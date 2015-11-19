@@ -6,4 +6,4 @@ DERT was written at the NASA Ames Research Center in the Intelligent Systems Div
 
 [More information . . .](https://github.com/nasa/DERT/wiki)
 
-[License](https://github.com/nasa/DERT/wiki/License)
+[License](https://github.com/nasa/DERT/blob/master/LICENSE.md)
