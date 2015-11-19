@@ -4,6 +4,6 @@ Desktop Exploration of Remote Terrain (DERT) is a viewer for exploring large dig
 
 DERT was written at the NASA Ames Research Center in the Intelligent Systems Division leveraging techniques from science support applications implemented for a number of NASA missions including Phoenix Lander and Mars Science Laboratory. DERT itself was funded by the Mars Reconnaissance Orbiter mission in collaboration with Malin Space Science Systems. DERT is licensed under the NASA Open Source Agreement (NOSA).
 
-[More information . . .](https://github.com/nasa/DERT/wiki/Desktop-Exploration-of-Remote-Terrain)
+[More information . . .](https://github.com/nasa/DERT/wiki)
 
 [License](https://github.com/nasa/DERT/wiki/License)
