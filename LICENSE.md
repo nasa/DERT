@@ -49,6 +49,7 @@ separate “DERT Third Party Licenses” pdf document found where you downloaded
  
 		Apache Harmony - Open Source Java SE
 		Copyright © 2006, 2010 The Apache Software Foundation.
+
  
  **GlueGen**
  
@@ -56,6 +57,7 @@ separate “DERT Third Party Licenses” pdf document found where you downloaded
  
 		GlueGen Portions - Sun Microsystems
 		Copyright © 2003-2005 Sun Microsystems, Inc. All Rights Reserved.
+
  
 **Guava**
 
@@ -67,23 +69,26 @@ separate “DERT Third Party Licenses” pdf document found where you downloaded
 	Copyright © 2003-2006, Joe Walnes
 	Copyright © 2006-2009, 2011 XStream Committers
 	All rights reserved.
+
  
 **SPICE**
 
 	Copyright © 2003, California Institute of Technology.
 	U.S. Government sponsorship acknowledged.
+
  
 **LibTIFF**
 
 	Copyright © 1988-1997 Sam Leffler
 	Copyright © 1991-1997 Silicon Graphics, Inc.
+
  
 **PROJ.4**
 
 	Copyright © 2000, Frank Warmerdam
  
 
-**Disclaimers**
+##Disclaimers
 
 	No Warranty: THE SUBJECT SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY OF ANY KIND,
 	EITHER EXPRESSED, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTY
