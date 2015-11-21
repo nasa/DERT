@@ -17,7 +17,6 @@ separate “DERT Third Party Licenses” pdf document found where you downloaded
 **JogAmp Ardor3D Continuation**
 
 	Copyright © 2008-2012 Ardor Labs, Inc.
-
  
 **JOGL**
 
@@ -49,7 +48,6 @@ separate “DERT Third Party Licenses” pdf document found where you downloaded
  
 		Apache Harmony - Open Source Java SE
 		Copyright © 2006, 2010 The Apache Software Foundation.
-
  
  **GlueGen**
  
@@ -57,31 +55,27 @@ separate “DERT Third Party Licenses” pdf document found where you downloaded
  
 		GlueGen Portions - Sun Microsystems
 		Copyright © 2003-2005 Sun Microsystems, Inc. All Rights Reserved.
-
  
 **Guava**
 
 	Copyright © 2010 The Guava Authors
 
- 
+
 **XStream**
 
 	Copyright © 2003-2006, Joe Walnes
 	Copyright © 2006-2009, 2011 XStream Committers
 	All rights reserved.
-
  
 **SPICE**
 
 	Copyright © 2003, California Institute of Technology.
 	U.S. Government sponsorship acknowledged.
-
  
 **LibTIFF**
 
 	Copyright © 1988-1997 Sam Leffler
 	Copyright © 1991-1997 Silicon Graphics, Inc.
-
  
 **PROJ.4**
 
