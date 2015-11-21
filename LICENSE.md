@@ -13,60 +13,68 @@
 	libraries. These libraries and their notices are listed below. Find the complete third party license listings in the
 	separate “DERT Third Party Licenses” pdf document found where you downloaded DERT in the LICENSE folder.
  
+ 
 	JogAmp Ardor3D Continuation
 	Copyright © 2008-2012 Ardor Labs, Inc.
+
  
-	JogAmp
+	JOGL
 	Copyright 2010 JogAmp Community. All rights reserved.
+	 
+		JOGL Portions Sun Microsystems
+		Copyright © 2003-2009 Sun Microsystems, Inc. All Rights Reserved.
  
-	JOGL Portions Sun Microsystems
-	Copyright © 2003-2009 Sun Microsystems, Inc. All Rights Reserved.
+		JOGL Portions Silicon Graphics
+		Copyright © 1991-2000 Silicon Graphics, Inc.
  
-	JOGL Portions Silicon Graphics
-	Copyright © 1991-2000 Silicon Graphics, Inc.
+		Light Weight Java Gaming Library Project (LWJGL)
+		Copyright © 2002-2004 LWJGL Project All rights reserved.
  
-	Light Weight Java Gaming Library Project (LWJGL)
-	Copyright © 2002-2004 LWJGL Project All rights reserved.
+		Tile Rendering Library - Brain Paul
+		Copyright © 1997-2005 Brian Paul. All Rights Reserved.
  
-	Tile Rendering Library - Brain Paul
-	Copyright © 1997-2005 Brian Paul. All Rights Reserved.
+		OpenKODE, EGL, OpenGL , OpenGL ES1 & ES2
+		Copyright © 2007-2010 The Khronos Group Inc.
  
-	OpenKODE, EGL, OpenGL , OpenGL ES1 & ES2
-	Copyright © 2007-2010 The Khronos Group Inc.
+		Cg
+		Copyright © 2002, NVIDIA Corporation
  
-	Cg
-	Copyright © 2002, NVIDIA Corporation
+		Typecast - David Schweinsberg
+		Copyright © 1999-2003 The Apache Software Foundation. All rights reserved.
  
-	Typecast - David Schweinsberg
-	Copyright © 1999-2003 The Apache Software Foundation. All rights reserved.
+		PNGJ - Herman J. Gonzalez and Shawn Hartsock
+		Copyright © 2004 The Apache Software Foundation. All rights reserved.
  
-	PNGJ - Herman J. Gonzalez and Shawn Hartsock
-	Copyright © 2004 The Apache Software Foundation. All rights reserved.
+		Apache Harmony - Open Source Java SE
+		Copyright © 2006, 2010 The Apache Software Foundation.
+
  
-	Apache Harmony - Open Source Java SE
-	Copyright © 2006, 2010 The Apache Software Foundation.
+	GlueGen
+	Copyright © 2010 JogAmp Community. All rights reserved.
+ 
+		GlueGen Portions - Sun Microsystems
+		Copyright © 2003-2005 Sun Microsystems, Inc. All Rights Reserved.
+
  
 	Guava
 	Copyright © 2010 The Guava Authors
- 
-	GlueGen Portions
-	Copyright © 2010 JogAmp Community. All rights reserved.
- 
-	GlueGen Portions - Sun Microsystems
-	Copyright © 2003-2005 Sun Microsystems, Inc. All Rights Reserved.
+
  
 	XStream
 	Copyright © 2003-2006, Joe Walnes
 	Copyright © 2006-2009, 2011 XStream Committers
 	All rights reserved.
+
  
 	SPICE
 	Copyright © 2003, California Institute of Technology.
 	U.S. Government sponsorship acknowledged.
+
  
 	LibTIFF
 	Copyright © 1988-1997 Sam Leffler
 	Copyright © 1991-1997 Silicon Graphics, Inc.
+
  
 	PROJ.4
 	Copyright © 2000, Frank Warmerdam
