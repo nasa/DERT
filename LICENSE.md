@@ -14,11 +14,13 @@
 	separate “DERT Third Party Licenses” pdf document found where you downloaded DERT in the LICENSE folder.
  
  
-	**JogAmp Ardor3D Continuation**
-	Copyright © 2008-2012 Ardor Labs, Inc.
+**JogAmp Ardor3D Continuation**
+```
+Copyright © 2008-2012 Ardor Labs, Inc.
+```
 
  
-	**JOGL**
+    **JOGL**
 	Copyright 2010 JogAmp Community. All rights reserved.
 	 
 		JOGL Portions Sun Microsystems
