@@ -17,6 +17,7 @@ separate “DERT Third Party Licenses” pdf document found where you downloaded
 **JogAmp Ardor3D Continuation**
 
 	Copyright © 2008-2012 Ardor Labs, Inc.
+
  
 **JOGL**
 
@@ -82,7 +83,7 @@ separate “DERT Third Party Licenses” pdf document found where you downloaded
 	Copyright © 2000, Frank Warmerdam
  
 
-	Disclaimers
+**Disclaimers**
 
 	No Warranty: THE SUBJECT SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY OF ANY KIND,
 	EITHER EXPRESSED, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTY
