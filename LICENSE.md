@@ -1,24 +1,26 @@
 #LICENSE
 
-	DERT is a viewer for digital terrain models created from data collected during NASA missions.
+DERT is a viewer for digital terrain models created from data collected during NASA missions.
 
-	DERT is Released in under the NASA Open Source Agreement (NOSA) found in the “LICENSE” folder where you downloaded DERT.
+DERT is Released in under the NASA Open Source Agreement (NOSA) found in the “LICENSE” folder where you downloaded DERT.
 
-	DERT includes 3rd Party software. The complete copyright notice listing for DERT is:
+DERT includes 3rd Party software. The complete copyright notice listing for DERT is:
 
-	Copyright © 2015 United States Government as represented by the Administrator of the National Aeronautics and Space
-	Administration.  No copyright is claimed in the United States under Title 17, U.S.Code. All Other Rights Reserved.
+Copyright © 2015 United States Government as represented by the Administrator of the National Aeronautics and Space
+Administration.  No copyright is claimed in the United States under Title 17, U.S.Code. All Other Rights Reserved.
 
-	Desktop Exploration of Remote Terrain (DERT) could not have been written without the aid of a number of free, open source
-	libraries. These libraries and their notices are listed below. Find the complete third party license listings in the
-	separate “DERT Third Party Licenses” pdf document found where you downloaded DERT in the LICENSE folder.
+Desktop Exploration of Remote Terrain (DERT) could not have been written without the aid of a number of free, open source
+libraries. These libraries and their notices are listed below. Find the complete third party license listings in the
+separate “DERT Third Party Licenses” pdf document found where you downloaded DERT in the LICENSE folder.
  
  
-	**JogAmp Ardor3D Continuation**
+**JogAmp Ardor3D Continuation**
+
 	Copyright © 2008-2012 Ardor Labs, Inc.
 
  
-	**JOGL**
+**JOGL**
+
 	Copyright 2010 JogAmp Community. All rights reserved.
 	 
 		JOGL Portions Sun Microsystems
@@ -49,34 +51,40 @@
 		Copyright © 2006, 2010 The Apache Software Foundation.
 
  
-	**GlueGen**
+ **GlueGen**
+ 
 	Copyright © 2010 JogAmp Community. All rights reserved.
  
 		GlueGen Portions - Sun Microsystems
 		Copyright © 2003-2005 Sun Microsystems, Inc. All Rights Reserved.
 
  
-	**Guava**
+**Guava**
+
 	Copyright © 2010 The Guava Authors
 
  
-	**XStream**
+**XStream**
+
 	Copyright © 2003-2006, Joe Walnes
 	Copyright © 2006-2009, 2011 XStream Committers
 	All rights reserved.
 
  
-	**SPICE**
+**SPICE**
+
 	Copyright © 2003, California Institute of Technology.
 	U.S. Government sponsorship acknowledged.
 
  
-	**LibTIFF**
+**LibTIFF**
+
 	Copyright © 1988-1997 Sam Leffler
 	Copyright © 1991-1997 Silicon Graphics, Inc.
 
  
-	**PROJ.4**
+**PROJ.4**
+
 	Copyright © 2000, Frank Warmerdam
  
 
