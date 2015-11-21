@@ -2,7 +2,7 @@
 
 DERT is a viewer for digital terrain models created from data collected during NASA missions.
 
-DERT is Released in under the NASA Open Source Agreement (NOSA) found in the “LICENSE” folder where you downloaded DERT.
+DERT is released under the NASA Open Source Agreement (NOSA) found in the “LICENSE” folder where you downloaded DERT.
 
 DERT includes 3rd Party software. The complete copyright notice listing for DERT is:
 
