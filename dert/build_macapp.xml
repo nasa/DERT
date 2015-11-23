@@ -78,12 +78,14 @@
 			</fileset>
 		</copy>
 		<mkdir dir="${macappdir}/kernels" />
+<!--
 		<copy todir="${macappdir}/kernels">
 			<fileset dir="kernels">
 				<exclude name=".svn"/>
 				<exclude name=".DS_Store"/>
 			</fileset>
 		</copy>
+-->
 		<mkdir dir="${macappdir}/colormap" />
 		<copy todir="${macappdir}/colormap">
 			<fileset dir="colormap">
@@ -107,6 +109,7 @@
 		</copy>
 		<copy file="dert" todir="${macdeploydir}" />
 		<copy file="layerfactory" todir="${macdeploydir}" />
+		<copy file="mac_get_kernels.sh" tofile="${macdeploydir}/get_kernels.sh" />
 		<chmod file="${macdeploydir}/layerfactory" perm="ugo+x" />		
 		<copy file="doc/DERT_UserGuide.pdf" todir="${macdeploydir}" />
 		<copy file="doc/ReleaseNotes.rtf" todir="${macdeploydir}" />

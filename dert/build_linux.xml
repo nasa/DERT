@@ -65,6 +65,7 @@
 		</jar>
 		<copy file="dert" todir="${linuxdeploydir}" />
 		<copy file="layerfactory" todir="${linuxdeploydir}" />
+		<copy file="linux_get_kernels.sh" tofile="${linuxdeploydir}/get_kernels.sh" />
 		<copy file="dert.properties" todir="${linuxdeploydir}" />
 		<mkdir dir="${linuxdeploydir}/lib" />
 		<copy todir="${linuxdeploydir}/lib">
@@ -89,12 +90,14 @@
 			</fileset>
 		</copy>
 		<mkdir dir="${linuxdeploydir}/kernels" />
+<!--
 		<copy todir="${linuxdeploydir}/kernels">
 			<fileset dir="kernels">
 				<exclude name=".svn"/>
 				<exclude name=".DS_Store"/>
 			</fileset>
 		</copy>
+-->
 		<mkdir dir="${linuxdeploydir}/colormap" />
 		<copy todir="${linuxdeploydir}/colormap">
 			<fileset dir="colormap">

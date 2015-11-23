@@ -1,11 +1,9 @@
 #!/bin/sh
 
 # This script gets the SPICE kernels and puts them in a directory called kernels.
-# Run it from the dert project directory.
+# Run it from the DERT installation directory.
 
 # Edit dert.properties to add or remove kernel files.
-
-mkdir kernels
 
 # Gravitational constant x mass (GM) values
 curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/gm_de431.tpc > kernels/gm_de431.tpc
