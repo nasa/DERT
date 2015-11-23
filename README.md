@@ -1,12 +1,12 @@
 # Desktop Exploration of Remote Terrain
 
-Desktop Exploration of Remote Terrain (DERT) is a software tool for exploring large Digital Terrain Models (DTM) in 3D. DTMs generally consist of a Digital Elevation Model (DEM) and one or more co-registered digital image overlays. These data sets have been collected by NASA planetary missions such as Mars Reconnaissance Orbiter (MRO), Mars Global Surveyor (MGS), and Lunar Reconnaissance Orbiter (LRO) as well as the Landsat and the Shuttle Radar Topography (SRTM) terrestrial missions.
+Desktop Exploration of Remote Terrain (DERT) is a software tool for exploring large Digital Terrain Models (DTM) in 3D. It aids in understanding topography and spatial relationships of terrain features, as well as performing simple analysis tasks relevant to the planetary science community.
 
 DERT was developed by the Autonomous Systems and Robotics Area of the Intelligent Systems Division at NASA Ames Research Center. It leverages techniques implemented for science support applications provided to a number of NASA missions including Phoenix Mars Lander (PML) and Mars Science Laboratory (MSL). 
 
 DERT was funded by the MRO mission and developed in collaboration with members of the MRO Context Camera (CTX) science team. DERT is licensed under the NASA Open Source Agreement (NOSA).
 
-[More information . . .](https://github.com/nasa/DERT/wiki)
+[Find out more . . .](https://github.com/nasa/DERT/wiki)
 
 [Download](https://github.com/nasa/DERT/wiki/Download)
 
