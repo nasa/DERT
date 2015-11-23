@@ -65,7 +65,7 @@
 		</jar>
 		<copy file="dert" todir="${linuxdeploydir}" />
 		<copy file="layerfactory" todir="${linuxdeploydir}" />
-		<copy file="linux_get_kernels.sh" tofile="${linuxdeploydir}/get_kernels.sh" />
+		<copy file="get_kernels" todir="${linuxdeploydir}" />
 		<copy file="dert.properties" todir="${linuxdeploydir}" />
 		<mkdir dir="${linuxdeploydir}/lib" />
 		<copy todir="${linuxdeploydir}/lib">
@@ -134,6 +134,7 @@
 		<chmod dir="${linuxdeploydir}/LICENSE" perm="g+x" />
 		<chmod file="${linuxdeploydir}/dert" perm="ugo+x" />
 		<chmod file="${linuxdeploydir}/layerfactory" perm="ugo+x" />		
+		<chmod file="${linuxdeploydir}/get_kernels" perm="ugo+x" />		
 		<delete file="dert.jar" />
 	</target>
 

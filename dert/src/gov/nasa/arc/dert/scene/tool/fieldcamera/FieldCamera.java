@@ -62,7 +62,7 @@ import com.ardor3d.scenegraph.shape.Sphere;
  */
 public class FieldCamera extends Movable implements Tool, ViewDependent {
 
-	public static final Icon icon = Icons.getImageIcon("fieldCamera.png");
+	public static final Icon icon = Icons.getImageIcon("fieldcamera.png");
 	protected static float AMBIENT_FACTOR = 0.75f;
 
 	// Defaults

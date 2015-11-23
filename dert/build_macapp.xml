@@ -109,7 +109,8 @@
 		</copy>
 		<copy file="dert" todir="${macdeploydir}" />
 		<copy file="layerfactory" todir="${macdeploydir}" />
-		<copy file="mac_get_kernels.sh" tofile="${macdeploydir}/get_kernels.sh" />
+		<copy file="get_kernels" todir="${macdeploydir}" />
+		<chmod file="${macdeploydir}/get_kernels" perm="ugo+x" />		
 		<chmod file="${macdeploydir}/layerfactory" perm="ugo+x" />		
 		<copy file="doc/DERT_UserGuide.pdf" todir="${macdeploydir}" />
 		<copy file="doc/ReleaseNotes.rtf" todir="${macdeploydir}" />
