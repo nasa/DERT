@@ -1,10 +1,14 @@
 # Desktop Exploration of Remote Terrain
 
-Desktop Exploration of Remote Terrain (DERT) is a viewer for exploring large digital terrain models (DTM) in 3D. DTMs generally consist of a digital elevation model (DEM) and one or more co-registered ortho-images. These data sets have been collected by NASA planetary missions such as Mars Reconnaissance Orbiter, Mars Global Surveyor, and Lunar Reconnaissance Orbiter (LRO) as well as the Landsat and Shuttle Radar Topography terrestrial missions.
+Desktop Exploration of Remote Terrain (DERT) is a software tool for exploring large Digital Terrain Models (DTM) in 3D. DTMs generally consist of a Digital Elevation Model (DEM) and one or more co-registered digital image overlays. These data sets have been collected by NASA planetary missions such as Mars Reconnaissance Orbiter (MRO), Mars Global Surveyor (MGS), and Lunar Reconnaissance Orbiter (LRO) as well as the Landsat and the Shuttle Radar Topography (SRTM) terrestrial missions.
 
-DERT was written at the NASA Ames Research Center in the Intelligent Systems Division leveraging techniques from science support applications implemented for a number of NASA missions including Phoenix Lander and Mars Science Laboratory. DERT itself was funded by the Mars Reconnaissance Orbiter mission and developed in collaboration with members of the MRO Context Camera (CTX) science team. DERT is licensed under the NASA Open Source Agreement (NOSA).
+DERT was developed by the Autonomous Systems and Robotics Area of the Intelligent Systems Division at NASA Ames Research Center. It leverages techniques implemented for science support applications provided to a number of NASA missions including Phoenix Mars Lander (PML) and Mars Science Laboratory (MSL). 
+
+DERT was funded by the MRO mission and developed in collaboration with members of the MRO Context Camera (CTX) science team. DERT is licensed under the NASA Open Source Agreement (NOSA).
 
 [More information . . .](https://github.com/nasa/DERT/wiki)
+
+[Download](https://github.com/nasa/DERT/wiki/Download)
 
 ##LICENSE
 
