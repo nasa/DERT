@@ -1,0 +1,11 @@
+0%	darkgray
+10%	gray
+20%	violet
+30%	magenta
+40%	blue
+50%	cyan
+60%	green
+70%	yellow
+80%	orange
+90%	red
+100%	white

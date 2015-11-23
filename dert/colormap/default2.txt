@@ -1,0 +1,11 @@
+400	darkgray
+600	gray
+800	violet
+1000	magenta
+1200	blue
+1400	cyan
+1600	green
+1800	yellow
+2000	orange
+2200	red
+2400	white

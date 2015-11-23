@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="DERT" default="main" basedir=".">
+
+<!-- Set up some directory properties -->
+	
+	<property name="version" value="1.0a13" />
+	<property name="srcdir" value="src" />
+	<property name="classdir" value="bin" />
+	<property name="libdir" value="lib" />
+	<property name="macdeploydir" value="dert_${version}_osx" />
+	<property name="macappdir" value="${macdeploydir}/dert.app/Contents/Java" />
+	
+	<path id="macclasspath">
+		<pathelement path="ardor3d-animation-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-awt-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-core-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-effects-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-extras-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-jogl-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-math-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-savable-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-ui-1.0-SNAPSHOT.jar"/>
+		<pathelement path="gluegen-rt.jar"/>
+		<pathelement path="jogl-all.jar"/>
+		<pathelement path="guava-18.0.jar"/>
+		<pathelement path="spice.jar"/>
+		<pathelement path="xstream-1.4.8.jar"/>
+		<pathelement path="jogl-all-natives-macosx-universal.jar"/>
+		<pathelement path="gluegen-rt-natives-macosx-universal.jar"/>
+		<pathelement path="natives_macosx.jar"/>
+	</path>
+	
+<!-- Mac Application Bundler -->
+	<taskdef name="bundleapp"
+		classname="com.oracle.appbundler.AppBundlerTask"   
+		classpath="appbundler-1.0.jar" />
+
+<!-- Create dert jar files -->
+	
+	<target name="macosx">
+		<bundleapp outputdirectory="${macdeploydir}" name="dert" displayname="DERT" identifier="gov.nasa.arc.dert.Dert"
+			icon="derticon.icns" mainclassname="gov.nasa.arc.dert.Dert"
+			signature="NASA" shortversion="${version}" >
+			<classpath file="lib/ardor3d-animation-1.0-SNAPSHOT.jar" />
+			<classpath file="lib/ardor3d-awt-1.0-SNAPSHOT.jar" />
+			<classpath file="lib/ardor3d-core-1.0-SNAPSHOT.jar" />
+			<classpath file="lib/ardor3d-effects-1.0-SNAPSHOT.jar" />
+			<classpath file="lib/ardor3d-extras-1.0-SNAPSHOT.jar" />
+			<classpath file="lib/ardor3d-jogl-1.0-SNAPSHOT.jar" />
+			<classpath file="lib/ardor3d-math-1.0-SNAPSHOT.jar" />
+			<classpath file="lib/ardor3d-savable-1.0-SNAPSHOT.jar" />
+			<classpath file="lib/ardor3d-ui-1.0-SNAPSHOT.jar" />
+			<classpath file="lib/gluegen-rt-natives-macosx-universal.jar" />
+			<classpath file="lib/gluegen-rt.jar" />
+			<classpath file="lib/guava-18.0.jar" />
+			<classpath file="lib/jogl-all-natives-macosx-universal.jar" />
+			<classpath file="lib/jogl-all.jar" />
+			<classpath file="lib/natives_macosx.jar" />
+			<classpath file="lib/spice.jar" />
+			<classpath file="lib/xstream-1.4.8.jar" />
+			<classpath file="dert.jar" />
+			<option value="-Xms256m" />
+			<option value="-Xmx2048m" />
+		</bundleapp>
+		<copy file="dert.properties" todir="${macappdir}" />
+		<mkdir dir="${macappdir}/html" />
+		<copy todir="${macappdir}/html">
+			<fileset dir="html">
+				<include name="**/*.html"/>
+				<include name="**/*.png"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${macappdir}/proj" />
+		<copy todir="${macappdir}/proj">
+			<fileset dir="proj">
+				<exclude name=".svn"/>
+				<exclude name=".DS_Store"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${macappdir}/kernels" />
+		<copy todir="${macappdir}/kernels">
+			<fileset dir="kernels">
+				<exclude name=".svn"/>
+				<exclude name=".DS_Store"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${macappdir}/colormap" />
+		<copy todir="${macappdir}/colormap">
+			<fileset dir="colormap">
+				<exclude name=".svn"/>
+				<exclude name=".DS_Store"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${macappdir}/camera" />
+		<copy todir="${macappdir}/camera">
+			<fileset dir="camera">
+				<exclude name=".svn"/>
+				<exclude name=".DS_Store"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${macdeploydir}/LICENSE" />
+		<copy todir="${macdeploydir}/LICENSE">
+			<fileset dir="LICENSE">
+				<exclude name=".svn"/>
+				<exclude name=".DS_Store"/>
+			</fileset>
+		</copy>
+		<copy file="dert" todir="${macdeploydir}" />
+		<copy file="layerfactory" todir="${macdeploydir}" />
+		<chmod file="${macdeploydir}/layerfactory" perm="ugo+x" />		
+		<copy file="doc/guide/DERT_UserGuide.pdf" todir="${macdeploydir}" />
+		<copy file="doc/ReleaseNotes.rtf" todir="${macdeploydir}" />
+		<copy file="doc/README.txt" todir="${macdeploydir}" />
+		<chmod dir="${macdeploydir}/LICENSE" perm="g+x" />
+		<chmod file="${macdeploydir}/dert" perm="ugo+x" />
+		<chmod dir="${macdeploydir}" perm="g+r" includes="**/*"/>
+		<chmod dir="${macdeploydir}" perm="g+x" />
+		<chmod dir="${macappdir}/html" perm="g+x" />
+		<chmod dir="${macappdir}/html/images" perm="g+x" />
+		<chmod dir="${macappdir}/lib" perm="g+x" />
+		<chmod dir="${macappdir}/proj" perm="g+x" />
+		<chmod dir="${macappdir}/kernels" perm="g+x" />
+		<chmod dir="${macappdir}/colormap" perm="g+x" />
+		<chmod dir="${macappdir}/camera" perm="g+x" />
+		<delete file="dert.jar" />
+	</target>
+	
+	
+<!-- Default Target -->
+		
+	<target name="main" depends="macosx">
+		<echo>
+			Build complete.
+		</echo>
+	</target>
+</project>

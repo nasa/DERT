@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="DERT" default="main" basedir=".">
+
+<!-- Set up some directory properties -->
+	
+	<property name="version" value="1.0a13" />
+	<property name="srcdir" value="src" />
+	<property name="classdir" value="bin" />
+	<property name="libdir" value="lib" />
+	<property name="linuxdeploydir" value="dert_${version}_linux" />
+	
+	<path id="linuxclasspath">
+		<pathelement path="${libdir}/ardor3d-animation-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-awt-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-core-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-effects-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-extras-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-jogl-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-math-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-savable-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-ui-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/gluegen-rt.jar"/>
+		<pathelement path="${libdir}/jogl-all.jar"/>
+		<pathelement path="${libdir}/guava-18.0.jar"/>
+		<pathelement path="${libdir}/spice.jar"/>
+		<pathelement path="${libdir}/xstream-1.4.8.jar"/>
+		<pathelement path="${libdir}/jogl-all-natives-linux-amd64.jar"/>
+		<pathelement path="${libdir}/gluegen-rt-natives-linux-amd64.jar"/>
+		<pathelement path="${libdir}/natives_linux.jar"/>
+	</path>
+	
+<!-- Compile all Java code and place class files in bin directory. -->
+<!-- Copy PNG icon files to bin directory -->
+	
+	<target name="compile">
+		<mkdir dir="${classdir}"/>
+		<javac includeantruntime="false" srcdir="${srcdir}" destdir="${classdir}" debug="on">
+			<classpath refid="linuxclasspath"/>
+		</javac>
+		<copy todir="${classdir}/gov/nasa/arc/dert/icon">
+			<fileset dir="${srcdir}/gov/nasa/arc/dert/icon">
+				<include name="**/*.png"/>
+			</fileset>
+		</copy>
+		<copy todir="${classdir}/gov/nasa/arc/dert/action/file">
+			<fileset dir="${srcdir}/gov/nasa/arc/dert/action/file">
+				<include name="About.txt"/>
+			</fileset>
+		</copy>
+	</target>
+
+<!-- Create dert jar files -->
+	
+	<target name="linux" depends="compile">
+		<delete dir="${linuxdeploydir}" />
+		<mkdir dir="${linuxdeploydir}" />
+		<manifestclasspath property="linuxjarclasspath" jarfile="dert.jar">
+			<classpath refid="linuxclasspath"/>
+		</manifestclasspath>
+		<jar destfile="${linuxdeploydir}/dert.jar" basedir="${classdir}" includes="**/*.class **/*.png **/*.txt">
+			<manifest>
+				<attribute name="Class-Path" value="${linuxjarclasspath}"/>
+				<attribute name="Main-Class" value="gov.nasa.arc.dert.Dert"/>
+			</manifest>
+		</jar>
+		<copy file="dert" todir="${linuxdeploydir}" />
+		<copy file="layerfactory" todir="${linuxdeploydir}" />
+		<copy file="dert.properties" todir="${linuxdeploydir}" />
+		<mkdir dir="${linuxdeploydir}/lib" />
+		<copy todir="${linuxdeploydir}/lib">
+			<fileset dir="lib">
+				<exclude name="*macosx*.jar"/>
+				<exclude name=".svn"/>
+				<exclude name=".DS_Store"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${linuxdeploydir}/html" />
+		<copy todir="${linuxdeploydir}/html">
+			<fileset dir="html">
+				<include name="**/*.html"/>
+				<include name="**/*.png"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${linuxdeploydir}/proj" />
+		<copy todir="${linuxdeploydir}/proj">
+			<fileset dir="proj">
+				<exclude name=".svn"/>
+				<exclude name=".DS_Store"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${linuxdeploydir}/kernels" />
+		<copy todir="${linuxdeploydir}/kernels">
+			<fileset dir="kernels">
+				<exclude name=".svn"/>
+				<exclude name=".DS_Store"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${linuxdeploydir}/colormap" />
+		<copy todir="${linuxdeploydir}/colormap">
+			<fileset dir="colormap">
+				<exclude name=".svn"/>
+				<exclude name=".DS_Store"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${linuxdeploydir}/camera" />
+		<copy todir="${linuxdeploydir}/camera">
+			<fileset dir="camera">
+				<exclude name=".svn"/>
+				<exclude name=".DS_Store"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${linuxdeploydir}/LICENSE" />
+		<copy todir="${linuxdeploydir}/LICENSE">
+			<fileset dir="LICENSE">
+				<exclude name=".svn"/>
+				<exclude name=".DS_Store"/>
+			</fileset>
+		</copy>
+		<copy file="doc/guide/DERT_UserGuide.pdf" todir="${linuxdeploydir}" />
+		<copy file="doc/ReleaseNotes.rtf" todir="${linuxdeploydir}" />
+		<copy file="doc/README.txt" todir="${linuxdeploydir}" />
+		<chmod dir="${linuxdeploydir}" perm="g+r" includes="**/*"/>
+		<chmod dir="${linuxdeploydir}" perm="g+x" />
+		<chmod dir="${linuxdeploydir}/html" perm="g+x" />
+		<chmod dir="${linuxdeploydir}/html/images" perm="g+x" />
+		<chmod dir="${linuxdeploydir}/lib" perm="g+x" />
+		<chmod dir="${linuxdeploydir}/proj" perm="g+x" />
+		<chmod dir="${linuxdeploydir}/kernels" perm="g+x" />
+		<chmod dir="${linuxdeploydir}/colormap" perm="g+x" />
+		<chmod dir="${linuxdeploydir}/camera" perm="g+x" />
+		<chmod dir="${linuxdeploydir}/LICENSE" perm="g+x" />
+		<chmod file="${linuxdeploydir}/dert" perm="ugo+x" />
+		<chmod file="${linuxdeploydir}/layerfactory" perm="ugo+x" />		
+		<delete file="dert.jar" />
+	</target>
+
+<!-- Clean Target -->
+	
+	<target name="clean">
+		<delete file="dert.jar" />
+		<delete dir="${classdir}" />
+		<delete dir="${linuxdeploydir}" />
+	</target>
+	
+	
+<!-- Default Target -->
+		
+	<target name="main" depends="linux">
+		<echo>
+			Build complete.
+		</echo>
+	</target>
+</project>

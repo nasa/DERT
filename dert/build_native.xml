@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="DERT_native" basedir=".">
+	
+<!-- Create natives jar file for Mac. -->
+	<target name="mac">
+		<delete dir="libnative" />
+		<mkdir dir="libnative"/>
+		<copy file="libgeo/libgeo.jnilib" todir="libnative" />
+		<copy file="libspice/libJNISpice.jnilib" todir="libnative" />
+		<jar destfile="lib/natives_macosx.jar" basedir="libnative"/>
+		<copy file="libspice/spice.jar" todir="lib" />
+		<delete dir="libnative" />
+	</target>
+			
+<!-- Create natives jar file. -->
+	<target name="linux">
+		<delete dir="libnative" />
+		<mkdir dir="libnative"/>
+		<copy file="libgeo/libgeo.so" todir="libnative" />
+		<copy file="libspice/libJNISpice.so" todir="libnative" />
+		<jar destfile="lib/natives_linux.jar" basedir="libnative"/>
+		<copy file="libspice/spice.jar" todir="lib" />
+		<delete dir="libnative" />
+	</target>
+</project>

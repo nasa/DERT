@@ -1,0 +1,176 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf400
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\b\fs36 \cf0 How to Build DERT
+\b0\fs24 \
+\
+DERT is built in three steps: first the native C libraries, second for external libraries, and third for the Java source. The first step is only necessary if you have changed the C code.\
+\
+\
+
+\b\fs28 Native C Libraries
+\b0\fs24 \
+\
+DERT uses a couple of well known libraries for handling TIFF files and projections (libtiff and proj.4). These libraries are written in C and are wrapped with JNI to make them accessible to Java. Wrapping creates a shared object file (.jnilib for Mac, and .so for Linux). These files are included in the source release.  If you need to rebuild them do the following:\
+\
+If you don't have libtiff and proj.4 (libproj) installed on your system, you can download them from these sites:\
+\
+http://download.osgeo.org/libtiff/\
+https://trac.osgeo.org/proj/\
+\
+You will need to build both libraries.\
+\
+Change directory to dert/libgeo.\
+\
+Edit Makefile to set the location of the libtiff.a, libproj.a, and the include files for both.\
+\
+Edit Makefile to change to the setup for your platform.\
+\
+Enter on the command line:\
+\
+make clean\
+make\
+\
+If successful, you should have a new copy of the shared object file for your platform in dert/libgeo.\
+\
+Copy the entire shared proj.4 data directory to dert.  You will have dert/proj.\
+\
+\
+
+\b\fs28 External Libraries
+\b0\fs24 \
+\
+DERT depends on a number of existing libraries.  Each one is open source and free.\
+\
+First, create a lib subdirectory under the dert directory.  Then add the following libraries.\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\i\b \cf0 JNISpice\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\i0\b0 \cf0 \
+The following instructions are derived from the document:\
+\
+https://naif.jpl.nasa.gov/pipermail/spice_announce/2010-February/000077.html\
+\
+Connect to the ftp site ftp://naif.jpl.nasa.gov as a guest. Go to pub/naif/misc/JNISpice/MacIntel_OSX_AppleC_Java1.5_64bit/packages and download everything. Follow the directions in the README file. Change directory to JNISpice/src/JNISpice and enter the following on the command line.\
+\
+jar -cvf spice.jar spice/basic/*.class spice/testutils/*.class spice/tspice/*.class\
+\
+Create a libspice directory under dert. Copy JNISpice/lib/libJNISpice.jnilib and spice.jar to dert/libspice.\
+\
+Download PC_Linux_GCC_Java1.5_64bit/packages directory contents and follow the instructions in the README file. Copy JNISpice/lib/libJNISpice.so to dert/libspice.\
+\
+You should now have a libspice directory containing the following three files.\
+\
+libJNISpice.jnilib\
+libJNISpice.so\
+spice.jar\
+\
+Now you will need spice kernels.  Download the following from http://naif.jpl.nasa.gov/pub/naif/generic_kernels/ and place them in dert/kernels.\
+\
+de421.bsp\
+naif0010.tls\
+pck00010.tpc\
+\
+For MSL folks:\
+msl_lmst_gc120806_v2.tsc\
+msl.tsc\
+\
+Change directory to dert and run the following:\
+\
+ant -buildfile build_native.xml 
+\i your_platform\
+\
+
+\i0 This command will create the jar file containing the dert native libraries for libgeo and spice and place it in dert/lib.\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\i\b \cf0 JogAmp's Ardor3D Continuation
+\i0\b0 \
+\
+The following instructions are from this site: https://gouessej.wordpress.com/2014/11/22/ardor3d-est-mort-vive-jogamps-ardor3d-continuation-ardor3d-is-dead-long-life-to-jogamps-ardor3d-continuation/.\
+\
+Download jogamp-ardor3d.7z from https://jogamp.org/deployment/ardor3d/. This is a zip of all the jars. You can also download jars separately from the site.\
+\
+Unzip the file.\
+\
+Copy the following jars into dert/lib:\
+\
+ardor3d-animation-1.0-SNAPSHOT.jar\
+ardor3d-awt-1.0-SNAPSHOT.jar\
+ardor3d-core-1.0-SNAPSHOT.jar\
+ardor3d-effects-1.0-SNAPSHOT.jar\
+ardor3d-extras-1.0-SNAPSHOT.jar\
+ardor3d-jogl-1.0-SNAPSHOT.jar\
+ardor3d-math-1.0-SNAPSHOT.jar\
+ardor3d-savable-1.0-SNAPSHOT.jar\
+ardor3d-ui-1.0-SNAPSHOT.jar\
+\
+Download jogamp-all-platforms.7z from https://jogamp.org/deployment/jogamp-current/archive/.\
+\
+Unzip the file. Change directory to jogamp-all-platforms/jar.\
+\
+Copy the following jars into dert/lib:\
+\
+gluegen-rt-natives-linux-amd64.jar\
+gluegen-rt-natives-macosx-universal.jar\
+gluegen-rt.jar\
+jogl-all-natives-linux-amd64.jar\
+jogl-all-natives-macosx-universal.jar\
+jogl-all.jar\
+\
+\
+
+\i\b Guava
+\i0\b0 \
+\
+Download guava-18.0.jar from \
+\
+http://code.google.com/p/guava-libraries/\
+\
+and place it in dert/lib.\
+\
+\
+
+\i\b XStream
+\i0\b0 \
+\
+Download xstream-1.4.8.jar from http://xstream.codehaus.org/download.html. Download the binary distribution and unzip it. The jar is located under xstream-1.4.8/lib.  Copy it to dert/lib.\
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b\fs28 \cf0 DERT Java Source
+\b0\fs24 \
+\
+These instructions assume that you are running Java 1.7 as your default.  You can change to a different JDK by set the JAVACMD environment variable.  See the Ant documentation for more information.\
+\
+You will need to download the Ant task called appbundler.  Put it in the top dert directory. This task requires Java 1.7 or later.\
+\
+Change to the dert directory.\
+\
+If you have Java 1.7 but must also support Java 1.6:\
+\
+	./build.sh\
+\
+If you only need to support Java 1.7 or later:\
+\
+	ant -v build.xml\
+\
+If you only have Java 1.6:\
+\
+	Copy build_linux.xml to build_mac.xml and change all of the linux references in it to mac.\
+\
+	ant -v build_mac.xml\
+	ant -v build_linux.xml\
+\
+If successful, you should see the DERT installation directory appear.  Additionally, you now have a complete lib directory that can be used for development. For Eclipse or NetBeans users, add all of the jars in lib to your build path (except, of course, for the the natives that are not for your platform). }

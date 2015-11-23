@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="DERT" default="main" basedir=".">
+
+<!-- Set up some directory properties -->
+	
+	<property name="version" value="1.0a13" />
+	<property name="srcdir" value="src" />
+	<property name="classdir" value="bin" />
+	<property name="libdir" value="lib" />
+	<property name="macdeploydir" value="dert_${version}_osx" />
+	<property name="macappdir" value="${macdeploydir}/dert.app/Contents/Java" />
+	
+	<path id="libclasspath">
+		<pathelement path="${libdir}/ardor3d-animation-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-awt-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-core-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-effects-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-extras-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-jogl-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-math-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-savable-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-ui-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/gluegen-rt.jar"/>
+		<pathelement path="${libdir}/jogl-all.jar"/>
+		<pathelement path="${libdir}/guava-18.0.jar"/>
+		<pathelement path="${libdir}/spice.jar"/>
+		<pathelement path="${libdir}/xstream-1.4.8.jar"/>
+		<pathelement path="${libdir}/jogl-all-natives-linux-amd64.jar"/>
+		<pathelement path="${libdir}/gluegen-rt-natives-linux-amd64.jar"/>
+		<pathelement path="${libdir}/natives_linux.jar"/>
+	</path>
+	
+	<path id="macclasspath">
+		<pathelement path="ardor3d-animation-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-awt-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-core-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-effects-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-extras-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-jogl-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-math-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-savable-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-ui-1.0-SNAPSHOT.jar"/>
+		<pathelement path="gluegen-rt.jar"/>
+		<pathelement path="jogl-all.jar"/>
+		<pathelement path="guava-18.0.jar"/>
+		<pathelement path="spice.jar"/>
+		<pathelement path="xstream-1.4.8.jar"/>
+		<pathelement path="jogl-all-natives-macosx-universal.jar"/>
+		<pathelement path="gluegen-rt-natives-macosx-universal.jar"/>
+		<pathelement path="natives_macosx.jar"/>
+	</path>
+	
+<!-- Compile all Java code and place class files in bin directory. -->
+<!-- Copy PNG icon files to bin directory -->
+	
+	<target name="compile">
+		<mkdir dir="${classdir}"/>
+		<javac includeantruntime="false" srcdir="${srcdir}" destdir="${classdir}" debug="on">
+			<classpath refid="libclasspath"/>
+		</javac>
+		<copy todir="${classdir}/gov/nasa/arc/dert/icon">
+			<fileset dir="${srcdir}/gov/nasa/arc/dert/icon">
+				<include name="**/*.png"/>
+			</fileset>
+		</copy>
+		<copy todir="${classdir}/gov/nasa/arc/dert/action/file">
+			<fileset dir="${srcdir}/gov/nasa/arc/dert/action/file">
+				<include name="About.txt"/>
+			</fileset>
+		</copy>
+	</target>
+
+<!-- Create dert jar files -->
+	
+	<target name="macosx" depends="compile">
+		<delete dir="${macdeploydir}" />
+		<mkdir dir="${macdeploydir}" />
+		<manifestclasspath property="macjarclasspath" jarfile="dert.jar">
+			<classpath refid="macclasspath"/>
+		</manifestclasspath>
+		<jar destfile="dert.jar" basedir="${classdir}" includes="**/*.class **/*.png **/*.txt">
+			<manifest>
+				<attribute name="Class-Path" value="${macjarclasspath}"/>
+				<attribute name="Main-Class" value="gov.nasa.arc.dert.Dert"/>
+			</manifest>
+		</jar>
+	</target>
+
+<!-- Clean Target -->
+	
+	<target name="clean">
+		<delete file="dert.jar" />
+		<delete dir="${classdir}" />
+		<delete dir="${macdeploydir}" />
+	</target>
+	
+	
+<!-- Default Target -->
+		
+	<target name="main" depends="macosx">
+		<echo>
+			Build complete.
+		</echo>
+	</target>
+</project>
