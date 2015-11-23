@@ -540,7 +540,7 @@ public class MainWindow extends JFrame {
 		// UIManager.getDefaults().put("defaultFont", new
 		// FontUIResource("Lucida-Grande", Font.PLAIN, 10));
 		FontUIResource fuir = new FontUIResource("Lucida-Grande", Font.PLAIN, 12);
-		Enumeration keys = UIManager.getDefaults().keys();
+		Enumeration<Object> keys = UIManager.getDefaults().keys();
 		while (keys.hasMoreElements()) {
 			Object key = keys.nextElement();
 			Object value = UIManager.get(key);

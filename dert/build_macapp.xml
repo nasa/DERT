@@ -3,7 +3,7 @@
 
 <!-- Set up some directory properties -->
 	
-	<property name="version" value="1.0a13" />
+	<property name="version" value="1.0a14" />
 	<property name="srcdir" value="src" />
 	<property name="classdir" value="bin" />
 	<property name="libdir" value="lib" />
