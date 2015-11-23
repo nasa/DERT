@@ -116,7 +116,7 @@
 				<exclude name=".DS_Store"/>
 			</fileset>
 		</copy>
-		<copy file="doc/guide/DERT_UserGuide.pdf" todir="${linuxdeploydir}" />
+		<copy file="doc/DERT_UserGuide.pdf" todir="${linuxdeploydir}" />
 		<copy file="doc/ReleaseNotes.rtf" todir="${linuxdeploydir}" />
 		<copy file="doc/README.txt" todir="${linuxdeploydir}" />
 		<chmod dir="${linuxdeploydir}" perm="g+r" includes="**/*"/>

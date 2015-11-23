@@ -108,7 +108,7 @@
 		<copy file="dert" todir="${macdeploydir}" />
 		<copy file="layerfactory" todir="${macdeploydir}" />
 		<chmod file="${macdeploydir}/layerfactory" perm="ugo+x" />		
-		<copy file="doc/guide/DERT_UserGuide.pdf" todir="${macdeploydir}" />
+		<copy file="doc/DERT_UserGuide.pdf" todir="${macdeploydir}" />
 		<copy file="doc/ReleaseNotes.rtf" todir="${macdeploydir}" />
 		<copy file="doc/README.txt" todir="${macdeploydir}" />
 		<chmod dir="${macdeploydir}/LICENSE" perm="g+x" />
