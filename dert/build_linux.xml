@@ -114,7 +114,7 @@
 		</copy>
 		<mkdir dir="${linuxdeploydir}/LICENSE" />
 		<copy todir="${linuxdeploydir}/LICENSE">
-			<fileset dir="LICENSE">
+			<fileset dir="../LICENSE">
 				<exclude name=".svn"/>
 				<exclude name=".DS_Store"/>
 			</fileset>

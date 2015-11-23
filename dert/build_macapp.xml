@@ -102,7 +102,7 @@
 		</copy>
 		<mkdir dir="${macdeploydir}/LICENSE" />
 		<copy todir="${macdeploydir}/LICENSE">
-			<fileset dir="LICENSE">
+			<fileset dir="../LICENSE">
 				<exclude name=".svn"/>
 				<exclude name=".DS_Store"/>
 			</fileset>
