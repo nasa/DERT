@@ -1,4 +1,4 @@
-# Desktop Exploration of Remote Terrain
+# DERT ![ ](https://github.com/nasa/DERT/blob/master/dert/html/images/dert.png)
 
 Desktop Exploration of Remote Terrain (DERT) is a software tool for exploring large Digital Terrain Models (DTM) in 3D. It aids in understanding topography and spatial relationships of terrain features, as well as performing simple analysis tasks relevant to the planetary science community.
 
