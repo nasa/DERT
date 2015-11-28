@@ -144,7 +144,7 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 					seekPoint.set(value);
 					World.getInstance().getLandscape().worldToLocalCoordinate(seekPoint);
 					double[] angle = fieldCamera.seek(seekPoint);
-					azSpinner.setValue(Math.toDegrees(-angle[0]));
+					azSpinner.setValue(Math.toDegrees(angle[0]));
 					tiltSpinner.setValue(Math.toDegrees(angle[1]));
 				}
 			}

@@ -336,10 +336,10 @@ public class BasicCamera extends Camera {
 		// axes.getColumn(0, _left);
 		// axes.getColumn(1, _up);
 		// axes.getColumn(2, _direction);
+		_location.set(location);
 
 		// We use the traditional OpenGL default (negative Z axis) for
 		// compatibility with other software. -LK
-		_location.set(location);
 		if (getProjectionMode() == ProjectionMode.Perspective) {
 			_direction.set(0, 0, -1);
 			axes.applyPost(_direction, _direction);

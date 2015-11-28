@@ -334,6 +334,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		int index = (int) state.id;
 		Waypoint currentWaypoint = new Waypoint(state);
 		index = pointSet.addPoint(currentWaypoint, index);
+		state.id = index;
 		currentWaypoint.addMotionListener(this);
 
 		// if we didn't add it to the end, renumber the way points
@@ -816,19 +817,11 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			lookAt.addLocal(camera.getLocation());
 			camera.setLookAt(lookAt);
 		}
-		// get the rotation angles for the viewpoint store
-		Vector3 vec = new Vector3();
-		camera.getDirection().negate(vec);
-		vec.setZ(0);
-		float az = (float) (Math.acos(Vector3.UNIT_Y.dot(vec)) + Math.PI);
-		camera.getDirection().negate(vec);
-		vec.set(vec.getY(), vec.getZ(), 0);
-		float el = (float) Math.acos(Vector3.UNIT_Y.dot(vec));
 
 		// set the frustum
 		camera.setFrustum(sceneBounds);
 
-		return (new ViewpointStore(wp.getName(), camera, az, el));
+		return (new ViewpointStore(wp.getName(), camera));
 	}
 
 	private void updateDistanceLabels(Waypoint wp) {

@@ -298,7 +298,7 @@ public class ViewpointNode extends CameraNode {
 		viewpointSelected = vpSelected;
 		strictFrustum = strict;
 		azimuth = vps.azimuth;
-		elevation = vps.elevation;
+		elevation = vps.elevation+Math.PI/2;
 		rotate.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
 		workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
 		rotate.multiplyLocal(workRot);
@@ -321,7 +321,7 @@ public class ViewpointNode extends CameraNode {
 	 * @return
 	 */
 	public ViewpointStore getViewpoint(String name) {
-		return (new ViewpointStore(name, camera, azimuth, elevation));
+		return (new ViewpointStore(name, camera));
 	}
 
 	/**
@@ -334,7 +334,7 @@ public class ViewpointNode extends CameraNode {
 		if (store == null) {
 			store = new ViewpointStore();
 		}
-		store.set(camera, azimuth, elevation);
+		store.set(camera);
 		return (store);
 	}
 

@@ -40,7 +40,7 @@ public abstract class MapElementState extends State {
 	public Type mapElementType;
 
 	// Index id for groups
-	public final long id;
+	public long id;
 
 	// The MapElement associated with this state
 	protected transient MapElement mapElement;

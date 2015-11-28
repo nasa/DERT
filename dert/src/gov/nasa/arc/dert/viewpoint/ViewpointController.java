@@ -494,11 +494,19 @@ public class ViewpointController {
 		flyParams.loop = loop;
 
 		flyList = new Vector<ViewpointStore>();
-		float delta = 1.0f / numInbetweens;
+		float lDelta = 1.0f / numInbetweens;
+		int halfInbetweens = numInbetweens/2;
+		float dDelta = 1.0f / (numInbetweens-halfInbetweens);
+//		float dDelta = lDelta;
 		ViewpointStore vps = viewpointList.get(0);
 		for (int i = 1; i < viewpointList.size(); ++i) {
-			for (float t = 0; t < 1.0; t += delta) {
-				flyList.add(vps.getInbetween(viewpointList.get(i), t));
+			float dp = 0;
+			float lp = 0;
+			for (int j = 0; j<numInbetweens; ++j) {
+				flyList.add(vps.getInbetween(viewpointList.get(i), lp, dp));
+				lp += lDelta;
+				if (j >= halfInbetweens)
+					dp += dDelta;
 			}
 			vps = viewpointList.get(i);
 		}
@@ -521,13 +529,21 @@ public class ViewpointController {
 		flyParams.pathHeight = height;
 
 		flyList = new Vector<ViewpointStore>();
-		float delta = 1.0f / numInbetweens;
+		float lDelta = 1.0f / numInbetweens;
+		int halfInbetweens = numInbetweens/2;
+		float dDelta = 1.0f / (numInbetweens-halfInbetweens);
+//		float dDelta = lDelta;
 		BasicCamera cam = new BasicCamera((BasicCamera) viewpointNode.getCamera());
 		ViewpointStore vps = path.getWaypointViewpoint(0, height, cam, viewpointNode.getSceneBounds());
 		for (int i = 1; i < path.getNumberOfPoints(); ++i) {
 			ViewpointStore nextVps = path.getWaypointViewpoint(i, height, cam, viewpointNode.getSceneBounds());
-			for (float t = 0; t < 1.0; t += delta) {
-				flyList.add(vps.getInbetween(nextVps, t));
+			float dp = 0;
+			float lp = 0;
+			for (int j=0; j<numInbetweens; ++j) {				
+				flyList.add(vps.getInbetween(nextVps, lp, dp));
+				lp += lDelta;
+				if (j >= halfInbetweens)
+					dp += dDelta;
 			}
 			vps = nextVps;
 		}

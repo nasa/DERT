@@ -42,21 +42,17 @@ public class MathUtil {
 			workVec.set(direction);
 			workVec.setZ(0);
 			workVec.normalizeLocal();
-			azAngle = Vector3.UNIT_Y.smallestAngleBetween(workVec);
-			if (workVec.getX() > 0) {
-				azAngle = -azAngle;
+			azAngle = (Math.acos(Vector3.UNIT_Y.dot(workVec)));
+			if (workVec.getX() < 0) {
+				azAngle = Math.PI*2-azAngle;
 			}
 		}
 
 		// Get the Elevation
-		// Rotate the vector into the North plane
-		workMat.fromAngleNormalAxis(-azAngle, Vector3.UNIT_Z);
-		workMat.applyPost(direction, workVec);
-		workVec.setX(workVec.getY());
-		workVec.setY(workVec.getZ());
-		workVec.setZ(0);
+		// Project the direction onto an XY plane with Z as Y and XY as X.
+		workVec.set(Math.sqrt(direction.getX()*direction.getX()+direction.getY()*direction.getY()), direction.getZ(), 0);
 		workVec.normalizeLocal();
-		double tiltAngle = Vector3.UNIT_X.smallestAngleBetween(workVec);
+		double tiltAngle = Math.acos(Vector3.UNIT_X.dot(workVec));
 		if (workVec.getY() < 0) {
 			tiltAngle = -tiltAngle;
 		}

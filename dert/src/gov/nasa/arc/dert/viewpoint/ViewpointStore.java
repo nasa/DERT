@@ -1,7 +1,10 @@
 package gov.nasa.arc.dert.viewpoint;
 
+import gov.nasa.arc.dert.util.MathUtil;
+
 import java.io.Serializable;
 
+import com.ardor3d.math.Matrix3;
 import com.ardor3d.math.Vector3;
 
 /**
@@ -19,21 +22,31 @@ public class ViewpointStore implements Serializable {
 	public double distance;
 	public double azimuth, elevation;
 	public int magIndex;
+	
+	private double[] angle;
+	private Vector3 workVec;
+	private Matrix3 workMat;
 
 	public ViewpointStore() {
-		// nothing here
+		angle = new double[3];
+		workVec = new Vector3();
+		workMat = new Matrix3();
 	}
 
-	public ViewpointStore(String name, BasicCamera camera, double az, double el) {
+	public ViewpointStore(String name, BasicCamera camera) {
 		this.name = name;
-		set(camera, az, el);
+		angle = new double[3];
+		workVec = new Vector3();
+		workMat = new Matrix3();
+		set(camera);
 	}
 
-	public void set(BasicCamera camera, double az, double el) {
+	public void set(BasicCamera camera) {
 		location = new Vector3(camera.getLocation());
 		direction = new Vector3(camera.getDirection());
-		azimuth = az;
-		elevation = el;
+		angle =  MathUtil.directionToAzEl(direction, angle, workVec, workMat);
+		azimuth = angle[0];
+		elevation = angle[1];
 		distance = camera.getDistanceToCoR();
 		lookAt = new Vector3(camera.getLookAt());
 		magIndex = camera.getMagIndex();
@@ -64,28 +77,23 @@ public class ViewpointStore implements Serializable {
 		return (str);
 	}
 
-	public ViewpointStore getInbetween(ViewpointStore that, float percent) {
+	public ViewpointStore getInbetween(ViewpointStore that, float lPct, float dPct) {
 		ViewpointStore vps = new ViewpointStore();
-		vps.name = this.name + percent;
-		vps.location = this.location.lerp(that.location, percent, null);
-		vps.direction = this.direction.lerp(that.direction, percent, null);
-		vps.lookAt = this.lookAt.lerp(that.lookAt, percent, null);
-		double azDelta = that.azimuth-this.azimuth;
-		// adjust for 0/360 crossover
-		if (azDelta > Math.PI)
-			azDelta -= Math.PI*2;
-		else if (azDelta < -Math.PI)
-			azDelta += Math.PI*2;			
-		vps.azimuth = azDelta * percent + this.azimuth;
-		vps.elevation = (that.elevation - this.elevation) * percent + this.elevation;
-		vps.distance = (that.distance - this.distance) * percent + this.distance;
+		vps.name = this.name + lPct;
+		vps.location = this.location.lerp(that.location, lPct, vps.location);
+		vps.direction = this.direction.lerp(that.direction, dPct, vps.direction);
+		vps.lookAt = this.lookAt.lerp(that.lookAt, dPct, vps.lookAt);
+		angle =  MathUtil.directionToAzEl(vps.direction, angle, workVec, workMat);
+		vps.azimuth = angle[0];
+		vps.elevation = angle[1];
+		vps.distance = vps.location.distance(vps.lookAt);
 		vps.magIndex = this.magIndex;
-		vps.frustumLeft = (that.frustumLeft - this.frustumLeft) * percent + this.frustumLeft;
-		vps.frustumRight = (that.frustumRight - this.frustumRight) * percent + this.frustumRight;
-		vps.frustumBottom = (that.frustumBottom - this.frustumBottom) * percent + this.frustumBottom;
-		vps.frustumTop = (that.frustumTop - this.frustumTop) * percent + this.frustumTop;
-		vps.frustumNear = (that.frustumNear - this.frustumNear) * percent + this.frustumNear;
-		vps.frustumFar = (that.frustumFar - this.frustumFar) * percent + this.frustumFar;
+		vps.frustumLeft = (that.frustumLeft - this.frustumLeft) * dPct + this.frustumLeft;
+		vps.frustumRight = (that.frustumRight - this.frustumRight) * dPct + this.frustumRight;
+		vps.frustumBottom = (that.frustumBottom - this.frustumBottom) * dPct + this.frustumBottom;
+		vps.frustumTop = (that.frustumTop - this.frustumTop) * dPct + this.frustumTop;
+		vps.frustumNear = (that.frustumNear - this.frustumNear) * dPct + this.frustumNear;
+		vps.frustumFar = (that.frustumFar - this.frustumFar) * dPct + this.frustumFar;
 		return (vps);
 	}
 }

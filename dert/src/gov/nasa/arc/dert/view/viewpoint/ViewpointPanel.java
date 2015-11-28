@@ -203,13 +203,13 @@ public class ViewpointPanel extends JPanel {
 			public void run() {
 				ArrayList<Path> pathList = World.getInstance().getTools().getPaths();
 				if (pathList.size() == 0) {
-					JOptionPane.showMessageDialog(Dert.getMainWindow(), "No Paths available.", "Fly Path",
+					JOptionPane.showMessageDialog(state.getViewData().getViewWindow(), "No Paths available.", "Fly Path",
 						JOptionPane.INFORMATION_MESSAGE, Icons.getImageIcon("path.png"));
 					return;
 				}
 				Path[] paths = new Path[pathList.size()];
 				pathList.toArray(paths);
-				Path path = (Path) JOptionPane.showInputDialog(Dert.getMainWindow(), "Select Path", "Fly Path",
+				Path path = (Path) JOptionPane.showInputDialog(state.getViewData().getViewWindow(), "Select Path", "Fly Path",
 					JOptionPane.QUESTION_MESSAGE, Icons.getImageIcon("path.png"), paths, paths[0]);
 				if (path != null) {
 					controller.flyThrough(path, (JDialog)state.getViewData().getViewWindow());
@@ -274,7 +274,7 @@ public class ViewpointPanel extends JPanel {
 					return;
 				}
 				controller.getViewpointNode().changeAzimuthAndElevation(Math.toRadians(azel[0]),
-					Math.toRadians(90 - azel[1]));
+					Math.toRadians(90 + azel[1]));
 			}
 		};
 		azElField.setToolTipText(tipText);
@@ -370,7 +370,7 @@ public class ViewpointPanel extends JPanel {
 		directionField.setValue(tempVPS.direction);
 		distanceField.setValue(tempVPS.distance);
 		azEl[0] = Math.toDegrees(tempVPS.azimuth);
-		azEl[1] = 90 - Math.abs(Math.toDegrees(tempVPS.elevation));
+		azEl[1] = Math.toDegrees(tempVPS.elevation);
 		azElField.setValue(azEl);
 		magnificationField.setValue(BasicCamera.magFactor[tempVPS.magIndex]);
 		double alt = viewpointNode.getAltitude();
