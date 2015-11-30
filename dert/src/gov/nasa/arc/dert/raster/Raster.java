@@ -438,6 +438,7 @@ public class Raster {
 	public void setAsGray(int top, int left, int wid, int hgt, ByteBuffer bBuf, DataType type, double[] min,
 		double[] max, float missing) {
 		double range = max[0] - min[0];
+//		System.err.println("Raster.setAsGray "+range+" "+type+" "+missing+" "+wid+" "+bBuf.limit());
 		byte[] bArray = new byte[bBuf.limit()];
 		ByteBuffer rBuf = ByteBuffer.wrap(bArray);
 		rBuf.rewind();

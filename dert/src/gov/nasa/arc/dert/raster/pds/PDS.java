@@ -504,6 +504,10 @@ public class PDS extends RasterFileImpl {
 
 		if ((minimum == null) || (maximum == null)) {
 			computeMinMaxFromStrip(dataType, numStrips, stripSize, stripWidth, stripHeight);
+			for (int i = 0; i < samplesPerPixel; ++i) {
+				minimum[i] *= scalingFactor;
+				maximum[i] *= scalingFactor;
+			}
 		}
 
 		loadFromStrip(dataType, numStrips, stripSize, stripWidth, stripHeight, raster, false);
@@ -572,12 +576,7 @@ public class PDS extends RasterFileImpl {
 		for (int i = 0; i < numStrips; ++i) {
 			// determine the height of each strip in case it is short
 			bbuf.rewind();
-			int h = Math.min(rasterLength - height * i, height); // compute
-																	// the
-																	// height
-																	// of
-																	// the
-																	// strip
+			int h = Math.min(rasterLength - height * i, height); // strip height
 			int len = h * width * bytesPerSample;
 			len = iStream.read(bbArray, 0, len);
 			bbuf.rewind();
@@ -621,12 +620,7 @@ public class PDS extends RasterFileImpl {
 		int r = 0; // row pixel of upper left corner of strip
 		for (int i = 0; i < numStrips; ++i) {
 			// determine the height of each strip in case it is short
-			int h = Math.min(rasterLength - height * i, height); // compute
-																	// the
-																	// height
-																	// of
-																	// the
-																	// strip
+			int h = Math.min(rasterLength - height * i, height); // strip height
 			int len = h * width * bytesPerSample;
 			iStream.read(bbArray, 0, len);
 			bbuf.rewind();
@@ -679,20 +673,11 @@ public class PDS extends RasterFileImpl {
 		// Read each strip and place it in the full size raster.
 		for (int i = 0; i < numStrips; ++i) {
 			// determine the height of each strip in case it is short
-			int h = Math.min(rasterLength - height * i, height); // compute
-																	// the
-																	// height
-																	// of
-																	// the
-																	// strip
+			int h = Math.min(rasterLength - height * i, height); // strip height
 			int len = h * width * bytesPerSample;
 			iStream.read(bbArray, 0, len);
 			bbuf.rewind();
 			computeMinMax(bbuf);
-		}
-		for (int i = 0; i < samplesPerPixel; ++i) {
-			minimum[i] *= scalingFactor;
-			maximum[i] *= scalingFactor;
 		}
 	}
 
