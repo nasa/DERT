@@ -254,19 +254,45 @@ public class PointSet extends Node {
 		poly.updateGeometricState(0);
 	}
 	
+	/**
+	 * Get a curve of point interpolated between the path waypoints.
+	 * @param steps
+	 * @return
+	 */
 	public Vector3[] getCurve(int steps) {
+		final ArrayList<ReadOnlyVector3> pointList = getPointList();
+		int n = pointList.size();
+		if (steps <= 1) {
+			Vector3[] vectors = new Vector3[n];
+			pointList.toArray(vectors);
+			return(vectors);
+		}
+		// linear interpolation
+		if (n < 4) {
+			ArrayList<Vector3> list = new ArrayList<Vector3>();
+			float delta = 1.0f / steps;
+			ReadOnlyVector3 v0 = pointList.get(0);
+			for (int i = 1; i < pointList.size(); ++i) {
+				for (float t = 0; t < 1.0; t += delta)
+					list.add(v0.lerp(pointList.get(i), t, null));
+				v0 = pointList.get(i);
+			}
+			list.add(new Vector3(pointList.get(n - 1)));
+			Vector3[] vectors = new Vector3[list.size()];
+			list.toArray(vectors);
+			return(vectors);
+		}
+		// spline interpolation
 		if (spline == null) 
 			spline = new CatmullRomSpline();
-		return(toVector3(steps));
+		return(toVector3SplineInterpolation(steps));
 	}
 	
 
     /**
      * Interpolates the curve and returns an array of vectors.
      */
-    private Vector3[] toVector3(final int steps) {
-    	if (steps <= 1)
-    		return(null);
+    private Vector3[] toVector3SplineInterpolation(final int steps) {
 
         final ArrayList<ReadOnlyVector3> controlPoints = getPointList();
 

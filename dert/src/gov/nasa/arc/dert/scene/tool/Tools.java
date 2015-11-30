@@ -156,7 +156,7 @@ public class Tools extends GroupNode {
 			Spatial child = getChild(i);
 			if (child instanceof Path) {
 				Path path = (Path)child;
-				if (path.getNumberOfPoints() >= 4)
+				if (path.getNumberOfPoints() > 1)
 					list.add(path);
 			}
 		}

@@ -17,6 +17,7 @@ import com.ardor3d.math.Vector2;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Spatial;
+import com.ardor3d.spline.CatmullRomSpline;
 
 /**
  * Controls the ViewpointNode with input from the InputHandler.
@@ -64,6 +65,9 @@ public class ViewpointController {
 	private FlyThroughParameters flyParams;
 	private DecimalFormat formatter1 = new DecimalFormat("00");
 	private DecimalFormat formatter2 = new DecimalFormat("00.000");
+	
+	// Curve for fly through
+	private CatmullRomSpline spline;
 
 	/**
 	 * Constructor
@@ -431,8 +435,9 @@ public class ViewpointController {
 					t -= hr * 3600;
 					int min = (int) (t / 60);
 					double sec = t - (min * 60);
-					flyThroughDialog.setStatus(formatter1.format(hr) + ":" + formatter1.format(min) + ":"
-						+ formatter2.format(sec) + "    Frame " + flyIndex);
+					if (flyThroughDialog != null)
+						flyThroughDialog.setStatus(formatter1.format(hr) + ":" + formatter1.format(min) + ":"
+								+ formatter2.format(sec) + "    Frame " + flyIndex);
 					flyIndex++;
 					if (flyIndex == flyList.size()) {
 						if (!flyParams.loop) {
@@ -490,29 +495,58 @@ public class ViewpointController {
 	 * @param loop
 	 */
 	public void flyViewpoints(int numInbetweens, int millis, final boolean loop) {
+    	if (numInbetweens <= 1)
+    		return;
+    	
 		flyParams.numInbetweens = numInbetweens;
 		flyParams.millisPerFrame = millis;
 		flyParams.loop = loop;
 
 		flyList = new Vector<ViewpointStore>();
-		float lDelta = 1.0f / numInbetweens;
-		int halfInbetweens = numInbetweens/2;
-		float dDelta = 1.0f / (numInbetweens-halfInbetweens);
-//		float dDelta = lDelta;
-		ViewpointStore vps = viewpointList.get(0);
-		for (int i = 1; i < viewpointList.size(); ++i) {
-			float dp = 0;
-			float lp = 0;
-			for (int j = 0; j<numInbetweens; ++j) {
-				flyList.add(vps.getInbetween(viewpointList.get(i), lp, dp));
-				lp += lDelta;
-				if (j >= halfInbetweens)
-					dp += dDelta;
+		
+		// Less than 4 viewpoints - linear interpolation
+		int vpCount = viewpointList.size();
+		if (vpCount < 4) {
+			double delta = 1.0/numInbetweens;
+			ViewpointStore vps = viewpointList.get(0);
+			for (int i = 1; i < vpCount; ++i) {
+				for (float t = 0; t < 1.0; t += delta) {
+					flyList.add(vps.getInbetween(viewpointList.get(i), t));
+				}
+				vps = viewpointList.get(i);
 			}
-			vps = viewpointList.get(i);
+			flyList.add(viewpointList.get(viewpointList.size() - 1));
+			return;
 		}
-		flyList.add(viewpointList.get(viewpointList.size() - 1));
-	}
+
+		// Use spline interpolation
+		if (spline == null) 
+			spline = new CatmullRomSpline();
+        int index = 1;
+        final int end = vpCount-2;
+        final int count = (end - index) * numInbetweens;
+
+        for (int i = 0; i < count; i++) {
+            final int is = i % numInbetweens;
+
+            if (0 == is && i >= numInbetweens) {
+                index++;
+            }
+
+            final double t = is / (double)numInbetweens;
+
+            final int p0 = index - 1;
+            final int p1 = index;
+            final int p2 = index + 1;
+            final int p3 = index + 2;
+            ViewpointStore vps = viewpointList.get(p1);
+			ViewpointStore newVps = vps.getInbetween(viewpointList.get(p2), t);
+
+            newVps.location = spline.interpolate(viewpointList.get(p0).location, viewpointList.get(p1).location, viewpointList.get(p2).location,
+            		viewpointList.get(p3).location, t);
+            flyList.add(newVps);
+        }
+    }
 
 	/**
 	 * Fly through path waypoints

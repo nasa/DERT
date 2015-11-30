@@ -77,23 +77,32 @@ public class ViewpointStore implements Serializable {
 		return (str);
 	}
 
-	public ViewpointStore getInbetween(ViewpointStore that, float lPct, float dPct) {
+	public ViewpointStore getInbetween(ViewpointStore that, double pct) {
 		ViewpointStore vps = new ViewpointStore();
-		vps.name = this.name + lPct;
-		vps.location = this.location.lerp(that.location, lPct, vps.location);
-		vps.direction = this.direction.lerp(that.direction, dPct, vps.direction);
-		vps.lookAt = this.lookAt.lerp(that.lookAt, dPct, vps.lookAt);
-		angle =  MathUtil.directionToAzEl(vps.direction, angle, workVec, workMat);
-		vps.azimuth = angle[0];
-		vps.elevation = angle[1];
+		vps.name = this.name + pct;
+		vps.location = this.location.lerp(that.location, pct, vps.location);
+		vps.direction = this.direction.lerp(that.direction, pct, vps.direction);
+		vps.lookAt = this.lookAt.lerp(that.lookAt, pct, vps.lookAt);
+//		System.err.println("ViewpointStore.getInbetween "+vps.location+" "+this.location+" "+that.location);
+//		angle =  MathUtil.directionToAzEl(vps.direction, angle, workVec, workMat);
+//		vps.azimuth = angle[0];
+//		vps.elevation = angle[1];
+		double azDelta = that.azimuth-this.azimuth;
+		// adjust for 0/360 crossover
+		if (azDelta > Math.PI)
+			azDelta -= Math.PI*2;
+		else if (azDelta < -Math.PI)
+			azDelta += Math.PI*2;			
+		vps.azimuth = azDelta * pct + this.azimuth;
+		vps.elevation = (that.elevation - this.elevation) * pct + this.elevation;
 		vps.distance = vps.location.distance(vps.lookAt);
 		vps.magIndex = this.magIndex;
-		vps.frustumLeft = (that.frustumLeft - this.frustumLeft) * dPct + this.frustumLeft;
-		vps.frustumRight = (that.frustumRight - this.frustumRight) * dPct + this.frustumRight;
-		vps.frustumBottom = (that.frustumBottom - this.frustumBottom) * dPct + this.frustumBottom;
-		vps.frustumTop = (that.frustumTop - this.frustumTop) * dPct + this.frustumTop;
-		vps.frustumNear = (that.frustumNear - this.frustumNear) * dPct + this.frustumNear;
-		vps.frustumFar = (that.frustumFar - this.frustumFar) * dPct + this.frustumFar;
+		vps.frustumLeft = (that.frustumLeft - this.frustumLeft) * pct + this.frustumLeft;
+		vps.frustumRight = (that.frustumRight - this.frustumRight) * pct + this.frustumRight;
+		vps.frustumBottom = (that.frustumBottom - this.frustumBottom) * pct + this.frustumBottom;
+		vps.frustumTop = (that.frustumTop - this.frustumTop) * pct + this.frustumTop;
+		vps.frustumNear = (that.frustumNear - this.frustumNear) * pct + this.frustumNear;
+		vps.frustumFar = (that.frustumFar - this.frustumFar) * pct + this.frustumFar;
 		return (vps);
 	}
 }

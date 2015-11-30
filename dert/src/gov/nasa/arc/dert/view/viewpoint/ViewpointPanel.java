@@ -203,7 +203,7 @@ public class ViewpointPanel extends JPanel {
 			public void run() {
 				ArrayList<Path> pathList = World.getInstance().getTools().getFlyablePaths();
 				if (pathList.size() == 0) {
-					JOptionPane.showMessageDialog(state.getViewData().getViewWindow(), "No flyable Paths available (paths must have >3 points).", "Fly Path",
+					JOptionPane.showMessageDialog(state.getViewData().getViewWindow(), "No flyable Paths available.", "Fly Path",
 						JOptionPane.INFORMATION_MESSAGE, Icons.getImageIcon("path.png"));
 					return;
 				}
