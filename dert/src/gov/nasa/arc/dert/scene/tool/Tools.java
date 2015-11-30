@@ -149,13 +149,15 @@ public class Tools extends GroupNode {
 	 * 
 	 * @return
 	 */
-	public ArrayList<Path> getPaths() {
+	public ArrayList<Path> getFlyablePaths() {
 		int n = getNumberOfChildren();
 		ArrayList<Path> list = new ArrayList<Path>();
 		for (int i = 0; i < n; ++i) {
 			Spatial child = getChild(i);
 			if (child instanceof Path) {
-				list.add((Path) child);
+				Path path = (Path)child;
+				if (path.getNumberOfPoints() >= 4)
+					list.add(path);
 			}
 		}
 		return (list);

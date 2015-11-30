@@ -18,14 +18,12 @@ import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
-import gov.nasa.arc.dert.viewpoint.ViewpointStore;
 
 import java.awt.Color;
 import java.util.Properties;
 
 import javax.swing.Icon;
 
-import com.ardor3d.bounding.BoundingSphere;
 import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -783,47 +781,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		return (getName());
 	}
 
-	/**
-	 * Get the camera viewpoint if it were located at the given way point and
-	 * looking at the next way point.
-	 * 
-	 * @param index
-	 * @param height
-	 * @param camera
-	 * @param sceneBounds
-	 * @return
-	 */
-	public ViewpointStore getWaypointViewpoint(int index, double height, BasicCamera camera, BoundingSphere sceneBounds) {
-		// place the camera at the given way point and altitude
-		Waypoint wp = (Waypoint) pointSet.getChild(index);
-		ReadOnlyVector3 loc = wp.getWorldTranslation();
-		camera.setLocation(loc.getX(), loc.getY(), loc.getZ() + height);
-
-		// if the way point is not the last one, point the camera at the next
-		// way point location
-		if (index < (pointSet.getNumberOfChildren() - 1)) {
-			Waypoint nextWp = (Waypoint) pointSet.getChild(index + 1);
-			Vector3 direction = new Vector3(nextWp.getWorldTranslation());
-			direction.subtractLocal(wp.getWorldTranslation());
-			direction.normalizeLocal();
-			camera.setDirection(direction);
-			Vector3 lookAt = new Vector3(nextWp.getWorldTranslation());
-			lookAt.setZ(lookAt.getZ() + height);
-			camera.setLookAt(lookAt);
-		}
-		// otherwise keep the current direction
-		else {
-			Vector3 lookAt = new Vector3(camera.getDirection());
-			lookAt.addLocal(camera.getLocation());
-			camera.setLookAt(lookAt);
-		}
-
-		// set the frustum
-		camera.setFrustum(sceneBounds);
-
-		return (new ViewpointStore(wp.getName(), camera));
-	}
-
 	private void updateDistanceLabels(Waypoint wp) {
 		int index = getWaypointIndex(wp);
 		// first way point does not have a distance
@@ -1029,6 +986,10 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			Waypoint wp = (Waypoint) getChild(0);
 			return (wp.getLocation());
 		}
+	}
+	
+	public Vector3[] getCurve(int steps) {
+		return(pointSet.getCurve(steps));
 	}
 
 	/**

@@ -201,9 +201,9 @@ public class ViewpointPanel extends JPanel {
 		flyPathButton = new ButtonAction("Fly through the waypoints on a path", "Fly Path", null) {
 			@Override
 			public void run() {
-				ArrayList<Path> pathList = World.getInstance().getTools().getPaths();
+				ArrayList<Path> pathList = World.getInstance().getTools().getFlyablePaths();
 				if (pathList.size() == 0) {
-					JOptionPane.showMessageDialog(state.getViewData().getViewWindow(), "No Paths available.", "Fly Path",
+					JOptionPane.showMessageDialog(state.getViewData().getViewWindow(), "No flyable Paths available (paths must have >3 points).", "Fly Path",
 						JOptionPane.INFORMATION_MESSAGE, Icons.getImageIcon("path.png"));
 					return;
 				}

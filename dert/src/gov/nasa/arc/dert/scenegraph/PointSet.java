@@ -19,6 +19,7 @@ import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.CullHint;
 import com.ardor3d.scenegraph.hint.PickingHint;
 import com.ardor3d.scenegraph.hint.TextureCombineMode;
+import com.ardor3d.spline.CatmullRomSpline;
 import com.ardor3d.util.geom.BufferUtils;
 
 /**
@@ -32,6 +33,9 @@ public class PointSet extends Node {
 
 	// For polygon
 	private Tessellator tessellator;
+	
+	// Curve for fly through
+	private CatmullRomSpline spline;
 
 	/**
 	 * Constructor
@@ -76,7 +80,7 @@ public class PointSet extends Node {
 	private ArrayList<ReadOnlyVector3> getPointList() {
 		pointList.clear();
 		for (int i = 0; i < getNumberOfChildren(); ++i) {
-			pointList.add(getChild(i).getTranslation());
+			pointList.add(new Vector3(getChild(i).getTranslation()));
 		}
 		return (pointList);
 	}
@@ -249,4 +253,51 @@ public class PointSet extends Node {
 		poly.updateModelBound();
 		poly.updateGeometricState(0);
 	}
+	
+	public Vector3[] getCurve(int steps) {
+		if (spline == null) 
+			spline = new CatmullRomSpline();
+		return(toVector3(steps));
+	}
+	
+
+    /**
+     * Interpolates the curve and returns an array of vectors.
+     */
+    private Vector3[] toVector3(final int steps) {
+    	if (steps <= 1)
+    		return(null);
+
+        final ArrayList<ReadOnlyVector3> controlPoints = getPointList();
+
+        final int start = 1;
+        final int end = controlPoints.size()-2;
+        final int count = (end - start) * steps;
+
+        final Vector3[] vectors = new Vector3[count];
+
+        int index = start;
+
+        for (int i = 0; i < count; i++) {
+            final int is = i % steps;
+
+            if (0 == is && i >= steps) {
+                index++;
+            }
+
+//            final double t = is / (steps - 1.0);
+            final double t = is / (double)steps;
+
+            final int p0 = index - 1;
+            final int p1 = index;
+            final int p2 = index + 1;
+            final int p3 = index + 2;
+
+            vectors[i] = spline.interpolate(controlPoints.get(p0), controlPoints.get(p1), controlPoints.get(p2),
+                    controlPoints.get(p3), t);
+        }
+
+        return vectors;
+    }
+
 }

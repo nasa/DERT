@@ -15,6 +15,7 @@ import javax.swing.Timer;
 import com.ardor3d.math.Ray3;
 import com.ardor3d.math.Vector2;
 import com.ardor3d.math.Vector3;
+import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Spatial;
 
 /**
@@ -527,27 +528,38 @@ public class ViewpointController {
 		flyParams.millisPerFrame = millis;
 		flyParams.loop = loop;
 		flyParams.pathHeight = height;
+		
+		Vector3[] curve = path.getCurve(numInbetweens);
 
 		flyList = new Vector<ViewpointStore>();
-		float lDelta = 1.0f / numInbetweens;
-		int halfInbetweens = numInbetweens/2;
-		float dDelta = 1.0f / (numInbetweens-halfInbetweens);
-//		float dDelta = lDelta;
-		BasicCamera cam = new BasicCamera((BasicCamera) viewpointNode.getCamera());
-		ViewpointStore vps = path.getWaypointViewpoint(0, height, cam, viewpointNode.getSceneBounds());
-		for (int i = 1; i < path.getNumberOfPoints(); ++i) {
-			ViewpointStore nextVps = path.getWaypointViewpoint(i, height, cam, viewpointNode.getSceneBounds());
-			float dp = 0;
-			float lp = 0;
-			for (int j=0; j<numInbetweens; ++j) {				
-				flyList.add(vps.getInbetween(nextVps, lp, dp));
-				lp += lDelta;
-				if (j >= halfInbetweens)
-					dp += dDelta;
-			}
-			vps = nextVps;
+		BasicCamera cam = new BasicCamera((BasicCamera)viewpointNode.getCamera());
+		for (int i = 0; i < curve.length-1; ++i) {
+			ViewpointStore vps = getViewpoint(Integer.toString(i), curve[i], curve[i+1], height, cam);
+			if (vps.direction.length() != 0)
+				flyList.add(vps);
 		}
-		flyList.add(vps);
+		ViewpointStore lastVps = new ViewpointStore(Integer.toString(curve.length-1), cam);
+		lastVps.location.set(curve[curve.length-1]);
+		lastVps.lookAt.addLocal(lastVps.direction);
+		flyList.add(lastVps);
+	}
+
+	private ViewpointStore getViewpoint(String name, ReadOnlyVector3 p0, ReadOnlyVector3 p1, double height, BasicCamera camera) {
+		// place the camera at the given way point and altitude
+		camera.setLocation(p0.getX(), p0.getY(), p0.getZ() + height);
+
+		// if the way point is not the last one, point the camera at the next
+		// way point location
+		Vector3 direction = new Vector3(p1);
+		direction.subtractLocal(p0);
+		direction.normalizeLocal();
+		camera.setDirection(direction);
+		Vector3 lookAt = new Vector3(p1);
+		lookAt.setZ(lookAt.getZ() + height);
+		camera.setLookAt(lookAt);
+		camera.setFrustum(viewpointNode.getSceneBounds());
+
+		return (new ViewpointStore(name, camera));
 	}
 
 	/**
