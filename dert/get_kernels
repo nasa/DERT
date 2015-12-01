@@ -40,3 +40,5 @@ curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellite/mar097.bsp 
 
 # Pluto Planet Ephemeris
 curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellite/plu055.bsp > $DEST/plu055.bsp
+
+chmod o+r $DEST/*
