@@ -35,8 +35,9 @@ public class LayerEffects extends GLSLShaderObjectsState {
 		+ "uniform float yGridCell;\n" + "uniform float gridLineWidth;\n" + "uniform float gridColor[4];\n"
 		+ "uniform bool gridEnabled;\n";
 
-	protected static final String bottom = "		if ((color.a > 0.0) && (color.a < 1.0))\n" + "			color.a = 1.0;\n"
-		+ "	}\n" + "	if (shadowEnabled) {\n" + "   		shadeFactor = shadow2DProj(shadowUnit, gl_TexCoord[7]).x;\n"
+	protected static final String bottom = "		if (color.a > 0.0)\n" + "			color.a = 1.0;\n"
+		+ "	}\n"
+		+ "	if (shadowEnabled) {\n" + "   		shadeFactor = shadow2DProj(shadowUnit, gl_TexCoord[7]).x;\n"
 		+ "   		shadeFactor = (shadeFactor < 1.0) ? 0.5 : 1.0;\n" + "	}\n" + "	if (hasTexture)\n"
 		+ "		gl_FragColor = vec4(shadeFactor*color.rgb*gl_Color.rgb, color.a);\n" + "	else\n"
 		+ "		gl_FragColor = vec4(shadeFactor*gl_Color.rgb, gl_Color.a);\n" + "	if (gridEnabled) {\n"
@@ -185,8 +186,7 @@ public class LayerEffects extends GLSLShaderObjectsState {
 				colorMapUniforms += "uniform sampler2D colorMap" + i + "Unit;\n";
 				intUniforms.add(new Object[] { "colorMap" + i + "Unit", new Integer(i) });
 				blendFactor[i] = (float) layers[i].getBlendFactor();
-				colorMapFunction += "		color += blendFactor[" + i + "]*texture2D(colorMap" + i + "Unit, gl_TexCoord["
-					+ i + "].st);\n";
+				colorMapFunction += "		color += blendFactor[" + i + "]*texture2D(colorMap" + i + "Unit, gl_TexCoord["+ i + "].st);\n";
 				addHasTexture = true;
 			} else if (layers[i].getLayerType() == LayerType.footprint) {
 				footprintUniforms += "uniform sampler2D footprint" + i + "Unit;\n";
@@ -221,8 +221,8 @@ public class LayerEffects extends GLSLShaderObjectsState {
 		progStr += viewshedFunction;
 		progStr += overlayFunction;
 		progStr += bottom;
-		// System.err.println("LayerEffects.setLayers");
-		// System.err.println(progStr);
+//		 System.err.println("LayerEffects.setLayers");
+//		 System.err.println(progStr);
 
 		fragmentProgram = progStr.getBytes();
 

@@ -468,8 +468,8 @@ public class ColorMap {
 			texture = new Texture2D();
 			texture.setWrap(Texture.WrapMode.BorderClamp);
 			texture.setTextureStoreFormat(TextureStoreFormat.RGBA8);
-			texture.setMinificationFilter(Texture.MinificationFilter.BilinearNoMipMaps);
-			texture.setMagnificationFilter(Texture.MagnificationFilter.Bilinear);
+			texture.setMinificationFilter(Texture.MinificationFilter.NearestNeighborNoMipMaps);
+			texture.setMagnificationFilter(Texture.MagnificationFilter.NearestNeighbor);
 			texture.setTextureKey(TextureKey.getRTTKey(Texture.MinificationFilter.NearestNeighborNoMipMaps));
 			texture.setApply(Texture2D.ApplyMode.Modulate);
 			texture.setBorderColor(ColorRGBA.BLACK_NO_ALPHA);
