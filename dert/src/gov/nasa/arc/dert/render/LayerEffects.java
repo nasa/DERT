@@ -221,8 +221,8 @@ public class LayerEffects extends GLSLShaderObjectsState {
 		progStr += viewshedFunction;
 		progStr += overlayFunction;
 		progStr += bottom;
-//		 System.err.println("LayerEffects.setLayers");
-//		 System.err.println(progStr);
+//		System.err.println("LayerEffects.setLayers");
+//		System.err.println(progStr);
 
 		fragmentProgram = progStr.getBytes();
 

@@ -183,7 +183,6 @@ public class Dert {
 		// Create singletons.
 		ConfigurationManager.createInstance(dertProperties);
 		FieldCameraInfoManager.createInstance(path);
-		Ephemeris.createInstance(path, dertProperties);
 
 		// Always create heavy weight menus (this must be set before creating
 		// any windows).
@@ -217,6 +216,9 @@ public class Dert {
 		Console.getInstance().println("OS Arch: " + System.getProperty("os.arch"));
 		Console.getInstance().println("Java Version: " + System.getProperty("java.version"));
 		Console.getInstance().println();
+		
+		// Load SPICE libraries and kernels
+		Ephemeris.createInstance(path, dertProperties);
 
 		// If a configuration has been passed in the command line, open it.
 		String configStr = null;

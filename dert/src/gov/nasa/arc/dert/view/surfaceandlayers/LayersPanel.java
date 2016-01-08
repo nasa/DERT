@@ -140,7 +140,7 @@ public class LayersPanel extends GroupPanel {
 			}
 			layer[index].setText(str);
 			lockBox[index].setSelected(!current.autoBlend);
-			blendFactorSpinner[index].setValueNoChange(current.blendFactor);
+			blendFactorSpinner[index].setValueNoChange(current.blendFactor*100);
 			blendFactorSpinner[index].setEnabled(true);
 		}
 	}
@@ -174,7 +174,7 @@ public class LayersPanel extends GroupPanel {
 						delta += (factor-1)/n;
 						factor = 1;
 					}
-					blendFactorSpinner[i].setValueNoChange(factor);
+					blendFactorSpinner[i].setValueNoChange(factor*100);
 					layerManager.setLayerBlendFactor(i, (float) factor);
 				}
 			}
@@ -189,7 +189,7 @@ public class LayersPanel extends GroupPanel {
 			double factor = v/n;
 			for (int i = 0; i < current.length; ++i) {
 				if ((current[i].type != LayerType.none) && current[i].autoBlend) {
-					blendFactorSpinner[i].setValueNoChange(factor);
+					blendFactorSpinner[i].setValueNoChange(factor*100);
 					layerManager.setLayerBlendFactor(i, (float) factor);
 				}
 			}
@@ -212,10 +212,11 @@ public class LayersPanel extends GroupPanel {
 	}
 
 	private void addBlendFactorSpinner(JPanel panel, final int index) {
-		blendFactorSpinner[index] = new DoubleSpinner(0, 0, 1, 0.05, false) {
+		blendFactorSpinner[index] = new DoubleSpinner(0, 0, 100, 1, false, "###") {
 			@Override
 			public void stateChanged(ChangeEvent event) {
 				double value = (Double) getValue();
+				value /= 100;
 				LayerManager layerManager = World.getInstance().getLandscape().getLayerManager();
 				layerManager.setLayerBlendFactor(index, (float) value);
 				adjustBlendFactors(value, index);

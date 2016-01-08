@@ -19,10 +19,12 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -109,7 +111,12 @@ public class LayerConfigurationDialog extends AbstractDialog {
 				add.setEnabled(doAdd);
 			}
 		});
-		contentArea.add(selectedLayerList,
+		JScrollPane scrollPane = new JScrollPane(selectedLayerList);
+		scrollPane.setPreferredSize(new Dimension(200, 128));
+		JPanel listPanel = new JPanel(new BorderLayout());
+		listPanel.add(new JLabel("Visible Layers", SwingConstants.CENTER), BorderLayout.NORTH);
+		listPanel.add(scrollPane, BorderLayout.CENTER);
+		contentArea.add(listPanel,
 			GBCHelper.getGBC(0, 0, 4, 4, GridBagConstraints.WEST, GridBagConstraints.BOTH, 1, 1));
 
 		JPanel buttonPanel = new JPanel(new GridLayout(4, 1));
@@ -203,10 +210,10 @@ public class LayerConfigurationDialog extends AbstractDialog {
 		// List of available layers
 		layerList = new JList(layers);
 		layerList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.getViewport().setView(layerList);
-		scrollPane.setMinimumSize(new Dimension(128, 128));
-		JPanel listPanel = new JPanel(new BorderLayout());
+		scrollPane = new JScrollPane(layerList);
+		scrollPane.setPreferredSize(new Dimension(200, 128));
+		listPanel = new JPanel(new BorderLayout());
+		listPanel.add(new JLabel("Available Layers", SwingConstants.CENTER), BorderLayout.NORTH);
 		listPanel.add(scrollPane, BorderLayout.CENTER);
 		layerList.addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -225,8 +232,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 				add.setEnabled(doAdd);
 			}
 		});
-		contentArea
-			.add(listPanel, GBCHelper.getGBC(6, 0, 4, 4, GridBagConstraints.EAST, GridBagConstraints.BOTH, 1, 1));
+		contentArea.add(listPanel, GBCHelper.getGBC(6, 0, 4, 4, GridBagConstraints.EAST, GridBagConstraints.BOTH, 1, 1));
 	}
 
 	private LayerInfo[] getCurrentSelection() {

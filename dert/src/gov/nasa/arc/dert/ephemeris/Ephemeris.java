@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.ephemeris;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.view.Console;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -8,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -105,6 +107,7 @@ public class Ephemeris {
 				// load SPICE kernels
 				String[] fileName = getFileList(properties);
 				for (int i = 0; i < fileName.length; ++i) {
+					Console.getInstance().println("Loading SPICE kernel "+fileName[i]);
 					KernelDatabase.load(path + "kernels/" + fileName[i]);
 				}
 			} catch (Exception e) {
@@ -119,16 +122,19 @@ public class Ephemeris {
 		Object[] key = properties.keySet().toArray();
 		ArrayList<String> list = new ArrayList<String>();
 		for (int i = 0; i < key.length; ++i) {
-			if (((String) key[i]).startsWith("SpiceKernel.")) {
-				String name = (String) key[i];
+			String name = (String)key[i];
+			if (name.startsWith("SpiceKernel.")) {
 				String str = properties.getProperty(name);
-				if ((str != null) && !str.isEmpty()) {
-					list.add(str);
-				}
+				if ((str != null) && !str.isEmpty())
+					list.add(name);
 			}
 		}
+		Collections.sort(list);
 		String[] files = new String[list.size()];
-		list.toArray(files);
+		for (int i = 0; i < list.size(); ++i) {
+			String name = list.get(i);
+			files[i] = properties.getProperty(name);
+		}
 		return (files);
 	}
 
