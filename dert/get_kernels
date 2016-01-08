@@ -21,24 +21,31 @@ else
 endif
 
 # Gravitational constant x mass (GM) values
+echo "Retrieving gm_de431.tpc"
 curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/gm_de431.tpc > $DEST/gm_de431.tpc
 
 # Generic orientation data
+echo "Retrieving pck00010.tpc"
 curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00010.tpc > $DEST/pck00010.tpc
 
 # Leapseconds kernel
+echo "Retrieving naif0011.tls"
 curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0011.tls > $DEST/naif0011.tls
 
 # Generic Planet Ephemeris
+echo "Retrieving de430.bsp"
 curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de430.bsp > $DEST/de430.bsp
 
 # Update to de430 for New Horizons
+echo "Retrieving de432s.bsp"
 curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de432s.bsp > $DEST/de432s.bsp
 
 # Mars Planet Ephemeris
-curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellite/mar097.bsp > $DEST/mar097.bsp
+echo "Retrieving mar097.bsp"
+curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/mar097.bsp > $DEST/mar097.bsp
 
 # Pluto Planet Ephemeris
-curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellite/plu055.bsp > $DEST/plu055.bsp
+echo "Retrieving plu055.bsp"
+curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/plu055.bsp > $DEST/plu055.bsp
 
 chmod o+r $DEST/*
