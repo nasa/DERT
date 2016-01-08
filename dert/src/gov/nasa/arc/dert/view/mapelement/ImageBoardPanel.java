@@ -85,7 +85,7 @@ public class ImageBoardPanel extends MapElementBasePanel {
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		openButton = new JButton("Show in Viewer");
+		openButton = new JButton("Open Image");
 		openButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
