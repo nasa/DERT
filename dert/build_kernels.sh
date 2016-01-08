@@ -23,7 +23,7 @@ curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de430.bsp > k
 curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de432s.bsp > kernels/de432s.bsp
 
 # Mars Planet Ephemeris
-curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellite/mar097.bsp > kernels/mar097.bsp
+curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/mar097.bsp > kernels/mar097.bsp
 
 # Pluto Planet Ephemeris
-curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellite/plu055.bsp > kernels/plu055.bsp
+curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/plu055.bsp > kernels/plu055.bsp
