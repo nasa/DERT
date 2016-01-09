@@ -115,9 +115,9 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 			initializingCount--;
 		}
 		if (viewpointNode.changed.get()) {
-			crosshair.update(viewpointNode.getBasicCamera());
+			crosshair.update(viewpointNode.getCamera());
 			for (int i = 0; i < viewDependentList.size(); ++i) {
-				viewDependentList.get(i).update(viewpointNode.getBasicCamera());
+				viewDependentList.get(i).update(viewpointNode.getCamera());
 			}
 		}
 	}
@@ -125,14 +125,14 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	@Override
 	public void preRender(Renderer renderer) {
 		// System.err.println("WorldScene.prerender "+renderer);
-		world.getLighting().prerender(viewpointNode.getBasicCamera(), renderer,
+		world.getLighting().prerender(viewpointNode.getCamera(), renderer,
 			world.getDirtyEventHandler().getChanged() || viewpointNode.changed.getAndSet(false));
 		if (world.getDirtyEventHandler().getChanged()) {
 			world.getLandscape().getLayerManager().renderLayers(renderer);
 		}
 
 		viewpointNode.updateGeometricState(0);
-		viewpointNode.getBasicCamera().update();
+		viewpointNode.getCamera().update();
 		ReadOnlyColorRGBA bgCol = world.getBackgroundColor();
 		if (bgCol != backgroundColor) {
 			renderer.setBackgroundColor(bgCol);
@@ -142,7 +142,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 
 	@Override
 	public void postRender(Renderer renderer) {
-		world.getLighting().postrender(viewpointNode.getBasicCamera(), renderer,
+		world.getLighting().postrender(viewpointNode.getCamera(), renderer,
 			world.getDirtyEventHandler().getChanged());
 		world.getDirtyEventHandler().setChanged(false);
 		drawNormals(renderer);
@@ -163,8 +163,8 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	@Override
 	public void render(Renderer renderer) {
 		// renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
-		if (viewpointNode.getBasicCamera() instanceof AnaglyphCamera) {
-			AnaglyphCamera camera = (AnaglyphCamera) viewpointNode.getBasicCamera();
+		if (viewpointNode.getCamera() instanceof AnaglyphCamera) {
+			AnaglyphCamera camera = (AnaglyphCamera) viewpointNode.getCamera();
 			camera.setupLeftRightCameras();
 			camera.updateLeftRightCameraFrames();
 
@@ -222,7 +222,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	private void addViewDependents(Spatial spatial) {
 		if (spatial instanceof ViewDependent) {
 			viewDependentList.add((ViewDependent) spatial);
-			((ViewDependent) spatial).update(viewpointNode.getBasicCamera());
+			((ViewDependent) spatial).update(viewpointNode.getCamera());
 		}
 		if (spatial instanceof Node) {
 			Node node = (Node) spatial;

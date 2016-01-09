@@ -147,7 +147,7 @@ public class WorldInputHandler implements InputHandler {
 	 */
 	public void move(Vector3 pos, Vector3 normal) {
 		if (movable instanceof ViewDependent) {
-			((ViewDependent) movable).update(controller.getViewpointNode().getBasicCamera());
+			((ViewDependent) movable).update(controller.getViewpointNode().getCamera());
 		}
 		movable.setTranslation(pos.getX(), pos.getY(), pos.getZ());
 	}
@@ -290,7 +290,7 @@ public class WorldInputHandler implements InputHandler {
 			} else if (path != null) {
 				path.click(pickPosition);
 			} else if (lastSelection instanceof World) {
-				World.getInstance().getMarble().update(pickPosition, getPickNormal(), controller.getViewpointNode().getBasicCamera());
+				World.getInstance().getMarble().update(pickPosition, getPickNormal(), controller.getViewpointNode().getCamera());
 			}
 		} else if (mouseButton == 2) {
 			// set the new center of rotation

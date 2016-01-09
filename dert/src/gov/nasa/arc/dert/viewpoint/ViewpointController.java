@@ -17,7 +17,6 @@ import com.ardor3d.math.Vector2;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Spatial;
-import com.ardor3d.spline.CatmullRomSpline;
 
 /**
  * Controls the ViewpointNode with input from the InputHandler.
@@ -67,7 +66,7 @@ public class ViewpointController {
 	private DecimalFormat formatter2 = new DecimalFormat("00.000");
 	
 	// Curve for fly through
-	private CatmullRomSpline spline;
+//	private CatmullRomSpline spline;
 
 	/**
 	 * Constructor
@@ -325,15 +324,16 @@ public class ViewpointController {
 	 * 
 	 * @param vps
 	 */
-	public void removeViewpoint(ViewpointStore vps) {
-		int index = viewpointList.indexOf(vps);
-		viewpointList.remove(vps);
-		viewpointIndex = index - 1;
+	public int removeViewpoints(int[] indices) {
+		for (int i=indices.length-1; i>=0; --i)
+			viewpointList.remove(indices[i]);
+		viewpointIndex = indices[0]-1;
 		if (viewpointList.size() == 0) {
 			viewpointIndex = -1;
 		} else if (viewpointIndex < 0) {
 			viewpointIndex = viewpointList.size() - 1;
 		}
+		return(viewpointIndex);
 	}
 
 	/**
@@ -506,7 +506,7 @@ public class ViewpointController {
 		
 		// Less than 4 viewpoints - linear interpolation
 		int vpCount = viewpointList.size();
-		if (vpCount < 4) {
+//		if (vpCount < 4) {
 			double delta = 1.0/numInbetweens;
 			ViewpointStore vps = viewpointList.get(0);
 			for (int i = 1; i < vpCount; ++i) {
@@ -517,35 +517,35 @@ public class ViewpointController {
 			}
 			flyList.add(viewpointList.get(viewpointList.size() - 1));
 			return;
-		}
+//		}
 
-		// Use spline interpolation
-		if (spline == null) 
-			spline = new CatmullRomSpline();
-        int index = 1;
-        final int end = vpCount-2;
-        final int count = (end - index) * numInbetweens;
-
-        for (int i = 0; i < count; i++) {
-            final int is = i % numInbetweens;
-
-            if (0 == is && i >= numInbetweens) {
-                index++;
-            }
-
-            final double t = is / (double)numInbetweens;
-
-            final int p0 = index - 1;
-            final int p1 = index;
-            final int p2 = index + 1;
-            final int p3 = index + 2;
-            ViewpointStore vps = viewpointList.get(p1);
-			ViewpointStore newVps = vps.getInbetween(viewpointList.get(p2), t);
-
-            newVps.location = spline.interpolate(viewpointList.get(p0).location, viewpointList.get(p1).location, viewpointList.get(p2).location,
-            		viewpointList.get(p3).location, t);
-            flyList.add(newVps);
-        }
+//		// Use spline interpolation
+//		if (spline == null) 
+//			spline = new CatmullRomSpline();
+//        int index = 1;
+//        final int end = vpCount-2;
+//        final int count = (end - index) * numInbetweens;
+//
+//        for (int i = 0; i < count; i++) {
+//            final int is = i % numInbetweens;
+//
+//            if (0 == is && i >= numInbetweens) {
+//                index++;
+//            }
+//
+//            final double t = is / (double)numInbetweens;
+//
+//            final int p0 = index - 1;
+//            final int p1 = index;
+//            final int p2 = index + 1;
+//            final int p3 = index + 2;
+//            ViewpointStore vps = viewpointList.get(p1);
+//			ViewpointStore newVps = vps.getInbetween(viewpointList.get(p2), t);
+//
+//            newVps.location = spline.interpolate(viewpointList.get(p0).location, viewpointList.get(p1).location, viewpointList.get(p2).location,
+//            		viewpointList.get(p3).location, t);
+//            flyList.add(newVps);
+//        }
     }
 
 	/**

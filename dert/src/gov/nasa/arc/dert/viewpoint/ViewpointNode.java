@@ -14,7 +14,7 @@ import com.ardor3d.bounding.BoundingVolume;
 import com.ardor3d.math.Matrix3;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.scenegraph.extension.CameraNode;
+import com.ardor3d.scenegraph.Node;
 
 /**
  * Provides a node that carries the main camera for the WorldView. Note: This
@@ -22,7 +22,7 @@ import com.ardor3d.scenegraph.extension.CameraNode;
  * in the scene graph that is listened to for events.
  *
  */
-public class ViewpointNode extends CameraNode {
+public class ViewpointNode extends Node {
 
 	// Viewpoint has changed
 	public AtomicBoolean changed = new AtomicBoolean();
@@ -75,7 +75,6 @@ public class ViewpointNode extends CameraNode {
 	 * @param camera
 	 */
 	public void setCamera(BasicCamera camera) {
-		super.setCamera(camera);
 		this.camera = camera;
 		if (camera != null) {
 			updateWorldTransform(true);
@@ -83,6 +82,14 @@ public class ViewpointNode extends CameraNode {
 			updateGeometricState(0);
 			changed.set(true);
 		}
+	}
+	
+	/**
+	 * Get the camera.
+	 * 
+	 */
+	public BasicCamera getCamera() {
+		return(camera);
 	}
 
 	/**
@@ -108,23 +115,27 @@ public class ViewpointNode extends CameraNode {
 	 * @param mapElement
 	 */
 	public void seek(MapElement mapElement) {
+		
 		double distance = mapElement.getSeekPointAndDistance(seekPoint);
 		if (Double.isNaN(distance)) {
 			return;
 		}
+		// create rotation matrix from azimuth and elevation
 		rotate.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
 		elevation = Math.PI / 4;
 		workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
 		rotate.multiplyLocal(workRot);
-		direction.set(Vector3.NEG_UNIT_Z);
-		rotate.applyPost(direction, direction);
-		direction.normalizeLocal();
-		direction.negate(location);
+		// start the location at (0,0,1) and rotate it
+		location.set(Vector3.UNIT_Z);
+		rotate.applyPost(location, location);
+		location.normalizeLocal();
+		// move the location out by the distance from the map element and add the seek point
 		location.multiplyLocal(distance);
 		location.addLocal(seekPoint);
-		camera.setLookAt(seekPoint);
-		setTranslation(location);
-		setRotation(rotate);
+		// set the camera location and direction
+		camera.setFrame(location, rotate);
+		// update this node
+		updateFromCamera();
 		updateGeometricState(0);
 		changed.set(true);
 	}
@@ -154,10 +165,11 @@ public class ViewpointNode extends CameraNode {
 		if (!sceneBounds.contains(tmpVec)) {
 			return;
 		}
-		location.set(getTranslation());
+		location.set(camera.getLocation());
 		location.addLocal(trans);
 		camera.setLookAt(tmpVec);
-		setTranslation(location);
+		camera.setLocation(location);
+		updateFromCamera();
 		updateGeometricState(0);
 		changed.set(true);
 	}
@@ -207,19 +219,10 @@ public class ViewpointNode extends CameraNode {
 		location.addLocal(sceneBounds.getCenter());
 		camera.setLookAt(sceneBounds.getCenter());
 		camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
-		setTranslation(location);
-		setRotation(rotate);
+		camera.setFrame(location, rotate);
+		updateFromCamera();
 		updateGeometricState(0);
 		changed.set(true);
-	}
-
-	/**
-	 * Get the camera
-	 * 
-	 * @return
-	 */
-	public BasicCamera getBasicCamera() {
-		return (camera);
 	}
 
 	/**
@@ -254,7 +257,8 @@ public class ViewpointNode extends CameraNode {
 		if ((distance > sceneBounds.getRadius() * 4) && (zDelta > 0)) {
 			return;
 		}
-		setTranslation(location);
+		camera.setLocation(location);
+		updateFromCamera();
 		updateGeometricState(0);
 		changed.set(true);
 	}
@@ -299,20 +303,35 @@ public class ViewpointNode extends CameraNode {
 		strictFrustum = strict;
 		azimuth = vps.azimuth;
 		elevation = vps.elevation+Math.PI/2;
-		rotate.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
-		workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
-		rotate.multiplyLocal(workRot);
 		camera.setMagnification(vps.magIndex);
 		camera.setLookAt(vps.lookAt);
 		if (strict) {
 			camera.setFrustum(vps.frustumNear, vps.frustumFar, vps.frustumLeft, vps.frustumRight, vps.frustumTop,
 				vps.frustumBottom);
 		}
-		setTranslation(vps.location);
-		setRotation(rotate);
+		rotateTurntable(vps.lookAt.distance(vps.location));
+		updateFromCamera();
 		updateGeometricState(0);
 		changed.set(true);
 	}
+	
+	/**
+	 * Adapted from Ardor3D CameraNode.
+	 */
+    private void updateFromCamera() {
+        final ReadOnlyVector3 camLeft = camera.getLeft();
+        final ReadOnlyVector3 camUp = camera.getUp();
+        final ReadOnlyVector3 camDir = camera.getDirection();
+        final ReadOnlyVector3 camLoc = camera.getLocation();
+
+        final Matrix3 rotation = Matrix3.fetchTempInstance();
+        rotation.fromAxes(camLeft, camUp, camDir);
+
+        setRotation(rotation);
+        setTranslation(camLoc);
+
+        Matrix3.releaseTempInstance(rotation);
+    }
 
 	/**
 	 * Get the viewpoint
@@ -354,17 +373,21 @@ public class ViewpointNode extends CameraNode {
 	 * the CoR.
 	 */
 	private void rotateTurntable(double distance) {
+		// create rotation matrix from azimuth and elevation
 		rotate.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
 		workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
 		rotate.multiplyLocal(workRot);
-		direction.set(Vector3.NEG_UNIT_Z);
-		rotate.applyPost(direction, direction);
-		direction.normalizeLocal();
-		direction.negate(location);
+		// start the location at (0,0,1) and rotate it
+		location.set(Vector3.UNIT_Z);
+		rotate.applyPost(location, location);
+		location.normalizeLocal();
+		// move the location out by the distance from center and add the CoR coordinates to translate
 		location.multiplyLocal(distance);
 		location.addLocal(camera.getLookAt());
-		setTranslation(location);
-		setRotation(rotate);
+		// set the camera location and direction
+		camera.setFrame(location, rotate);
+		// update this node
+		updateFromCamera();
 		updateGeometricState(0);
 		changed.set(true);
 	}
@@ -376,18 +399,24 @@ public class ViewpointNode extends CameraNode {
 	 * @return
 	 */
 	public boolean changeLocation(ReadOnlyVector3 loc) {
-		Vector3 offset = new Vector3(loc);
-		offset.subtractLocal(getWorldTranslation());
-		Vector3 lookAt = new Vector3(camera.getLookAt());
-		lookAt.addLocal(offset);
-		if (loc.distance(lookAt) > sceneBounds.getRadius() * 4) {
-			return (false);
-		}
-		setTranslation(loc);
+		if (!locInBounds(loc))
+			return(false);
+		Vector3 lookAt = new Vector3(camera.getDirection());
+		lookAt.scaleAddLocal(camera.getDistanceToCoR(), loc);
+		camera.setLocation(loc);
 		camera.setLookAt(lookAt);
+		updateFromCamera();
 		updateGeometricState(0);
 		changed.set(true);
 		return (true);
+	}
+	
+	private boolean locInBounds(ReadOnlyVector3 loc) {
+		if (loc.distance(sceneBounds.getCenter()) > sceneBounds.getRadius() * 4) {
+			return (false);
+		}
+		return(true);
+		
 	}
 
 	/**
@@ -417,6 +446,7 @@ public class ViewpointNode extends CameraNode {
 		lookAt.scaleAddLocal(camera.getDistanceToCoR(), camera.getLocation());
 		camera.setLookAt(lookAt);
 		rotateTurntable(camera.getDistanceToCoR());
+		updateFromCamera();
 		updateGeometricState(0);
 		changed.set(true);
 	}
@@ -432,7 +462,14 @@ public class ViewpointNode extends CameraNode {
 		Vector3 loc = new Vector3(camera.getDirection());
 		loc.negateLocal();
 		loc.scaleAddLocal(dist, camera.getLookAt());
-		return (changeLocation(loc));
+		if (!locInBounds(loc))
+			return(false);
+//		setTranslation(loc);
+		camera.setLocation(loc);
+		updateFromCamera();
+		updateGeometricState(0);
+		changed.set(true);
+		return (true);
 	}
 
 	/**
@@ -455,7 +492,8 @@ public class ViewpointNode extends CameraNode {
 	 * @return
 	 */
 	public double getAltitude() {
-		ReadOnlyVector3 trans = getWorldTranslation();
+//		ReadOnlyVector3 trans = getWorldTranslation();
+		ReadOnlyVector3 trans = camera.getLocation();
 		Landscape landscape = World.getInstance().getLandscape();
 		return (trans.getZ() - landscape.getZ(trans.getX(), trans.getY()));
 	}
@@ -518,6 +556,7 @@ public class ViewpointNode extends CameraNode {
 	public void setCenterOfRotation(ReadOnlyVector3 cor) {
 		camera.setLookAt(cor);
 		rotate(0, 0);
+		updateFromCamera();
 		updateGeometricState(0);
 		changed.set(true);
 	}
@@ -529,6 +568,7 @@ public class ViewpointNode extends CameraNode {
 	 */
 	public void setLookAt(ReadOnlyVector3 lookAt) {
 		camera.setLookAt(lookAt);
+		updateFromCamera();
 		updateGeometricState(0);
 		changed.set(true);
 	}

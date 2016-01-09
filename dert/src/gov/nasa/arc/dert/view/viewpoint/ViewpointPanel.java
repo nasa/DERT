@@ -92,7 +92,7 @@ public class ViewpointPanel extends JPanel {
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		add(splitPane, BorderLayout.CENTER);
 		list = new JList(viewpointList);
-		list.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		list.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent event) {
@@ -172,18 +172,17 @@ public class ViewpointPanel extends JPanel {
 		deleteButton = new ButtonAction("Delete the selected viewpoint", "Delete", null) {
 			@Override
 			public void run() {
-				int answer = JOptionPane.showConfirmDialog(Dert.getMainWindow(), "Delete " + currentVPS + "?",
+				int[] vpList = list.getSelectedIndices();
+				String str = currentVPS.toString();
+				if (vpList.length > 1)
+					str += ". . . ";
+				int answer = JOptionPane.showConfirmDialog(Dert.getMainWindow(), "Delete " + str + "?",
 					"Confirm Delete", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
 					Icons.getImageIcon("delete.png"));
 				if (answer == JOptionPane.OK_OPTION) {
-					int index = list.getSelectedIndex();
-					controller.removeViewpoint(currentVPS);
+					int index = controller.removeViewpoints(vpList);
 					list.setListData(viewpointList);
-					if (index >= viewpointList.size()) {
-						list.setSelectedIndex(-1);
-					} else {
-						list.setSelectedIndex(index);
-					}
+					list.setSelectedIndex(index);
 					flyListButton.setEnabled(viewpointList.size() > 1);
 				}
 			}

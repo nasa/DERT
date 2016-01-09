@@ -119,7 +119,7 @@ public class WorldScenePanel extends SceneCanvasPanel {
 	 */
 	public void setStereo(boolean stereo, double focalDistance, double eyeSeparation) {
 		ViewpointNode viewpointNode = worldScene.getViewpointNode();
-		BasicCamera bc = viewpointNode.getBasicCamera();
+		BasicCamera bc = viewpointNode.getCamera();
 		if (stereo) {
 			if (!(bc instanceof AnaglyphCamera)) {
 				bc = new AnaglyphCamera(bc);

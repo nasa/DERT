@@ -123,7 +123,7 @@ public class Tools extends GroupNode {
 			attachChild(spatial);
 			if (update) {
 				spatial.updateGeometricState(0, true);
-				tool.update(Dert.getWorldView().getViewpointNode().getBasicCamera());
+				tool.update(Dert.getWorldView().getViewpointNode().getCamera());
 			}
 			if ((tool instanceof FieldCamera) || (tool instanceof Profile)) {
 				state.open();
