@@ -106,7 +106,6 @@ public class ViewpointNode extends Node {
 			viewpointPanel.updateData(viewpointSelected);
 		}
 		viewpointSelected = false;
-		Dert.getMainWindow().updateCompass(azimuth);
 	}
 
 	/**
@@ -150,7 +149,6 @@ public class ViewpointNode extends Node {
 			camera.setFrustum(sceneBounds);
 		}
 		strictFrustum = false;
-		updateStatus();
 	}
 
 	@Override
@@ -172,6 +170,7 @@ public class ViewpointNode extends Node {
 		updateFromCamera();
 		updateGeometricState(0);
 		changed.set(true);
+		updateStatus();
 	}
 
 	/**
@@ -366,6 +365,7 @@ public class ViewpointNode extends Node {
 	public void rotate(float xRotAngle, float zRotAngle) {
 		setAzAndEl(azimuth + (zRotAngle * 0.5 * Math.PI / 360), elevation + (xRotAngle * 0.5 * Math.PI / 360));
 		rotateTurntable(camera.getDistanceToCoR());
+		updateStatus();
 	}
 
 	/**
@@ -390,6 +390,7 @@ public class ViewpointNode extends Node {
 		updateFromCamera();
 		updateGeometricState(0);
 		changed.set(true);
+		Dert.getMainWindow().updateCompass(azimuth);
 	}
 
 	/**
