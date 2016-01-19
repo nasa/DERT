@@ -140,7 +140,7 @@ public class CalendarPanel extends JPanel implements MouseListener {
 		timePart.add(label);
 		hour = new JSpinner(new CalSpinnerNumberModel(new Integer(0), new Integer(0), new Integer(23), new Integer(1)));
 		timePart.add(hour);
-		hour.setToolTipText("Hours (0-23)");
+		hour.setToolTipText("hours (0-23)");
 		hour.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent event) {
@@ -150,7 +150,7 @@ public class CalendarPanel extends JPanel implements MouseListener {
 		minute = new JSpinner(
 			new CalSpinnerNumberModel(new Integer(0), new Integer(0), new Integer(59), new Integer(1)));
 		timePart.add(minute);
-		minute.setToolTipText("Minutes (0-59)");
+		minute.setToolTipText("minutes (0-59)");
 		minute.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent event) {
@@ -170,7 +170,7 @@ public class CalendarPanel extends JPanel implements MouseListener {
 		second = new JSpinner(
 			new CalSpinnerNumberModel(new Integer(0), new Integer(0), new Integer(59), new Integer(1)));
 		timePart.add(second);
-		second.setToolTipText("Seconds (0-59)");
+		second.setToolTipText("seconds (0-59)");
 		second.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent event) {
@@ -190,7 +190,7 @@ public class CalendarPanel extends JPanel implements MouseListener {
 		current = new JButton();
 		timePart.add(current);
 		current.setText("Now");
-		current.setToolTipText("Set calendar to current date and time.");
+		current.setToolTipText("set calendar to current date and time");
 		current.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -288,7 +288,7 @@ public class CalendarPanel extends JPanel implements MouseListener {
 		JPanel bottomPanel = new JPanel(new FlowLayout());
 		bottomPanel.add(new JLabel("Day of Year:"));
 		doy = new JSpinner(new CalSpinnerNumberModel(new Integer(1), new Integer(1), new Integer(366), new Integer(1)));
-		doy.setToolTipText("Day of Year (1-366)");
+		doy.setToolTipText("day of year (1-366)");
 		doy.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent event) {

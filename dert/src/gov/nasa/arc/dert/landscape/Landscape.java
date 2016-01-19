@@ -115,8 +115,8 @@ public class Landscape extends Node implements ViewDependent {
 		this.source = source;
 		this.layerManager = layerManager;
 		this.surfaceColor = surfaceColor;
-		baseLayer = layerManager.getBaseLayer();
 		layerList = layerManager.getLayers();
+		baseLayer = (RasterLayer)layerList[0];
 		projInfo = baseLayer.getProjectionInfo();
 		srs = new SpatialReferenceSystem(projInfo);
 		pixelWidth = projInfo.scale[0];
@@ -234,7 +234,7 @@ public class Landscape extends Node implements ViewDependent {
 	 * Initialize the landscape. Create the factory, quad tree, and layers.
 	 */
 	public void initialize() {
-		factory = new QuadTreeFactory(source, baseLayer, layerList, pixelScale);
+		factory = new QuadTreeFactory(source, layerList, pixelScale);
 		factory.setSurfaceColor(surfaceColor);
 		factory.enableLayers(layerManager.layersEnabled);
 
@@ -314,7 +314,6 @@ public class Landscape extends Node implements ViewDependent {
 	public void dispose() {
 		quadTree = null;
 		factory.dispose();
-		baseLayer.dispose();
 		for (int i = 0; i < layerList.length; ++i) {
 			if (layerList[i] != null) {
 				layerList[i].dispose();
@@ -654,34 +653,6 @@ public class Landscape extends Node implements ViewDependent {
 	public void sphericalToLocalCoordinate(Vector3 coord) {
 		srs.getProjection().sphericalToWorld(coord);
 		srs.getProjection().worldToLocal(coord);
-	}
-
-	/**
-	 * Get a property from the base layer properties file. If not found, look in
-	 * the other layers.
-	 * 
-	 * @param key
-	 * @return
-	 */
-	public String getProperty(String key) {
-		if (baseLayer != null) {
-			String prop = baseLayer.getProperties().getProperty(key);
-			if (prop != null) {
-				return (prop);
-			}
-		}
-		if (layerList != null) {
-			for (int i = 0; i < layerList.length; ++i) {
-				if (layerList[i] == null) {
-					continue;
-				}
-				String prop = layerList[i].getProperties().getProperty(key);
-				if (prop != null) {
-					return (prop);
-				}
-			}
-		}
-		return (null);
 	}
 
 	/**

@@ -26,7 +26,7 @@ public class ActivateTapeMeasureAction extends ButtonAction {
 	 * Constructor
 	 */
 	public ActivateTapeMeasureAction() {
-		super("Activate tape measure", null, "tape.png", false);
+		super("activate tape measure", null, "tape.png", false);
 	}
 
 	@Override

@@ -65,6 +65,7 @@ public class SurfacePanel extends GroupPanel {
 		setLayout(new GridBagLayout());
 
 		wireframeCheckBox = new JCheckBox("Wireframe");
+		wireframeCheckBox.setToolTipText("display landscape as wireframe");
 		wireframeCheckBox.setSelected(SpatialUtil.isWireFrame(World.getInstance().getLandscape()));
 		wireframeCheckBox.addActionListener(new ActionListener() {
 			@Override
@@ -77,6 +78,7 @@ public class SurfacePanel extends GroupPanel {
 		add(wireframeCheckBox, GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, 0, 0));
 
 		shadingCheckBox = new JCheckBox("Surface Shading");
+		shadingCheckBox.setToolTipText("shading determined by surface topography");
 		shadingCheckBox.setSelected(landscape.isShadingFromSurface());
 		shadingCheckBox.addActionListener(new ActionListener() {
 			@Override
@@ -87,6 +89,7 @@ public class SurfacePanel extends GroupPanel {
 		add(shadingCheckBox, GBCHelper.getGBC(0, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, 0, 0));
 
 		surfaceNormalsCheckBox = new JCheckBox("Surface Normals");
+		surfaceNormalsCheckBox.setToolTipText("display normal vector for each surface point");
 		surfaceNormalsCheckBox.setSelected(scene.isNormalsEnabled());
 		surfaceNormalsCheckBox.addActionListener(new ActionListener() {
 			@Override
@@ -106,6 +109,7 @@ public class SurfacePanel extends GroupPanel {
 				World.getInstance().setVerticalExaggeration(val);
 			}
 		};
+		vertExag.setToolTipText("scale elevation");
 		add(vertExag, GBCHelper.getGBC(2, 0, 1, 1, GridBagConstraints.EAST, GridBagConstraints.NONE, 0, 0));
 
 		label = new JLabel("Surface Color", SwingConstants.RIGHT);
@@ -119,6 +123,7 @@ public class SurfacePanel extends GroupPanel {
 		add(surfaceColor, GBCHelper.getGBC(2, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.NONE, 0, 0));
 
 		gridButton = new JCheckBox("Surface Grid");
+		gridButton.setToolTipText("display a grid on the surface");
 		gridButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

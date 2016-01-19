@@ -48,7 +48,7 @@ public class LMSTPanel extends JPanel {
 			new Integer(Integer.MAX_VALUE), new Integer(1));
 		sol = new JSpinner(model);
 		sol.setSize(100, -1);
-		sol.setToolTipText("Sol (starts at 1)");
+		sol.setToolTipText("sol (starts at 1)");
 		sol.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent event) {
@@ -66,7 +66,7 @@ public class LMSTPanel extends JPanel {
 		timePart.add(label);
 		hour = new JSpinner(new SpinnerNumberModel(new Integer(0), new Integer(0), new Integer(23), new Integer(1)));
 		timePart.add(hour);
-		hour.setToolTipText("Hours (0-23)");
+		hour.setToolTipText("hours (0-23)");
 		hour.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent event) {
@@ -75,7 +75,7 @@ public class LMSTPanel extends JPanel {
 		});
 		minute = new JSpinner(new SpinnerNumberModel(new Integer(0), new Integer(0), new Integer(59), new Integer(1)));
 		timePart.add(minute);
-		minute.setToolTipText("Minutes (0-59)");
+		minute.setToolTipText("minutes (0-59)");
 		minute.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent event) {
@@ -94,7 +94,7 @@ public class LMSTPanel extends JPanel {
 		});
 		second = new JSpinner(new SpinnerNumberModel(new Integer(0), new Integer(0), new Integer(59), new Integer(1)));
 		timePart.add(second);
-		second.setToolTipText("Seconds (0-59)");
+		second.setToolTipText("seconds (0-59)");
 		second.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent event) {
@@ -114,7 +114,7 @@ public class LMSTPanel extends JPanel {
 		current = new JButton();
 		timePart.add(current);
 		current.setText("Now");
-		current.setToolTipText("Set calendar to current date and time.");
+		current.setToolTipText("set to current date and time");
 		current.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

@@ -39,8 +39,8 @@ public class LayerEffects extends GLSLShaderObjectsState {
 		+ "	}\n"
 		+ "	if (shadowEnabled) {\n" + "   		shadeFactor = shadow2DProj(shadowUnit, gl_TexCoord[7]).x;\n"
 		+ "   		shadeFactor = (shadeFactor < 1.0) ? 0.5 : 1.0;\n" + "	}\n" + "	if (hasTexture)\n"
-		+ "		gl_FragColor = vec4(shadeFactor*color.rgb*gl_Color.rgb, color.a);\n" + "	else\n"
-		+ "		gl_FragColor = vec4(shadeFactor*gl_Color.rgb, gl_Color.a);\n" + "	if (gridEnabled) {\n"
+		+ "		gl_FragColor = vec4(shadeFactor*(color.rgb+(blendFactor[0]*gl_Color.rgb)), gl_Color.a);\n" + "	else\n"
+		+ "		gl_FragColor = vec4(shadeFactor*blendFactor[0]*gl_Color.rgb, gl_Color.a);\n" + "	if (gridEnabled) {\n"
 		+ "		x = gl_TexCoord[0].x-xGridOffset;\n"
 		+ "		x = abs(xGridOffset+xGridCell*floor(x/xGridCell)-gl_TexCoord[0].x);\n"
 		+ "		y = gl_TexCoord[0].y-yGridOffset;\n"
@@ -84,7 +84,7 @@ public class LayerEffects extends GLSLShaderObjectsState {
 	 * @param oldEffects
 	 */
 	public LayerEffects(Layer[] layers, LayerEffects oldEffects) {
-		blendFactor = new float[] { 0, 0, 0, 0, 0, 0, 0 };
+		blendFactor = new float[] { 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridColor = new float[] { 1, 1, 1, 1 };
 		gridCell = Grid.defaultCellSize;
 		if (oldEffects != null) {
@@ -163,13 +163,14 @@ public class LayerEffects extends GLSLShaderObjectsState {
 
 		// generate shader code for each layer
 		boolean addHasTexture = false;
-		for (int i = 0; i < layers.length; ++i) {
+		blendFactor[0] = (float)layers[0].getBlendFactor();
+		for (int i = 1; i < layers.length; ++i) {
 			if (layers[i] == null) {
 				continue;
 			}
 			if (layers[i].isOverlay()) {
 				imageUniforms += "uniform sampler2D photo" + i + "Unit;\n";
-				intUniforms.add(new Object[] { "photo" + i + "Unit", new Integer(i) });
+				intUniforms.add(new Object[] { "photo" + i + "Unit", new Integer(i-1) });
 				blendFactor[i] = (float) layers[i].getBlendFactor();
 				overlayFunction += "		tcolor = texture2D(photo" + i + "Unit, gl_TexCoord[0].st);\n";
 				overlayFunction += "		if (tcolor.a > 0.5)\n";
@@ -177,26 +178,26 @@ public class LayerEffects extends GLSLShaderObjectsState {
 				addHasTexture = true;
 			} else if (layers[i].isImage()) {
 				imageUniforms += "uniform sampler2D photo" + i + "Unit;\n";
-				intUniforms.add(new Object[] { "photo" + i + "Unit", new Integer(i) });
+				intUniforms.add(new Object[] { "photo" + i + "Unit", new Integer(i-1) });
 				blendFactor[i] = (float) layers[i].getBlendFactor();
 				imageFunction += "		color += blendFactor[" + i + "]*texture2D(photo" + i
 					+ "Unit, gl_TexCoord[0].st);\n";
 				addHasTexture = true;
 			} else if (layers[i].getLayerType() == LayerType.floatfield) {
 				colorMapUniforms += "uniform sampler2D colorMap" + i + "Unit;\n";
-				intUniforms.add(new Object[] { "colorMap" + i + "Unit", new Integer(i) });
+				intUniforms.add(new Object[] { "colorMap" + i + "Unit", new Integer(i-1) });
 				blendFactor[i] = (float) layers[i].getBlendFactor();
-				colorMapFunction += "		color += blendFactor[" + i + "]*texture2D(colorMap" + i + "Unit, gl_TexCoord["+ i + "].st);\n";
+				colorMapFunction += "		color += blendFactor[" + i + "]*texture2D(colorMap" + i + "Unit, gl_TexCoord["+ (i-1) + "].st);\n";
 				addHasTexture = true;
 			} else if (layers[i].getLayerType() == LayerType.footprint) {
 				footprintUniforms += "uniform sampler2D footprint" + i + "Unit;\n";
-				intUniforms.add(new Object[] { "footprint" + i + "Unit", new Integer(i) });
+				intUniforms.add(new Object[] { "footprint" + i + "Unit", new Integer(i-1) });
 				blendFactor[i] = (float) layers[i].getBlendFactor();
 				footprintFunction += getFootprintFunction(i);
 			} else if (layers[i].getLayerType() == LayerType.viewshed) {
 				FieldCameraLayer iLayer = (FieldCameraLayer) layers[i];
 				viewshedUniforms += "uniform sampler2DShadow viewshed" + i + "Unit;\n";
-				intUniforms.add(new Object[] { "viewshed" + i + "Unit", new Integer(i) });
+				intUniforms.add(new Object[] { "viewshed" + i + "Unit", new Integer(i-1) });
 				viewshedUniforms += "uniform float viewshed" + i + "Color[4];\n";
 				floatArrayUniforms.add(new Object[] { "viewshed" + i + "Color", iLayer.getColor() });
 				blendFactor[i] = (float) layers[i].getBlendFactor();
@@ -260,16 +261,16 @@ public class LayerEffects extends GLSLShaderObjectsState {
 
 	private String getViewshedFunction(int i) {
 		String str = "		vec4 vscol" + i + " = vec4(viewshed" + i + "Color[0], viewshed" + i + "Color[1], viewshed" + i
-			+ "Color[2], viewshed" + i + "Color[3]);\n" + "		if (gl_TexCoord[" + i + "].q > 0.0) {\n"
-			+ "			float d = shadow2DProj(viewshed" + i + "Unit, gl_TexCoord[" + i + "]).x;\n"
+			+ "Color[2], viewshed" + i + "Color[3]);\n" + "		if (gl_TexCoord[" + (i-1) + "].q > 0.0) {\n"
+			+ "			float d = shadow2DProj(viewshed" + i + "Unit, gl_TexCoord[" + (i-1) + "]).x;\n"
 			+ "			d = d < 1.0 ? 0.0 : 1.0;\n" + "			color += blendFactor[" + i + "]*d*vscol" + i + ";\n"
 			+ "			hasTexture = true;\n" + "		}\n";
 		return (str);
 	}
 
 	private String getFootprintFunction(int i) {
-		String str = "		if (gl_TexCoord[" + i + "].q > 0.0) {\n" + "			color += blendFactor[" + i
-			+ "]*texture2DProj(footprint" + i + "Unit, gl_TexCoord[" + i + "]);\n" + "			hasTexture = true;\n"
+		String str = "		if (gl_TexCoord[" + (i-1) + "].q > 0.0) {\n" + "			color += blendFactor[" + i
+			+ "]*texture2DProj(footprint" + i + "Unit, gl_TexCoord[" + (i-1) + "]);\n" + "			hasTexture = true;\n"
 			+ "		}\n";
 		return (str);
 	}

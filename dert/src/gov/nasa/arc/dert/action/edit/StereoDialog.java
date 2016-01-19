@@ -38,7 +38,7 @@ public class StereoDialog extends AbstractDialog {
 		contentArea.setLayout(new GridLayout(2, 1));
 		Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
 		WorldState wState = currentConfig.worldState;
-		stereoCheck = new JCheckBox("Stereo");
+		stereoCheck = new JCheckBox("Enable Stereo");
 		WorldScenePanel wsp = Dert.getWorldView().getScenePanel();
 		stereoCheck.setSelected(wsp.isStereo());
 		contentArea.add(stereoCheck);

@@ -157,6 +157,7 @@ public class ToolsPanel extends JPanel {
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("All Tools:"));
 		JButton hideAllButton = new JButton("Hide");
+		hideAllButton.setToolTipText("hide all tools");
 		hideAllButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -166,6 +167,7 @@ public class ToolsPanel extends JPanel {
 		panel.add(hideAllButton);
 
 		JButton showAllButton = new JButton("Show");
+		showAllButton.setToolTipText("show all tools");
 		showAllButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

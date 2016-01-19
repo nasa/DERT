@@ -56,6 +56,7 @@ public class PlacemarkPanel extends MapElementBasePanel {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Icon"));
 		iconCombo = new JComboBox(Placemark.ICON_LABEL);
+		iconCombo.setToolTipText("select placemark icon");
 		iconCombo.setSelectedIndex(0);
 		iconCombo.addActionListener(new ActionListener() {
 			@Override

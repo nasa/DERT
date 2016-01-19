@@ -152,9 +152,11 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		// Common functions
 		JPanel buttonBar = new JPanel(new GridBagLayout());
 		searchText = new JTextField();
+		searchText.setToolTipText("enter text for search");
 		buttonBar.add(searchText,
 			GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
 		findButton = new JButton("Find");
+		findButton.setToolTipText("press to search map element list");
 		findButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -178,6 +180,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		buttonBar.add(new JLabel("    "),
 			GBCHelper.getGBC(2, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
 		showButton = new JButton("Hide");
+		showButton.setToolTipText("hide/show selected map element");
 		showButton.setEnabled(false);
 		showButton.addActionListener(new ActionListener() {
 			@Override
@@ -203,6 +206,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		buttonBar.add(showButton,
 			GBCHelper.getGBC(3, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
 		deleteButton = new JButton("Delete");
+		deleteButton.setToolTipText("remove selected map element");
 		deleteButton.setEnabled(false);
 		deleteButton.addActionListener(new ActionListener() {
 			@Override
@@ -236,6 +240,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		buttonBar.add(deleteButton,
 			GBCHelper.getGBC(4, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
 		seekButton = new JButton("Seek");
+		seekButton.setToolTipText("move viewpoint close to selected map element");
 		seekButton.setEnabled(false);
 		seekButton.addActionListener(new ActionListener() {
 			@Override
@@ -249,6 +254,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		buttonBar.add(seekButton,
 			GBCHelper.getGBC(5, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
 		renameButton = new JButton("Rename");
+		renameButton.setToolTipText("rename selected map element");
 		renameButton.setEnabled(false);
 		renameButton.addActionListener(new ActionListener() {
 			@Override

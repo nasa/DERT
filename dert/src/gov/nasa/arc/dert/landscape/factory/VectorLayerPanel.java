@@ -71,7 +71,7 @@ public class VectorLayerPanel extends JPanel {
 		// Vector file
 
 		JLabel label = new JLabel("Input File:");
-		label.setToolTipText("Enter GeoJSON file.");
+		label.setToolTipText("enter GeoJSON file.");
 		container
 			.add(label, GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 
@@ -95,7 +95,7 @@ public class VectorLayerPanel extends JPanel {
 		// Color
 
 		label = new JLabel("Default Color:");
-		label.setToolTipText("Select the default color for the vectors.");
+		label.setToolTipText("select the default color for the vectors");
 		container
 			.add(label, GBCHelper.getGBC(0, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 
@@ -108,7 +108,7 @@ public class VectorLayerPanel extends JPanel {
 		label = new JLabel("Landscape: ");
 		container
 			.add(label, GBCHelper.getGBC(0, 3, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
-		label.setToolTipText("Enter the landscape directory.");
+		label.setToolTipText("enter the landscape directory");
 
 		landscapeText = new JTextField();
 		if (landscapePath != null) {
@@ -132,7 +132,7 @@ public class VectorLayerPanel extends JPanel {
 		nameLabel = new JLabel("Layer Name: ");
 		container.add(nameLabel,
 			GBCHelper.getGBC(0, 4, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
-		nameLabel.setToolTipText("Enter the output vector layer name.");
+		nameLabel.setToolTipText("enter the output vector layer name");
 
 		nameText = new JTextField();
 		nameText.setText(layerName);

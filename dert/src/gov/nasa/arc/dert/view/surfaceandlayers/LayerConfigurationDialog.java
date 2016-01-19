@@ -57,12 +57,12 @@ public class LayerConfigurationDialog extends AbstractDialog {
 	protected void build() {
 		super.build();
 		LayerManager layerManager = World.getInstance().getLandscape().getLayerManager();
-		layerInfo = layerManager.getLayerInfoList();
+		layerInfo = layerManager.getImageLayerInfoList();
 		LayerInfo[] currentSelection = layerManager.getLayerSelection();
 		layers = new Vector<LayerInfo>();
 		for (int i = 0; i < layerInfo.length; ++i) {
 			boolean found = false;
-			for (int j = 0; j < currentSelection.length; ++j) {
+			for (int j = 1; j < currentSelection.length; ++j) {
 				if (currentSelection[j] == null) {
 					continue;
 				}
@@ -77,7 +77,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 			}
 		}
 		selectedLayers = new Vector<LayerInfo>();
-		for (int i = 0; i < currentSelection.length; ++i) {
+		for (int i = 1; i < currentSelection.length; ++i) {
 			selectedLayers.add(currentSelection[i]);
 		}
 
@@ -122,6 +122,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 		JPanel buttonPanel = new JPanel(new GridLayout(4, 1));
 		// Button to move currently selected layer up in the list
 		up = new JButton("Up");
+		up.setToolTipText("move selected visible layer up");
 		up.setEnabled(false);
 		up.addActionListener(new ActionListener() {
 			@Override
@@ -142,6 +143,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 
 		// Button to move a layer from the available list to the display list
 		add = new JButton(Icons.getImageIcon("left.png"));
+		add.setToolTipText("move selected available layer to the selected position in the visible list");
 		add.setEnabled(false);
 		add.addActionListener(new ActionListener() {
 			@Override
@@ -166,6 +168,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 		// Button to move the selected layer from the display list to the
 		// available list
 		remove = new JButton(Icons.getImageIcon("right.png"));
+		remove.setToolTipText("move selected visible layer to the available list");
 		remove.setEnabled(false);
 		remove.addActionListener(new ActionListener() {
 			@Override
@@ -187,6 +190,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 
 		// Button to move the selected layer down in the display list
 		down = new JButton("Down");
+		down.setToolTipText("move selected visible layer down");
 		down.setEnabled(false);
 		down.addActionListener(new ActionListener() {
 			@Override
@@ -236,9 +240,19 @@ public class LayerConfigurationDialog extends AbstractDialog {
 	}
 
 	private LayerInfo[] getCurrentSelection() {
-		LayerInfo[] currentSelection = new LayerInfo[LayerManager.NUM_LAYERS];
-		selectedLayers.toArray(currentSelection);
-		return (currentSelection);
+		LayerManager layerManager = World.getInstance().getLandscape().getLayerManager();
+		LayerInfo[] currentSelection = layerManager.getLayerSelection();
+		LayerInfo[] newSelection = new LayerInfo[LayerManager.NUM_LAYERS];
+		newSelection[0] = currentSelection[0];
+		int n = 0;
+		for (int i=0; i<selectedLayers.size(); ++i) {
+			newSelection[i+1] = selectedLayers.get(i);
+			if (newSelection[i+1].type != LayerType.none)
+				n ++;
+		}
+		if (n == 0)
+			newSelection[0].blendFactor = 1;
+		return (newSelection);
 	}
 
 	@Override

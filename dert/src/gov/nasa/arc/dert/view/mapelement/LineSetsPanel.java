@@ -52,6 +52,7 @@ public class LineSetsPanel extends JPanel {
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("All LineSets:"));
 		JButton hideAllButton = new JButton("Hide");
+		hideAllButton.setToolTipText("hide all LineSets");
 		hideAllButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -61,6 +62,7 @@ public class LineSetsPanel extends JPanel {
 		panel.add(hideAllButton);
 
 		JButton showAllButton = new JButton("Show");
+		showAllButton.setToolTipText("show all LineSets");
 		showAllButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

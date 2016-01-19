@@ -142,7 +142,7 @@ public class MainWindow extends JFrame {
 		toolBar.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 
 		// Menu for file operations (loading configurations, exit).
-		PopupMenuAction fileMenu = new PopupMenuAction("File actions", "File", null) {
+		PopupMenuAction fileMenu = new PopupMenuAction("file actions", "File", null) {
 			@Override
 			protected void fillMenu(JPopupMenu menu) {
 				fillFileMenu(menu);
@@ -152,7 +152,7 @@ public class MainWindow extends JFrame {
 
 		// Menu for edit operations (undo, redo, background color, stereo, CoR
 		// cross hair visibility).
-		editMenu = new PopupMenuAction("Edit actions", "Edit", null) {
+		editMenu = new PopupMenuAction("edit actions", "Edit", null) {
 			@Override
 			protected void fillMenu(JPopupMenu menu) {
 				fillEditMenu(menu);
@@ -164,7 +164,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(new JLabel(filler));
 
 		// Open the console view.
-		consoleAction = new ButtonAction("Open console", null, "console.png", buttonBorder) {
+		consoleAction = new ButtonAction("open console", null, "console.png", buttonBorder) {
 			@Override
 			public void run() {
 				currentConfig.consoleState.getViewData().setVisible(true);
@@ -174,7 +174,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(consoleAction);
 
 		// Open the help view.
-		helpAction = new ButtonAction("Open help", null, "help.png", buttonBorder) {
+		helpAction = new ButtonAction("open help", null, "help.png", buttonBorder) {
 			@Override
 			public void run() {
 				currentConfig.helpState.getViewData().setVisible(true);
@@ -186,7 +186,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(new JLabel(filler));
 
 		// Open the surface and layers view.
-		surfaceAndLayersAction = new ButtonAction("Edit landscape surface and layers", null, "surfandlayer.png",
+		surfaceAndLayersAction = new ButtonAction("edit landscape surface and layers", null, "surfandlayer.png",
 			buttonBorder) {
 			@Override
 			public void run() {
@@ -198,7 +198,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(surfaceAndLayersAction);
 
 		// Open the map elements view.
-		mapElementsAction = new ButtonAction("Edit map elements", null, "mapelements.png", buttonBorder) {
+		mapElementsAction = new ButtonAction("edit map elements", null, "mapelements.png", buttonBorder) {
 			@Override
 			public void run() {
 				currentConfig.mapElementsState.getViewData().setVisible(true);
@@ -214,7 +214,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(measuringAction);
 
 		// Open the color bar view.
-		colorbarAction = new ButtonAction("Show bars for color maps", null, "colorbar.png", buttonBorder) {
+		colorbarAction = new ButtonAction("show color maps", null, "colorbar.png", buttonBorder) {
 			@Override
 			public void run() {
 				currentConfig.colorBarsState.getViewData().setVisible(true);
@@ -227,7 +227,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(new JLabel(filler));
 
 		// Open the lighting and shadows view.
-		lightingAndShadowsAction = new ButtonAction("Edit landscape lighting and shadows", null, "lightandshadow.png",
+		lightingAndShadowsAction = new ButtonAction("edit lighting and shadows", null, "lightandshadow.png",
 			buttonBorder) {
 			@Override
 			public void run() {
@@ -239,7 +239,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(lightingAndShadowsAction);
 
 		// Open the light positioning view.
-		lightAction = new ButtonAction("Position artificial light", null, "luxo.png", buttonBorder) {
+		lightAction = new ButtonAction("position artificial light", null, "luxo.png", buttonBorder) {
 			@Override
 			public void run() {
 				currentConfig.lightPosState.getViewData().setVisible(true);
@@ -252,7 +252,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(new JLabel(filler));
 
 		// Open the viewpoint view.
-		viewpointAction = new ButtonAction("Show viewpoint properties", null, "viewpoint.png", buttonBorder) {
+		viewpointAction = new ButtonAction("show viewpoint properties", null, "viewpoint.png", buttonBorder) {
 			@Override
 			public void run() {
 				currentConfig.viewPtState.getViewData().setVisible(true);
@@ -263,7 +263,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(viewpointAction);
 
 		// Reset the viewpoint to the default overhead view.
-		resetAction = new ButtonAction("Reset viewpoint to overhead position", null, "reset.png", buttonBorder) {
+		resetAction = new ButtonAction("reset viewpoint to overhead position", null, "reset.png", buttonBorder) {
 			@Override
 			public void run() {
 				worldView.getViewpointNode().reset();
@@ -284,7 +284,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(new JLabel(filler));
 
 		// Open the marble info window.
-		marbleAction = new ButtonAction("Show terrain attributes at marble location", null, "marble.png", buttonBorder) {
+		marbleAction = new ButtonAction("show terrain attributes at marble location", null, "marble.png", buttonBorder) {
 			@Override
 			public void run() {
 				currentConfig.marbleState.getViewData().setVisible(true);
@@ -295,7 +295,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(marbleAction);
 
 		// Move the viewpoint to the current marble location.
-		gotoMarble = new ButtonAction("Move viewpoint to marble location", null, "gotomarble.png", buttonBorder) {
+		gotoMarble = new ButtonAction("go to marble", null, "gotomarble.png", buttonBorder) {
 			@Override
 			public void run() {
 				// seek marble
@@ -332,7 +332,7 @@ public class MainWindow extends JFrame {
 				}
 			}
 		};
-		marbleLocField.setToolTipText("Current marble location");
+		marbleLocField.setToolTipText("current marble location");
 		toolBar.add(marbleLocField);
 
 		add(toolBar, BorderLayout.NORTH);
@@ -463,10 +463,10 @@ public class MainWindow extends JFrame {
 		Lighting lighting = World.getInstance().getLighting();
 		if (lighting.isLampMode()) {
 			lightAction.setIcon(Icons.getImageIcon("luxo.png"));
-			lightAction.setToolTipText("Set position of artificial light");
+			lightAction.setToolTipText("set position of artificial light");
 		} else {
 			lightAction.setIcon(Icons.getImageIcon("sun.png"));
-			lightAction.setToolTipText("Set position of sun");
+			lightAction.setToolTipText("set position of sun");
 		}
 		State state = currentConfig.lightPosState;
 		if (state != null) {

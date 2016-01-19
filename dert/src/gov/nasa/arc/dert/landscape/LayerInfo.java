@@ -93,7 +93,10 @@ public class LayerInfo implements Serializable, Comparable<LayerInfo> {
 		this.type = type;
 		this.blendFactor = blendFactor;
 		this.layerNumber = layerNumber;
-		this.autoBlend = !isOverlay;
+		if (type == LayerType.none)
+			autoBlend = false;
+		else
+			autoBlend = !isOverlay;
 	}
 
 	/**

@@ -98,7 +98,7 @@ public class RasterLayerPanel extends JPanel {
 		container.setLayout(gridLayout);
 
 		JLabel label = new JLabel("Input File:");
-		label.setToolTipText("Enter GeoTIFF or PDS file.");
+		label.setToolTipText("enter GeoTIFF or PDS file");
 		container
 			.add(label, GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 
@@ -120,7 +120,7 @@ public class RasterLayerPanel extends JPanel {
 			GBCHelper.getGBC(4, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		label = new JLabel("Layer Type:");
-		label.setToolTipText("Select the type of landscape layer to be created.");
+		label.setToolTipText("select the type of landscape layer to be created");
 		container
 			.add(label, GBCHelper.getGBC(0, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 
@@ -140,7 +140,7 @@ public class RasterLayerPanel extends JPanel {
 			GBCHelper.getGBC(1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		label = new JLabel("Globe:", SwingConstants.RIGHT);
-		label.setToolTipText("Select the planet or moon.");
+		label.setToolTipText("select the planet or moon");
 		container
 			.add(label, GBCHelper.getGBC(2, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 
@@ -150,7 +150,7 @@ public class RasterLayerPanel extends JPanel {
 			GBCHelper.getGBC(3, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		label = new JLabel("Missing value:");
-		label.setToolTipText("Indicate the missing value for the input file.");
+		label.setToolTipText("indicate the missing value for the input file");
 		container
 			.add(label, GBCHelper.getGBC(0, 2, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 
@@ -190,7 +190,7 @@ public class RasterLayerPanel extends JPanel {
 		label = new JLabel("Landscape: ");
 		container
 			.add(label, GBCHelper.getGBC(0, 3, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
-		label.setToolTipText("Enter the output landscape directory or create a new one.");
+		label.setToolTipText("enter the output landscape directory or create a new one");
 
 		landscapeText = new JTextField();
 		if (landscapePath != null) {
@@ -214,7 +214,7 @@ public class RasterLayerPanel extends JPanel {
 		nameLabel = new JLabel("Layer Name: ");
 		container.add(nameLabel,
 			GBCHelper.getGBC(0, 4, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
-		nameLabel.setToolTipText("Enter the output landscape layer name.");
+		nameLabel.setToolTipText("enter the output landscape layer name");
 
 		nameText = new JTextField();
 		updateNameText();
@@ -229,7 +229,7 @@ public class RasterLayerPanel extends JPanel {
 			GBCHelper.getGBC(1, 4, 2, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
 
 		label = new JLabel("Tile Size: ", SwingConstants.RIGHT);
-		label.setToolTipText("Select a tile size.");
+		label.setToolTipText("select a tile size");
 		container
 			.add(label, GBCHelper.getGBC(3, 4, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 
@@ -242,7 +242,7 @@ public class RasterLayerPanel extends JPanel {
 		autoMargin = new JCheckBox("Automatically add margins");
 		autoMargin.setSelected(true);
 		autoMargin
-			.setToolTipText("Automatically extend raster with missing value pixels to make each side a power of 2.");
+			.setToolTipText("automatically extend raster with missing value pixels to make each side a power of 2");
 		autoMargin.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -254,7 +254,7 @@ public class RasterLayerPanel extends JPanel {
 
 		label = new JLabel("Margin (pixels):");
 		label
-			.setToolTipText("Number of missing value pixels to use to extend the side (must include extra for bilinear interpolation at edges).");
+			.setToolTipText("number of missing value pixels to use to extend the side (include extra for bilinear interpolation at edges)");
 		container
 			.add(label, GBCHelper.getGBC(0, 5, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 		marginPanel = new JPanel();

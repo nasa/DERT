@@ -161,6 +161,7 @@ public class ConfigFileChooserDialog extends AbstractDialog {
 		// configuration
 		if (!delete) {
 			newButton = new JButton("New Configuration");
+			newButton.setToolTipText("create a new configuration using the selected landscape");
 			newButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
@@ -172,6 +173,7 @@ public class ConfigFileChooserDialog extends AbstractDialog {
 			newButton.setEnabled(false);
 			buttonsPanel.add(newButton);
 			okButton.setText("Open");
+			okButton.setToolTipText("open the selected configuration");
 		}
 		okButton.setEnabled(false);
 

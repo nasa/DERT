@@ -74,8 +74,8 @@ public class WorldState extends State {
 	 * @param landscape
 	 * @return the world
 	 */
-	public World createWorld(String landscape, Configuration config) {
-		tileSource = new FileSystemTileSource(landscape);
+	public World createWorld(String landscapeName, Configuration config) {
+		tileSource = new FileSystemTileSource(landscapeName);
 		if (!tileSource.connect("dert", "dert")) {
 			return (null);
 		}
@@ -98,11 +98,11 @@ public class WorldState extends State {
 		if (!layerManager.initialize(tileSource)) {
 			return (null);
 		}
-		Landscape landscapeNode = new Landscape(tileSource, layerManager, surfaceColor);
+		Landscape landscape = new Landscape(tileSource, layerManager, surfaceColor);
 		if (time == 0) {
 			time = System.currentTimeMillis();
 		}
-		world = World.createNewWorld(name, landscapeNode, new Landmarks(config.getLandmarkStates()),
+		world = World.createNewWorld(name, landscape, new Landmarks(config.getLandmarkStates()),
 			new Tools(config.getToolStates()), new LineSets(config.getLineSetStates()), lighting, background, time);
 		if (verticalExaggeration != 1) {
 			world.setVerticalExaggeration(verticalExaggeration);

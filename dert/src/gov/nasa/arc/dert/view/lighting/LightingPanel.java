@@ -67,12 +67,12 @@ public class LightingPanel extends JPanel {
 		panel.add(modeLabel);
 		ButtonGroup group = new ButtonGroup();
 		solButton = new JRadioButton("Solar");
-		solButton.setToolTipText("The light is positioned by time.");
+		solButton.setToolTipText("light is positioned by time");
 		solButton.setSelected(!lighting.isLampMode());
 		group.add(solButton);
 		panel.add(solButton);
 		lampButton = new JRadioButton("Artificial");
-		lampButton.setToolTipText("The light is positioned by azimuth and elevation.");
+		lampButton.setToolTipText("light is positioned by azimuth and elevation");
 		lampButton.setSelected(lighting.isLampMode());
 		group.add(lampButton);
 		panel.add(lampButton);
@@ -129,7 +129,7 @@ public class LightingPanel extends JPanel {
 		GroupPanel headPanel = new GroupPanel("Headlight");
 		headPanel.setLayout(new GridLayout(2, 1, 0, 0));
 		headlightButton = new JCheckBox("Enable");
-		headlightButton.setToolTipText("Light travels with viewpoint and points in same direction.");
+		headlightButton.setToolTipText("light mimics viewpoint");
 		headlightButton.setSelected(lighting.isHeadlightEnabled());
 		headPanel.add(headlightButton);
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -148,7 +148,7 @@ public class LightingPanel extends JPanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		shadowButton = new JCheckBox("Enable Shadows");
-		shadowButton.setToolTipText("Show shadows.");
+		shadowButton.setToolTipText("display shadows");
 		shadowButton.setSelected(lighting.isShadowEnabled());
 		shadowButton.addActionListener(new ActionListener() {
 			@Override
@@ -158,7 +158,7 @@ public class LightingPanel extends JPanel {
 		});
 		panel.add(shadowButton);
 		advancedShadow = new JButton("Advanced");
-		advancedShadow.setToolTipText("Set advanced shadow features.");
+		advancedShadow.setToolTipText("edit advanced shadow settings");
 		advancedShadow.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

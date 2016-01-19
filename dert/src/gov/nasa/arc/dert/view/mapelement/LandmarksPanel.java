@@ -49,7 +49,7 @@ public class LandmarksPanel extends JPanel {
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		setLayout(new BorderLayout());
 
-		JPanel topPanel = new JPanel(new GridLayout(2, 1));
+		JPanel topPanel = new JPanel(new GridLayout(3, 1));
 
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Add:"));
@@ -98,6 +98,7 @@ public class LandmarksPanel extends JPanel {
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("All Landmarks:"));
 		JButton hideAllButton = new JButton("Hide");
+		hideAllButton.setToolTipText("hide all landmarks");
 		hideAllButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -107,6 +108,7 @@ public class LandmarksPanel extends JPanel {
 		panel.add(hideAllButton);
 
 		JButton showAllButton = new JButton("Show");
+		showAllButton.setToolTipText("show all landmarks");
 		showAllButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -116,6 +118,7 @@ public class LandmarksPanel extends JPanel {
 		panel.add(showAllButton);
 
 		JButton saveAsCSVButton = new JButton("Save to File");
+		saveAsCSVButton.setToolTipText("save all landmark coordinates to a file");
 		saveAsCSVButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -124,13 +127,17 @@ public class LandmarksPanel extends JPanel {
 		});
 		panel.add(saveAsCSVButton);
 		topPanel.add(panel);
+
+		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		panel.add(new JLabel("Preferences"));
+		topPanel.add(panel);
 		add(topPanel, BorderLayout.NORTH);
 
 		JPanel bottomPanel = new JPanel();
 
 		bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
 		// Placemark Preferences
-		GroupPanel gPanel = new GroupPanel("Placemark Preferences");
+		GroupPanel gPanel = new GroupPanel("Placemark");
 		gPanel.setLayout(new GridLayout(4, 2));
 
 		gPanel.add(new JLabel("Label", SwingConstants.RIGHT));
@@ -179,7 +186,7 @@ public class LandmarksPanel extends JPanel {
 		bottomPanel.add(gPanel);
 
 		// Figure Preferences
-		gPanel = new GroupPanel("3D Figure Preferences");
+		gPanel = new GroupPanel("3D Figure");
 		gPanel.setLayout(new GridLayout(6, 2));
 
 		gPanel.add(new JLabel("Label", SwingConstants.RIGHT));
@@ -237,7 +244,7 @@ public class LandmarksPanel extends JPanel {
 		gPanel.add(sizeText);
 
 		gPanel.add(new JLabel("    ", SwingConstants.RIGHT));
-		checkBox = new JCheckBox("fixed");
+		checkBox = new JCheckBox("fixed size");
 		checkBox.setSelected(Figure.defaultFixedSize);
 		checkBox.addActionListener(new ActionListener() {
 			@Override
@@ -250,7 +257,7 @@ public class LandmarksPanel extends JPanel {
 		bottomPanel.add(gPanel);
 
 		// Image Billboard Preferences
-		gPanel = new GroupPanel("Billboard Preferences");
+		gPanel = new GroupPanel("Billboard");
 		gPanel.setLayout(new GridLayout(2, 2));
 
 		gPanel.add(new JLabel("Label", SwingConstants.RIGHT));

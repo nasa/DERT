@@ -27,7 +27,7 @@ public class Compass extends JPanel {
 		textX = 50;
 		textY = 24;
 		backColor = getBackground();
-		setToolTipText("Viewpoint heading");
+		setToolTipText("viewpoint heading");
 	}
 
 	/**

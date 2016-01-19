@@ -119,6 +119,7 @@ public abstract class MapElementBasePanel extends JPanel {
 		if (addCBs) {
 			panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 			pinnedCheckBox = new JCheckBox("Pin in Place");
+			pinnedCheckBox.setToolTipText("pin map element at current location");
 			pinnedCheckBox.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
@@ -127,6 +128,7 @@ public abstract class MapElementBasePanel extends JPanel {
 			});
 			panel.add(pinnedCheckBox);
 			labelCheckBox = new JCheckBox("Show Label");
+			labelCheckBox.setToolTipText("display map element label");
 			labelCheckBox.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {

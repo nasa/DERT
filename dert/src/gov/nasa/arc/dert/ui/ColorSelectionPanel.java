@@ -41,9 +41,11 @@ public class ColorSelectionPanel extends JPanel {
 		colorLabel = new JLabel("            ");
 		colorLabel.setOpaque(true);
 		colorLabel.setBackground(color);
+		colorLabel.setToolTipText("current color");
 		add(colorLabel);
 
 		colorButton = new JButton(Icons.getImageIcon("colors.png"));
+		colorButton.setToolTipText("open color chooser");
 		colorButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

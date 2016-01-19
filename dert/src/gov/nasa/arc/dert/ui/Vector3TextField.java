@@ -36,6 +36,7 @@ public class Vector3TextField extends JTextField {
 		setEditable(true);
 		formatter = new DecimalFormat(format);
 		setValue(value);
+		setToolTipText("press return to enter a value");
 
 		addActionListener(new ActionListener() {
 			@Override

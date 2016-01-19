@@ -28,8 +28,7 @@ import com.ardor3d.renderer.Renderer;
  */
 public class LayerManager implements Serializable {
 
-	// number of texture units available for image layers
-	public static int NUM_LAYERS = 7;
+	public static int NUM_LAYERS = 8;
 	public static final ReadOnlyColorRGBA DEFAULT_GRID_COLOR = ColorRGBA.WHITE;
 
 	// Flags accessed by Landscape
@@ -42,12 +41,11 @@ public class LayerManager implements Serializable {
 	private double gridCellSize;
 	private boolean gridEnabled;
 
-	// Layer information
-	private ArrayList<LayerInfo> layerInfoList;
+	// Array of image layers currently displayed (element set to null if not used).
+	protected LayerInfo[] selectedLayerInfo;
 
-	// Array of image layers currently displayed (element set to null if not
-	// used) corresponding to texture unit.
-	protected transient LayerInfo[] selectedLayerInfo;
+	// Information about available image layers
+	private transient ArrayList<LayerInfo> imageLayerInfoList;
 
 	// Object to do special layer effects in shader
 	protected transient LayerEffects layerEffects;
@@ -83,12 +81,12 @@ public class LayerManager implements Serializable {
 		LayerInfo baseLayerInfo = null;
 
 		boolean firstTime = false;
-		if (layerInfoList == null) {
-			layerInfoList = new ArrayList<LayerInfo>();
+		if (imageLayerInfoList == null) {
+			imageLayerInfoList = new ArrayList<LayerInfo>();
 			firstTime = true;
 		}
 
-		// create a list of available layers
+		// create a list of available image layers
 		String[][] sourceLayerInfo = source.getLayerInfo();
 		ArrayList<LayerInfo> newInfoList = new ArrayList<LayerInfo>();
 		for (int i = 0; i < sourceLayerInfo.length; ++i) {
@@ -97,6 +95,8 @@ public class LayerManager implements Serializable {
 			if (li.type == LayerType.elevation) {
 				baseLayerInfo = li;
 				baseLayerInfo.layerNumber = 0;
+				baseLayerInfo.autoBlend = false;
+				baseLayerInfo.blendFactor = 0;
 			} else {
 				LayerInfo lInfo = findLayerInfo(li.name, li.type);
 				if (lInfo != null) {
@@ -146,51 +146,65 @@ public class LayerManager implements Serializable {
 		newInfoList.add(lInfo);
 
 		// FieldCamera footprints and viewsheds
-		for (int i = 0; i < layerInfoList.size(); ++i) {
-			lInfo = layerInfoList.get(i);
+		for (int i = 0; i < imageLayerInfoList.size(); ++i) {
+			lInfo = imageLayerInfoList.get(i);
 			if ((lInfo.type == LayerType.footprint) || (lInfo.type == LayerType.viewshed)) {
 				newInfoList.add(lInfo);
 			}
 		}
 
-		layerInfoList = newInfoList;
-		Collections.sort(layerInfoList);
+		imageLayerInfoList = newInfoList;
+		Collections.sort(imageLayerInfoList);
 
-		// set up the displayed image layers
+		// set up the displayed layers
 		if (selectedLayerInfo == null) {
 			selectedLayerInfo = new LayerInfo[NUM_LAYERS];
-			for (int i = 0; i < layerInfoList.size(); ++i) {
-				LayerInfo li = layerInfoList.get(i);
+			selectedLayerInfo[0] = baseLayerInfo;
+			for (int i = 0; i < imageLayerInfoList.size(); ++i) {
+				LayerInfo li = imageLayerInfoList.get(i);
 				if (li.layerNumber > 0) {
-					selectedLayerInfo[li.layerNumber - 1] = li;
+					selectedLayerInfo[li.layerNumber] = li;
 				}
 			}
-			if (firstTime && (selectedLayerInfo[0] == null)) {
+			if (firstTime && (selectedLayerInfo[1] == null)) {
 				// first time choose the first image layer found as the default
 				// image layer
-				for (int i = 0; i < layerInfoList.size(); ++i) {
-					if ((layerInfoList.get(i).type == LayerType.colorimage)
-						|| (layerInfoList.get(i).type == LayerType.grayimage)) {
-						selectedLayerInfo[0] = layerInfoList.get(i);
-						selectedLayerInfo[0].blendFactor = 1;
-						selectedLayerInfo[0].layerNumber = 1;
+				for (int i = 0; i < imageLayerInfoList.size(); ++i) {
+					if ((imageLayerInfoList.get(i).type == LayerType.colorimage)
+						|| (imageLayerInfoList.get(i).type == LayerType.grayimage)) {
+						selectedLayerInfo[1] = imageLayerInfoList.get(i);
+						selectedLayerInfo[1].blendFactor = 1;
+						selectedLayerInfo[1].layerNumber = 1;
 						break;
 					}
 				}
 				firstTime = false;
 			}
-			// no image layers available for the default, we are showing the
-			// surface
-			if (selectedLayerInfo[0] == null) {
-				selectedLayerInfo[0] = new LayerInfo("None", "none", 0, 1);
-			}
 			// set all non-assigned layers to "none"
-			for (int i = 1; i < selectedLayerInfo.length; ++i) {
+			for (int i = 0; i < selectedLayerInfo.length; ++i) {
 				if (selectedLayerInfo[i] == null) {
-					selectedLayerInfo[i] = new LayerInfo("None", "none", 0, i + 1);
+					selectedLayerInfo[i] = new LayerInfo("None", "none", 0, i);
 				}
 			}
 		}
+		else {
+			baseLayerInfo.autoBlend = selectedLayerInfo[0].autoBlend;
+			baseLayerInfo.blendFactor = selectedLayerInfo[0].blendFactor;
+			selectedLayerInfo[0] = baseLayerInfo;
+			for (int i=1; i<selectedLayerInfo.length; ++i) {
+				LayerInfo li = findLayerInfo(selectedLayerInfo[i].name, selectedLayerInfo[i].type);
+				if (li == null)
+					selectedLayerInfo[i] = new LayerInfo("None", "none", 0, i);
+			}
+		}
+		
+		int n = 0;
+		for (int i=0; i<selectedLayerInfo.length; ++i) {
+			if (selectedLayerInfo[i].type != LayerType.none)
+				n ++;
+		}
+		if (n == 1)
+			baseLayerInfo.blendFactor = 1;
 
 		// create the layers
 		if (layers == null) {
@@ -205,8 +219,8 @@ public class LayerManager implements Serializable {
 	}
 
 	private LayerInfo findLayerInfo(String name, LayerType type) {
-		for (int i = 0; i < layerInfoList.size(); ++i) {
-			LayerInfo li = layerInfoList.get(i);
+		for (int i = 0; i < imageLayerInfoList.size(); ++i) {
+			LayerInfo li = imageLayerInfoList.get(i);
 			if ((li.type == type) && li.name.equals(name)) {
 				return (li);
 			}
@@ -217,6 +231,7 @@ public class LayerManager implements Serializable {
 	private boolean createBaseLayer(LayerInfo baseLayerInfo) {
 		// already been here
 		if (baseLayer != null) {
+			baseLayer.blendFactor = baseLayerInfo.blendFactor;
 			return (true);
 		}
 
@@ -226,6 +241,7 @@ public class LayerManager implements Serializable {
 			Console.getInstance().println("Unable to create base layer");
 			return (false);
 		}
+		layers[0] = baseLayer;
 		return (true);
 	}
 
@@ -234,9 +250,9 @@ public class LayerManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public LayerInfo[] getLayerInfoList() {
-		LayerInfo[] layerInfo = new LayerInfo[layerInfoList.size()];
-		layerInfoList.toArray(layerInfo);
+	public LayerInfo[] getImageLayerInfoList() {
+		LayerInfo[] layerInfo = new LayerInfo[imageLayerInfoList.size()];
+		imageLayerInfoList.toArray(layerInfo);
 		return (layerInfo);
 	}
 
@@ -298,7 +314,7 @@ public class LayerManager implements Serializable {
 				}
 			}
 		}
-		Iterator<LayerInfo> iterator = layerInfoList.iterator();
+		Iterator<LayerInfo> iterator = imageLayerInfoList.iterator();
 		while (iterator.hasNext()) {
 			LayerInfo li = iterator.next();
 			if (li.name.equals(iName)) {
@@ -321,13 +337,15 @@ public class LayerManager implements Serializable {
 	 * @param fieldCamera
 	 */
 	public void addFieldCamera(FieldCamera fieldCamera) {
-		layerInfoList.add(new LayerInfo(fieldCamera.getName(), "footprint", 0, -1));
-		layerInfoList.add(new LayerInfo(fieldCamera.getName(), "viewshed", 0, -1));
+		imageLayerInfoList.add(new LayerInfo(fieldCamera.getName(), "footprint", 0, -1));
+		imageLayerInfoList.add(new LayerInfo(fieldCamera.getName(), "viewshed", 0, -1));
 	}
 
 	private void createLayers() {
 		Layer[] newList = new Layer[NUM_LAYERS];
-		for (int i = 0; i < selectedLayerInfo.length; ++i) {
+		newList[0] = layers[0];
+		layers[0] = null;
+		for (int i = 1; i < selectedLayerInfo.length; ++i) {
 			if (selectedLayerInfo[i].type == LayerType.none) {
 				newList[i] = null;
 			} else {
@@ -507,14 +525,10 @@ public class LayerManager implements Serializable {
 	 * @param key
 	 * @return
 	 */
-	public Object getRasterLayerProperty(String key) {
-		Object prop = baseLayer.getProperties().getProperty(key);
-		if (prop != null) {
-			return (prop);
-		}
+	public Object getLayerProperty(String key) {
 		for (int i = 0; i < layers.length; ++i) {
 			if (layers[i] != null) {
-				prop = layers[i].getProperties().getProperty(key);
+				Object prop = layers[i].getProperties().getProperty(key);
 				if (prop != null) {
 					return (prop);
 				}
@@ -539,7 +553,7 @@ public class LayerManager implements Serializable {
 	}
 
 	/**
-	 * Prerender layers
+	 * Pre-render layers
 	 * 
 	 * @param renderer
 	 */
@@ -555,8 +569,8 @@ public class LayerManager implements Serializable {
 	 * Prepare layer info objects for persistence
 	 */
 	public void save() {
-		for (int i = 0; i < layerInfoList.size(); ++i) {
-			layerInfoList.get(i).save();
+		for (int i = 0; i < selectedLayerInfo.length; ++i) {
+			selectedLayerInfo[i].save();
 		}
 	}
 }

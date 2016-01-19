@@ -39,6 +39,7 @@ public class ColorBar extends JPanel implements ColorMapListener {
 		setLayout(new BorderLayout());
 		palette = new Palette(colorMap, vertical);
 		JButton button = new JButton("Color Map");
+		button.setToolTipText("edit color map settings");
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
