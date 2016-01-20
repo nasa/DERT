@@ -112,14 +112,15 @@ public class CartesianGridPanel extends MapElementBasePanel {
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		actualCoordButton = new JCheckBox("Show World Coordinates in Label");
-		actualCoordButton.setSelected(true);
+		actualCoordButton = new JCheckBox("Absolute Landscape Coordinates");
+		actualCoordButton.setToolTipText("label shows absolute landscape coordinates or coordinates relative to grid origin");
 		actualCoordButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				grid.setActualCoordinates(actualCoordButton.isSelected());
 			}
 		});
+		panel.add(actualCoordButton);
 		contents.add(panel);
 	}
 

@@ -75,6 +75,7 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 
 		crosshair = new JCheckBox("Xhair");
 		crosshair.setSelected(fieldCameraScene.isCrosshairVisible());
+		crosshair.setToolTipText("display crosshair");
 		crosshair.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -130,12 +131,14 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 				}
 			}
 		};
+		heightSpinner.setToolTipText("set height of camera above ground");
 		panel.add(heightSpinner);
 
 		controlPanel.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		JButton seekButton = new JButton("Point At");
+		seekButton.setToolTipText("point camera at given coordinates");
 		seekButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -153,6 +156,7 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 		seekText = new Vector3TextField(20, seekPoint, Landscape.format, true);
 		panel.add(seekText);
 		JButton distanceButton = new JButton("Distance");
+		distanceButton.setToolTipText("press to display distance to crosshair");
 		distanceButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -163,17 +167,20 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 		panel.add(distanceButton);
 		distanceText = new DoubleTextField(8, 0, false, Landscape.format);
 		distanceText.setEditable(false);
+		distanceText.setToolTipText("distance to crosshair");
 		panel.add(distanceText);
 		controlPanel.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("FOV   Location:"));
+		panel.add(new JLabel("VwPt Location:"));
 		fovLocationText = new DoubleArrayTextField(20, new double[3], Landscape.format);
 		fovLocationText.setBackground(panel.getBackground());
 		fovLocationText.setEditable(false);
+		fovLocationText.setToolTipText("location of camera viewpoint");
 		panel.add(fovLocationText);
 		panel.add(new JLabel("  Direction:"));
 		fovDirectionText = new DoubleArrayTextField(12, new double[3], "0.000");
+		fovDirectionText.setToolTipText("direction camera is pointing");
 		fovDirectionText.setBackground(panel.getBackground());
 		fovDirectionText.setEditable(false);
 		panel.add(fovDirectionText);

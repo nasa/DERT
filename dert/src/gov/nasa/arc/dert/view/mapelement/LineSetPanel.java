@@ -55,6 +55,7 @@ public class LineSetPanel extends MapElementBasePanel {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel("File"), BorderLayout.WEST);
 		fileText = new JTextField();
+		fileText.setToolTipText("path to GeoJSON file");
 		fileText.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -64,6 +65,7 @@ public class LineSetPanel extends MapElementBasePanel {
 		panel.add(fileText, BorderLayout.CENTER);
 		panel.setMaximumSize(new Dimension(1000, -1));
 		browseButton = new JButton("Browse");
+		browseButton.setToolTipText("browse to GeoJSON file");
 		browseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

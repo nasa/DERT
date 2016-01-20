@@ -58,6 +58,7 @@ public class ImageBoardPanel extends MapElementBasePanel {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel("File"), BorderLayout.WEST);
 		imageText = new JTextField();
+		imageText.setToolTipText("image file path");
 		panel.add(imageText, BorderLayout.CENTER);
 		browseButton = new JButton("Browse");
 		browseButton.addActionListener(new ActionListener() {
@@ -66,6 +67,7 @@ public class ImageBoardPanel extends MapElementBasePanel {
 				setImageFile();
 			}
 		});
+		browseButton.setToolTipText("browse to image file");
 		panel.add(browseButton, BorderLayout.EAST);
 		panel.setMaximumSize(new Dimension(1000, -1));
 		contents.add(panel);
@@ -86,6 +88,7 @@ public class ImageBoardPanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		openButton = new JButton("Open Image");
+		openButton.setToolTipText("view the image in full size");
 		openButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

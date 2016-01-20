@@ -129,7 +129,6 @@ public class LightingPanel extends JPanel {
 		GroupPanel headPanel = new GroupPanel("Headlight");
 		headPanel.setLayout(new GridLayout(2, 1, 0, 0));
 		headlightButton = new JCheckBox("Enable");
-		headlightButton.setToolTipText("light mimics viewpoint");
 		headlightButton.setSelected(lighting.isHeadlightEnabled());
 		headPanel.add(headlightButton);
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));

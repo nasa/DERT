@@ -107,6 +107,7 @@ public class ProfilePanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		saveAsCSV = new JButton("Save As CSV");
+		saveAsCSV.setToolTipText("save profile data formatted as comma separated values");
 		saveAsCSV.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -120,6 +121,7 @@ public class ProfilePanel extends MapElementBasePanel {
 		saveAsCSV.setEnabled(false);
 		panel.add(saveAsCSV);
 		openButton = new JButton("Open Graph");
+		openButton.setToolTipText("show the profile as a graph in a separate window");
 		openButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

@@ -162,6 +162,7 @@ public class PlanePanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		openButton = new JButton("Diff Map");
+		openButton.setToolTipText("display map of difference of plane and elevation in separate window");
 		openButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

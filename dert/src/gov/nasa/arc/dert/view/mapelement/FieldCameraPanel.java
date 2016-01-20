@@ -51,6 +51,7 @@ public class FieldCameraPanel extends MapElementBasePanel {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Definition"));
 		defCombo = new JComboBox(names);
+		defCombo.setToolTipText("select camera definition file");
 		defCombo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -76,6 +77,7 @@ public class FieldCameraPanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		fovCheckBox = new JCheckBox("Show FOV");
+		fovCheckBox.setToolTipText("display the field of view frustum");
 		fovCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -86,7 +88,8 @@ public class FieldCameraPanel extends MapElementBasePanel {
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		lineCheckBox = new JCheckBox("Show Line to Lookat Point");
+		lineCheckBox = new JCheckBox("Show Line");
+		lineCheckBox.setToolTipText("display a line to the lookat point");
 		lineCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -98,6 +101,7 @@ public class FieldCameraPanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		openButton = new JButton("Open View");
+		openButton.setToolTipText("display this camera's view of the landscape in a separate window");
 		openButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

@@ -72,9 +72,11 @@ public class ContourScenePanel extends SceneCanvasPanel {
 
 		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		coordTextField = new Vector3TextField(20, new Vector3(), Landscape.format, true);
+		coordTextField.setToolTipText("current cursor location in landscape");
 		coordTextField.setEditable(false);
 		topPanel.add(coordTextField);
 		JButton refreshButton = new JButton(Icons.getImageIcon("refresh.png"));
+		refreshButton.setToolTipText("refresh");
 		refreshButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

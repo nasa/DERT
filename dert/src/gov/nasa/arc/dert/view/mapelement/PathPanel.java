@@ -61,6 +61,7 @@ public class PathPanel extends MapElementBasePanel {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Type"));
 		typeCombo = new JComboBox(Path.BodyType.values());
+		typeCombo.setToolTipText("select path body type");
 		typeCombo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -82,6 +83,7 @@ public class PathPanel extends MapElementBasePanel {
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Label"));
 		labelCombo = new JComboBox(Path.LabelType.values());
+		labelCombo.setToolTipText("select type of label");
 		labelCombo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -118,6 +120,7 @@ public class PathPanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		saveAsCSV = new JButton("Save As CSV");
+		saveAsCSV.setToolTipText("save waypoints formatted as comma separated values");
 		saveAsCSV.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -130,6 +133,7 @@ public class PathPanel extends MapElementBasePanel {
 		});
 		panel.add(saveAsCSV);
 		addPoints = new JButton("Add Points");
+		addPoints.setToolTipText("add points to the path");;
 		addPoints.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -139,6 +143,7 @@ public class PathPanel extends MapElementBasePanel {
 		});
 		panel.add(addPoints);
 		statistics = new JButton("Open Info");
+		statistics.setToolTipText("display path statistics in a separate window");
 		statistics.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

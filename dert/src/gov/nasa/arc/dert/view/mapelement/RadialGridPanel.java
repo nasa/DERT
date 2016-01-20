@@ -71,7 +71,7 @@ public class RadialGridPanel extends MapElementBasePanel {
 				grid.setRings(rings);
 			}
 		});
-		panel.add(new JLabel("Distance", SwingConstants.RIGHT));
+		panel.add(new JLabel("Gap Between", SwingConstants.RIGHT));
 		sizeText = new DoubleTextField(8, Grid.defaultCellSize, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
@@ -82,6 +82,7 @@ public class RadialGridPanel extends MapElementBasePanel {
 				setRadius();
 			}
 		};
+		sizeText.setToolTipText("distance to next ring");
 		panel.add(sizeText);
 		contents.add(panel);
 
@@ -97,18 +98,20 @@ public class RadialGridPanel extends MapElementBasePanel {
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		actualCoordButton = new JCheckBox("Show World Coordinates in Label");
-		actualCoordButton.setSelected(true);
+		actualCoordButton = new JCheckBox("Absolute Landscape Coordinates");
+		actualCoordButton.setToolTipText("label shows absolute landscape coordinates or coordinates relative to grid origin");
 		actualCoordButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				grid.setActualCoordinates(actualCoordButton.isSelected());
 			}
 		});
+		panel.add(actualCoordButton);
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		compassRoseCheckBox = new JCheckBox("Compass Rose");
+		compassRoseCheckBox.setToolTipText("label with N, S, E, and W");
 		compassRoseCheckBox.setSelected(false);
 		panel.add(compassRoseCheckBox);
 		compassRoseCheckBox.addActionListener(new ActionListener() {

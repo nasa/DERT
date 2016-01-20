@@ -124,6 +124,7 @@ public class SurfacePanel extends GroupPanel {
 
 		gridButton = new JCheckBox("Surface Grid");
 		gridButton.setToolTipText("display a grid on the surface");
+		gridButton.setSelected(landscape.getLayerManager().isGridEnabled());
 		gridButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

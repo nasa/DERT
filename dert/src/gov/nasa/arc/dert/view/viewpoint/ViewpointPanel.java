@@ -262,7 +262,7 @@ public class ViewpointPanel extends JPanel {
 		dataPanel.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		tipText = "Direction in degress from N, degrees from hort";
+		tipText = "Direction in degrees from N, degrees from hort";
 		label = new JLabel("Az,El", SwingConstants.RIGHT);
 		label.setToolTipText(tipText);
 		panel.add(label);

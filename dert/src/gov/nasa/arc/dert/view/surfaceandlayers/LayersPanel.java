@@ -62,8 +62,8 @@ public class LayersPanel extends GroupPanel {
 		LayerInfo[] currentSelection = landscape.getLayerManager().getLayerSelection();
 
 		JPanel topPanel = new JPanel(new FlowLayout());
-		showLayersCheckBox = new JCheckBox("Show Image Layers");
-		showLayersCheckBox.setToolTipText("display the visible image layers");
+		showLayersCheckBox = new JCheckBox("Show Layers");
+		showLayersCheckBox.setToolTipText("display the visible layers");
 		showLayersCheckBox.setSelected(landscape.isLayersEnabled());
 		showLayersCheckBox.addActionListener(new ActionListener() {
 			@Override
@@ -187,6 +187,8 @@ public class LayersPanel extends GroupPanel {
 				if (current[i].autoBlend && (i != index)) {
 					float bf = (float)current[i].blendFactor;
 					bf += d;
+					bf = Math.max(0, bf);
+					bf = Math.min(1, bf);
 					blendFactorSpinner[i].setValueNoChange((int)(bf*100));
 					layerManager.setLayerBlendFactor(i, bf);
 				}

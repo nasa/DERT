@@ -59,6 +59,7 @@ public class FigurePanel extends MapElementBasePanel {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Shape"));
 		shapeCombo = new JComboBox(ShapeType.values());
+		shapeCombo.setToolTipText("select figure shape");
 		shapeCombo.setSelectedIndex(3);
 		shapeCombo.addActionListener(new ActionListener() {
 			@Override
@@ -94,6 +95,7 @@ public class FigurePanel extends MapElementBasePanel {
 		};
 		panel.add(sizeText);
 		fixedSizeButton = new JCheckBox("Fixed");
+		fixedSizeButton.setToolTipText("lock size at current value");
 		fixedSizeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -113,6 +115,7 @@ public class FigurePanel extends MapElementBasePanel {
 				figure.setAzimuth(azimuth);
 			}
 		};
+		azSpinner.setToolTipText("rotate figure around vertical axis");
 		panel.add(azSpinner);
 
 		panel.add(new JLabel("        "));
@@ -126,11 +129,13 @@ public class FigurePanel extends MapElementBasePanel {
 				figure.setTilt(tilt);
 			}
 		};
+		tiltSpinner.setToolTipText("rotate figure around horizontal axis");
 		panel.add(tiltSpinner);
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		surfaceButton = new JCheckBox("Show Surface Normal");
+		surfaceButton.setToolTipText("display the vector for the surface normal");
 		surfaceButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
