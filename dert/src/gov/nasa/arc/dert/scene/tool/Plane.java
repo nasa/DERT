@@ -749,7 +749,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		centroid.set(point[0].getWorldTranslation());
 		centroid.addLocal(point[1].getWorldTranslation());
 		centroid.addLocal(point[2].getWorldTranslation());
-		centroid.multiplyLocal(0.33333);
+		centroid.multiplyLocal(0.33333333333);
 
 		// find the surface normal of the triangle
 		MathUtil.createNormal(normal, point[0].getWorldTranslation(), point[1].getWorldTranslation(),
