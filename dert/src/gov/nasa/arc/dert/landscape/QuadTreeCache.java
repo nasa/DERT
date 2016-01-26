@@ -94,21 +94,6 @@ public class QuadTreeCache {
 	}
 
 	/**
-	 * Enable the layers for all elements in the cache
-	 * 
-	 * @param enable
-	 */
-	public synchronized void enableLayers(boolean enable) {
-		Object[] key = new Object[quadTreeMap.size()];
-		key = quadTreeMap.keySet().toArray(key);
-		for (int i = 0; i < key.length; ++i) {
-			QuadTree item = quadTreeMap.get(key[i]);
-			item.getMesh().enableLayers(enable);
-		}
-
-	}
-
-	/**
 	 * Update the surface color for all elements in the cache
 	 * 
 	 * @param rgba

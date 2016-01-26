@@ -236,7 +236,7 @@ public class Landscape extends Node implements ViewDependent {
 	public void initialize() {
 		factory = new QuadTreeFactory(source, layerList, pixelScale);
 		factory.setSurfaceColor(surfaceColor);
-		factory.enableLayers(layerManager.layersEnabled);
+//		factory.enableLayers(layerManager.layersEnabled);
 
 		// create the top level quad tree tile
 		quadTree = factory.getQuadTree("", null, new Vector3(0, 0, 0), worldWidth / tileWidth,
@@ -664,10 +664,7 @@ public class Landscape extends Node implements ViewDependent {
 		if (layerManager.layersEnabled == enable) {
 			return;
 		}
-		factory.enableLayers(enable);
 		layerManager.enableLayers(enable);
-		materialState.setColorMaterialFace(MaterialFace.Front);
-		quadTree.setRenderState(materialState);
 		quadTree.markDirty(DirtyType.RenderState);
 	}
 

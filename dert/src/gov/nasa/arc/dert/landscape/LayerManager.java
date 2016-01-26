@@ -380,6 +380,7 @@ public class LayerManager implements Serializable {
 
 		// create the layer effects shaders
 		layerEffects = new LayerEffects(layers, layerEffects);
+		enableLayers(layersEnabled);
 		enableGrid(gridEnabled);
 		layerEffects.setEnabled(true);
 		ColorBarPanel.resetColorBars();

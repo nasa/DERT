@@ -771,16 +771,6 @@ public class QuadTreeFactory {
 	}
 
 	/**
-	 * Enable layers for all QuadTrees
-	 * 
-	 * @param enable
-	 */
-	public void enableLayers(boolean enable) {
-		layersEnabled = enable;
-		quadTreeCache.enableLayers(enable);
-	}
-
-	/**
 	 * Set the surface color for all QuadTrees
 	 * 
 	 * @param surfaceColor

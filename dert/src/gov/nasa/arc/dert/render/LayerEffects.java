@@ -234,8 +234,6 @@ public class LayerEffects extends GLSLShaderObjectsState {
 		// load shader program
 		InputStream iStream = null;
 		try {
-			// iStream =
-			// this.getClass().getResource(getFilename()).openStream();
 			iStream = new ByteArrayInputStream(fragmentProgram);
 			setFragmentShader(iStream, "frag");
 			iStream.close();
