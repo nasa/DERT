@@ -128,10 +128,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	// Center of scene
 	private int centerX, centerY;
 
-	// Math helpers
-	private Vector3 workVec = new Vector3();
-	private Matrix3 workMat = new Matrix3();
-
 	// Map element state
 	private FieldCameraState state;
 
@@ -477,11 +473,11 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 * @param point
 	 * @return
 	 */
-	public double[] seek(ReadOnlyVector3 point) {
+	public Vector3 seek(ReadOnlyVector3 point) {
 		Vector3 dir = new Vector3(point);
 		dir.subtractLocal(basicCamera.getLocation());
 		dir.normalizeLocal();
-		double[] angle = MathUtil.directionToAzEl(dir, null, workVec, workMat);
+		Vector3 angle = MathUtil.directionToAzEl(dir, null);
 		return (angle);
 	}
 
@@ -609,6 +605,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		} else {
 			getSceneHints().setCullHint(CullHint.Always);
 		}
+		markDirty(DirtyType.RenderState);
 	}
 
 	private void setViewport(int width, int fullWidth, int fullHeight, int xOrigin) {

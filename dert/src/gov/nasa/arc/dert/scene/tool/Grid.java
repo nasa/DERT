@@ -335,6 +335,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 		} else {
 			getSceneHints().setCullHint(CullHint.Always);
 		}
+		markDirty(DirtyType.RenderState);
 	}
 
 	/**

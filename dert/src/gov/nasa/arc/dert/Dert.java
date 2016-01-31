@@ -136,8 +136,8 @@ public class Dert {
 		// Initialize global path related fields.
 		path = pathStr;
 		ColorMap.location = path;
-		ImageBoard.defaultImagePath = path + "html" + File.separator + "images" + File.separator + "defaultimage.png";
-		BasicScene.imagePath = path + "html" + File.separator + "images" + File.separator + "dert.png";
+		ImageBoard.defaultImagePath = path + "html/images/defaultimage.png";
+		BasicScene.imagePath = path + "html/images/dert.png";
 		userPath = System.getProperty("user.home");
 		Proj4.setProjPath(path + "proj");
 

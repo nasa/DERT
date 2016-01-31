@@ -437,12 +437,12 @@ public class ViewpointNode extends Node {
 	 * @param lookAt
 	 */
 	private void changeCamera(ReadOnlyVector3 dir) {
-		double[] angle = MathUtil.directionToAzEl(dir, null, workVec, workRot);
+		Vector3 angle = MathUtil.directionToAzEl(dir, null);
 		// This function returns the az angle around +Z axis from +Y
 		// and the el angle around +X axis from +Y
 		// We want the az angle to rotate around the -Z axis and
 		// the el angle to rotate around +X axis from the -Z axis.
-		setAzAndEl(-angle[0], angle[1] + Math.PI / 2);
+		setAzAndEl(-angle.getX(), angle.getY() + Math.PI / 2);
 		Vector3 lookAt = new Vector3(dir);
 		lookAt.scaleAddLocal(camera.getDistanceToCoR(), camera.getLocation());
 		camera.setLookAt(lookAt);

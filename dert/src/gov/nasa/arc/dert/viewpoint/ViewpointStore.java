@@ -4,7 +4,6 @@ import gov.nasa.arc.dert.util.MathUtil;
 
 import java.io.Serializable;
 
-import com.ardor3d.math.Matrix3;
 import com.ardor3d.math.Vector3;
 
 /**
@@ -22,31 +21,21 @@ public class ViewpointStore implements Serializable {
 	public double distance;
 	public double azimuth, elevation;
 	public int magIndex;
-	
-	private double[] angle;
-	private Vector3 workVec;
-	private Matrix3 workMat;
 
 	public ViewpointStore() {
-		angle = new double[3];
-		workVec = new Vector3();
-		workMat = new Matrix3();
 	}
 
 	public ViewpointStore(String name, BasicCamera camera) {
 		this.name = name;
-		angle = new double[3];
-		workVec = new Vector3();
-		workMat = new Matrix3();
 		set(camera);
 	}
 
 	public void set(BasicCamera camera) {
 		location = new Vector3(camera.getLocation());
 		direction = new Vector3(camera.getDirection());
-		angle =  MathUtil.directionToAzEl(direction, angle, workVec, workMat);
-		azimuth = angle[0];
-		elevation = angle[1];
+		Vector3 angle =  MathUtil.directionToAzEl(direction, null);
+		azimuth = angle.getX();
+		elevation = angle.getY();
 		distance = camera.getDistanceToCoR();
 		lookAt = new Vector3(camera.getLookAt());
 		magIndex = camera.getMagIndex();

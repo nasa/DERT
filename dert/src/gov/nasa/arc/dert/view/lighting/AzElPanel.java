@@ -55,7 +55,7 @@ public class AzElPanel extends JPanel {
 				azElText.setValue(azElArray);
 				az = (float) Math.toRadians(az);
 				el = (float) Math.toRadians(el);
-				MathUtil.azElToPoint(az, el, Vector3.UNIT_Y, Vector3.NEG_UNIT_Z, Vector3.UNIT_X, direction);
+				MathUtil.azElToPoint(az, el, direction);
 				direction.negateLocal();
 				direction.toArray(dirArray);
 				dirText.setValue(dirArray);

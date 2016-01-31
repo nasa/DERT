@@ -584,6 +584,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		} else {
 			getSceneHints().setCullHint(CullHint.Always);
 		}
+		markDirty(DirtyType.RenderState);
 	}
 	
 	public void complete() {

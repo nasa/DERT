@@ -555,6 +555,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		} else {
 			getSceneHints().setCullHint(CullHint.Always);
 		}
+		markDirty(DirtyType.RenderState);
 	}
 
 	/**

@@ -22,75 +22,73 @@ import com.ardor3d.scenegraph.Spatial;
 public class MathUtil {
 
 	public final static double PI2 = 2 * Math.PI;
+	public final static double epsilon = 0.0000000001;
 
 	/**
 	 * Given a direction vector, return the azimuth and elevation angles.
 	 * 
-	 * @param direction
-	 * @param angle
-	 * @return
+	 * @param direction	the direction vector
+	 * @param angle	the storage for the azimuth and elevation angles (will be allocated if null)
+	 * @return	the angles
+	 * 
 	 */
-	public static double[] directionToAzEl(ReadOnlyVector3 direction, double[] angle, Vector3 workVec, Matrix3 workMat) {
+	public static Vector3 directionToAzEl(ReadOnlyVector3 direction, Vector3 angle) {
 		if (angle == null) {
-			angle = new double[3];
+			angle = new Vector3();
 		}
 		double azAngle = 0;
 
 		// Get the Azimuth
 		if ((Math.abs(direction.getX()) > 0.0000001) || (Math.abs(direction.getY()) > 0.0000001)) {
 			// Use only the x and y components for rotation around the Z axis
-			workVec.set(direction);
-			workVec.setZ(0);
-			workVec.normalizeLocal();
-			azAngle = (Math.acos(Vector3.UNIT_Y.dot(workVec)));
-			if (workVec.getX() < 0) {
+			angle.set(direction);
+			angle.setZ(0);
+			angle.normalizeLocal();
+			azAngle = (Math.acos(Vector3.UNIT_Y.dot(angle)));
+			if (angle.getX() < 0) {
 				azAngle = Math.PI*2-azAngle;
 			}
 		}
 
 		// Get the Elevation
 		// Project the direction onto an XY plane with Z as Y and XY as X.
-		workVec.set(Math.sqrt(direction.getX()*direction.getX()+direction.getY()*direction.getY()), direction.getZ(), 0);
-		workVec.normalizeLocal();
-		double tiltAngle = Math.acos(Vector3.UNIT_X.dot(workVec));
-		if (workVec.getY() < 0) {
+		angle.set(Math.sqrt(direction.getX()*direction.getX()+direction.getY()*direction.getY()), direction.getZ(), 0);
+		angle.normalizeLocal();
+		double tiltAngle = Math.acos(Vector3.UNIT_X.dot(angle));
+		if (angle.getY() < 0) {
 			tiltAngle = -tiltAngle;
 		}
 
-		angle[0] = azAngle;
-		angle[1] = tiltAngle;
-		angle[2] = 0;
+		angle.set(azAngle, tiltAngle, 0);
 		return (angle);
 	}
 
 	/**
 	 * Given azimuth and elevation, return a point in 3D space.
 	 * 
-	 * @param az
-	 * @param el
-	 * @param startVector
-	 * @param azAxis
-	 * @param elAxis
-	 * @param result
-	 * @return
+	 * @param az	azimuth in radians
+	 * @param el	elevation in radians
+	 * @param result	the resulting point (will be allocated if null)
+	 * @return the result
 	 */
-	public static Vector3 azElToPoint(double az, double el, ReadOnlyVector3 startVector, ReadOnlyVector3 azAxis,
-		ReadOnlyVector3 elAxis, Vector3 result) {
+	public static Vector3 azElToPoint(double az, double el, Vector3 result) {
 		if (result == null) {
 			result = new Vector3();
 		}
-		Matrix3 mat = new Matrix3();
-		mat.fromAngleAxis(az, azAxis);
-		Matrix3 mat2 = new Matrix3();
-		mat2.fromAngleAxis(el, elAxis);
+		Matrix3 mat = Matrix3.fetchTempInstance();
+		mat.fromAngleAxis(az, Vector3.NEG_UNIT_Z);
+		Matrix3 mat2 = Matrix3.fetchTempInstance();
+		mat2.fromAngleAxis(el, Vector3.UNIT_X);
 		mat.multiplyLocal(mat2);
-		result.set(startVector);
+		result.set(Vector3.UNIT_Y);
 		mat.applyPost(result, result);
+		Matrix3.releaseTempInstance(mat);
+		Matrix3.releaseTempInstance(mat2);
 		return (result);
 	}
 
 	/**
-	 * Determine if a point is inside a polygon.
+	 * Determine if a point is inside a closed polygon.
 	 * 
 	 * @param p
 	 * @param vertex
@@ -104,14 +102,15 @@ public class MathUtil {
 		int wNumber = 0;
 		for (int i = 0; i < vertex.length - 1; i++) {
 			if (vertex[i].getY() <= p.getY()) {
-				if (vertex[i + 1].getY() > p.getY()) {
-					if (isLeft(vertex[i], vertex[i + 1], p) > 0) {
+				if (vertex[i+1].getY() > p.getY()) {
+					if (isLeft(vertex[i], vertex[i+1], p) > 0) {
 						wNumber++;
 					}
 				}
-			} else {
-				if (vertex[i + 1].getY() <= p.getY()) {
-					if (isLeft(vertex[i], vertex[i + 1], p) < 0) {
+			}
+			else {
+				if (vertex[i+1].getY() <= p.getY()) {
+					if (isLeft(vertex[i], vertex[i+1], p) < 0) {
 						wNumber--;
 					}
 				}
@@ -123,40 +122,6 @@ public class MathUtil {
 	private static float isLeft(ReadOnlyVector3 p0, ReadOnlyVector3 p1, ReadOnlyVector3 p2) {
 		return ((float) ((p1.getX() - p0.getX()) * (p2.getY() - p0.getY()) - (p2.getX() - p0.getX())
 			* (p1.getY() - p0.getY())));
-	}
-
-	/**
-	 * Given 3 points, A, B, and C in a 2d plane, this function computes if the
-	 * points going from A-B-C are moving counter clock wise.
-	 * 
-	 * @param p0
-	 *            Point 0.
-	 * @param p1
-	 *            Point 1.
-	 * @param p2
-	 *            Point 2.
-	 * @return 1 If they are CCW, -1 if they are not CCW, 0 if p2 is between p0
-	 *         and p1.
-	 */
-	public static int counterClockwise(Vector2 p0, Vector2 p1, Vector2 p2) {
-		double dx1, dx2, dy1, dy2;
-		dx1 = p1.getX() - p0.getX();
-		dy1 = p1.getY() - p0.getY();
-		dx2 = p2.getX() - p0.getX();
-		dy2 = p2.getY() - p0.getY();
-		if (dx1 * dy2 > dy1 * dx2) {
-			return 1;
-		}
-		if (dx1 * dy2 < dy1 * dx2) {
-			return -1;
-		}
-		if ((dx1 * dx2 < 0) || (dy1 * dy2 < 0)) {
-			return -1;
-		}
-		if ((dx1 * dx1 + dy1 * dy1) < (dx2 * dx2 + dy2 * dy2)) {
-			return 1;
-		}
-		return (0);
 	}
 
 	/**
@@ -208,14 +173,14 @@ public class MathUtil {
 	}
 
 	/**
-	 * Compute the normals for a vertex buffer.
+	 * Compute the mean normal for a polygon.
 	 * 
 	 * @param vertexBuffer
 	 * @param normalBuffer
 	 * @param zPos
 	 *            if true, all normals will have a positive Z coordinate
 	 */
-	public static void computeNormals(FloatBuffer vertexBuffer, FloatBuffer normalBuffer, boolean zPos) {
+	public static void computePolygonNormal(FloatBuffer vertexBuffer, FloatBuffer normalBuffer, boolean zPos) {
 		// compute mean normal of points
 		int n = vertexBuffer.limit();
 		double count = 0;
@@ -249,8 +214,7 @@ public class MathUtil {
 	}
 
 	/**
-	 * Get the surface area in the region defined by the vertices by sampling
-	 * the spatial.
+	 * Get the surface area of a region region by sampling the spatial.
 	 * 
 	 * @param vertex
 	 * @param n
@@ -536,5 +500,17 @@ public class MathUtil {
 	public static double getPlaneZ(double x, double y, double[] planeEq) {
 		double z = (planeEq[3] - planeEq[0] * x - planeEq[1] * y) / planeEq[2];
 		return (z);
+	}
+	
+	public static boolean equals(ReadOnlyVector3 vec0, ReadOnlyVector3 vec1) {
+		if (vec0 == vec1)
+			return(true);
+		if (Math.abs(vec0.getX()-vec1.getX()) > epsilon)
+			return(false);
+		if (Math.abs(vec0.getY()-vec1.getY()) > epsilon)
+			return(false);
+		if (Math.abs(vec0.getZ()-vec1.getZ()) > epsilon)
+			return(false);
+		return(true);
 	}
 }

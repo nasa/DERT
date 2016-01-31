@@ -246,7 +246,7 @@ public class PointSet extends Node {
 		}
 		FloatBuffer vertexBuffer = tessellator.tessellate(getPointList(), null);
 		FloatBuffer normalBuffer = BufferUtils.createFloatBuffer(vertexBuffer.capacity());
-		MathUtil.computeNormals(vertexBuffer, normalBuffer, true);
+		MathUtil.computePolygonNormal(vertexBuffer, normalBuffer, true);
 		poly.getMeshData().setVertexBuffer(vertexBuffer);
 		poly.getMeshData().setNormalBuffer(normalBuffer);
 		poly.markDirty(DirtyType.Bounding);
