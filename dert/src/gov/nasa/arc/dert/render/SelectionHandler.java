@@ -124,7 +124,7 @@ public class SelectionHandler {
 	 */
 	public Vector3 getNormal(Vector3 v0, Vector3 v1, Vector3 v2) {
 		Vector3 store = new Vector3();
-		MathUtil.createNormal(store, v0, v1, v2, new Vector3());
+		MathUtil.createNormal(store, v0, v1, v2);
 		return (store);
 	}
 }

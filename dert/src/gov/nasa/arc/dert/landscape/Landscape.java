@@ -912,7 +912,7 @@ public class Landscape extends Node implements ViewDependent {
 		double surfaceArea = 0;
 		for (int i = 0; i < rSampleSize; ++i) {
 			for (int j = 0; j < cSampleSize; ++j) {
-				vert.set((float) (lowerBound.getX() + j * pixelWidth), (float) (lowerBound.getY() + i * pixelLength), 0);
+				vert.set((float) (lowerBound.getX() + (j+0.5) * pixelWidth), (float) (lowerBound.getY() + (i+0.5) * pixelLength), 0);
 				if (MathUtil.isInsidePolygon(vert, vertex)) {
 					double sa = getSurfaceArea(vert);
 					if (!Double.isNaN(sa)) {
@@ -942,7 +942,6 @@ public class Landscape extends Node implements ViewDependent {
 	}
 
 	private double getAreaOfTriangle(double x0, double y0, double x1, double y1, double x2, double y2) {
-		double x, y, z;
 		double z0 = getElevationAtHighestLevel(x0, y0);
 		if (Double.isNaN(z0)) {
 			return (0);
@@ -955,20 +954,17 @@ public class Landscape extends Node implements ViewDependent {
 		if (Double.isNaN(z2)) {
 			return (0);
 		}
-		x = x1 - x0;
-		y = y1 - y0;
-		z = z1 - z0;
-		double a = Math.sqrt(x * x + y * y + z * z);
-		x = x2 - x1;
-		y = y2 - y1;
-		z = z2 - z1;
-		double b = Math.sqrt(x * x + y * y + z * z);
-		x = x0 - x2;
-		y = y0 - y2;
-		z = z0 - z2;
-		double c = Math.sqrt(x * x + y * y + z * z);
-		double s = (a + b + c) / 2;
-		return (Math.sqrt(s * (s - a) * (s - b) * (s - c)));
+		Vector3 p0 = Vector3.fetchTempInstance();
+		Vector3 p1 = Vector3.fetchTempInstance();
+		Vector3 p2 = Vector3.fetchTempInstance();
+		p0.set(x0, y0, z0);
+		p1.set(x1, y1, z1);
+		p2.set(x2, y2, z2);
+		double area = MathUtil.getArea(p0, p1, p2);
+		Vector3.releaseTempInstance(p0);
+		Vector3.releaseTempInstance(p1);
+		Vector3.releaseTempInstance(p2);
+		return(area);
 	}
 
 	/**

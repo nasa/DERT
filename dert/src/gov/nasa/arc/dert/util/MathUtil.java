@@ -5,15 +5,11 @@ import java.util.List;
 
 import com.ardor3d.bounding.BoundingVolume;
 import com.ardor3d.intersection.IntersectionRecord;
-import com.ardor3d.intersection.PickData;
-import com.ardor3d.intersection.PickingUtil;
-import com.ardor3d.intersection.PrimitivePickResults;
 import com.ardor3d.math.Matrix3;
 import com.ardor3d.math.Ray3;
 import com.ardor3d.math.Vector2;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.scenegraph.Spatial;
 
 /**
  * Provides math helper methods.
@@ -22,7 +18,8 @@ import com.ardor3d.scenegraph.Spatial;
 public class MathUtil {
 
 	public final static double PI2 = 2 * Math.PI;
-	public final static double epsilon = 0.0000000001;
+	public final static double epsilonD = 0.00000000000001;
+	public final static float epsilonF = 0.00000001f;
 
 	/**
 	 * Given a direction vector, return the azimuth and elevation angles.
@@ -119,8 +116,8 @@ public class MathUtil {
 		return wNumber;
 	}
 
-	private static float isLeft(ReadOnlyVector3 p0, ReadOnlyVector3 p1, ReadOnlyVector3 p2) {
-		return ((float) ((p1.getX() - p0.getX()) * (p2.getY() - p0.getY()) - (p2.getX() - p0.getX())
+	private static double isLeft(ReadOnlyVector3 p0, ReadOnlyVector3 p1, ReadOnlyVector3 p2) {
+		return (((p1.getX() - p0.getX()) * (p2.getY() - p0.getY()) - (p2.getX() - p0.getX())
 			* (p1.getY() - p0.getY())));
 	}
 
@@ -212,66 +209,34 @@ public class MathUtil {
 		}
 		normalBuffer.flip();
 	}
-
+	
 	/**
-	 * Get the surface area of a region region by sampling the spatial.
-	 * 
-	 * @param vertex
-	 * @param n
-	 * @param node
+	 * Get the area of the triangle defined by points p0, p1, and p2.
+	 * @param p0
+	 * @param p1
+	 * @param p2
 	 * @return
 	 */
-	public static double getSampledSurfaceArea(ReadOnlyVector3[] vertex, int n, Spatial node) {
-		double xMin = Double.MAX_VALUE;
-		double xMax = -Double.MAX_VALUE;
-		double yMin = Double.MAX_VALUE;
-		double yMax = -Double.MAX_VALUE;
-		double zMax = -Double.MAX_VALUE;
-		for (int i = 0; i < vertex.length; ++i) {
-			xMin = Math.min(xMin, vertex[i].getX());
-			xMax = Math.max(xMax, vertex[i].getX());
-			yMin = Math.min(yMin, vertex[i].getY());
-			yMax = Math.max(yMax, vertex[i].getY());
-			zMax = Math.max(zMax, vertex[i].getZ());
-		}
-		double xd = (xMax - xMin) / n;
-		double yd = (yMax - yMin) / n;
-		Vector3 vert = new Vector3();
-		Vector3 dir = new Vector3(0, 0, -1);
-		double surfaceArea = 0;
-		PrimitivePickResults pr = new PrimitivePickResults();
-		for (int i = 0; i < n; ++i) {
-			for (int j = 0; j < n; ++j) {
-				vert.set((float) (xMin + j * xd), (float) (yMin + i * yd), (float) zMax);
-				if (isInsidePolygon(vert, vertex)) {
-					float el = getElevation(vert, dir, node, pr);
-					if (!Float.isNaN(el)) {
-						surfaceArea += xd * yd;
-					}
-				}
-			}
-		}
-		return (surfaceArea);
-	}
-
-	private static float getElevation(Vector3 p0, Vector3 dir, Spatial node, PrimitivePickResults pr) {
-		// Create a ray starting from the point, and going in the given
-		// direction
-		final Ray3 mouseRay = new Ray3(p0, dir);
-		pr.setCheckDistance(true);
-		PickingUtil.findPick(node, mouseRay, pr);
-		if (pr.getNumber() == 0) {
-			return (Float.NaN);
-		}
-		PickData closest = pr.getPickData(0);
-		for (int i = 1; i < pr.getNumber(); ++i) {
-			PickData pd = pr.getPickData(i);
-			if (closest.getIntersectionRecord().getClosestDistance() > pd.getIntersectionRecord().getClosestDistance()) {
-				closest = pd;
-			}
-		}
-		double dist = closest.getIntersectionRecord().getClosestDistance();
-		return ((float) dist);
+	public static double getArea(Vector3 p0, Vector3 p1, Vector3 p2) {
+		p1.subtractLocal(p0);
+		p2.subtractLocal(p0);
+		p1.cross(p2, p0);
+		return(0.5*p0.length());
+//		double x, y, z;
+//		x = x1 - x0;
+//		y = y1 - y0;
+//		z = z1 - z0;
+//		double a = Math.sqrt(x * x + y * y + z * z);
+//		x = x2 - x1;
+//		y = y2 - y1;
+//		z = z2 - z1;
+//		double b = Math.sqrt(x * x + y * y + z * z);
+//		x = x0 - x2;
+//		y = y0 - y2;
+//		z = z0 - z2;
+//		double c = Math.sqrt(x * x + y * y + z * z);
+//		double s = (a + b + c) / 2;
+//		return (Math.sqrt(s * (s - a) * (s - b) * (s - c)));
 	}
 
 	/**
@@ -283,18 +248,19 @@ public class MathUtil {
 	 * @param v2
 	 * @return
 	 */
-	public static boolean createNormal(Vector3 norm, ReadOnlyVector3 v0, ReadOnlyVector3 v1, ReadOnlyVector3 v2,
-		Vector3 work) {
+	public static boolean createNormal(Vector3 norm, ReadOnlyVector3 v0, ReadOnlyVector3 v1, ReadOnlyVector3 v2) {
 		if (Double.isNaN(v0.getZ()) || Double.isNaN(v1.getZ()) || Double.isNaN(v2.getZ())) {
 			norm.set(0, 0, 0);
 			return (false);
 		}
+		Vector3 work = Vector3.fetchTempInstance();
 		norm.set(v1);
 		norm.subtractLocal(v0);
 		work.set(v2);
 		work.subtractLocal(v0);
 		norm.crossLocal(work);
 		norm.normalizeLocal();
+		Vector3.releaseTempInstance(work);
 		return (true);
 	}
 
@@ -310,20 +276,6 @@ public class MathUtil {
 			po2 *= 2;
 		}
 		return (po2);
-	}
-
-	/**
-	 * Convert a list of radian values to degrees
-	 * 
-	 * @param ll
-	 */
-	public static void radianToDegree(double[] ll) {
-		if (ll == null) {
-			return;
-		}
-		for (int i = 0; i < ll.length; ++i) {
-			ll[i] = Math.toDegrees(ll[i]);
-		}
 	}
 
 	/**
@@ -502,14 +454,38 @@ public class MathUtil {
 		return (z);
 	}
 	
-	public static boolean equals(ReadOnlyVector3 vec0, ReadOnlyVector3 vec1) {
+	/**
+	 * Determine if two double vectors are within an epsilon.
+	 * @param vec0
+	 * @param vec1
+	 * @return
+	 */
+	public static boolean equalsDouble(ReadOnlyVector3 vec0, ReadOnlyVector3 vec1) {
 		if (vec0 == vec1)
 			return(true);
-		if (Math.abs(vec0.getX()-vec1.getX()) > epsilon)
+		if (Math.abs(vec0.getX()-vec1.getX()) > epsilonD)
 			return(false);
-		if (Math.abs(vec0.getY()-vec1.getY()) > epsilon)
+		if (Math.abs(vec0.getY()-vec1.getY()) > epsilonD)
 			return(false);
-		if (Math.abs(vec0.getZ()-vec1.getZ()) > epsilon)
+		if (Math.abs(vec0.getZ()-vec1.getZ()) > epsilonD)
+			return(false);
+		return(true);
+	}
+	
+	/**
+	 * Determine if two float vectors are within an epsilon.
+	 * @param vec0
+	 * @param vec1
+	 * @return
+	 */
+	public static boolean equalsFloat(ReadOnlyVector3 vec0, ReadOnlyVector3 vec1) {
+		if (vec0 == vec1)
+			return(true);
+		if (Math.abs(vec0.getXf()-vec1.getXf()) > epsilonF)
+			return(false);
+		if (Math.abs(vec0.getYf()-vec1.getYf()) > epsilonF)
+			return(false);
+		if (Math.abs(vec0.getZf()-vec1.getZf()) > epsilonF)
 			return(false);
 		return(true);
 	}

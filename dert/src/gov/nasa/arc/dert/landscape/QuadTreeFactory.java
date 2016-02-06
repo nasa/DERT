@@ -713,7 +713,6 @@ public class QuadTreeFactory {
 		float[] face = new float[3];
 		float[] nrml = new float[dataSize * 3];
 		byte[] cnt = new byte[dataSize];
-		Vector3 work = new Vector3();
 		Vector3 norm = new Vector3();
 		Vector3 v0 = new Vector3();
 		Vector3 v1 = new Vector3();
@@ -730,7 +729,7 @@ public class QuadTreeFactory {
 				v0.set(vertex.get(i), vertex.get(i + 1), vertex.get(i + 2));
 				v1.set(vertex.get(i + n), vertex.get(i + n + 1), vertex.get(i + n + 2));
 				v2.set(vertex.get(i + 3), vertex.get(i + 4), vertex.get(i + 5));
-				MathUtil.createNormal(norm, v0, v1, v2, work);
+				MathUtil.createNormal(norm, v0, v1, v2);
 				face[0] = norm.getXf();
 				face[1] = norm.getYf();
 				face[2] = norm.getZf();
@@ -739,7 +738,7 @@ public class QuadTreeFactory {
 				addFace(k + cols, nrml, face, cnt);
 				// bottom triangle for quad
 				v0.set(vertex.get(i + n + 3), vertex.get(i + n + 4), vertex.get(i + n + 5));
-				MathUtil.createNormal(norm, v2, v1, v0, work);
+				MathUtil.createNormal(norm, v2, v1, v0);
 				face[0] = norm.getXf();
 				face[1] = norm.getYf();
 				face[2] = norm.getZf();

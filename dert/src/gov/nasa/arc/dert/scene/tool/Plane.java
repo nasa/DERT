@@ -86,7 +86,6 @@ public class Plane extends Node implements Tool, ViewDependent {
 
 	// For slope, aspect and viewpoint
 	private Vector2 work2 = new Vector2();
-	private Vector3 work3 = new Vector3();
 	private double strike, dip;
 	private Vector3 location;
 	private double[] planeEq = new double[4];
@@ -718,7 +717,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		sampleLength = Math.max(sampleLength, World.getInstance().getLandscape().getPixelLength());
 		double sampleSize = Math.max(sampleWidth, sampleLength);
 
-		// get elevation differeneces
+		// get elevation differences
 		double[] planeEqCopy = new double[planeEq.length];
 		System.arraycopy(planeEq, 0, planeEqCopy, 0, planeEq.length);
 		int[] result = World.getInstance().getLandscape()
@@ -754,7 +753,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 
 		// find the surface normal of the triangle
 		MathUtil.createNormal(normal, point[0].getWorldTranslation(), point[1].getWorldTranslation(),
-			point[2].getWorldTranslation(), work3);
+			point[2].getWorldTranslation());
 		// be sure the normal is pointing up
 		if (normal.getZ() < 0) {
 			normal.negateLocal();

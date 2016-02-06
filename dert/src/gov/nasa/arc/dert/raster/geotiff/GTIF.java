@@ -608,7 +608,7 @@ public class GTIF extends RasterFileImpl {
 			}
 			if (isGeographic) {
 				if (!isDegrees) {
-					MathUtil.radianToDegree(scale);
+					radianToDegree(scale);
 				}
 			}
 			projInfo.scale = scale;
@@ -635,7 +635,7 @@ public class GTIF extends RasterFileImpl {
 
 		if (isGeographic) {
 			if (!isDegrees) {
-				MathUtil.radianToDegree(projInfo.tiePoint);
+				radianToDegree(projInfo.tiePoint);
 			}
 			MathUtil.clipLonLat(projInfo.tiePoint);
 		}
@@ -1692,6 +1692,15 @@ public class GTIF extends RasterFileImpl {
 			Thread.yield();
 		}
 
+	}
+
+	private void radianToDegree(double[] ll) {
+		if (ll == null) {
+			return;
+		}
+		for (int i = 0; i < ll.length; ++i) {
+			ll[i] = Math.toDegrees(ll[i]);
+		}
 	}
 
 }

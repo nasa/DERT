@@ -159,30 +159,29 @@ public class FrustumPyramid extends Node {
 	protected void setNormalData() {
 
 		Vector3 normal = new Vector3();
-		Vector3 work = new Vector3();
 
 		FloatBuffer norms = BufferUtils.createVector3Buffer(12);
 
 		// side 1
-		MathUtil.createNormal(normal, vert0, vert1, peak, work);
+		MathUtil.createNormal(normal, vert0, vert1, peak);
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());
 
 		// side 2
-		MathUtil.createNormal(normal, vert1, vert2, peak, work);
+		MathUtil.createNormal(normal, vert1, vert2, peak);
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());
 
 		// side 3
-		MathUtil.createNormal(normal, vert2, vert3, peak, work);
+		MathUtil.createNormal(normal, vert2, vert3, peak);
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());
 
 		// side 4
-		MathUtil.createNormal(normal, vert3, vert0, peak, work);
+		MathUtil.createNormal(normal, vert3, vert0, peak);
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());

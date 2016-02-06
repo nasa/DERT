@@ -1,0 +1,402 @@
+package gov.nasa.arc.dert.test;
+
+import gov.nasa.arc.dert.util.MathUtil;
+
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
+
+import com.ardor3d.bounding.BoundingBox;
+import com.ardor3d.math.Matrix3;
+import com.ardor3d.math.Vector3;
+import com.ardor3d.math.type.ReadOnlyVector3;
+import com.ardor3d.scenegraph.Mesh;
+import com.ardor3d.util.geom.BufferUtils;
+
+/**
+ * Provided for testing math utilities.
+ *
+ */
+public class MathUtilTest {
+	
+	public boolean testMathUtil(String[] args) {
+		System.err.println("Testing math utilities . . .");
+		if (!testDirectionToAzEl()) {
+			System.err.println("Test of MathUtil.directionToAzEl failed.");
+			return(false);
+		}
+		if (!testAzElToPoint()) {
+			System.err.println("Test of MathUtil.azElToPoint failed.");
+			return(false);
+		}
+		if (!testIsInsidePolygon()) {
+			System.err.println("Test of MathUtil.isInsidePolygon failed.");
+			return(false);
+		}
+		if (!testComputePolygonArea2D()) {
+			System.err.println("Test of MathUtil.computePolygonArea2D failed.");
+			return(false);
+		}
+		if (!testComputePolygonNormal()) {
+			System.err.println("Test of MathUtil.computePolygonNormal failed.");
+			return(false);
+		}
+		if (!testGetArea()) {
+			System.err.println("Test of MathUtil.getSampledSurfaceArea failed.");
+			return(false);
+		}
+		System.err.println(". . . complete.");
+		return(true);
+	}
+	
+	private boolean testDirectionToAzEl() {
+		Vector3 direction = new Vector3();
+		Vector3 angle = new Vector3();
+		try {
+			// invalid zero direction
+			MathUtil.directionToAzEl(direction, angle);
+			System.err.println("MathUtil.directionToAzEl direction:("+direction.getX()+","+direction.getY()+","+direction.getZ()+") azimuth:"+Math.toDegrees(angle.getX())+" elevation:"+Math.toDegrees(angle.getY()));
+			if (!MathUtil.equalsDouble(angle, new Vector3(0, Math.PI/2, 0)))
+				return(false);
+			
+			// looking straight ahead
+			direction.set(0, 1, 0);
+			MathUtil.directionToAzEl(direction, angle);
+			System.err.println("MathUtil.directionToAzEl direction:("+direction.getX()+","+direction.getY()+","+direction.getZ()+") azimuth:"+Math.toDegrees(angle.getX())+" elevation:"+Math.toDegrees(angle.getY()));
+			if (!MathUtil.equalsDouble(angle, new Vector3(0, 0, 0)))
+				return(false);
+			
+			// look to the right
+			direction.set(1, 0, 0);
+			MathUtil.directionToAzEl(direction, angle);
+			System.err.println("MathUtil.directionToAzEl direction:("+direction.getX()+","+direction.getY()+","+direction.getZ()+") azimuth:"+Math.toDegrees(angle.getX())+" elevation:"+Math.toDegrees(angle.getY()));
+			if (!MathUtil.equalsDouble(angle, new Vector3(Math.PI/2, 0, 0)))
+				return(false);
+			
+			// look to the left
+			direction.set(-1, 0, 0);
+			MathUtil.directionToAzEl(direction, angle);
+			System.err.println("MathUtil.directionToAzEl direction:("+direction.getX()+","+direction.getY()+","+direction.getZ()+") azimuth:"+Math.toDegrees(angle.getX())+" elevation:"+Math.toDegrees(angle.getY()));
+			if (!MathUtil.equalsDouble(angle, new Vector3(1.5*Math.PI, 0, 0)))
+				return(false);
+			
+			// look to the back
+			direction.set(0, -1, 0);
+			MathUtil.directionToAzEl(direction, angle);
+			System.err.println("MathUtil.directionToAzEl direction:("+direction.getX()+","+direction.getY()+","+direction.getZ()+") azimuth:"+Math.toDegrees(angle.getX())+" elevation:"+Math.toDegrees(angle.getY()));
+			if (!MathUtil.equalsDouble(angle, new Vector3(Math.PI, 0, 0)))
+				return(false);
+			
+			// looking down
+			direction.set(0, 0, -1);
+			MathUtil.directionToAzEl(direction, angle);
+			System.err.println("MathUtil.directionToAzEl direction:("+direction.getX()+","+direction.getY()+","+direction.getZ()+") azimuth:"+Math.toDegrees(angle.getX())+" elevation:"+Math.toDegrees(angle.getY()));
+			if (!MathUtil.equalsDouble(angle, new Vector3(0, -Math.PI/2, 0)))
+				return(false);
+			
+			// upper right front
+			direction.set(1, 1, 1);
+			MathUtil.directionToAzEl(direction, angle);
+			System.err.println("MathUtil.directionToAzEl direction:("+direction.getX()+","+direction.getY()+","+direction.getZ()+") azimuth:"+Math.toDegrees(angle.getX())+" elevation:"+Math.toDegrees(angle.getY()));
+			if (!MathUtil.equalsDouble(angle, new Vector3(Math.PI/4, 0.61547970867038, 0)))
+				return(false);
+			
+			// upper left front
+			direction.set(-1, 1, 1);
+			MathUtil.directionToAzEl(direction, angle);
+			System.err.println("MathUtil.directionToAzEl direction:("+direction.getX()+","+direction.getY()+","+direction.getZ()+") azimuth:"+Math.toDegrees(angle.getX())+" elevation:"+Math.toDegrees(angle.getY()));
+			if (!MathUtil.equalsDouble(angle, new Vector3(1.75*Math.PI, 0.61547970867038, 0)))
+				return(false);
+			
+			// upper right back
+			direction.set(1, -1, 1);
+			MathUtil.directionToAzEl(direction, angle);
+			System.err.println("MathUtil.directionToAzEl direction:("+direction.getX()+","+direction.getY()+","+direction.getZ()+") azimuth:"+Math.toDegrees(angle.getX())+" elevation:"+Math.toDegrees(angle.getY()));
+			if (!MathUtil.equalsDouble(angle, new Vector3(0.75*Math.PI, 0.61547970867038, 0)))
+				return(false);
+			
+			// upper left back
+			direction.set(-1, -1, 1);
+			MathUtil.directionToAzEl(direction, angle);
+			System.err.println("MathUtil.directionToAzEl direction:("+direction.getX()+","+direction.getY()+","+direction.getZ()+") azimuth:"+Math.toDegrees(angle.getX())+" elevation:"+Math.toDegrees(angle.getY()));
+			if (!MathUtil.equalsDouble(angle, new Vector3(1.25*Math.PI, 0.61547970867038, 0)))
+				return(false);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return(false);
+		}
+		return(true);
+	}
+	
+	private boolean testAzElToPoint() {
+		Vector3 point = new Vector3();
+		double az = 0;
+		double el = 0;
+		try {			
+			// looking straight ahead
+			az = 0;
+			el = 0;
+			MathUtil.azElToPoint(az, el, point);
+			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			if (!MathUtil.equalsDouble(point, new Vector3(0, 1, 0)))
+				return(false);
+			
+			// look to the right
+			az = 0.5*Math.PI;
+			el = 0;
+			MathUtil.azElToPoint(az, el, point);
+			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			if (!MathUtil.equalsDouble(point, new Vector3(1, 0, 0)))
+				return(false);
+			
+			// look to the left
+			az = 1.5*Math.PI;
+			el = 0;
+			MathUtil.azElToPoint(az, el, point);
+			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			if (!MathUtil.equalsDouble(point, new Vector3(-1, 0, 0)))
+				return(false);
+			
+			// look to the back
+			az = Math.PI;
+			el = 0;
+			MathUtil.azElToPoint(az, el, point);
+			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			if (!MathUtil.equalsDouble(point, new Vector3(0, -1, 0)))
+				return(false);
+			
+			// looking down
+			az = 0;
+			el = -0.5*Math.PI;
+			MathUtil.azElToPoint(az, el, point);
+			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			if (!MathUtil.equalsDouble(point, new Vector3(0, 0, -1)))
+				return(false);
+			
+			// upper right front
+			az = 0.25*Math.PI;
+			el = 0.25*Math.PI;
+			MathUtil.azElToPoint(az, el, point);
+			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			if (!MathUtil.equalsDouble(point, new Vector3(0.5, 0.5, 0.7071067811865475)))
+				return(false);
+			
+			// upper left front
+			az = 1.75*Math.PI;
+			el = 0.25*Math.PI;
+			MathUtil.azElToPoint(az, el, point);
+			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			if (!MathUtil.equalsDouble(point, new Vector3(-0.5, 0.5, 0.7071067811865475)))
+				return(false);
+			
+			// upper right back
+			az = 0.75*Math.PI;
+			el = 0.25*Math.PI;
+			MathUtil.azElToPoint(az, el, point);
+			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			if (!MathUtil.equalsDouble(point, new Vector3(0.5, -0.5, 0.7071067811865475)))
+				return(false);
+			
+			// upper left back
+			az = 1.25*Math.PI;
+			el = 0.25*Math.PI;
+			MathUtil.azElToPoint(az, el, point);
+			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			if (!MathUtil.equalsDouble(point, new Vector3(-0.5, -0.5, 0.7071067811865475)))
+				return(false);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return(false);
+		}
+		return(true);
+	}
+
+	public boolean testIsInsidePolygon() {
+		Vector3 p = null;
+		Vector3[] vertex = null;
+		// point inside triangle
+		p = new Vector3(0.5, -0.5, 0);
+		vertex = new Vector3[] {new Vector3(-1, -1, 0), new Vector3(1, -1, 0), new Vector3(1, 1, 0), new Vector3(-1, -1, 0)};
+		System.err.println("MathUtil.isInsidePolygon point in triangle");
+		if (!MathUtil.isInsidePolygon(p, vertex))
+			return(false);
+		// point inside square
+		p = new Vector3();
+		vertex = new Vector3[] {new Vector3(-1, -1, 0), new Vector3(1, -1, 0), new Vector3(1, 1, 0), new Vector3(-1, 1, 0), new Vector3(-1, -1, 0)};
+		System.err.println("MathUtil.isInsidePolygon point in square");
+		if (!MathUtil.isInsidePolygon(p, vertex))
+			return(false);
+		// point outside triangle
+		p = new Vector3(-0.5, 0.5, 0);
+		vertex = new Vector3[] {new Vector3(-1, -1, 0), new Vector3(1, -1, 0), new Vector3(1, 1, 0), new Vector3(-1, -1, 0)};
+		System.err.println("MathUtil.isInsidePolygon point outside triangle");
+		if (MathUtil.isInsidePolygon(p, vertex))
+			return(false);
+		// point outside square
+		p = new Vector3(2, 2, 0);
+		vertex = new Vector3[] {new Vector3(-1, -1, 0), new Vector3(1, -1, 0), new Vector3(1, 1, 0), new Vector3(-1, 1, 0), new Vector3(-1, -1, 0)};
+		System.err.println("MathUtil.isInsidePolygon point outside square");
+		if (MathUtil.isInsidePolygon(p, vertex))
+			return(false);
+		// point inside polygon
+		p = new Vector3();
+		vertex = new Vector3[] {new Vector3(-1, -1, 0), new Vector3(1, -1, 0), new Vector3(2, -0.5, 0), new Vector3(1, 0, 0), new Vector3(2, 0.5, 0),
+				new Vector3(1, 1, 0), new Vector3(-1, 1, 0), new Vector3(-1, -1, 0)};
+		System.err.println("MathUtil.isInsidePolygon point in polygon");
+		if (!MathUtil.isInsidePolygon(p, vertex))
+			return(false);
+		// point outside polygon
+		p = new Vector3(1.5, 0, 0);
+		vertex = new Vector3[] {new Vector3(-1, -1, 0), new Vector3(1, -1, 0), new Vector3(2, -0.5, 0), new Vector3(1, 0, 0), new Vector3(2, 0.5, 0),
+				new Vector3(1, 1, 0), new Vector3(-1, 1, 0), new Vector3(-1, -1, 0)};
+		System.err.println("MathUtil.isInsidePolygon point outside polygon");
+		if (MathUtil.isInsidePolygon(p, vertex))
+			return(false);
+		return(true);
+	}
+	
+	public boolean testComputePolygonArea2D() {
+		ArrayList<ReadOnlyVector3> points = new ArrayList<ReadOnlyVector3>();
+		double area = 0;
+		// unit triangle
+		points.clear();
+		points.add(new Vector3());
+		points.add(new Vector3(1, 0, 0));
+		points.add(new Vector3(1, 1, 0));
+		area = MathUtil.computePolygonArea2D(points);
+		System.err.println("MathUtil.computePolyArea2D unit triangle, area:"+area);
+		if (area != 0.5)
+			return(false);
+		// unit square
+		points.clear();
+		points.add(new Vector3());
+		points.add(new Vector3(1, 0, 0));
+		points.add(new Vector3(1, 1, 0));
+		points.add(new Vector3(0, 1, 0));
+		area = MathUtil.computePolygonArea2D(points);
+		System.err.println("MathUtil.computePolyArea2D unit square, area:"+area);
+		if (area != 1.0)
+			return(false);
+		// positive polygon
+		points.clear();
+		points.add(new Vector3());
+		points.add(new Vector3(1, 0, 0));
+		points.add(new Vector3(1, 1, 0));
+		points.add(new Vector3(2, 1, 0));
+		points.add(new Vector3(2, 2, 0));
+		points.add(new Vector3(1, 2, 0));
+		points.add(new Vector3(1, 1, 0));
+		points.add(new Vector3(0, 1, 0));
+		area = MathUtil.computePolygonArea2D(points);
+		System.err.println("MathUtil.computePolyArea2D positive polygon, area:"+area);
+		if (area != 2.0)
+			return(false);
+		// negative polygon
+		points.clear();
+		points.add(new Vector3(0, 1, 0));
+		points.add(new Vector3(1, 1, 0));
+		points.add(new Vector3(1, 2, 0));
+		points.add(new Vector3(2, 2, 0));
+		points.add(new Vector3(2, 1, 0));
+		points.add(new Vector3(1, 1, 0));
+		points.add(new Vector3(1, 0, 0));
+		points.add(new Vector3());		
+		area = MathUtil.computePolygonArea2D(points);
+		System.err.println("MathUtil.computePolyArea2D negative polygon, area:"+area);
+		if (area != -2.0)
+			return(false);
+		return(true);
+	}
+	
+	public boolean testComputePolygonNormal() {
+		Mesh mesh = getQuad();
+		FloatBuffer vertexBuffer = mesh.getMeshData().getVertexBuffer();
+		FloatBuffer normalBuffer = BufferUtils.createFloatBuffer(vertexBuffer.limit());
+		
+		MathUtil.computePolygonNormal(vertexBuffer, normalBuffer, true);
+		System.err.println("MathUtil.computePolygonNormal flat square normal: "+normalBuffer.get(0)+","+normalBuffer.get(1)+","+normalBuffer.get(2));
+		if ((normalBuffer.get(0) != 0) || (normalBuffer.get(1) != 0) || (normalBuffer.get(2) != 1))
+			return(false);
+		
+		Matrix3 mat = new Matrix3();
+		mat.fromAngleNormalAxis(Math.PI/4, Vector3.UNIT_Y);
+		Vector3 vec = new Vector3();
+		for (int i=0; i<24; ++i) {
+			vec.set(vertexBuffer.get(i*3), vertexBuffer.get(i*3+1), vertexBuffer.get(i*3+2));
+			mat.applyPost(vec, vec);
+			vertexBuffer.put(i*3, vec.getXf());
+			vertexBuffer.put(i*3+1, vec.getYf());
+			vertexBuffer.put(i*3+2, vec.getZf());
+		}
+		MathUtil.computePolygonNormal(vertexBuffer, normalBuffer, true);
+		System.err.println("MathUtil.computePolygonNormal rotated square normal: "+normalBuffer.get(0)+","+normalBuffer.get(1)+","+normalBuffer.get(2));
+		vec.set(normalBuffer.get(0), normalBuffer.get(1), normalBuffer.get(2));
+		if (!MathUtil.equalsFloat(vec, new Vector3(0.70710677,0.0,0.70710677)))
+			return(false);
+		
+		return(true);
+	}
+	
+	public boolean testGetArea() {
+		double area = MathUtil.getArea(new Vector3(0, 0, 0), new Vector3(1, 0, 0),  new Vector3(1, 1, 0));
+		System.err.println("MathUtil.getArea XY-plane triangle area: "+area);
+		if (area != 0.5)
+			return(false);
+		area = MathUtil.getArea(new Vector3(0, 0, 0), new Vector3(1, 0, 0),  new Vector3(1, 0, 1));
+		System.err.println("MathUtil.getArea XZ-plane triangle area: "+area);
+		if (area != 0.5)
+			return(false);
+		area = MathUtil.getArea(new Vector3(0, 0, 0), new Vector3(1, 0, 0),  new Vector3(1, 1, 1));
+		System.err.println("MathUtil.getArea oblique triangle area: "+area);
+		if (area != 0.7071067811865476)
+			return(false);
+		return(true);
+	}
+	
+	private Mesh getQuad() {
+		int numVertices = 72;
+		FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(numVertices);
+
+		vertexBuffer.put(0).put(0).put(0);
+		vertexBuffer.put(1).put(0).put(0);
+		vertexBuffer.put(1).put(1).put(0);
+
+		vertexBuffer.put(0).put(0).put(0);
+		vertexBuffer.put(1).put(1).put(0);
+		vertexBuffer.put(0).put(1).put(0);
+
+		vertexBuffer.put(0).put(0).put(0);
+		vertexBuffer.put(0).put(1).put(0);
+		vertexBuffer.put(-1).put(1).put(0);
+
+		vertexBuffer.put(0).put(0).put(0);
+		vertexBuffer.put(-1).put(1).put(0);
+		vertexBuffer.put(-1).put(0).put(0);
+
+		vertexBuffer.put(0).put(0).put(0);
+		vertexBuffer.put(-1).put(0).put(0);
+		vertexBuffer.put(-1).put(-1).put(0);
+
+		vertexBuffer.put(0).put(0).put(0);
+		vertexBuffer.put(-1).put(-1).put(0);
+		vertexBuffer.put(0).put(-1).put(0);
+
+		vertexBuffer.put(0).put(0).put(0);
+		vertexBuffer.put(0).put(-1).put(0);
+		vertexBuffer.put(1).put(-1).put(0);
+
+		vertexBuffer.put(0).put(0).put(0);
+		vertexBuffer.put(1).put(-1).put(0);
+		vertexBuffer.put(1).put(0).put(0);
+		
+		vertexBuffer.flip();
+		
+		Mesh mesh = new Mesh("Quad");
+		mesh.getMeshData().setVertexBuffer(vertexBuffer);
+		mesh.setModelBound(new BoundingBox());
+		mesh.updateModelBound();
+		mesh.updateGeometricState(0);
+		return(mesh);
+	}
+}
