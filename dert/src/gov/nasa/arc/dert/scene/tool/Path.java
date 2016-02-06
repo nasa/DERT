@@ -126,6 +126,8 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 
 		this.labelType = state.labelType;
 		this.bodyType = state.bodyType;
+		lineIsEnabled = this.bodyType == BodyType.Line;
+		polyIsEnabled = this.bodyType == BodyType.Polygon;
 		this.size = state.size;
 		this.labelVisible = state.labelVisible;
 		this.waypointsVisible = state.waypointsVisible;
