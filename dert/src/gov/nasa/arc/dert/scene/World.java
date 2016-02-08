@@ -205,18 +205,12 @@ public class World extends GroupNode {
 		updateGeometricState(0);
 
 		// Initialize root node
-		ZBufferState buf = (ZBufferState) getLocalRenderState(RenderState.StateType.ZBuffer);
-		if (buf == null) {
-			buf = new ZBufferState();
-			buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
-		}
+		ZBufferState buf = new ZBufferState();
+		buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
 		buf.setEnabled(true);
 		root.setRenderState(buf);
 
-		BlendState as = (BlendState) getLocalRenderState(RenderState.StateType.Blend);
-		if (as == null) {
-			as = new BlendState();
-		}
+		BlendState as = new BlendState();
 		as.setBlendEnabled(true);
 		root.setRenderState(as);
 

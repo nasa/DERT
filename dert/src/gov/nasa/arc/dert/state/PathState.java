@@ -32,6 +32,9 @@ public class PathState extends ToolState {
 
 	// Line width
 	public float lineWidth;
+	
+	// Z-Buffer
+	public boolean zBufferEnabled;
 
 	private transient Thread statThread;
 
@@ -44,6 +47,7 @@ public class PathState extends ToolState {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.Path), MapElementState.Type.Path, "Path", Path.defaultSize,
 			Path.defaultColor, Path.defaultLabelVisible, Path.defaultPinned, position);
+		zBufferEnabled = true;
 		bodyType = Path.defaultBodyType;
 		labelType = Path.defaultLabelType;
 		lineWidth = Path.defaultLineWidth;
@@ -64,6 +68,7 @@ public class PathState extends ToolState {
 			labelType = path.getLabelType();
 			lineWidth = path.getLineWidth();
 			waypointsVisible = path.areWaypointsVisible();
+			zBufferEnabled = path.isZBufferEnabled();
 		}
 	}
 

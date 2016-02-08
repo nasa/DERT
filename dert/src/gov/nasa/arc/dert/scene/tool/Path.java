@@ -28,6 +28,7 @@ import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.state.MaterialState;
+import com.ardor3d.renderer.state.ZBufferState;
 import com.ardor3d.scenegraph.Line;
 import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.Node;
@@ -109,6 +110,8 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	private Vector3 lowerBound, upperBound, tmpVec, location;
 	
 	private Thread statThread;
+	
+	private ZBufferState zBufferState;
 
 	/**
 	 * Constructor
@@ -153,7 +156,21 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			addWaypoint(wps);
 		}
 
+		zBufferState = new ZBufferState();
+		zBufferState.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
+		zBufferState.setEnabled(state.zBufferEnabled);
+		setRenderState(zBufferState);
+		
 		setVisible(state.visible);
+	}
+	
+	public void enableZBuffer(boolean enable) {
+		zBufferState.setEnabled(enable);
+		markDirty(DirtyType.RenderState);
+	}
+	
+	public boolean isZBufferEnabled() {
+		return(zBufferState.isEnabled());
 	}
 
 	/**

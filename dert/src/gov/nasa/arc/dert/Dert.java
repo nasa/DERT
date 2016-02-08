@@ -17,6 +17,7 @@ import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
 import gov.nasa.arc.dert.scene.landmark.Landmarks;
 import gov.nasa.arc.dert.scene.landmark.Placemark;
+import gov.nasa.arc.dert.scene.tapemeasure.TapeMeasure;
 import gov.nasa.arc.dert.scene.tool.CartesianGrid;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Plane;
@@ -263,6 +264,7 @@ public class Dert {
 			BackgroundColorDialog.setPredefinedBackgroundColors(dertProperties);
 			Landscape.MAX_LEVELS = StringUtil.getIntegerValue(dertProperties, "Landscape.MaximumLevels", true,
 				Landscape.MAX_LEVELS, false);
+			TapeMeasure.zBufferEnabled = StringUtil.getBooleanValue(dertProperties, "TapeMeasure.ZBuffer", true, false);
 
 			// Get map element preferences.
 			Placemark.setDefaultsFromProperties(dertProperties);
