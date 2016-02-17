@@ -333,6 +333,7 @@ public class MathUtil {
 		Vector3 vec = Vector3.fetchTempInstance();
 		vec.set(v1);
 		vec.subtractLocal(v0);
+		vec.normalizeLocal();
 		ReadOnlyVector3 unit = Vector3.UNIT_Z;
 		if (vec.getZ() < 0) {
 			unit = Vector3.NEG_UNIT_Z;
