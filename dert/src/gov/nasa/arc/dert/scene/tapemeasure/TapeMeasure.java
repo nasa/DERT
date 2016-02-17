@@ -15,7 +15,6 @@ import java.nio.FloatBuffer;
 
 import com.ardor3d.bounding.BoundingBox;
 import com.ardor3d.math.ColorRGBA;
-import com.ardor3d.math.Vector2;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -74,9 +73,6 @@ public class TapeMeasure extends Node implements ViewDependent {
 
 	// Measurement information strings
 	private String anchorStr = "", currentStr = "", distanceStr = "", gradientStr = "", deltaZStr = "", azStr = "";
-
-	// Aspect calculation
-	private Vector2 work = new Vector2();
 
 	// Temporary
 	private Vector3 tmpVec;
@@ -224,7 +220,7 @@ public class TapeMeasure extends Node implements ViewDependent {
 		distanceStr = StringUtil.format(coord.distance(anchor));
 		gradientStr = StringUtil.format(MathUtil.getSlopeFromLine(anchor, coord));
 		deltaZStr = StringUtil.format(coord.getZf() - anchor.getZf());
-		azStr = StringUtil.format(MathUtil.getAspectFromLine(anchor, coord, work));
+		azStr = StringUtil.format(MathUtil.getAspectFromLine(anchor, coord));
 		if (textDialog != null) {
 			String str = "Anchor (m) = " + anchorStr + "\nCurrent (m) = " + currentStr + "\nDistance (m) = "
 				+ distanceStr + "\nSlope = " + gradientStr + StringUtil.DEGREE + "\nAzimuth = " + azStr

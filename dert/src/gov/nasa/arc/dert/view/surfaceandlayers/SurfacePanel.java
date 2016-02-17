@@ -10,7 +10,6 @@ import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
 import gov.nasa.arc.dert.ui.GBCHelper;
 import gov.nasa.arc.dert.ui.GroupPanel;
-import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.view.world.WorldScene;
 
 import java.awt.Color;
@@ -66,7 +65,7 @@ public class SurfacePanel extends GroupPanel {
 
 		wireframeCheckBox = new JCheckBox("Wireframe");
 		wireframeCheckBox.setToolTipText("display landscape as wireframe");
-		wireframeCheckBox.setSelected(SpatialUtil.isWireFrame(World.getInstance().getLandscape()));
+		wireframeCheckBox.setSelected(landscape.isWireFrame());
 		wireframeCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

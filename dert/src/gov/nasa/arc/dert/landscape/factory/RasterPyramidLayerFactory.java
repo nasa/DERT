@@ -4,7 +4,6 @@ import gov.nasa.arc.dert.landscape.LayerInfo.LayerType;
 import gov.nasa.arc.dert.raster.Raster;
 import gov.nasa.arc.dert.raster.RasterFile;
 import gov.nasa.arc.dert.raster.RasterFile.DataType;
-import gov.nasa.arc.dert.util.MathUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -248,8 +247,8 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 		// no adjacent edges
 		if (margin == null) {
 			// raster width and height must be power of 2
-			paddedWidth = (int) MathUtil.nextPowerOf2(rasterWidth);
-			paddedLength = (int) MathUtil.nextPowerOf2(rasterLength);
+			paddedWidth = (int)nextPowerOf2(rasterWidth);
+			paddedLength = (int)nextPowerOf2(rasterLength);
 			// User specified tile size is used for longest edge of tile (tiles
 			// are rectangular).
 			if (paddedLength > paddedWidth) {
@@ -273,8 +272,8 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			leftMargin = leftInset + (paddedWidth - rasterWidth) / 2;
 			topMargin = topInset + (paddedLength - rasterLength) / 2;
 		} else {
-			paddedLength = (int) MathUtil.nextPowerOf2(rasterLength + margin[2] + margin[3]) / 2;
-			paddedWidth = (int) MathUtil.nextPowerOf2(rasterWidth + margin[0] + margin[1]) / 2;
+			paddedLength = (int)nextPowerOf2(rasterLength + margin[2] + margin[3]) / 2;
+			paddedWidth = (int)nextPowerOf2(rasterWidth + margin[0] + margin[1]) / 2;
 			topMargin = margin[3];
 			leftMargin = margin[0];
 
@@ -604,6 +603,20 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			break;
 		}
 		bbuf.rewind();
+	}
+
+	/**
+	 * Get the next power of two greater than the given value
+	 * 
+	 * @param val
+	 * @return
+	 */
+	private long nextPowerOf2(long val) {
+		long po2 = 1;
+		while (po2 < val) {
+			po2 *= 2;
+		}
+		return (po2);
 	}
 
 }

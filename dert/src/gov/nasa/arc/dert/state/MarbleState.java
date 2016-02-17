@@ -82,7 +82,7 @@ public class MarbleState extends MapElementState {
 		str += "Solar Direction Vector: " + StringUtil.format(dir) + "\n";
 		str += "Elevation (meters): " + StringUtil.format(loc.getZ()) + "\n";
 		str += "Slope: " + StringUtil.format(MathUtil.getSlopeFromNormal(normal)) + StringUtil.DEGREE + "\n";
-		str += "Aspect: " + StringUtil.format(MathUtil.getAspectFromNormal(normal, work)) + StringUtil.DEGREE + "\n";
+		str += "Aspect: " + StringUtil.format(MathUtil.getAspectFromNormal(normal)) + StringUtil.DEGREE + "\n";
 		((TextView) view).setText(str);
 	}
 

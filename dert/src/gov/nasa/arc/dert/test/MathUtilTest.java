@@ -6,6 +6,7 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import com.ardor3d.bounding.BoundingBox;
+import com.ardor3d.bounding.BoundingSphere;
 import com.ardor3d.math.Matrix3;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -41,7 +42,51 @@ public class MathUtilTest {
 			return(false);
 		}
 		if (!testGetArea()) {
-			System.err.println("Test of MathUtil.getSampledSurfaceArea failed.");
+			System.err.println("Test of MathUtil.getArea failed.");
+			return(false);
+		}
+		if (!testCreateNormal()) {
+			System.err.println("Test of MathUtil.creatNormal failed.");
+			return(false);
+		}
+		if (!testBytes2Int()) {
+			System.err.println("Test of MathUtil.bytes2Int failed.");
+			return(false);
+		}
+		if (!testUnsignedInt()) {
+			System.err.println("Test of MathUtil.unsignedInt failed.");
+			return(false);
+		}
+		if (!testUnsignedShort()) {
+			System.err.println("Test of MathUtil.unsignedShort failed.");
+			return(false);
+		}
+		if (!testUnsignedByte()) {
+			System.err.println("Test of MathUtil.unsignedByte failed.");
+			return(false);
+		}
+		if (!testGetSlopeFromNormal()) {
+			System.err.println("Test of MathUtil.getSlopeFromNormal failed.");
+			return(false);
+		}
+		if (!testGetSlopeFromLine()) {
+			System.err.println("Test of MathUtil.getSlopeFromLine failed.");
+			return(false);
+		}
+		if (!testGetAspectFromLine()) {
+			System.err.println("Test of MathUtil.getAspectFromLine failed.");
+			return(false);
+		}
+		if (!testDistanceToSphere()) {
+			System.err.println("Test of MathUtil.distanceToSphere failed.");
+			return(false);
+		}
+		if (!testGetPlaneFromPointAndNormal()) {
+			System.err.println("Test of MathUtil.getPlaneFromPointAndNormal failed.");
+			return(false);
+		}
+		if (!testGetPlaneZ()) {
+			System.err.println("Test of MathUtil.getPlaneZ failed.");
 			return(false);
 		}
 		System.err.println(". . . complete.");
@@ -350,6 +395,222 @@ public class MathUtilTest {
 		area = MathUtil.getArea(new Vector3(0, 0, 0), new Vector3(1, 0, 0),  new Vector3(1, 1, 1));
 		System.err.println("MathUtil.getArea oblique triangle area: "+area);
 		if (area != 0.7071067811865476)
+			return(false);
+		return(true);
+	}
+	
+	public boolean testCreateNormal() {
+		boolean created = false;
+		created = MathUtil.createNormal(new Vector3(), new Vector3(0, 0, Double.NaN), new Vector3(), new Vector3());
+		if (created)
+			return(false);
+		created = MathUtil.createNormal(new Vector3(), new Vector3(), new Vector3(0, 0, Double.NaN), new Vector3());
+		if (created)
+			return(false);
+		created = MathUtil.createNormal(new Vector3(), new Vector3(), new Vector3(), new Vector3(0, 0, Double.NaN));
+		if (created)
+			return(false);
+		Vector3 norm = new Vector3();
+		created = MathUtil.createNormal(norm, new Vector3(), new Vector3(), new Vector3());
+		System.err.println("MathUtil.createNormal: normal="+norm);
+		if (!created)
+			return(false);
+		if (!norm.equals(Vector3.ZERO))
+			return(false);
+		created = MathUtil.createNormal(norm, new Vector3(), new Vector3(1,0,0), new Vector3(1,1,0));
+		System.err.println("MathUtil.createNormal: normal="+norm);
+		if (!created)
+			return(false);
+		if (!norm.equals(Vector3.UNIT_Z))
+			return(false);
+		created = MathUtil.createNormal(norm, new Vector3(), new Vector3(0,1,0), new Vector3(1,1,0));
+		System.err.println("MathUtil.createNormal: normal="+norm);
+		if (!created)
+			return(false);
+		if (!norm.equals(Vector3.NEG_UNIT_Z))
+			return(false);
+		return(true);
+	}
+	
+	public boolean testBytes2Int() {
+		int i = MathUtil.bytes2Int((byte)255, (byte)255, (byte)255, (byte)255);
+		System.err.println("MathUtil.bytes2Int: int="+i);
+		if (i != 0xffffffff)
+			return(false);
+		i = MathUtil.bytes2Int((byte)0, (byte)255, (byte)0, (byte)255);
+		System.err.println("MathUtil.bytes2Int: int="+i);
+		if (i != 0x00ff00ff)
+			return(false);
+		return(true);
+	}
+	
+	public boolean testUnsignedInt() {
+		long l = MathUtil.unsignedInt(0xffffffff);
+		System.err.println("MathUtil.unsignedInt: long="+l);
+		if (l != 0xffffffff)
+			return(false);
+		l = MathUtil.unsignedInt(0x00ff00ff);
+		System.err.println("MathUtil.unsignedInt: long="+l);
+		if (l != 0x00ff00ff)
+			return(false);
+		return(true);
+	}
+	
+	public boolean testUnsignedShort() {
+		int i = MathUtil.unsignedShort((short)0xffff);
+		System.err.println("MathUtil.unsignedShort: int="+i);
+		if (i != 0xffff)
+			return(false);
+		i = MathUtil.unsignedShort((short)0x00ff);
+		System.err.println("MathUtil.unsignedShort: int="+i);
+		if (i != 0x00ff)
+			return(false);
+		return(true);
+	}
+	
+	public boolean testUnsignedByte() {
+		short s = MathUtil.unsignedByte((byte)0xff);
+		System.err.println("MathUtil.unsignedByte: short="+s);
+		if (s != 0xff)
+			return(false);
+		s = MathUtil.unsignedByte((byte)0x0f);
+		System.err.println("MathUtil.unsignedByte: short="+s);
+		if (s != 0x0f)
+			return(false);
+		return(true);
+	}
+	
+	public boolean testGetSlopeFromNormal() {
+		double slope = MathUtil.getSlopeFromNormal(new Vector3(0, 0, 1));
+		System.err.println("MathUtil.getSlopeFromNormal: normal=(0,0,1), slope="+slope);
+		if (slope != 0)
+			return(false);
+		slope = MathUtil.getSlopeFromNormal(new Vector3(0, 0, -1));
+		System.err.println("MathUtil.getSlopeFromNormal: normal=(0,0,-1), slope="+slope);
+		if (slope != 0)
+			return(false);
+		slope = MathUtil.getSlopeFromNormal(new Vector3(1, 0, 0));
+		System.err.println("MathUtil.getSlopeFromNormal: normal=(1,0,0), slope="+slope);
+		if (slope != 90)
+			return(false);
+		slope = MathUtil.getSlopeFromNormal(new Vector3(0, 1, 0));
+		System.err.println("MathUtil.getSlopeFromNormal: normal=(0,1,0), slope="+slope);
+		if (slope != 90)
+			return(false);
+		slope = MathUtil.getSlopeFromNormal(new Vector3(-1, 0, 0));		
+		System.err.println("MathUtil.getSlopeFromNormal: normal=(-1,0,0), slope="+slope);
+		if (slope != 90)
+			return(false);
+		slope = MathUtil.getSlopeFromNormal(new Vector3(0, -1, 0));
+		System.err.println("MathUtil.getSlopeFromNormal: normal=(0,-1,0), slope="+slope);
+		if (slope != 90)
+			return(false);
+		slope = MathUtil.getSlopeFromNormal(new Vector3(0.70710677,0.0,0.70710677));		
+		System.err.println("MathUtil.getSlopeFromNormal: normal=(0.70710677,0.0,0.70710677), slope="+slope);
+		if (Math.round(slope) != 45)
+			return(false);
+		slope = MathUtil.getSlopeFromNormal(new Vector3(-0.70710677,0.0,-0.70710677));		
+		System.err.println("MathUtil.getSlopeFromNormal: normal=(-0.70710677,0.0,-0.70710677), slope="+slope);
+		if (Math.round(slope) != 45)
+			return(false);
+		return(true);
+	}
+	
+	public boolean testGetSlopeFromLine() {
+		double slope = MathUtil.getSlopeFromLine(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+		System.err.println("MathUtil.getSlopeFromLine: slope="+slope);
+		if (slope != 0)
+			return(false);
+		slope = MathUtil.getSlopeFromLine(new Vector3(0, 0, 0), new Vector3(0, 0, -1));
+		System.err.println("MathUtil.getSlopeFromLine: slope="+slope);
+		if (slope != 90)
+			return(false);
+		slope = MathUtil.getSlopeFromLine(new Vector3(0, 0, 0), new Vector3(0, 0, 1));
+		System.err.println("MathUtil.getSlopeFromLine: slope="+slope);
+		if (slope != 90)
+			return(false);
+		slope = MathUtil.getSlopeFromLine(new Vector3(0, 0, 0), new Vector3(0.70710677,0.0,0.70710677));
+		System.err.println("MathUtil.getSlopeFromLine: slope="+slope);
+		if (Math.round(slope) != 45)
+			return(false);
+		slope = MathUtil.getSlopeFromLine(new Vector3(0, 0, 0), new Vector3(-0.70710677,0.0,-0.70710677));
+		System.err.println("MathUtil.getSlopeFromLine: slope="+slope);
+		if (Math.round(slope) != 45)
+			return(false);
+		return(true);
+	}
+	
+	public boolean testGetAspectFromLine() {
+		double aspect = MathUtil.getAspectFromLine(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+		System.err.println("MathUtil.getAspectFromLine: aspect="+aspect);
+		if (aspect != 0)
+			return(false);
+		aspect = MathUtil.getAspectFromLine(new Vector3(0, 0, 0), new Vector3(0, 0, -1));
+		System.err.println("MathUtil.getAspectFromLine: aspect="+aspect);
+		if (aspect != 0)
+			return(false);
+		aspect = MathUtil.getAspectFromLine(new Vector3(0, 0, 0), new Vector3(0, 0, 1));
+		System.err.println("MathUtil.getAspectFromLine: aspect="+aspect);
+		if (aspect != 0)
+			return(false);
+		aspect = MathUtil.getAspectFromLine(new Vector3(0, 0, 0), new Vector3(1,0,1));
+		System.err.println("MathUtil.getAspectFromLine: aspect="+aspect);
+		if (Math.round(aspect) != 90)
+			return(false);
+		aspect = MathUtil.getAspectFromLine(new Vector3(0, 0, 0), new Vector3(-1,0,-1));
+		System.err.println("MathUtil.getAspectFromLine: aspect="+aspect);
+		if (Math.round(aspect) != 270)
+			return(false);
+		return(true);
+	}
+	
+	public boolean testDistanceToSphere() {
+		BoundingSphere bs = new BoundingSphere();
+		bs.setCenter(0, 0, 0);
+		bs.setRadius(100);
+		double distance = MathUtil.distanceToSphere(bs, new Vector3(), Vector3.UNIT_X);
+		System.err.println("MathUtil.distanceToSphere: distance="+distance);
+		if (distance != 100)
+			return(false);
+		distance = MathUtil.distanceToSphere(bs, new Vector3(0,50,0), Vector3.UNIT_Y);
+		System.err.println("MathUtil.distanceToSphere: distance="+distance);
+		if (distance != 50)
+			return(false);
+		return(true);
+	}
+	
+	public boolean testGetPlaneFromPointAndNormal() {
+		Vector3 pt = new Vector3();
+		double[] planeEq = MathUtil.getPlaneFromPointAndNormal(pt, new Vector3(0,0,1), null);
+		System.err.println("MathUtil.getPlaneFromPointAndNormal: plane eq = "+planeEq[0]+" "+planeEq[1]+" "+planeEq[2]+" "+planeEq[3]);
+		Vector3 vec = new Vector3(planeEq[0], planeEq[1], planeEq[2]);
+		double distance = Math.abs(planeEq[3])/vec.length();
+		if (distance != 0)
+			return(false);
+		pt.set(1, 1, 1);
+		planeEq = MathUtil.getPlaneFromPointAndNormal(pt, new Vector3(0,0,1), null);
+		System.err.println("MathUtil.getPlaneFromPointAndNormal: plane eq = "+planeEq[0]+" "+planeEq[1]+" "+planeEq[2]+" "+planeEq[3]);
+		vec = new Vector3(planeEq[0], planeEq[1], planeEq[2]);
+		double l = vec.length();
+		vec.multiplyLocal(pt);		
+		distance = Math.abs(vec.getX()+vec.getY()+vec.getZ()+planeEq[3])/l;
+		if (Math.round(distance) != 0)
+			return(false);
+		return(true);
+	}
+	
+	public boolean testGetPlaneZ() {
+		Vector3 pt = new Vector3();
+		double[] planeEq = MathUtil.getPlaneFromPointAndNormal(pt, new Vector3(0,0,1), null);
+		double z = MathUtil.getPlaneZ(1, 1, planeEq);
+		System.err.println("MathUtil.getPlaneZ: z = "+z);
+		if (z != 0)
+			return(false);
+		pt.set(1, 1, 1);
+		planeEq = MathUtil.getPlaneFromPointAndNormal(pt, new Vector3(0,0,1), null);
+		z = MathUtil.getPlaneZ(0, 0, planeEq);
+		System.err.println("MathUtil.getPlaneZ: z = "+z);
+		if (z != 1)
 			return(false);
 		return(true);
 	}

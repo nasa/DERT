@@ -265,35 +265,6 @@ public class MathUtil {
 	}
 
 	/**
-	 * Get the next power of two greater than the given value
-	 * 
-	 * @param val
-	 * @return
-	 */
-	public static long nextPowerOf2(long val) {
-		long po2 = 1;
-		while (po2 < val) {
-			po2 *= 2;
-		}
-		return (po2);
-	}
-
-	/**
-	 * Clip the angle down to within a range of -180 to 180.
-	 * 
-	 * @param llb
-	 */
-	public static void clipLonLat(double[] llb) {
-		for (int i = 0; i < llb.length; i += 2) {
-			if (llb[i] > 180) {
-				System.out.print("Found longitude of " + llb[i] + " degrees ...");
-				llb[i] -= 360;
-				System.out.println(" setting to " + llb[i] + " degrees.");
-			}
-		}
-	}
-
-	/**
 	 * Convert 4 bytes to an int.
 	 * 
 	 * @param b0
@@ -359,10 +330,16 @@ public class MathUtil {
 	 * @return
 	 */
 	public static double getSlopeFromLine(ReadOnlyVector3 v0, ReadOnlyVector3 v1) {
-		double dx = v1.getX() - v0.getX();
-		double dy = v1.getY() - v0.getY();
-		double dz = v1.getZ() - v0.getZ();
-		return ((float) (90 * Math.abs(dz / Math.sqrt(dx * dx + dy * dy))));
+		Vector3 vec = Vector3.fetchTempInstance();
+		vec.set(v1);
+		vec.subtractLocal(v0);
+		ReadOnlyVector3 unit = Vector3.UNIT_Z;
+		if (vec.getZ() < 0) {
+			unit = Vector3.NEG_UNIT_Z;
+		}
+		double slope = Math.acos(vec.dot(unit));
+		Vector3.releaseTempInstance(vec);
+		return (90-Math.toDegrees(slope));
 	}
 
 	/**
@@ -372,8 +349,8 @@ public class MathUtil {
 	 * @param work
 	 * @return
 	 */
-	public static double getAspectFromNormal(ReadOnlyVector3 normal, Vector2 work) {
-		return (getAspect(normal.getX(), normal.getY(), work));
+	public static double getAspectFromNormal(ReadOnlyVector3 normal) {
+		return (getAspect(normal.getX(), normal.getY()));
 	}
 
 	/**
@@ -384,13 +361,16 @@ public class MathUtil {
 	 * @param work
 	 * @return
 	 */
-	public static double getAspectFromLine(ReadOnlyVector3 v0, ReadOnlyVector3 v1, Vector2 work) {
+	public static double getAspectFromLine(ReadOnlyVector3 v0, ReadOnlyVector3 v1) {
 		double dx = v1.getX() - v0.getX();
 		double dy = v1.getY() - v0.getY();
-		return (getAspect(dx, dy, work));
+		return (getAspect(dx, dy));
 	}
 
-	private static double getAspect(double x, double y, Vector2 work) {
+	private static double getAspect(double x, double y) {
+		if ((x == 0) && (y == 0))
+			return(0);
+		Vector2 work = Vector2.fetchTempInstance();
 		work.set(x, y);
 		work.normalizeLocal();
 		double aspect = work.angleBetween(Vector2.UNIT_Y);
@@ -398,6 +378,7 @@ public class MathUtil {
 			aspect += 2 * Math.PI;
 		}
 		aspect = Math.toDegrees(aspect);
+		Vector2.releaseTempInstance(work);
 		return (aspect);
 	}
 
@@ -436,7 +417,7 @@ public class MathUtil {
 		if (normal.getZ() == 0) {
 			result[3] = Double.NaN;
 		} else {
-			result[3] = normal.getX() * p0.getX() + normal.getY() * p0.getY() + normal.getZ() * p0.getZ();
+			result[3] = -(normal.getX() * p0.getX() + normal.getY() * p0.getY() + normal.getZ() * p0.getZ());
 		}
 		return (result);
 	}
@@ -450,7 +431,7 @@ public class MathUtil {
 	 * @return
 	 */
 	public static double getPlaneZ(double x, double y, double[] planeEq) {
-		double z = (planeEq[3] - planeEq[0] * x - planeEq[1] * y) / planeEq[2];
+		double z = (-planeEq[3] - planeEq[0] * x - planeEq[1] * y) / planeEq[2];
 		return (z);
 	}
 	

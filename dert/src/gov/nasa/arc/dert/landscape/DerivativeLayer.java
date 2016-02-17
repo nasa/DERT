@@ -47,9 +47,6 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 	// Information about this layer
 	private LayerInfo layerInfo;
 
-	// Work field for aspect calculation
-	private Vector2 work = new Vector2();
-
 	/**
 	 * Constructor
 	 * 
@@ -191,7 +188,7 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 					break;
 				case Aspect:
 					normal.set(normals.get(i * 3), normals.get(i * 3 + 1), normals.get(i * 3 + 2));
-					z = (float) MathUtil.getAspectFromNormal(normal, work);
+					z = (float) MathUtil.getAspectFromNormal(normal);
 					colorMap.getTextureCoordinate(z, coord);
 					texCoords.put(k, coord.getXf()).put(k + 1, coord.getYf());
 					break;

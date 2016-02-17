@@ -6,7 +6,6 @@ import gov.nasa.arc.dert.raster.RasterFileImpl;
 import gov.nasa.arc.dert.raster.geotiff.GeoKey.KeyID;
 import gov.nasa.arc.dert.raster.geotiff.GeoKey.LinearUnits;
 import gov.nasa.arc.dert.raster.geotiff.GeoKey.RasterType;
-import gov.nasa.arc.dert.util.MathUtil;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -637,7 +636,7 @@ public class GTIF extends RasterFileImpl {
 			if (!isDegrees) {
 				radianToDegree(projInfo.tiePoint);
 			}
-			MathUtil.clipLonLat(projInfo.tiePoint);
+			clipLonLat(projInfo.tiePoint);
 		}
 		return (projInfo);
 	}
@@ -1700,6 +1699,21 @@ public class GTIF extends RasterFileImpl {
 		}
 		for (int i = 0; i < ll.length; ++i) {
 			ll[i] = Math.toDegrees(ll[i]);
+		}
+	}
+
+	/**
+	 * Clip the angle down to within a range of -180 to 180.
+	 * 
+	 * @param llb
+	 */
+	private void clipLonLat(double[] llb) {
+		for (int i = 0; i < llb.length; i += 2) {
+			if (llb[i] > 180) {
+				System.out.print("Found longitude of " + llb[i] + " degrees ...");
+				llb[i] -= 360;
+				System.out.println(" setting to " + llb[i] + " degrees.");
+			}
 		}
 	}
 

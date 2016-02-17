@@ -10,8 +10,6 @@ import com.ardor3d.intersection.PickResults;
 import com.ardor3d.intersection.PickingUtil;
 import com.ardor3d.intersection.PrimitivePickResults;
 import com.ardor3d.math.Ray3;
-import com.ardor3d.renderer.state.RenderState;
-import com.ardor3d.renderer.state.WireframeState;
 import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.Spatial;
@@ -21,26 +19,6 @@ import com.ardor3d.scenegraph.Spatial;
  *
  */
 public class SpatialUtil {
-
-	/**
-	 * Determine if a spatial is drawn as wireframe.
-	 * 
-	 * @param spatial
-	 * @return
-	 */
-	public static final boolean isWireFrame(Spatial spatial) {
-		if (spatial == null) {
-			return (false);
-		}
-		WireframeState wfs = (WireframeState) spatial.getLocalRenderState(RenderState.StateType.Wireframe);
-		if (wfs == null) {
-			return (false);
-		}
-		if (!wfs.isEnabled()) {
-			return (false);
-		}
-		return (true);
-	}
 
 	/**
 	 * Do a pick operation on a spatial

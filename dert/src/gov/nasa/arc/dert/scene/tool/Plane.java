@@ -25,7 +25,6 @@ import com.ardor3d.bounding.BoundingBox;
 import com.ardor3d.image.Texture;
 import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Matrix3;
-import com.ardor3d.math.Vector2;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.IndexMode;
@@ -85,7 +84,6 @@ public class Plane extends Node implements Tool, ViewDependent {
 	protected PlaneState state;
 
 	// For slope, aspect and viewpoint
-	private Vector2 work2 = new Vector2();
 	private double strike, dip;
 	private Vector3 location;
 	private double[] planeEq = new double[4];
@@ -763,7 +761,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		MathUtil.getPlaneFromPointAndNormal(point[0].getWorldTranslation(), normal, planeEq);
 
 		// get the dip azimuth from the normal
-		double aspect = MathUtil.getAspectFromNormal(normal, work2);
+		double aspect = MathUtil.getAspectFromNormal(normal);
 		// strike azimuth is 90 degrees off of dip azimuth
 		strike = (aspect + 90) % 360;
 		// get the dip in degrees from a horizontal plane

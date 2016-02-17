@@ -22,6 +22,8 @@ import com.ardor3d.math.Ray3;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.state.MaterialState;
+import com.ardor3d.renderer.state.RenderState;
+import com.ardor3d.renderer.state.WireframeState;
 import com.ardor3d.renderer.state.MaterialState.MaterialFace;
 import com.ardor3d.renderer.state.TextureState;
 import com.ardor3d.scenegraph.Mesh;
@@ -694,6 +696,18 @@ public class Landscape extends Node implements ViewDependent {
 	public boolean isShadingFromSurface() {
 		return (layerManager.shadingFromSurface);
 	}
+	
+	public boolean isWireFrame() {
+		WireframeState wfs = (WireframeState) getLocalRenderState(RenderState.StateType.Wireframe);
+		if (wfs == null) {
+			return (false);
+		}
+		if (!wfs.isEnabled()) {
+			return (false);
+		}
+		return (true);
+	}
+
 
 	/**
 	 * Set the shading.
