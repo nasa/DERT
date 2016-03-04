@@ -213,7 +213,7 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 					tileLength, numberOfTiles, false);
 			}
 			System.out.println("Number of levels for " + layerName + " = " + (maxLevel + 1) + " with " + numberOfTiles
-				+ " tiles on a side at the highest resolution level.");
+				+ " tiles per side at the highest resolution level.");
 			int nt = 0;
 			int n = 1;
 			int bytes = 0;

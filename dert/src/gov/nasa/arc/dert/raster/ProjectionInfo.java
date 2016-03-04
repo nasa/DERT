@@ -118,11 +118,14 @@ public class ProjectionInfo {
 	 */
 	public static ProjectionInfo createDefault(int rasterWidth, int rasterLength, double pixelScale) {
 		ProjectionInfo projInfo = new ProjectionInfo();
-		projInfo.coordTransformCode = 21;
+		projInfo.projCode = Code_CT_Orthographic;
+		projInfo.coordTransformCode = Code_CT_Orthographic;
 		projInfo.tiePoint = new double[] { -pixelScale * rasterWidth / 2, pixelScale * rasterLength / 2, 0 };
 		projInfo.scale = new double[] { pixelScale, pixelScale, 1 };
 		projInfo.centerLat = 0;
 		projInfo.centerLon = 0;
+		projInfo.naturalOriginLon = 0;
+		projInfo.naturalOriginLat = 0;
 		projInfo.falseEasting = 0;
 		projInfo.falseNorthing = 0;
 		projInfo.globe = "Earth";
@@ -131,7 +134,6 @@ public class ProjectionInfo {
 		projInfo.projected = true;
 		projInfo.projLinearUnits = "meter";
 		return (projInfo);
-
 	}
 
 	/**

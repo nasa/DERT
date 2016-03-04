@@ -4,8 +4,7 @@ import gov.nasa.arc.dert.raster.ProjectionInfo;
 import gov.nasa.arc.dert.raster.Raster;
 import gov.nasa.arc.dert.raster.RasterFileImpl;
 import gov.nasa.arc.dert.raster.geotiff.GeoKey.KeyID;
-import gov.nasa.arc.dert.raster.geotiff.GeoKey.LinearUnits;
-import gov.nasa.arc.dert.raster.geotiff.GeoKey.RasterType;
+import gov.nasa.arc.dert.util.ImageUtil;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -356,7 +355,9 @@ public class GTIF extends RasterFileImpl {
 	public boolean open(String access) {
 		handle = openTIFF(filePath, access);
 		if (handle == 0) {
+			String str = getTIFFError();
 			System.err.println("Unable to open " + filePath + " for " + access + " access.");
+			System.err.println("Cause: " + str);
 			return (false);
 		}
 		return (super.open(access));
@@ -458,35 +459,35 @@ public class GTIF extends RasterFileImpl {
 		boolean isGeographic = false;
 		boolean isDegrees = false;
 
-		GeoKey.AngularUnits aU = (GeoKey.AngularUnits) geoKeyMap.get(KeyID.GeogAngularUnits);
+		Integer aU = (Integer)geoKeyMap.get(KeyID.GeogAngularUnits);
 		if (aU != null) {
-			if (!(aU == GeoKey.AngularUnits.Angular_Degree) && !(aU == GeoKey.AngularUnits.Angular_Radian)) {
+			if (!(aU == GeoKey.Code_Angular_Degree) && !(aU == GeoKey.Code_Angular_Radian)) {
 				throw new UnsupportedOperationException("Angular units of " + aU + " is not supported.");
 			}
 		} else {
-			aU = GeoKey.AngularUnits.Angular_Degree;
+			aU = GeoKey.Code_Angular_Degree;
 		}
-		isDegrees = (aU == GeoKey.AngularUnits.Angular_Degree);
-		GeoKey.LinearUnits lU = (GeoKey.LinearUnits) geoKeyMap.get(KeyID.GeogLinearUnits);
+		isDegrees = (aU == GeoKey.Code_Angular_Degree);
+		Integer lU = (Integer) geoKeyMap.get(KeyID.GeogLinearUnits);
 		if (lU != null) {
-			if (lU != GeoKey.LinearUnits.Linear_Meter) {
+			if (lU != GeoKey.Code_Linear_Meter) {
 				throw new UnsupportedOperationException("Geographic Linear units of " + lU + " is not supported.");
 			}
 		}
-		lU = (GeoKey.LinearUnits) geoKeyMap.get(KeyID.ProjLinearUnits);
+		lU = (Integer) geoKeyMap.get(KeyID.ProjLinearUnits);
 		if (lU != null) {
-			if (lU != LinearUnits.Linear_Meter) {
+			if (lU != GeoKey.Code_Linear_Meter) {
 				throw new UnsupportedOperationException("Projected Linear units of " + lU + " not supported.");
 			}
 		}
 		projInfo.projLinearUnits = "meter";
 
 		// Coordinate Transform
-		Object mt = geoKeyMap.get(KeyID.ModelType);
-		if (mt == GeoKey.ModelType.ModelTypeGeocentric) {
-			throw new UnsupportedOperationException("ModelType " + mt.toString() + " is not supported.");
+		Integer mt = (Integer)geoKeyMap.get(KeyID.ModelType);
+		if (mt == GeoKey.Code_ModelTypeGeocentric) {
+			throw new UnsupportedOperationException("ModelType Geocentric is not supported.");
 		}
-		isGeographic = (mt == GeoKey.ModelType.ModelTypeGeographic);
+		isGeographic = (mt == GeoKey.Code_ModelTypeGeographic);
 
 		projInfo.projected = !isGeographic;
 		projInfo.rasterWidth = rasterWidth;
@@ -568,6 +569,8 @@ public class GTIF extends RasterFileImpl {
 			projInfo.globe = "Earth";
 		} else if (citation.toLowerCase().contains("nad 83") || geogCitation.toLowerCase().contains("nad 83")) {
 			projInfo.globe = "Earth";
+		} else if ((projInfo.gcsCode == GeoKey.Code_GCS_WGS_84) || (projInfo.gcsCode == GeoKey.Code_GCS_NAD_83)) {
+			projInfo.globe = "Earth";
 		} else {
 			String g = properties.getProperty("DefaultGlobe");
 			if (g != null) {
@@ -621,13 +624,13 @@ public class GTIF extends RasterFileImpl {
 			}
 		}
 
-		// Pixel is area (see section 2.5.2.2 of GeoTIFF spec)
-		// For DERT, each pixel (post) in the DEM must represent a vertex in the
-		// mesh. We shift by 1/2 pixel if pixel is area (value in center). Each
-		// pixel in a DRG
-		// must line up with those in the DEM for texture coordinates.
-		RasterType rasterType = (RasterType) geoKeyMap.get(KeyID.RasterType);
-		if (rasterType == RasterType.RasterPixelIsArea) {
+		// Raster Type (see section 2.5.2.2 of GeoTIFF spec)
+		// DERT and LayerFactory work with "pixel is point" because OpenGL renders each
+		// pixel at a vertex for both the DEM and the orthoimage texture.
+		// Convert "pixel is area" to "pixel is point" by shifting the
+		// tie point right and down by 1/2 pixel
+		Integer rasterType = (Integer) geoKeyMap.get(KeyID.RasterType);
+		if (rasterType == GeoKey.Code_RasterPixelIsArea) {
 			projInfo.tiePoint[0] += 0.5 * projInfo.scale[0];
 			projInfo.tiePoint[1] -= 0.5 * projInfo.scale[1];
 		}
@@ -639,6 +642,97 @@ public class GTIF extends RasterFileImpl {
 			clipLonLat(projInfo.tiePoint);
 		}
 		return (projInfo);
+	}
+
+	/**
+	 * Set the projection information from the ProjectionInfo object.
+	 * 
+	 * @param projInfo projection info object
+	 */
+	public void setProjectionInfo(ProjectionInfo projInfo) {
+		geoKeyMap = new HashMap<KeyID,Object>();
+		
+		// use "pixel is area" as it is the GDAL default
+		geoKeyMap.put(KeyID.RasterType, new Integer(GeoKey.Code_RasterPixelIsArea));
+		geoKeyMap.put(KeyID.GeogAngularUnits, new Integer(GeoKey.Code_Angular_Degree));
+		geoKeyMap.put(KeyID.GeogLinearUnits, new Integer(GeoKey.Code_Linear_Meter));
+		geoKeyMap.put(KeyID.ProjLinearUnits, new Integer(GeoKey.Code_Linear_Meter));
+
+		// Coordinate Transform
+		if (projInfo.projected)
+			geoKeyMap.put(KeyID.ModelType, new Integer(GeoKey.Code_ModelTypeProjected));
+		else
+			geoKeyMap.put(KeyID.ModelType, new Integer(GeoKey.Code_ModelTypeGeographic));
+
+		rasterWidth = projInfo.rasterWidth;
+		rasterLength = projInfo.rasterLength;
+		if (!projInfo.projected) {
+			geoKeyMap.put(KeyID.GeographicType, new Integer(projInfo.gcsCode));
+			geoKeyMap.put(KeyID.GeogGeodeticDatum, new Integer(projInfo.datumCode));
+			geoKeyMap.put(KeyID.GeogEllipsoid, new Integer(projInfo.ellipsoidCode));
+			geoKeyMap.put(KeyID.GeogPrimeMeridian, new Integer(projInfo.primeMeridianCode));
+			geoKeyMap.put(KeyID.GeogSemiMajorAxis, new Double(projInfo.semiMajorAxis));
+			geoKeyMap.put(KeyID.GeogSemiMinorAxis, new Double(projInfo.semiMinorAxis));
+			geoKeyMap.put(KeyID.GeogInvFlattening, new Double(projInfo.inverseFlattening));
+			geoKeyMap.put(KeyID.GeogPrimeMeridianLong, new Double(projInfo.gcsPrimeMeridianLon));
+		}
+		else {
+			if (projInfo.gcsCode > 0)
+				geoKeyMap.put(KeyID.GeographicType, new Integer(projInfo.gcsCode));
+			if (projInfo.pcsCode > 0)
+				geoKeyMap.put(KeyID.ProjectedCSType, new Integer(projInfo.pcsCode));
+			geoKeyMap.put(KeyID.Projection, new Integer(projInfo.projCode));
+			geoKeyMap.put(KeyID.ProjCoordTrans, new Integer(projInfo.coordTransformCode));
+			if (!Double.isNaN(projInfo.centerLon))
+				geoKeyMap.put(KeyID.ProjCenterLong, new Double(projInfo.centerLon));
+			if (!Double.isNaN(projInfo.centerLat))
+				geoKeyMap.put(KeyID.ProjCenterLat, new Double(projInfo.centerLat));
+			if (!Double.isNaN(projInfo.stdParallel1))
+				geoKeyMap.put(KeyID.ProjStdParallel1, new Double(projInfo.stdParallel1));
+			if (!Double.isNaN(projInfo.stdParallel2))
+				geoKeyMap.put(KeyID.ProjStdParallel2, new Double(projInfo.stdParallel2));
+			if (!Double.isNaN(projInfo.naturalOriginLon))
+				geoKeyMap.put(KeyID.ProjNatOriginLong, new Double(projInfo.naturalOriginLon));
+			if (!Double.isNaN(projInfo.naturalOriginLat))
+				geoKeyMap.put(KeyID.ProjNatOriginLat, new Double(projInfo.naturalOriginLat));
+			if (!Double.isNaN(projInfo.falseEasting))
+				geoKeyMap.put(KeyID.ProjFalseEasting, new Double(projInfo.falseEasting));
+			if (!Double.isNaN(projInfo.falseNorthing))
+				geoKeyMap.put(KeyID.ProjFalseNorthing, new Double(projInfo.falseNorthing));
+			if (!Double.isNaN(projInfo.centerEasting))
+				geoKeyMap.put(KeyID.ProjCenterEasting, new Double(projInfo.centerEasting));
+			if (!Double.isNaN(projInfo.centerNorthing))
+				geoKeyMap.put(KeyID.ProjCenterNorthing, new Double(projInfo.centerNorthing));
+			if (!Double.isNaN(projInfo.scaleAtNaturalOrigin))
+				geoKeyMap.put(KeyID.ProjScaleAtNatOrigin, new Double(projInfo.scaleAtNaturalOrigin));
+			if (!Double.isNaN(projInfo.azimuth))
+				geoKeyMap.put(KeyID.ProjAzimuthAngle, new Double(projInfo.azimuth));
+			if (!Double.isNaN(projInfo.straightVertPoleLon))
+				geoKeyMap.put(KeyID.ProjStraightVertPoleLong, new Double(projInfo.straightVertPoleLon));
+			if (!Double.isNaN(projInfo.scaleAtCenter))
+				geoKeyMap.put(KeyID.ProjScaleAtCenter, new Double(projInfo.scaleAtCenter));
+			if (!Double.isNaN(projInfo.falseOriginLon))
+				geoKeyMap.put(KeyID.ProjFalseOriginLong, new Double(projInfo.falseOriginLon));
+			if (!Double.isNaN(projInfo.falseOriginLat))
+				geoKeyMap.put(KeyID.ProjFalseOriginLat, new Double(projInfo.falseOriginLat));			
+		}
+
+		if (projInfo.pcsCitation != null)
+			geoKeyMap.put(KeyID.Citation, projInfo.pcsCitation);			
+		if (projInfo.gcsCitation != null)
+			geoKeyMap.put(KeyID.GeogCitation, projInfo.gcsCitation);				
+		
+		// convert to "pixel is area" by shifting tie point left and up by 1/2 pixel
+		double[] tp = new double[] {0,0,0, projInfo.tiePoint[0]-(0.5*projInfo.scale[0]),projInfo.tiePoint[1]+(0.5*projInfo.scale[1]),projInfo.tiePoint[2]};  
+		double[] scale = new double[] {projInfo.scale[0], projInfo.scale[1], projInfo.scale[2]};  
+
+		setTIFFFieldDouble(MODEL_TIEPOINT_TAG, tp);
+		setTIFFFieldDouble(MODEL_PIXEL_SCALE_TAG, scale);
+		
+		Object[] result = GeoKey.unmapKeys(geoKeyMap);
+		setTIFFFieldShort(GEO_KEY_DIRECTORY_TAG, (short[])(result[0]));
+		setTIFFFieldDouble(GEO_DOUBLE_PARAMS_TAG, (double[])(result[1]));
+		setTIFFFieldString(GEO_ASCII_PARAMS_TAG, (String)(result[2]));		
 	}
 
 	/**
@@ -961,12 +1055,16 @@ public class GTIF extends RasterFileImpl {
 	 * @return the minimum sample value
 	 */
 	protected double[] findMinimumSampleValue() {
-		double[] min = new double[samplesPerPixel];
-		int n = getTIFFFieldDouble(handle, TIFFTAG_SMINSAMPLEVALUE, min);
-		if (n > 0) {
-			return (min);
-		}
-		return (null);
+		// Although the TIFF documentation claims that smaxsamplevalue and sminsamplevalue handle samplesPerPixel
+		// values (one for each sample) and all datatypes, libtiff actually only stores and retrieves a
+		// single double. See http://maptools-org.996276.n3.nabble.com/TIFFTAG-SMINSAMPLEVALUE-and-TIFFTAG-SMAXSAMPLEVALUE-td171.html.
+		double min = getTIFFFieldDouble(TIFFTAG_SMINSAMPLEVALUE, false, Double.NaN);
+		if (Double.isNaN(min))
+			return(null);
+		double[] d = new double[samplesPerPixel];
+		for (int i=0; i<samplesPerPixel; ++i)
+			d[i] = min;
+		return(d);
 	}
 
 	/**
@@ -975,12 +1073,16 @@ public class GTIF extends RasterFileImpl {
 	 * @return the maximum sample value
 	 */
 	protected double[] findMaximumSampleValue() {
-		double[] max = new double[samplesPerPixel];
-		int n = getTIFFFieldDouble(handle, TIFFTAG_SMAXSAMPLEVALUE, max);
-		if (n > 0) {
-			return (max);
-		}
-		return (null);
+		// Although the TIFF documentation claims that smaxsamplevalue and sminsamplevalue handle samplesPerPixel
+		// values (one for each sample) and all datatypes, libtiff actually only stores and retrieves a
+		// single double. See http://maptools-org.996276.n3.nabble.com/TIFFTAG-SMINSAMPLEVALUE-and-TIFFTAG-SMAXSAMPLEVALUE-td171.html.
+		double max = getTIFFFieldDouble(TIFFTAG_SMAXSAMPLEVALUE, false, Double.NaN);
+		if (Double.isNaN(max))
+			return(null);
+		double[] d = new double[samplesPerPixel];
+		for (int i=0; i<samplesPerPixel; ++i)
+			d[i] = max;
+		return(d);
 	}
 
 	/**
@@ -1358,6 +1460,9 @@ public class GTIF extends RasterFileImpl {
 					throw new IllegalStateException(getTIFFError());
 				}
 				bbuf.rewind();
+				// libtiff doesn't flip the RGBA image (only RGB) so we need to
+				if (samplesPerPixel == 4)
+					ImageUtil.doFlip(bbuf, rasterWidth*4, h);
 				bbuf.get(bArray);
 				int hgt = Math.min(h, rasterLength - r);
 				// raster.set(r, rasterWidth, hgt, bbuf);

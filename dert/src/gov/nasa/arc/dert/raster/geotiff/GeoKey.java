@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.raster.geotiff;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -8,6 +9,7 @@ import java.util.HashMap;
  */
 public class GeoKey implements Comparable<GeoKey> {
 
+	public static final int Code_GeoKeyShortTag = 0;
 	public static final int Code_GeoKeyDirectoryTag = 34735;
 	public static final int Code_GeoDoubleParamsTag = 34736;
 	public static final int Code_GeoAsciiParamsTag = 34737;
@@ -126,12 +128,14 @@ public class GeoKey implements Comparable<GeoKey> {
 	public static final int Code_Datum_WGS84 = 6326;
 	public static final int Code_UserDefined = 32767;
 
-	public static final int[] idCode = { Code_ModelType, Code_RasterType, Code_Citation,
+	public static final int[] idCode = {
+		
+		Code_ModelType, Code_RasterType, Code_Citation,
 
-	Code_GeographicType, Code_GeogCitation, Code_GeogGeodeticDatum, Code_GeogPrimeMeridian, Code_GeogLinearUnits,
+		Code_GeographicType, Code_GeogCitation, Code_GeogGeodeticDatum, Code_GeogPrimeMeridian, Code_GeogPrimeMeridianLong, Code_GeogLinearUnits,
 		Code_GeogLinearUnitSize, Code_GeogAngularUnits, Code_GeogAngularUnitSize, Code_GeogEllipsoid,
 		Code_GeogSemiMajorAxis, Code_GeogSemiMinorAxis, Code_GeogInvFlattening, Code_GeogAzimuthUnits,
-		Code_GeogPrimeMeridianLong,
+		
 
 		Code_ProjectedCSType, Code_PCSCitation, Code_Projection, Code_ProjCoordTrans, Code_ProjLinearUnits,
 		Code_ProjLinearUnitSize, Code_ProjStdParallel1, Code_ProjStdParallel2, Code_ProjNatOriginLong,
@@ -140,12 +144,33 @@ public class GeoKey implements Comparable<GeoKey> {
 		Code_ProjCenterLat, Code_ProjCenterEasting, Code_ProjCenterNorthing, Code_ProjScaleAtNatOrigin,
 		Code_ProjScaleAtCenter, Code_ProjAzimuthAngle, Code_ProjStraightVertPoleLong,
 
-		Code_VerticalCSType, Code_VerticalCitation, Code_VerticalDatum, Code_VerticalUnits, };
+		Code_VerticalCSType, Code_VerticalCitation, Code_VerticalDatum, Code_VerticalUnits
+		
+	};
+
+	public static final int[] idType = {
+		
+		Code_GeoKeyShortTag, Code_GeoKeyShortTag, Code_GeoAsciiParamsTag,
+
+		Code_GeoKeyShortTag, Code_GeoAsciiParamsTag, Code_GeoKeyShortTag, Code_GeoKeyShortTag, Code_GeoDoubleParamsTag, Code_GeoKeyShortTag,
+		Code_GeoDoubleParamsTag, Code_GeoKeyShortTag, Code_GeoDoubleParamsTag, Code_GeoKeyShortTag,
+		Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag, Code_GeoKeyShortTag,
+
+		Code_GeoKeyShortTag, Code_GeoAsciiParamsTag, Code_GeoKeyShortTag, Code_GeoKeyShortTag, Code_GeoKeyShortTag,
+		Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag,
+		Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag,
+		Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag,
+		Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag,
+		Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag, Code_GeoDoubleParamsTag,
+
+		Code_GeoKeyShortTag, Code_GeoAsciiParamsTag, Code_GeoKeyShortTag, Code_GeoKeyShortTag
+		
+	};
 
 	public static enum KeyID {
 		ModelType, RasterType, Citation,
 
-		GeographicType, GeogCitation, GeogGeodeticDatum, GeogPrimeMeridian, GeogLinearUnits, GeogLinearUnitSize, GeogAngularUnits, GeogAngularUnitSize, GeogEllipsoid, GeogSemiMajorAxis, GeogSemiMinorAxis, GeogInvFlattening, GeogAzimuthUnits, GeogPrimeMeridianLong,
+		GeographicType, GeogCitation, GeogGeodeticDatum, GeogPrimeMeridian, GeogPrimeMeridianLong, GeogLinearUnits, GeogLinearUnitSize, GeogAngularUnits, GeogAngularUnitSize, GeogEllipsoid, GeogSemiMajorAxis, GeogSemiMinorAxis, GeogInvFlattening, GeogAzimuthUnits,
 
 		ProjectedCSType, PCSCitation, Projection, ProjCoordTrans, ProjLinearUnits, ProjLinearUnitSize, ProjStdParallel1, ProjStdParallel2, ProjNatOriginLong, ProjNatOriginLat, ProjFalseEasting, ProjFalseNorthing, ProjFalseOriginLong, ProjFalseOriginLat, ProjFalseOriginEasting, ProjFalseOriginNorthing, ProjCenterLong, ProjCenterLat, ProjCenterEasting, ProjCenterNorthing, ProjScaleAtNatOrigin, ProjScaleAtCenter, ProjAzimuthAngle, ProjStraightVertPoleLong,
 
@@ -178,30 +203,6 @@ public class GeoKey implements Comparable<GeoKey> {
 
 	public static final int geographicTypeCode[] = { Code_GCS_WGS_84, Code_GCS_NAD_83, Code_UserDefined };
 
-	public static enum AngularUnits {
-		Angular_Radian, Angular_Degree, Angular_Arc_Minute, Angular_Arc_Second, Angular_Grad, Angular_Gon, Angular_DMS, Angular_DMS_Hemisphere
-	}
-
-	public static enum LinearUnits {
-		Linear_Undefined, Linear_Meter, Linear_Foot, Linear_Foot_US_Survey, Linear_Foot_Modified_American, Linear_Foot_Clarke, Linear_Foot_Indian, Linear_Link, Linear_Link_Benoit, Linear_Link_Sears, Linear_Chain_Benoit, Linear_Chain_Sears, Linear_Yard_Sears, Linear_Yard_Indian, Linear_Fathom, Linear_Mile_International_Nautical
-	}
-
-	static public enum CoordinateTransform {
-		TransverseMercator, TransvMercator_Modified_Alaska, ObliqueMercator, ObliqueMercator_Laborde, ObliqueMercator_Rosenmund, ObliqueMercator_Spherical, Mercator, LambertConfConic_2SP, LambertConfConic_Helmert, LambertAzimEqualArea, AlbersEqualArea, AzimuthalEquidistant, EquidistantConic, Stereographic, PolarStereographic, ObliqueStereographic, Equirectangular, CassiniSoldner, Gnomonic, MillerCylindrical, Orthographic, Polyconic, Robinson, Sinusoidal, VanDerGrinten, NewZealandMapGrid, TransvMercator_SouthOriented, CylindricalEqualArea
-	}
-
-	public static enum ModelType {
-		ModelTypeUndefined, ModelTypeProjected, ModelTypeGeographic, ModelTypeGeocentric
-	}
-
-	public static enum RasterType {
-		RasterPixelIsArea, RasterPixelIsPoint
-	}
-
-	public static enum GeographicCSType {
-		GCS_WGS_84, GCS_NAD_83, GCS_UserDefined
-	}
-
 	public int keyCode;
 	public int count;
 	public int offset;
@@ -229,22 +230,6 @@ public class GeoKey implements Comparable<GeoKey> {
 	}
 
 	/**
-	 * Given a key code, find a label for it.
-	 * 
-	 * @param k
-	 *            the key code
-	 * @return the label
-	 */
-	public static String findKeyLabel(int k) {
-		KeyID ki = findKeyID(k);
-		if (ki == null) {
-			return (null);
-		} else {
-			return (ki.toString());
-		}
-	}
-
-	/**
 	 * Find the key enumeration given its code.
 	 * 
 	 * @param keyCode
@@ -261,76 +246,84 @@ public class GeoKey implements Comparable<GeoKey> {
 	}
 
 	/**
-	 * Given a key code and value, find the enumeration for the value.
+	 * Find the key code given its enumeration.
 	 * 
-	 * @param k
-	 *            key code
-	 * @param v
-	 *            key value
-	 * @return the enumeration
+	 * @param keyID the key enumeration enumeration
+	 *           
+	 * @return the key code
 	 */
-	public static Object findValue(int k, int v) {
-		KeyID ki = findKeyID(k);
-		if (ki == null) {
-			return (null);
-		}
-		Object val = findValue(ki, v);
-		return (val);
+	public static int findKeyCode(KeyID keyID) {
+		return(idCode[keyID.ordinal()]);
 	}
 
 	/**
-	 * Given a KeyID enumeration and a key value, find the value enumeration.
+	 * Find the key type given its enumeration.
+	 * 
+	 * @param keyID
+	 *            the key enumeration
+	 * @return the key type
+	 */
+	public static int findKeyType(KeyID keyID) {
+		return(idType[keyID.ordinal()]);
+	}
+
+	/**
+	 * Given a KeyID enumeration and a value code, check the code and return it as an Integer object.
 	 * 
 	 * @param key
 	 *            the key id
-	 * @param valueCode
-	 *            the value code
-	 * @return the value enumeration
+	 * @param keyCode
+	 *            the key value code
+	 * @return the key value code as an Integer object
 	 */
-	public static Object findValue(KeyID key, int valueCode) {
+	public static Integer checkCode(KeyID key, int valueCode) {
 		if (key == KeyID.GeogAngularUnits) {
 			for (int i = 0; i < angularUnitsCode.length; ++i) {
 				if (valueCode == angularUnitsCode[i]) {
-					return (AngularUnits.values()[i]);
+					return (new Integer(valueCode));
 				}
 			}
+			System.out.println("Angular units code " + valueCode + " not supported.");
 			return (null);
-		}
-		if (key == KeyID.GeogLinearUnits) {
+		} else if (key == KeyID.GeogLinearUnits) {
 			for (int i = 0; i < linearUnitsCode.length; ++i) {
 				if (valueCode == linearUnitsCode[i]) {
-					return (LinearUnits.values()[i]);
+					return (new Integer(valueCode));
 				}
 			}
+			System.out.println("Linear units code " + valueCode + " not supported.");
 			return (null);
 		} else if (key == KeyID.ModelType) {
 			for (int i = 0; i < modelTypeCode.length; ++i) {
 				if (valueCode == modelTypeCode[i]) {
-					return (ModelType.values()[i]);
+					return (new Integer(valueCode));
 				}
 			}
+			System.out.println("Mode type code " + valueCode + " not supported.");
 			return (null);
 		} else if (key == KeyID.RasterType) {
 			for (int i = 0; i < rasterTypeCode.length; ++i) {
 				if (valueCode == rasterTypeCode[i]) {
-					return (RasterType.values()[i]);
+					return (new Integer(valueCode));
 				}
 			}
+			System.out.println("Raster type code " + valueCode + " not supported.");
 			return (null);
 		} else if (key == KeyID.ProjLinearUnits) {
 			for (int i = 0; i < linearUnitsCode.length; ++i) {
 				if (valueCode == linearUnitsCode[i]) {
-					return (LinearUnits.values()[i]);
+					return (new Integer(valueCode));
 				}
 			}
+			System.out.println("Projected linear units code " + valueCode + " not supported.");
 			return (null);
 		} else if (key == KeyID.ProjCoordTrans) {
 			for (int i = 0; i < coordinateTransformCode.length; ++i) {
 				if (valueCode == coordinateTransformCode[i]) {
-					// return(CoordinateTransform.values()[i]);
 					return (new Integer(valueCode));
 				}
 			}
+			System.out.println("Projected coordinate transform code " + valueCode + " not supported.");
 			return (null);
 		} else if (key == KeyID.GeographicType) {
 			if (valueCode == Code_Datum_WGS84) {
@@ -338,14 +331,38 @@ public class GeoKey implements Comparable<GeoKey> {
 			}
 			for (int i = 0; i < geographicTypeCode.length; ++i) {
 				if (valueCode == geographicTypeCode[i]) {
-					// return(GeographicCSType.values()[i]);
 					return (new Integer(valueCode));
 				}
 			}
-			System.out.println("Geographic CS type of " + valueCode + " not supported.");
+			System.out.println("Geographic CS type code " + valueCode + " not supported.");
 			return (null);
 		}
-		return (null);
+		else if ((valueCode > -1) && (valueCode < 65536))		
+			return (new Integer(valueCode));
+		return(null);
+	}
+
+	/**
+	 * Given a KeyID enumeration and a value object, find the number of key values.
+	 * 
+	 * @param key
+	 *            the key id
+	 * @param index
+	 *            the enumeration index
+	 * @return the key value
+	 */
+	public static int findValueCount(KeyID key, Object obj) {
+		if (obj instanceof Integer[])
+			return(((Integer[])obj).length);
+		if (obj instanceof Short[])
+			return(((Short[])obj).length);
+		if (obj instanceof Float[])
+			return(((Float[])obj).length);
+		if (obj instanceof Double[])
+			return(((Double[])obj).length);
+		if (obj instanceof String)
+			return(((String)obj).length()+1);
+		return(1);
 	}
 
 	public static HashMap<KeyID, Object> mapKeys(short[] geoKeyDirectory, double[] geoKeyDouble, String geoKeyAscii) {
@@ -369,35 +386,28 @@ public class GeoKey implements Comparable<GeoKey> {
 			int type = keys[kk + 1] & 0xffff;
 			int valParam = keys[kk + 3];
 			switch (type) {
-			case 0:
-				Object value = findValue(keyId, valParam);
-				if (value != null) {
+			case GeoKey.Code_GeoKeyShortTag:
+				Integer value = checkCode(label, valParam);
+				if (value != null)
 					map.put(label, value);
-				} else {
-					map.put(label, new Integer(valParam));
-				}
 				break;
 			case GeoKey.Code_GeoKeyDirectoryTag:
-				if (count > 1) {
-					int[] val = new int[count];
-					for (int i = 0; i < count; ++i) {
-						val[i] = keys[numKeys + valParam + i];
-					}
-					map.put(label, val);
-				} else {
-					map.put(label, new Integer(numKeys + valParam));
+				int[] ival = new int[count];
+				for (int i = 0; i < count; ++i) {
+					ival[i] = keys[numKeys + valParam + i];
 				}
+				map.put(label, ival);
 				break;
 			case GeoKey.Code_GeoDoubleParamsTag:
 				if (doubleParams == null) {
 					break;
 				}
 				if (count > 1) {
-					double[] val = new double[count];
+					double[] dval = new double[count];
 					for (int i = 0; i < count; ++i) {
-						val[i] = doubleParams[valParam + i];
+						dval[i] = doubleParams[valParam + i];
 					}
-					map.put(label, val);
+					map.put(label, dval);
 				} else {
 					map.put(label, new Double(doubleParams[valParam]));
 				}
@@ -413,6 +423,84 @@ public class GeoKey implements Comparable<GeoKey> {
 
 		}
 		return (map);
+	}
+
+	public static Object[] unmapKeys(HashMap<KeyID, Object> map) {
+		KeyID[] mapKey = new KeyID[map.size()];
+		map.keySet().toArray(mapKey);
+		ArrayList<Short> keys = new ArrayList<Short>();
+		ArrayList<Short> shortData = new ArrayList<Short>();
+		keys.add(new Short((short)1)); // key directory version
+		keys.add(new Short((short)1)); // key revision
+		keys.add(new Short((short)2)); // minor revision
+		keys.add(new Short((short)mapKey.length)); // number of keys
+		ArrayList<Double> doubleParams = new ArrayList<Double>();
+		String asciiParams = "";
+		for (int k = 0; k < mapKey.length; ++k) {
+			int keyCode = findKeyCode(mapKey[k]);
+			int type = findKeyType(mapKey[k]);
+			int count = findValueCount(mapKey[k], map.get(mapKey[k]));
+			switch (type) {
+			case GeoKey.Code_GeoKeyShortTag:
+				int code = (Integer)map.get(mapKey[k]);
+				keys.add((short)keyCode);
+				keys.add((short)type);
+				keys.add((short)count);
+				keys.add((short)code);
+				break;
+			case GeoKey.Code_GeoKeyDirectoryTag:
+				keys.add((short)keyCode);
+				keys.add((short)type);
+				keys.add((short)count);
+				keys.add((short)(mapKey.length*4+shortData.size()));
+				Object sobj = map.get(mapKey[k]);
+				if (sobj instanceof Integer[]) {
+					Integer[] iarray = (Integer[])sobj;
+					for (int i=0; i<iarray.length; ++i)
+						shortData.add(iarray[i].shortValue());
+				}
+				else
+					shortData.add(((Integer)sobj).shortValue());
+				break;
+			case GeoKey.Code_GeoDoubleParamsTag:
+				keys.add((short)keyCode);
+				keys.add((short)type);
+				keys.add((short)count);
+				keys.add((short)doubleParams.size());
+				Object dobj = map.get(mapKey[k]);
+				if (dobj instanceof Double[]) {
+					Double[] dArray = (Double[])dobj;
+					for (int i=0; i<dArray.length; ++i)
+						doubleParams.add(dArray[i]);	
+				}
+				else {
+					doubleParams.add((Double)dobj);
+				}
+				break;
+			case GeoKey.Code_GeoAsciiParamsTag:
+				keys.add((short)keyCode);
+				keys.add((short)type);
+				keys.add((short)count);
+				keys.add((short)asciiParams.length());
+				String str = (String)map.get(mapKey[k]);
+				asciiParams += str+"|";					
+				break;
+			}
+
+		}
+		for (int i=0; i<shortData.size(); ++i)
+			keys.add(shortData.get(i));
+		short[] keysArray = new short[keys.size()];
+		for (int i=0; i<keysArray.length; ++i)
+			keysArray[i] = keys.get(i);
+		double[] doublesArray = new double[doubleParams.size()];
+		for (int i=0; i<doublesArray.length; ++i)
+			doublesArray[i] = doubleParams.get(i);
+		Object[] result = new Object[3];
+		result[0] = keysArray;
+		result[1] = doublesArray;
+		result[2] = asciiParams;
+		return (result);
 	}
 
 }

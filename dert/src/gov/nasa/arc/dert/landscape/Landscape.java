@@ -452,6 +452,8 @@ public class Landscape extends Node implements ViewDependent {
 	public ReadOnlyVector3 getCenter() {
 		Vector3 center = new Vector3(quadTree.getCenter());
 		double z = getZ(center.getX(), center.getY());
+		if (Double.isNaN(z))
+			z = minZ;
 		center.setZ(z);
 		return (center);
 	}
