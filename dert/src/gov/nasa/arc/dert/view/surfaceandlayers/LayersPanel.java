@@ -5,7 +5,6 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.LayerInfo;
 import gov.nasa.arc.dert.landscape.LayerInfo.LayerType;
 import gov.nasa.arc.dert.landscape.LayerManager;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.state.State;
 import gov.nasa.arc.dert.ui.GroupPanel;
 import gov.nasa.arc.dert.ui.IntSpinner;
@@ -58,7 +57,7 @@ public class LayersPanel extends GroupPanel {
 
 		setLayout(new BorderLayout());
 
-		Landscape landscape = World.getInstance().getLandscape();
+		Landscape landscape = Landscape.getInstance();
 		LayerInfo[] currentSelection = landscape.getLayerManager().getLayerSelection();
 
 		JPanel topPanel = new JPanel(new FlowLayout());
@@ -68,7 +67,7 @@ public class LayersPanel extends GroupPanel {
 		showLayersCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				World.getInstance().getLandscape().enableLayers(showLayersCheckBox.isSelected());
+				Landscape.getInstance().enableLayers(showLayersCheckBox.isSelected());
 			}
 		});
 		topPanel.add(showLayersCheckBox);
@@ -81,12 +80,12 @@ public class LayersPanel extends GroupPanel {
 				dialog.open();
 				LayerInfo[] current = (LayerInfo[]) dialog.getResult();
 				if (current != null) {
-					World.getInstance().getLandscape().getLayerManager().setLayerSelection(current);
+					Landscape.getInstance().getLayerManager().setLayerSelection(current);
 					adjustBlendFactors(1, -1);
 					for (int i = 0; i < current.length; ++i) {
 						fillLayerSelection(i, current[i]);
 					}
-					World.getInstance().getLandscape().resetLayers();
+					Landscape.getInstance().resetLayers();
 				}
 			}
 		});
@@ -97,7 +96,7 @@ public class LayersPanel extends GroupPanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				adjustBlendFactors(1, -1);
-				World.getInstance().getLandscape().markDirty(DirtyType.RenderState);
+				Landscape.getInstance().markDirty(DirtyType.RenderState);
 			}
 		});
 		topPanel.add(distributeButton);
@@ -129,7 +128,7 @@ public class LayersPanel extends GroupPanel {
 	 * An available layer has been added or removed
 	 */
 	public void updateSelectedLayers() {
-		LayerInfo[] currentSelection = World.getInstance().getLandscape().getLayerManager().getLayerSelection();
+		LayerInfo[] currentSelection = Landscape.getInstance().getLayerManager().getLayerSelection();
 		for (int i = 0; i < LayerManager.NUM_LAYERS; ++i) {
 			fillLayerSelection(i, currentSelection[i]);
 		}
@@ -158,7 +157,7 @@ public class LayersPanel extends GroupPanel {
 			return;
 		
 		// get the layer manager and current blend factors
-		LayerManager layerManager = World.getInstance().getLandscape().getLayerManager();
+		LayerManager layerManager = Landscape.getInstance().getLayerManager();
 		LayerInfo[] current = layerManager.getLayerSelection();
 		
 		// single spinner
@@ -227,7 +226,7 @@ public class LayersPanel extends GroupPanel {
 		lockBox[index].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				LayerManager layerManager = World.getInstance().getLandscape().getLayerManager();
+				LayerManager layerManager = Landscape.getInstance().getLayerManager();
 				LayerInfo[] current = layerManager.getLayerSelection();
 				current[index].autoBlend = !lockBox[index].isSelected();
 			}
@@ -242,10 +241,10 @@ public class LayersPanel extends GroupPanel {
 			public void stateChanged(ChangeEvent event) {
 				int value = (Integer) getValue();
 				double blendValue = value/100.0;
-				LayerManager layerManager = World.getInstance().getLandscape().getLayerManager();
+				LayerManager layerManager = Landscape.getInstance().getLayerManager();
 				layerManager.setLayerBlendFactor(index, (float) blendValue);
 				adjustBlendFactors(value-lastValue, index);
-				World.getInstance().getLandscape().markDirty(DirtyType.RenderState);
+				Landscape.getInstance().markDirty(DirtyType.RenderState);
 				lastValue = value;
 			}
 		};

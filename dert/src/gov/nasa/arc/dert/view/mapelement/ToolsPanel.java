@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.icon.Icons;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.CartesianGrid;
@@ -134,7 +135,7 @@ public class ToolsPanel extends JPanel {
 				FieldCamera fieldCamera = (FieldCamera) ConfigurationManager.getInstance().getCurrentConfiguration()
 					.addMapElementState(state);
 				newMapElement(MapElementState.Type.FieldCamera, fieldCamera);
-				World.getInstance().getLandscape().getLayerManager().addFieldCamera(fieldCamera);
+				Landscape.getInstance().getLayerManager().addFieldCamera(fieldCamera);
 			}
 		});
 		panel.add(newButton);

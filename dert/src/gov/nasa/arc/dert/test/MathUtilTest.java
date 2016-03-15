@@ -19,7 +19,7 @@ import com.ardor3d.util.geom.BufferUtils;
  */
 public class MathUtilTest {
 	
-	public boolean testMathUtil(String[] args) {
+	public boolean testMathUtil() {
 		System.err.println("Testing math utilities . . .");
 		if (!testDirectionToAzEl()) {
 			System.err.println("Test of MathUtil.directionToAzEl failed.");
@@ -384,16 +384,16 @@ public class MathUtilTest {
 	}
 	
 	public boolean testGetArea() {
-		double area = MathUtil.getArea(new Vector3(0, 0, 0), new Vector3(1, 0, 0),  new Vector3(1, 1, 0));
-		System.err.println("MathUtil.getArea XY-plane triangle area: "+area);
+		double area = MathUtil.getAreaOfTriangle(0, 0, 0, 1, 0, 0, 1, 1, 0);
+		System.err.println("MathUtil.getAreaOfTriangle XY-plane triangle area: "+area);
 		if (area != 0.5)
 			return(false);
-		area = MathUtil.getArea(new Vector3(0, 0, 0), new Vector3(1, 0, 0),  new Vector3(1, 0, 1));
-		System.err.println("MathUtil.getArea XZ-plane triangle area: "+area);
+		area = MathUtil.getAreaOfTriangle(0, 0, 0, 1, 0, 0, 1, 0, 1);
+		System.err.println("MathUtil.getAreaOfTriangle XZ-plane triangle area: "+area);
 		if (area != 0.5)
 			return(false);
-		area = MathUtil.getArea(new Vector3(0, 0, 0), new Vector3(1, 0, 0),  new Vector3(1, 1, 1));
-		System.err.println("MathUtil.getArea oblique triangle area: "+area);
+		area = MathUtil.getAreaOfTriangle(0, 0, 0, 1, 0, 0, 1, 1, 1);
+		System.err.println("MathUtil.getAreaOfTriangle oblique triangle area: "+area);
 		if (area != 0.7071067811865476)
 			return(false);
 		return(true);

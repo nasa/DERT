@@ -3,6 +3,7 @@ package gov.nasa.arc.dert.scene;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.io.geojson.GeoJsonObject;
 import gov.nasa.arc.dert.io.geojson.GeojsonLoader;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.raster.SpatialReferenceSystem;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
@@ -54,7 +55,7 @@ public class LineSet extends GroupNode implements MapElement {
 	 * @param state
 	 */
 	public LineSet(LineSetState state) {
-		this(state, null, World.getInstance().getLandscape().getSpatialReferenceSystem());
+		this(state, null, Landscape.getInstance().getSpatialReferenceSystem());
 	}
 
 	/**
@@ -257,7 +258,7 @@ public class LineSet extends GroupNode implements MapElement {
 	@Override
 	public ReadOnlyVector3 getLocation() {
 		location.set(getWorldTranslation());
-		World.getInstance().getLandscape().localToWorldCoordinate(location);
+		Landscape.getInstance().localToWorldCoordinate(location);
 		return (location);
 	}
 

@@ -82,6 +82,9 @@ public class LayerFactory {
 	
 	// About
 	private String version;
+	
+	private String[] args;
+	private String pathStr;
 
 	/**
 	 * Main
@@ -90,7 +93,15 @@ public class LayerFactory {
 	 *            command line arguments
 	 */
 	public static void main(String[] args) {
-		new LayerFactory(args);
+		if (args.length > 0) {
+			if (args[0].equals("-usage")) {
+				System.out
+					.println("layerfactory -globe=globename -landscape=landscapePath -file=inputFilePath -missing=missingValue -tilesize=tileSize -type=layerType -name=layerName -leftmargin=numPixels -rightmargin=numPixels -bottommargin=numPixels -topmargin=numPixels -color=R,G,B,A -elevattrname=gdal_contour elevation attribute name");
+				System.exit(0);
+			}
+		}
+		LayerFactory lf = new LayerFactory(args);
+		lf.createLayer();
 	}
 
 	/**
@@ -100,15 +111,19 @@ public class LayerFactory {
 	 *            command line arguments
 	 */
 	public LayerFactory(String[] args) {
+		this.args = args;
 
 		// Find the application location.
-		String pathStr = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		pathStr = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		if (pathStr.toLowerCase().endsWith(".jar")) {
 			int p = pathStr.lastIndexOf('/');
 			pathStr = pathStr.substring(0, p + 1);
 		} else {
 			pathStr += "../";
 		}
+	}
+	
+	public boolean createLayer() {
 
 		// Load properties.
 		dertProperties = new Properties();
@@ -125,6 +140,7 @@ public class LayerFactory {
 			defaultGlobe = (String) StringUtil.findString(defaultGlobe, GLOBE_NAME, true);
 		} catch (Exception e) {
 			e.printStackTrace();
+			return(false);
 		}
 
 		// Do the build if all arguments are present and then exit.
@@ -148,8 +164,9 @@ public class LayerFactory {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+				return(false);
 			}
-			System.exit(0);
+			return(true);
 		}
 		// Show GUI to get more arguments.
 		else {
@@ -214,20 +231,13 @@ public class LayerFactory {
 			mainFrame.setVisible(true);
 			mainFrame.validate();
 		}
-
+		return(true);
 	}
 
 	/**
 	 * Perform the pyramid build if all required arguments are present.
 	 */
 	protected boolean checkArgs(String[] args) {
-		if (args.length > 0) {
-			if (args[0].equals("-usage")) {
-				System.out
-					.println("layerfactory -globe=globename -landscape=landscapePath -file=inputFilePath -missing=missingValue -tilesize=tileSize -type=layerType -name=layerName -leftmargin=numPixels -rightmargin=numPixels -bottommargin=numPixels -topmargin=numPixels -color=R,G,B,A -elevattrname=gdal_contour elevation attribute name");
-				System.exit(0);
-			}
-		}
 
 		landscapePath = null;
 		layerName = null;
@@ -270,7 +280,7 @@ public class LayerFactory {
 				String str = args[i].substring(10);
 				if (!str.isEmpty()) {
 					str = (String) StringUtil.findString(str, TILE_SIZE, false);
-					tileSize = Integer.parseInt(str, 0);
+					tileSize = Integer.parseInt(str);
 				}
 			} else if (args[i].startsWith("-color=")) {
 				String str = args[i].substring(7);
@@ -284,7 +294,7 @@ public class LayerFactory {
 					color = Color.white;
 				}
 			} else if (args[i].startsWith("-type=")) {
-				String str = args[i].substring(11);
+				String str = args[i].substring(6);
 				if (str.isEmpty()) {
 					layerType = null;
 				} else {

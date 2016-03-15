@@ -235,7 +235,7 @@ public class ViewpointPanel extends JPanel {
 		locationField = new Vector3TextField(20, new Vector3(), "0.000", true) {
 			@Override
 			protected void handleChange(Vector3 loc) {
-				Landscape landscape = World.getInstance().getLandscape();
+				Landscape landscape = Landscape.getInstance();
 				landscape.worldToLocalCoordinate(loc);
 				if (!controller.getViewpointNode().changeLocation(loc)) {
 					Toolkit.getDefaultToolkit().beep();
@@ -362,7 +362,7 @@ public class ViewpointPanel extends JPanel {
 			list.clearSelection();
 		ViewpointNode viewpointNode = controller.getViewpointNode();
 		viewpointNode.getViewpoint(tempVPS);
-		Landscape landscape = World.getInstance().getLandscape();
+		Landscape landscape = Landscape.getInstance();
 		coord.set(tempVPS.location);
 		landscape.localToWorldCoordinate(coord);
 		locationField.setValue(coord);

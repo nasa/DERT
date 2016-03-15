@@ -1,6 +1,6 @@
 package gov.nasa.arc.dert.scene.tapemeasure;
 
-import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.ui.TextDialog;
@@ -205,7 +205,7 @@ public class TapeMeasure extends Node implements ViewDependent {
 
 	private void setAnchorPosition(ReadOnlyVector3 coord) {
 		tmpVec.set(coord);
-		World.getInstance().getLandscape().localToWorldCoordinate(tmpVec);
+		Landscape.getInstance().localToWorldCoordinate(tmpVec);
 		anchorStr = StringUtil.format(tmpVec);
 		distanceStr = "0.0";
 		gradientStr = "0.0";
@@ -215,7 +215,7 @@ public class TapeMeasure extends Node implements ViewDependent {
 
 	private void setCurrentPosition(ReadOnlyVector3 coord) {
 		tmpVec.set(coord);
-		World.getInstance().getLandscape().localToWorldCoordinate(tmpVec);
+		Landscape.getInstance().localToWorldCoordinate(tmpVec);
 		currentStr = StringUtil.format(tmpVec);
 		distanceStr = StringUtil.format(coord.distance(anchor));
 		gradientStr = StringUtil.format(MathUtil.getSlopeFromLine(anchor, coord));

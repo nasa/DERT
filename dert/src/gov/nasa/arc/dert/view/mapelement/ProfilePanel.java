@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Profile;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.Vector3TextField;
@@ -55,7 +54,7 @@ public class ProfilePanel extends MapElementBasePanel {
 		pALocation = new Vector3TextField(20, new Vector3(), Landscape.format, false) {
 			@Override
 			protected void handleChange(Vector3 coord) {
-				Landscape landscape = World.getInstance().getLandscape();
+				Landscape landscape = Landscape.getInstance();
 				landscape.worldToLocalCoordinate(coord);
 				coord.setZ(landscape.getZ(coord.getX(), coord.getY()));
 				if (!coord.equals(profile.getEndpointA())) {
@@ -77,7 +76,7 @@ public class ProfilePanel extends MapElementBasePanel {
 		pBLocation = new Vector3TextField(20, new Vector3(), Landscape.format, false) {
 			@Override
 			protected void handleChange(Vector3 coord) {
-				Landscape landscape = World.getInstance().getLandscape();
+				Landscape landscape = Landscape.getInstance();
 				landscape.worldToLocalCoordinate(coord);
 				coord.setZ(landscape.getZ(coord.getX(), coord.getY()));
 				if (!coord.equals(profile.getEndpointB())) {

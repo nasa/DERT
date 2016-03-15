@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.scenegraph;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scenegraph.Text.AlignType;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
@@ -272,7 +272,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 	public boolean updateElevation(QuadTree quadTree) {
 		ReadOnlyVector3 t = getWorldTranslation();
 		if (quadTree.contains(t.getX(), t.getY())) {
-			double z = World.getInstance().getLandscape().getZ(t.getX(), t.getY(), quadTree);
+			double z = Landscape.getInstance().getZ(t.getX(), t.getY(), quadTree);
 			if (!Double.isNaN(z)) {
 				setTranslation(t.getX(), t.getY(), z);
 				return (true);
@@ -293,7 +293,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 	 */
 	public ReadOnlyVector3 getLocation() {
 		location.set(getWorldTranslation());
-		World.getInstance().getLandscape().localToWorldCoordinate(location);
+		Landscape.getInstance().localToWorldCoordinate(location);
 		return (location);
 	}
 

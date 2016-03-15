@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.action.mapelement;
 
 import gov.nasa.arc.dert.action.MenuItemAction;
-import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.FieldCameraState;
@@ -31,7 +31,7 @@ public class AddCameraAction extends MenuItemAction {
 	protected void run() {
 		FieldCameraState state = new FieldCameraState(position);
 		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state);
-		World.getInstance().getLandscape().getLayerManager().addFieldCamera((FieldCamera) state.getMapElement());
+		Landscape.getInstance().getLayerManager().addFieldCamera((FieldCamera) state.getMapElement());
 	}
 
 }

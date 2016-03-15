@@ -4,7 +4,6 @@ import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.io.CsvWriter;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scenegraph.BillboardMarker;
 import gov.nasa.arc.dert.scenegraph.MotionListener;
 import gov.nasa.arc.dert.scenegraph.Movable;
@@ -101,7 +100,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 		pBLoc = new Vector3(state.p1);
 		colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
 			color.getAlpha() / 255f);
-		Landscape landscape = World.getInstance().getLandscape();
+		Landscape landscape = Landscape.getInstance();
 		xDim = landscape.getRasterWidth();
 		yDim = landscape.getRasterLength();
 		vertex = new float[3 * (int) (Math.sqrt((long) xDim * xDim + (long) yDim * yDim) + 1024)];
@@ -201,7 +200,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 
 	protected void buildLine() {
 		// Get vertices along the trancept from the Landscape
-		Landscape landscape = World.getInstance().getLandscape();
+		Landscape landscape = Landscape.getInstance();
 		int n = landscape.getVertices(vertex, pALoc, pBLoc, false, true);
 		FloatBuffer vertexBuffer = line.getMeshData().getVertexBuffer();
 		vertexBuffer.clear();

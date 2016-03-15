@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Plane;
 import gov.nasa.arc.dert.scene.tool.Profile;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
@@ -65,7 +64,7 @@ public class PlanePanel extends MapElementBasePanel {
 		p0Location = new Vector3TextField(18, new Vector3(), Landscape.format, false) {
 			@Override
 			protected void handleChange(Vector3 coord) {
-				Landscape landscape = World.getInstance().getLandscape();
+				Landscape landscape = Landscape.getInstance();
 				landscape.worldToLocalCoordinate(coord);
 				coord.setZ(landscape.getZ(coord.getX(), coord.getY()));
 				if (!coord.equals(plane.getPoint(0))) {
@@ -84,7 +83,7 @@ public class PlanePanel extends MapElementBasePanel {
 		p1Location = new Vector3TextField(18, new Vector3(), Landscape.format, false) {
 			@Override
 			protected void handleChange(Vector3 coord) {
-				Landscape landscape = World.getInstance().getLandscape();
+				Landscape landscape = Landscape.getInstance();
 				landscape.worldToLocalCoordinate(coord);
 				coord.setZ(landscape.getZ(coord.getX(), coord.getY()));
 				if (!coord.equals(plane.getPoint(1))) {
@@ -103,7 +102,7 @@ public class PlanePanel extends MapElementBasePanel {
 		p2Location = new Vector3TextField(18, new Vector3(), Landscape.format, false) {
 			@Override
 			protected void handleChange(Vector3 coord) {
-				Landscape landscape = World.getInstance().getLandscape();
+				Landscape landscape = Landscape.getInstance();
 				landscape.worldToLocalCoordinate(coord);
 				coord.setZ(landscape.getZ(coord.getX(), coord.getY()));
 				if (!coord.equals(plane.getPoint(2))) {

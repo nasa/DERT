@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.scenegraph;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
-import gov.nasa.arc.dert.scene.World;
 
 import java.nio.FloatBuffer;
 
@@ -42,7 +41,7 @@ public class LineStrip extends Line {
 	public synchronized void updateElevation(QuadTree quadTree) {
 		FloatBuffer vertex = _meshData.getVertexBuffer();
 		int n = vertex.limit();
-		Landscape landscape = World.getInstance().getLandscape();
+		Landscape landscape = Landscape.getInstance();
 		for (int i = 0; i < n; i += 3) {
 			float x = vertex.get(i);
 			float y = vertex.get(i + 1);

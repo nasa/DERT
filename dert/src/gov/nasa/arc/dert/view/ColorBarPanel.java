@@ -1,6 +1,6 @@
 package gov.nasa.arc.dert.view;
 
-import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.ui.ColorBar;
 import gov.nasa.arc.dert.util.ColorMap;
 
@@ -67,7 +67,7 @@ public class ColorBarPanel extends JPanel {
 	public void reset() {
 		container.removeAll();
 		colorBar.clear();
-		ArrayList<ColorMap> colorMapList = World.getInstance().getLandscape().getLayerManager().getColorMaps();
+		ArrayList<ColorMap> colorMapList = Landscape.getInstance().getLayerManager().getColorMaps();
 		for (int i = 0; i < colorMapList.size(); ++i) {
 			colorBar.add(new ColorBar(colorMapList.get(i), false));
 		}

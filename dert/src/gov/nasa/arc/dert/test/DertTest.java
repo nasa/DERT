@@ -18,6 +18,7 @@ import gov.nasa.arc.dert.scene.tool.RadialGrid;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scenegraph.RasterText;
 import gov.nasa.arc.dert.util.StringUtil;
+import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
 
 import java.io.File;
@@ -134,6 +135,8 @@ public class DertTest {
 		System.err.println("Java Version: " + System.getProperty("java.version"));
 		System.err.println();
 		
+		Console.createInstance();
+		
 		// Load SPICE libraries and kernels
 //		Ephemeris.createInstance(path, dertProperties);
 	}
@@ -201,7 +204,11 @@ public class DertTest {
 	
 	public void runTests(String[] args) {
 		MathUtilTest mut = new MathUtilTest();
-		if (!mut.testMathUtil(args))
+		if (!mut.testMathUtil())
 			System.exit(1);
+		
+		LandscapeTest lt = new LandscapeTest();
+		if (!lt.testLandscape())
+			System.exit(2);
 	}
 }

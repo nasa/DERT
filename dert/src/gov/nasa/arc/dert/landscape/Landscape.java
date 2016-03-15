@@ -101,6 +101,17 @@ public class Landscape extends Node implements ViewDependent {
 
 	// blocks sunlight from underneath landscape while shadows are enabled
 	private Mesh sunBlock;
+	
+	private static Landscape INSTANCE;
+	
+	public static Landscape createInstance(TileSource source, LayerManager layerManager, Color surfaceColor) {
+		INSTANCE = new Landscape(source, layerManager, surfaceColor);
+		return(INSTANCE);
+	}
+	
+	public static Landscape getInstance() {
+		return(INSTANCE);
+	}
 
 	/**
 	 * Constructor
@@ -112,7 +123,7 @@ public class Landscape extends Node implements ViewDependent {
 	 * @param surfaceColor
 	 *            surface color
 	 */
-	public Landscape(TileSource source, LayerManager layerManager, Color surfaceColor) {
+	protected Landscape(TileSource source, LayerManager layerManager, Color surfaceColor) {
 		super("Landscape");
 		this.source = source;
 		this.layerManager = layerManager;
@@ -565,7 +576,8 @@ public class Landscape extends Node implements ViewDependent {
 		if (qt == null) {
 			return (Double.NaN);
 		}
-		return (qt.getElevationNearestNeighbor(x, y));
+//		return (qt.getElevationNearestNeighbor(x, y));
+		return (qt.getElevation(x, y));
 	}
 
 	/**
@@ -629,7 +641,7 @@ public class Landscape extends Node implements ViewDependent {
 	}
 
 	/**
-	 * Convert unprojected (Lon/Lat) coordinates to projected (planetary)
+	 * Convert unprojected (Lon/Lat degrees) coordinates to projected (planetary)
 	 * coordinates.
 	 * 
 	 * @param coord
@@ -649,7 +661,7 @@ public class Landscape extends Node implements ViewDependent {
 	}
 
 	/**
-	 * Convert unprojected (Lon/Lat) coordinates to OpenGL coordinates in
+	 * Convert unprojected (Lon/Lat degrees) coordinates to OpenGL coordinates in
 	 * contents object frame.
 	 * 
 	 * @param coord
@@ -821,7 +833,7 @@ public class Landscape extends Node implements ViewDependent {
 			for (int j = 0; j < cSampleSize; ++j) {
 				vert.set((float) (lowerBound.getX() + j * pixelWidth), (float) (lowerBound.getY() + i * pixelLength), 0);
 				if (MathUtil.isInsidePolygon(vert, vertex)) {
-					double el = getElevationAtHighestLevel(vert.getX(), vert.getY()) - minZ;
+					double el = getElevationAtHighestLevel(vert.getX(), vert.getY())-minZ;
 					if (!Double.isNaN(el)) {
 						vert.setZ(el);
 						if (el < lowerBound.getZ()) {
@@ -867,8 +879,9 @@ public class Landscape extends Node implements ViewDependent {
 			for (int j = 0; j < columns; ++j) {
 				vert.set((float) (lowerBound.getX() + j * sampleSize), (float) (lowerBound.getY() + i * sampleSize), 0);
 				if (MathUtil.isInsidePolygon(vert, vertex)) {
-					double el = getElevationAtHighestLevel(vert.getX(), vert.getY()) - minZ;
+					double el = getElevationAtHighestLevel(vert.getX(), vert.getY())-minZ;
 					double elPoly = MathUtil.getPlaneZ(vert.getX(), vert.getY(), planeEq);
+//					System.err.println("Landscape.getSampledDifferenceOfRegion "+el+" "+elPoly);
 					result[i][j] = (float) (el - elPoly);
 					if (result[i][j] < minMaxElev[0]) {
 						minMaxElev[0] = result[i][j];
@@ -970,16 +983,7 @@ public class Landscape extends Node implements ViewDependent {
 		if (Double.isNaN(z2)) {
 			return (0);
 		}
-		Vector3 p0 = Vector3.fetchTempInstance();
-		Vector3 p1 = Vector3.fetchTempInstance();
-		Vector3 p2 = Vector3.fetchTempInstance();
-		p0.set(x0, y0, z0);
-		p1.set(x1, y1, z1);
-		p2.set(x2, y2, z2);
-		double area = MathUtil.getArea(p0, p1, p2);
-		Vector3.releaseTempInstance(p0);
-		Vector3.releaseTempInstance(p1);
-		Vector3.releaseTempInstance(p2);
+		double area = MathUtil.getAreaOfTriangle(x0, y0, z0, x1, y1, z1, x2, y2, z2);
 		return(area);
 	}
 
@@ -995,7 +999,7 @@ public class Landscape extends Node implements ViewDependent {
 	 * @param maxLevel
 	 * @return
 	 */
-	public int getLineRaster(float[] vertex, int start, Vector3 p0, Vector3 p1, double stepWidth, double stepLength,
+	private int getLineRaster(float[] vertex, int start, Vector3 p0, Vector3 p1, double stepWidth, double stepLength,
 		boolean maxLevel) {
 		double dx = p1.getX() - p0.getX();
 		double dy = p1.getY() - p0.getY();

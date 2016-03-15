@@ -10,22 +10,20 @@ import java.util.Properties;
 
 public class TestDemFactory {
 	
-	private int size = 2048;
+	private int size, halfSize;
 	private ByteBuffer bBuf;
 	private float minValue, maxValue;
 	
-	public TestDemFactory() {
+	public TestDemFactory(int size) {
+		this.size = size;
 		bBuf = ByteBuffer.allocate(size*size*4);
 		bBuf.order(ByteOrder.nativeOrder());
 		minValue = Float.MAX_VALUE;
 		maxValue = -Float.MAX_VALUE;
-		int halfSize = size/2;
+		halfSize = size/2;
 		for (int r=halfSize; r>-halfSize; --r) {
 			for (int c=-halfSize; c<halfSize; ++c) {
-				double cc = 2*Math.PI*c/(double)halfSize;
-				double rr = 2*Math.PI*r/(double)halfSize;
-				double d = Math.sqrt(cc*cc+rr*rr);
-				float z = (float)Math.sin(d)*100f;
+				float z = getZ(c, r);
 				bBuf.putFloat(z);
 				if (!Float.isNaN(z)) {
 					minValue = Math.min(minValue, z);
@@ -37,10 +35,18 @@ public class TestDemFactory {
 		System.out.println("TestDemFactory min elev="+minValue+" max elev="+maxValue);
 	}
 	
-	public void createDem() {
+	public float getZ(double c, double r) {
+		double cc = 2*Math.PI*c/(double)halfSize;
+		double rr = 2*Math.PI*r/(double)halfSize;
+		double d = Math.sqrt(cc*cc+rr*rr);
+		float z = (float)Math.sin(d)*100f;	
+		return(z);
+	}
+	
+	public boolean createDem(String filename) {
 		try {
 			Properties properties = new Properties();
-			GTIF gtif = new GTIF("/tmp/testdem.tif", properties);
+			GTIF gtif = new GTIF(filename, properties);
 			gtif.open("w");
 			ProjectionInfo projInfo = ProjectionInfo.createDefault(size, size, 1);	
 			projInfo.pcsCode = GeoKey.Code_UserDefined;
@@ -71,15 +77,17 @@ public class TestDemFactory {
 			}
 
 			gtif.close();
+			return(true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		return(false);
 	}
 	
 	public static void main(String[] arg) {
-		TestDemFactory factory = new TestDemFactory();
-		factory.createDem();
+		TestDemFactory factory = new TestDemFactory(2048);
+		factory.createDem("/tmp/testdem.tif");
 	}
 
 }

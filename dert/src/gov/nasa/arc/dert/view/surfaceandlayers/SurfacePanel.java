@@ -58,7 +58,7 @@ public class SurfacePanel extends GroupPanel {
 		super("Surface");
 		formatter = new DecimalFormat("0");
 
-		final Landscape landscape = World.getInstance().getLandscape();
+		final Landscape landscape = Landscape.getInstance();
 		final WorldScene scene = (WorldScene) Dert.getWorldView().getScenePanel().getScene();
 
 		setLayout(new GridBagLayout());
@@ -71,7 +71,7 @@ public class SurfacePanel extends GroupPanel {
 			public void actionPerformed(ActionEvent event) {
 				WireframeState wfs = new WireframeState();
 				wfs.setEnabled(wireframeCheckBox.isSelected());
-				World.getInstance().getLandscape().setRenderState(wfs);
+				Landscape.getInstance().setRenderState(wfs);
 			}
 		});
 		add(wireframeCheckBox, GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, 0, 0));
@@ -82,7 +82,7 @@ public class SurfacePanel extends GroupPanel {
 		shadingCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				World.getInstance().getLandscape().setShadingFromSurface(shadingCheckBox.isSelected());
+				Landscape.getInstance().setShadingFromSurface(shadingCheckBox.isSelected());
 			}
 		});
 		add(shadingCheckBox, GBCHelper.getGBC(0, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, 0, 0));
@@ -127,9 +127,9 @@ public class SurfacePanel extends GroupPanel {
 		gridButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				LayerManager layerManager = World.getInstance().getLandscape().getLayerManager();
+				LayerManager layerManager = Landscape.getInstance().getLayerManager();
 				layerManager.enableGrid(gridButton.isSelected());
-				World.getInstance().getLandscape().markDirty(DirtyType.RenderState);
+				Landscape.getInstance().markDirty(DirtyType.RenderState);
 			}
 		});
 		add(gridButton, GBCHelper.getGBC(0, 3, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, 0, 0));
@@ -149,9 +149,9 @@ public class SurfacePanel extends GroupPanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				int index = cellSizeCombo.getSelectedIndex();
-				LayerManager layerManager = World.getInstance().getLandscape().getLayerManager();
+				LayerManager layerManager = Landscape.getInstance().getLayerManager();
 				layerManager.setGridCellSize(units[index]);
-				World.getInstance().getLandscape().markDirty(DirtyType.RenderState);
+				Landscape.getInstance().markDirty(DirtyType.RenderState);
 			}
 		});
 		add(cellSizeCombo, GBCHelper.getGBC(2, 3, 1, 1, GridBagConstraints.EAST, GridBagConstraints.NONE, 0, 0));
@@ -166,9 +166,9 @@ public class SurfacePanel extends GroupPanel {
 			public void doColor(Color color) {
 				gridColorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
 					color.getAlpha() / 255f);
-				LayerManager layerManager = World.getInstance().getLandscape().getLayerManager();
+				LayerManager layerManager = Landscape.getInstance().getLayerManager();
 				layerManager.setGridColor(gridColorRGBA);
-				World.getInstance().getLandscape().markDirty(DirtyType.RenderState);
+				Landscape.getInstance().markDirty(DirtyType.RenderState);
 			}
 		};
 		add(gridColor, GBCHelper.getGBC(2, 4, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, 0, 0));

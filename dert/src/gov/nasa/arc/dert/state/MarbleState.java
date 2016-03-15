@@ -1,8 +1,8 @@
 package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.Marble;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.TextView;
@@ -70,10 +70,9 @@ public class MarbleState extends MapElementState {
 
 		Marble marble = (Marble) mapElement;
 		Vector3 loc = new Vector3(marble.getWorldTranslation());
-		World world = World.getInstance();
-		world.getLandscape().localToWorldCoordinate(loc);
+		Landscape.getInstance().localToWorldCoordinate(loc);
 		String str = "Location (meters): " + StringUtil.format(loc) + "\n";
-		world.getLandscape().worldToSphericalCoordinate(loc);
+		Landscape.getInstance().worldToSphericalCoordinate(loc);
 		str += "Longitude: " + StringUtil.format(loc.getX()) + StringUtil.DEGREE + "\n";
 		str += "Latitude: " + StringUtil.format(loc.getY()) + StringUtil.DEGREE + "\n";
 		ReadOnlyVector3 normal = marble.getNormal();

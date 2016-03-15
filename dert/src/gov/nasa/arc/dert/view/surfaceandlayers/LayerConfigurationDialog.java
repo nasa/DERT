@@ -1,10 +1,10 @@
 package gov.nasa.arc.dert.view.surfaceandlayers;
 
 import gov.nasa.arc.dert.icon.Icons;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.LayerInfo;
 import gov.nasa.arc.dert.landscape.LayerInfo.LayerType;
 import gov.nasa.arc.dert.landscape.LayerManager;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.ui.AbstractDialog;
 import gov.nasa.arc.dert.ui.GBCHelper;
 
@@ -56,7 +56,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 	@Override
 	protected void build() {
 		super.build();
-		LayerManager layerManager = World.getInstance().getLandscape().getLayerManager();
+		LayerManager layerManager = Landscape.getInstance().getLayerManager();
 		layerInfo = layerManager.getImageLayerInfoList();
 		LayerInfo[] currentSelection = layerManager.getLayerSelection();
 		layers = new Vector<LayerInfo>();
@@ -240,7 +240,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 	}
 
 	private LayerInfo[] getCurrentSelection() {
-		LayerManager layerManager = World.getInstance().getLandscape().getLayerManager();
+		LayerManager layerManager = Landscape.getInstance().getLayerManager();
 		LayerInfo[] currentSelection = layerManager.getLayerSelection();
 		LayerInfo[] newSelection = new LayerInfo[LayerManager.NUM_LAYERS];
 		newSelection[0] = currentSelection[0];

@@ -52,9 +52,6 @@ public class World extends GroupNode {
 	// LineSet map elements group
 	private LineSets lineSets;
 
-	// Landscape, holds quad tree
-	private Landscape landscape;
-
 	// Special figure
 	private Marble marble;
 
@@ -98,9 +95,9 @@ public class World extends GroupNode {
 	 * @param timeUTC
 	 * @return
 	 */
-	public static World createNewWorld(String name, Landscape landscape, Landmarks landmarks, Tools tools,
+	public static World createInstance(String name, Landmarks landmarks, Tools tools,
 		LineSets lineSets, Lighting lighting, ReadOnlyColorRGBA background, long timeUTC) {
-		INSTANCE = new World(name, landscape, landmarks, tools, lineSets, lighting, background, timeUTC);
+		INSTANCE = new World(name, landmarks, tools, lineSets, lighting, background, timeUTC);
 		return (INSTANCE);
 	}
 
@@ -125,11 +122,9 @@ public class World extends GroupNode {
 	 * @param background
 	 * @param timeUTC
 	 */
-	protected World(String name, Landscape landscape, Landmarks landmarks, Tools tools, LineSets lineSets,
-		Lighting lighting, ReadOnlyColorRGBA background, long timeUTC) {
+	protected World(String name, Landmarks landmarks, Tools tools, LineSets lineSets, Lighting lighting, ReadOnlyColorRGBA background, long timeUTC) {
 		super(name);
 		backgroundColor = background;
-		this.landscape = landscape;
 		this.landmarks = landmarks;
 		this.tools = tools;
 		this.lineSets = lineSets;
@@ -167,8 +162,8 @@ public class World extends GroupNode {
 		}
 
 		// initialize the scenegraph
-		landscape.initialize();
-		contents.attachChild(landscape);
+		Landscape.getInstance().initialize();
+		contents.attachChild(Landscape.getInstance());
 		updateGeometricState(0); // create a world bounds
 
 		// initialize the map elements
@@ -181,13 +176,13 @@ public class World extends GroupNode {
 
 		// initialize lighting
 		root.setRenderState(lighting.getGlobalLightState());
-		lighting.getLight().setTranslation(landscape.getWorldBound().getCenter());
+		lighting.getLight().setTranslation(Landscape.getInstance().getWorldBound().getCenter());
 
 		// initialize the marble
 		MarbleState marbleState = ConfigurationManager.getInstance().getCurrentConfiguration().marbleState;
 		marble = new Marble(marbleState);
 		marble.setNormal(Vector3.UNIT_Z);
-		marble.setTranslation(landscape.getCenter());
+		marble.setTranslation(Landscape.getInstance().getCenter());
 		marble.setSolarDirection(lighting.getLightDirection());
 		contents.attachChild(marble);
 
@@ -260,7 +255,7 @@ public class World extends GroupNode {
 	 * Dispose of resources (landscape and lighting)
 	 */
 	public void dispose() {
-		landscape.dispose();
+		Landscape.getInstance().dispose();
 		lighting.dispose();
 	}
 
@@ -319,15 +314,6 @@ public class World extends GroupNode {
 	}
 
 	/**
-	 * Get the landscape object
-	 * 
-	 * @return
-	 */
-	public Landscape getLandscape() {
-		return (landscape);
-	}
-
-	/**
 	 * Set the vertical exaggeration of the terrain
 	 * 
 	 * @param vertExag
@@ -336,6 +322,7 @@ public class World extends GroupNode {
 		if (vertExag <= 0) {
 			return;
 		}
+		Landscape landscape = Landscape.getInstance();
 		if (landscape == null) {
 			return;
 		}
@@ -351,6 +338,7 @@ public class World extends GroupNode {
 	 * @return
 	 */
 	public double getVerticalExaggeration() {
+		Landscape landscape = Landscape.getInstance();
 		if (landscape == null) {
 			return (1);
 		}
@@ -385,6 +373,7 @@ public class World extends GroupNode {
 	 */
 	public void setTime(long timeUTC) {
 		this.timeUTC = timeUTC;
+		Landscape landscape = Landscape.getInstance();
 		lighting.setTime(timeUTC, landscape.getGlobeName(), landscape.getCenterLonLat());
 		if (marble != null) {
 			marble.setSolarDirection(lighting.getLightDirection());

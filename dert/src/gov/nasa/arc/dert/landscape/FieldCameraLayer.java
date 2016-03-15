@@ -103,8 +103,8 @@ public class FieldCameraLayer extends Layer {
 
 	@Override
 	public void dispose() {
-		World.getInstance().getLandscape().getTextureState().setTexture(null, textureUnit);
-		World.getInstance().getLandscape().markDirty(DirtyType.RenderState);
+		Landscape.getInstance().getTextureState().setTexture(null, textureUnit);
+		Landscape.getInstance().markDirty(DirtyType.RenderState);
 	}
 
 	@Override
@@ -188,8 +188,8 @@ public class FieldCameraLayer extends Layer {
 			matrix.multiplyLocal(BIAS);
 			texture.setTextureMatrix(matrix);
 		}
-		World.getInstance().getLandscape().getTextureState().setTexture(texture, textureUnit);
-		World.getInstance().getLandscape().markDirty(DirtyType.RenderState);
+		Landscape.getInstance().getTextureState().setTexture(texture, textureUnit);
+		Landscape.getInstance().markDirty(DirtyType.RenderState);
 	}
 
 	/**

@@ -1,8 +1,8 @@
 package gov.nasa.arc.dert.scene.tool;
 
 import gov.nasa.arc.dert.icon.Icons;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scenegraph.BillboardMarker;
 import gov.nasa.arc.dert.scenegraph.MotionListener;
 import gov.nasa.arc.dert.scenegraph.Movable;
@@ -711,15 +711,14 @@ public class Plane extends Node implements Tool, ViewDependent {
 		// determine sample size
 		double sampleWidth = (upperBound.getX() - lowerBound.getX()) / size;
 		double sampleLength = (upperBound.getY() - lowerBound.getY()) / size;
-		sampleWidth = Math.max(sampleWidth, World.getInstance().getLandscape().getPixelWidth());
-		sampleLength = Math.max(sampleLength, World.getInstance().getLandscape().getPixelLength());
+		sampleWidth = Math.max(sampleWidth, Landscape.getInstance().getPixelWidth());
+		sampleLength = Math.max(sampleLength, Landscape.getInstance().getPixelLength());
 		double sampleSize = Math.max(sampleWidth, sampleLength);
 
 		// get elevation differences
 		double[] planeEqCopy = new double[planeEq.length];
 		System.arraycopy(planeEq, 0, planeEqCopy, 0, planeEq.length);
-		int[] result = World.getInstance().getLandscape()
-			.getSampledDifferenceOfRegion(vertex, lowerBound, upperBound, planeEqCopy, sampleSize, diff, minMaxElev);
+		int[] result = Landscape.getInstance().getSampledDifferenceOfRegion(vertex, lowerBound, upperBound, planeEqCopy, sampleSize, diff, minMaxElev);
 		return (result);
 	}
 
@@ -785,7 +784,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	@Override
 	public ReadOnlyVector3 getLocation() {
 		location.set(centroid);
-		World.getInstance().getLandscape().localToWorldCoordinate(location);
+		Landscape.getInstance().localToWorldCoordinate(location);
 		return (location);
 	}
 

@@ -218,7 +218,7 @@ public class Projection {
 	}
 
 	/**
-	 * Convert lon/lat coordinate to world (OpenGL) coordinates.
+	 * Convert lon/lat (degree) coordinate to world (OpenGL) coordinates.
 	 * 
 	 * @param vec
 	 */
@@ -233,6 +233,8 @@ public class Projection {
 		}
 		try {
 			vec.toArray(coord);
+			coord[0] = Math.toRadians(coord[0]);
+			coord[1] = Math.toRadians(coord[1]);
 			pjUnprojected.transform(pjProjected, coord);
 			vec.setX(coord[0]);
 			vec.setY(coord[1]);

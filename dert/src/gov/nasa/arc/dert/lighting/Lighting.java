@@ -298,7 +298,7 @@ public class Lighting implements Serializable {
 	 */
 	public ShadowMap getShadowMap() {
 		if (shadowMap == null) {
-			Landscape landscape = World.getInstance().getLandscape();
+			Landscape landscape = Landscape.getInstance();
 			shadowMap = new ShadowMap(landscape.getCenter(), landscape.getWorldBound().getRadius(), World.getInstance()
 				.getContents(), World.getInstance().getContents());
 			shadowMap.setPolygonOffsetFactor(2);
@@ -412,7 +412,7 @@ public class Lighting implements Serializable {
 	 */
 	public Date getEpoch() {
 		if (epoch == null) {
-			String key = World.getInstance().getLandscape().getGlobeName();
+			String key = Landscape.getInstance().getGlobeName();
 			Date date = (Date) lmstTable.get(key + ".epoch");
 			if (date == null) {
 				return (defaultEpoch);
@@ -423,7 +423,7 @@ public class Lighting implements Serializable {
 	}
 
 	private double getToEarth() {
-		String key = World.getInstance().getLandscape().getGlobeName();
+		String key = Landscape.getInstance().getGlobeName();
 		Double toEarth = (Double) lmstTable.get(key + ".toEarth");
 		if (toEarth == null) {
 			return (1);

@@ -160,7 +160,7 @@ public class ContourScenePanel extends SceneCanvasPanel {
 			return (null);
 		}
 		double z = coord.getZ();
-		World.getInstance().getLandscape().localToWorldCoordinate(coord);
+		Landscape.getInstance().localToWorldCoordinate(coord);
 		coord.setZ(z);
 		coordTextField.setValue(coord);
 		return (coord);

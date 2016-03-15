@@ -4,7 +4,6 @@ import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.io.CsvWriter;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scenegraph.MotionListener;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.scenegraph.PointSet;
@@ -484,7 +483,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			// only update the elevation for this way point
 			if (wp != null) {
 				coord.set(wp.getTranslation());
-				World.getInstance().getLandscape().localToWorldCoordinate(coord);
+				Landscape.getInstance().localToWorldCoordinate(coord);
 				wp.setLabel(StringUtil.format(coord.getZ()));
 			}
 			break;
@@ -767,7 +766,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			csvWriter = new CsvWriter(filename, column);
 			csvWriter.open();
 			String[] value = new String[column.length];
-			Landscape landscape = World.getInstance().getLandscape();
+			Landscape landscape = Landscape.getInstance();
 			Vector3 coord = new Vector3();
 			for (int i = 0; i < n; ++i) {
 				Waypoint wp = (Waypoint) pointSet.getChild(i);
@@ -929,13 +928,14 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		}
 		pointSet.getBounds(lowerBound, upperBound);
 		tmpVec.set(lowerBound);
-		World.getInstance().getLandscape().localToWorldCoordinate(tmpVec);
+		Landscape landscape = Landscape.getInstance();
+		landscape.localToWorldCoordinate(tmpVec);
 		str += "Lower Bounds: " + tmpVec.getXf() + "," + tmpVec.getYf() + "," + tmpVec.getZf() + "\n";
 		tmpVec.set(upperBound);
-		World.getInstance().getLandscape().localToWorldCoordinate(tmpVec);
+		landscape.localToWorldCoordinate(tmpVec);
 		str += "Upper Bounds: " + tmpVec.getXf() + "," + tmpVec.getYf() + "," + tmpVec.getZf() + "\n";
 		Vector3 pos = pointSet.getCentroid();
-		World.getInstance().getLandscape().localToWorldCoordinate(pos);
+		landscape.localToWorldCoordinate(pos);
 		str += "Centroid: " + pos.getXf() + "," + pos.getYf() + "," + pos.getZf() + "\n";
 		str += "Total Path Distance: " + (float) pointSet.getDistance() + "\n";
 
@@ -957,7 +957,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			}
 			vertex[n] = new Vector3(vertex[0]);
 
-			Landscape landscape = World.getInstance().getLandscape();
 			str += "Planimetric Area: " + pointSet.getArea() + "\n";
 			str += "Sampled Mean Elevation: "
 				+ (float) landscape.getSampledMeanElevationOfRegion(vertex, lowerBound, upperBound) + "\n";
@@ -985,7 +984,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		for (int i = 0; i < pointSet.getNumberOfChildren(); ++i) {
 			Waypoint wp = (Waypoint) pointSet.getChild(i);
 			coord.set(wp.getTranslation());
-			World.getInstance().getLandscape().localToWorldCoordinate(coord);
+			Landscape.getInstance().localToWorldCoordinate(coord);
 			if (withText) {
 				sBuf.append(wp.getName() + "," + wp.getState().getAnnotation() + "," + coord.getX() + ","
 					+ coord.getY() + "," + coord.getZ() + "\n");
@@ -1000,7 +999,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	public ReadOnlyVector3 getLocation() {
 		if (pointSet.getNumberOfChildren() == 0) {
 			location.set(getWorldTranslation());
-			World.getInstance().getLandscape().localToWorldCoordinate(location);
+			Landscape.getInstance().localToWorldCoordinate(location);
 			return (location);
 		} else {
 			Waypoint wp = (Waypoint) getChild(0);

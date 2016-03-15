@@ -1,8 +1,8 @@
 package gov.nasa.arc.dert.view.contour;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.render.BasicScene;
 import gov.nasa.arc.dert.render.ColorTableEffects;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Plane;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.state.PlaneState;
@@ -320,7 +320,7 @@ public class ContourScene extends BasicScene implements ColorMapListener {
 			pX = lowerBound.getX() + (upperBound.getX() - lowerBound.getX()) * pX;
 			pY = lowerBound.getY() + (upperBound.getY() - lowerBound.getY()) * pY;
 
-			double pZ = World.getInstance().getLandscape().getZ(pX, pY);
+			double pZ = Landscape.getInstance().getZ(pX, pY);
 
 			return (new Vector3(pX, pY, pZ));
 		} else {

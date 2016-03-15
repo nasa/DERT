@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.view.world;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.render.BasicScene;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.state.WorldState;
@@ -80,7 +81,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		setRootNode(world);
 		world.initialize();
 		world.attachChild(viewpointNode);
-		initializingCount = world.getLandscape().getBaseMapLevel() * 2;
+		initializingCount = Landscape.getInstance().getBaseMapLevel() * 2;
 		updateBounds();
 		spatialDirty(null, DirtyType.Attached); // add the tiles to the
 												// viewdependent list
@@ -128,7 +129,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		world.getLighting().prerender(viewpointNode.getCamera(), renderer,
 			world.getDirtyEventHandler().getChanged() || viewpointNode.changed.getAndSet(false));
 		if (world.getDirtyEventHandler().getChanged()) {
-			world.getLandscape().getLayerManager().renderLayers(renderer);
+			Landscape.getInstance().getLayerManager().renderLayers(renderer);
 		}
 
 		viewpointNode.updateGeometricState(0);

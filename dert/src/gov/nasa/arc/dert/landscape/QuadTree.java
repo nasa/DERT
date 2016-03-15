@@ -182,7 +182,7 @@ public class QuadTree extends Node {
 				testPoint[i].setZ(vertexBuffer.get(2));
 			}
 		} else {
-			double minZ = World.getInstance().getLandscape().getMinimumElevation();
+			double minZ = Landscape.getInstance().getMinimumElevation();
 			// lower left
 			testPoint[0].setZ(vertexBuffer.get(tileLength * tWidth * 3 + 2) - minZ);
 			// lower right
@@ -373,7 +373,7 @@ public class QuadTree extends Node {
 		// in use, no children, and not at the highest resolution
 		if (enabled && (child == null) && !highestLevel) {
 			final QuadTree[] qt = new QuadTree[4];
-			QuadTreeFactory factory = World.getInstance().getLandscape().getFactory();
+			QuadTreeFactory factory = Landscape.getInstance().getFactory();
 			// get the children
 			int count = factory.loadQuadTrees(getName(), this, qt, false);
 			// we are at the highest resolution already?
@@ -770,7 +770,7 @@ public class QuadTree extends Node {
 			}
 		} else {
 			return (mesh.getNormal((int) Math.floor((x - testPoint[0].getX()) / pixelWidth),
-				(int) Math.floor((y - testPoint[0].getY()) / pixelLength), store));
+					mesh.getTileLength()-(int)Math.floor((y - testPoint[0].getY()) / pixelLength), store));
 		}
 		return (false);
 	}

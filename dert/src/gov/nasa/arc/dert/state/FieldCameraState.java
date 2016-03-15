@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
-import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfo;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
@@ -49,7 +49,7 @@ public class FieldCameraState extends ToolState {
 	public void dispose() {
 		if (mapElement != null) {
 			FieldCamera fieldCamera = (FieldCamera) mapElement;
-			World.getInstance().getLandscape().removeFieldCamera(fieldCamera);
+			Landscape.getInstance().removeFieldCamera(fieldCamera);
 		}
 		super.dispose();
 	}

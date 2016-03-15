@@ -481,7 +481,7 @@ public class ViewpointNode extends Node {
 	 */
 	public boolean changeAltitude(double alt) {
 		ReadOnlyVector3 trans = getWorldTranslation();
-		Landscape landscape = World.getInstance().getLandscape();
+		Landscape landscape = Landscape.getInstance();
 		Vector3 loc = new Vector3(trans);
 		loc.setZ(landscape.getZ(trans.getX(), trans.getY()) + alt);
 		return (changeLocation(loc));
@@ -495,7 +495,7 @@ public class ViewpointNode extends Node {
 	public double getAltitude() {
 //		ReadOnlyVector3 trans = getWorldTranslation();
 		ReadOnlyVector3 trans = camera.getLocation();
-		Landscape landscape = World.getInstance().getLandscape();
+		Landscape landscape = Landscape.getInstance();
 		return (trans.getZ() - landscape.getZ(trans.getX(), trans.getY()));
 	}
 

@@ -98,11 +98,12 @@ public class WorldState extends State {
 		if (!layerManager.initialize(tileSource)) {
 			return (null);
 		}
-		Landscape landscape = new Landscape(tileSource, layerManager, surfaceColor);
+		// create Landscape before world
+		Landscape.createInstance(tileSource, layerManager, surfaceColor);
 		if (time == 0) {
 			time = System.currentTimeMillis();
 		}
-		world = World.createNewWorld(name, landscape, new Landmarks(config.getLandmarkStates()),
+		world = World.createInstance(name, new Landmarks(config.getLandmarkStates()),
 			new Tools(config.getToolStates()), new LineSets(config.getLineSetStates()), lighting, background, time);
 		if (verticalExaggeration != 1) {
 			world.setVerticalExaggeration(verticalExaggeration);
@@ -128,7 +129,7 @@ public class WorldState extends State {
 		}
 		background = world.getBackgroundColor();
 		verticalExaggeration = world.getVerticalExaggeration();
-		surfaceColor = world.getLandscape().getSurfaceColor();
+		surfaceColor = Landscape.getInstance().getSurfaceColor();
 		time = world.getTime();
 	}
 

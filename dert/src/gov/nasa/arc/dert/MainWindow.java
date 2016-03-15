@@ -310,12 +310,13 @@ public class MainWindow extends JFrame {
 			// User hit return
 			@Override
 			protected void handleChange(Vector3 store) {
+				Landscape landscape = Landscape.getInstance();
 				// save a copy
 				Vector3 old = new Vector3(store);
 				// convert to OpenGL coordinates
-				World.getInstance().getLandscape().worldToLocalCoordinate(store);
+				landscape.worldToLocalCoordinate(store);
 				// get the actual elevation at the point
-				double z = World.getInstance().getLandscape().getZ(store.getX(), store.getY());
+				double z = landscape.getZ(store.getX(), store.getY());
 				// coordinate is out of bounds or in error, beep the user
 				if (Double.isNaN(z)) {
 					Toolkit.getDefaultToolkit().beep();
@@ -326,7 +327,7 @@ public class MainWindow extends JFrame {
 				else {
 					store.setZ(z);
 					World.getInstance().getMarble().setTranslation(store);
-					World.getInstance().getLandscape().localToWorldCoordinate(store);
+					landscape.localToWorldCoordinate(store);
 					marbleLocation.set(store);
 					setValue(store);
 				}
@@ -374,7 +375,7 @@ public class MainWindow extends JFrame {
 			public void run() {
 				ConfigurationManager.getInstance().saveCurrentConfigurationAs(true);
 				currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
-				setTitle("Desktop Exploration of Remote Terrain - " + World.getInstance().getLandscape().getGlobeName()
+				setTitle("Desktop Exploration of Remote Terrain - " + Landscape.getInstance().getGlobeName()
 					+ ":" + World.getInstance().getName() + ":" + currentConfig.toString());
 			}
 		};
@@ -451,7 +452,7 @@ public class MainWindow extends JFrame {
 		resetAction.setEnabled(true);
 		updateLightIcon();
 		marbleLocField.setFormat(Landscape.format);
-		setTitle("Desktop Exploration of Remote Terrain - " + World.getInstance().getLandscape().getGlobeName() + ":"
+		setTitle("Desktop Exploration of Remote Terrain - " + Landscape.getInstance().getGlobeName() + ":"
 			+ World.getInstance().getName() + ":" + currentConfig.toString());
 		worldView.getScenePanel().getCanvas().requestFocusInWindow();
 	}
@@ -483,7 +484,7 @@ public class MainWindow extends JFrame {
 	public void updateMarbleLocationField() {
 		marbleLocation.set(World.getInstance().getMarble().getTranslation());
 		// Convert from OpenGL to World coordinates
-		World.getInstance().getLandscape().localToWorldCoordinate(marbleLocation);
+		Landscape.getInstance().localToWorldCoordinate(marbleLocation);
 		marbleLocField.setValue(marbleLocation);
 	}
 

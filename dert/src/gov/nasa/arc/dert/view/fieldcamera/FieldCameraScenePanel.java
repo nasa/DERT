@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.view.fieldcamera;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.render.SceneCanvasPanel;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfo;
 import gov.nasa.arc.dert.state.FieldCameraState;
@@ -145,7 +144,7 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 				ReadOnlyVector3 value = seekText.getValue();
 				if (value != null) {
 					seekPoint.set(value);
-					World.getInstance().getLandscape().worldToLocalCoordinate(seekPoint);
+					Landscape.getInstance().worldToLocalCoordinate(seekPoint);
 					Vector3 angle = fieldCamera.seek(seekPoint);
 					azSpinner.setValue(Math.toDegrees(angle.getX()));
 					tiltSpinner.setValue(Math.toDegrees(angle.getY()));
@@ -216,7 +215,7 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 	public void updateFOV() {
 		BasicCamera cam = fieldCamera.getCamera();
 		coord.set(cam.getLocation());
-		World.getInstance().getLandscape().localToWorldCoordinate(coord);
+		Landscape.getInstance().localToWorldCoordinate(coord);
 		fovLocationText.setValue(coord);
 		coord.set(cam.getDirection());
 		fovDirectionText.setValue(coord);

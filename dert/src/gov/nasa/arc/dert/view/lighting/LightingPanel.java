@@ -174,12 +174,12 @@ public class LightingPanel extends JPanel {
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Center"));
 		coord.set(lighting.getShadowMap().getCenter());
-		World.getInstance().getLandscape().localToWorldCoordinate(coord);
+		Landscape.getInstance().localToWorldCoordinate(coord);
 		shadowCenterText = new Vector3TextField(30, coord, Landscape.format, false) {
 			@Override
 			public void handleChange(Vector3 store) {
 				coord.set(store);
-				World.getInstance().getLandscape().worldToLocalCoordinate(coord);
+				Landscape.getInstance().worldToLocalCoordinate(coord);
 				Lighting lighting = World.getInstance().getLighting();
 				lighting.getShadowMap().setCenter(coord);
 			}
@@ -207,7 +207,7 @@ public class LightingPanel extends JPanel {
 				BoundingVolume bv = World.getInstance().getContents().getWorldBound();
 				shadowRadiusText.setValue((float) bv.getRadius());
 				coord.set(bv.getCenter());
-				World.getInstance().getLandscape().localToWorldCoordinate(coord);
+				Landscape.getInstance().localToWorldCoordinate(coord);
 				shadowCenterText.setValue(coord);
 			}
 		});

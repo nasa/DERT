@@ -1,10 +1,10 @@
 package gov.nasa.arc.dert.scene.tool;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
-import gov.nasa.arc.dert.scene.World;
-import gov.nasa.arc.dert.scenegraph.Text.AlignType;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.scenegraph.RasterText;
+import gov.nasa.arc.dert.scenegraph.Text.AlignType;
 import gov.nasa.arc.dert.state.GridState;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.State.StateType;
@@ -389,7 +389,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	@Override
 	public ReadOnlyVector3 getLocation() {
 		location.set(getWorldTranslation());
-		World.getInstance().getLandscape().localToWorldCoordinate(location);
+		Landscape.getInstance().localToWorldCoordinate(location);
 		return (location);
 	}
 }

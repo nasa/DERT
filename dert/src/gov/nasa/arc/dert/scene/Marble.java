@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.scene;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scenegraph.DirectionArrow;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
@@ -97,7 +98,7 @@ public class Marble extends FigureMarker implements MapElement {
 	public void update(ReadOnlyVector3 pos, ReadOnlyVector3 normal, BasicCamera camera) {
 		if (normal == null) {
 			Vector3 store = new Vector3();
-			World.getInstance().getLandscape().getNormal(pos.getX(), pos.getY(), store);
+			Landscape.getInstance().getNormal(pos.getX(), pos.getY(), store);
 			setNormal(store);
 		} else {
 			setNormal(normal);

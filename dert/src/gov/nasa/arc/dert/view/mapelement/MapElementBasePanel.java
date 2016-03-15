@@ -98,7 +98,7 @@ public abstract class MapElementBasePanel extends JPanel {
 					if (mapElement instanceof Path) {
 						return;
 					}
-					Landscape landscape = World.getInstance().getLandscape();
+					Landscape landscape = Landscape.getInstance();
 					landscape.worldToLocalCoordinate(coord);
 					coord.setZ(landscape.getZ(coord.getX(), coord.getY()));
 					ReadOnlyVector3 trans = new Vector3(((Spatial) mapElement).getTranslation());
@@ -190,7 +190,7 @@ public abstract class MapElementBasePanel extends JPanel {
 			position = World.getInstance().getMarble().getTranslation();
 		}
 		coord.set(position);
-		World.getInstance().getLandscape().localToWorldCoordinate(coord);
+		Landscape.getInstance().localToWorldCoordinate(coord);
 		locationText.setValue(coord);
 		elevLabel.setText(formatter.format(coord.getZ()));
 	}

@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.scene.tool.fieldcamera;
 
 import gov.nasa.arc.dert.icon.Icons;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.render.Viewshed;
 import gov.nasa.arc.dert.scene.World;
@@ -157,7 +158,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		box.setModelBound(new BoundingBox());
 		geomNode.attachChild(box);
 
-		fovLength = World.getInstance().getLandscape().getWorldBound().getRadius();
+		fovLength = Landscape.getInstance().getWorldBound().getRadius();
 		fovVisible = state.fovVisible;
 
 		setFieldCameraDefinition(state.fieldCameraDef);
@@ -652,7 +653,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		}
 		ReadOnlyVector3 t = getWorldTranslation();
 		if (quadTree.contains(t.getX(), t.getY())) {
-			double z = World.getInstance().getLandscape().getZ(t.getX(), t.getY(), quadTree);
+			double z = Landscape.getInstance().getZ(t.getX(), t.getY(), quadTree);
 			if (!Double.isNaN(z)) {
 				setTranslation(t.getX(), t.getY(), z);
 				return (true);

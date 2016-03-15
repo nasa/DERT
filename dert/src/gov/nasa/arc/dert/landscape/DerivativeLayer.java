@@ -1,6 +1,5 @@
 package gov.nasa.arc.dert.landscape;
 
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.ColorMapListener;
 import gov.nasa.arc.dert.util.MathUtil;
@@ -140,7 +139,7 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 	 */
 	@Override
 	public void mapChanged(ColorMap cMap) {
-		World.getInstance().getLandscape().markDirty(DirtyType.RenderState);
+		Landscape.getInstance().markDirty(DirtyType.RenderState);
 	}
 
 	/**
@@ -148,7 +147,7 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 	 */
 	@Override
 	public void rangeChanged(ColorMap cMap) {
-		World.getInstance().getLandscape().markDirty(DirtyType.RenderState);
+		Landscape.getInstance().markDirty(DirtyType.RenderState);
 	}
 
 	/**

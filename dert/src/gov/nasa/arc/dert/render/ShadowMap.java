@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.render;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.World;
 
 import com.ardor3d.bounding.BoundingVolume;
@@ -74,8 +75,8 @@ public class ShadowMap extends ProjectedDepthTexture {
 			textureState.setTexture(null, SHADOW_MAP_UNIT);
 		}
 		target.markDirty(DirtyType.RenderState);
-		sunBlock = World.getInstance().getLandscape().getSunBlock();
-		world.getLandscape().getLayerManager().enableShadow(enabled);
+		sunBlock = Landscape.getInstance().getSunBlock();
+		Landscape.getInstance().getLayerManager().enableShadow(enabled);
 	}
 
 	/**

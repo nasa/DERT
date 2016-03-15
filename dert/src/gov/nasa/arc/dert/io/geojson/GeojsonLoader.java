@@ -3,6 +3,7 @@ package gov.nasa.arc.dert.io.geojson;
 import gov.nasa.arc.dert.io.geojson.json.Json;
 import gov.nasa.arc.dert.io.geojson.json.JsonObject;
 import gov.nasa.arc.dert.io.geojson.json.JsonReader;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.raster.SpatialReferenceSystem;
 import gov.nasa.arc.dert.scene.LineSet;
 import gov.nasa.arc.dert.scene.World;
@@ -103,7 +104,7 @@ public class GeojsonLoader {
 		if (elevAttrName == null) {
 			World world = World.getInstance();
 			if (world != null)
-				landscapeMinZ = world.getLandscape().getMinimumElevation();
+				landscapeMinZ = Landscape.getInstance().getMinimumElevation();
 		}
 		root.getSceneHints().setLightCombineMode(LightCombineMode.Off);
 		int count = 0;
@@ -250,7 +251,7 @@ public class GeojsonLoader {
 			coord.setZ(0);
 			srs.getProjection().worldToLocal(coord);
 			if (getZ) {
-				coord.setZ(World.getInstance().getLandscape().getZ(coord.getX(), coord.getY()));
+				coord.setZ(Landscape.getInstance().getZ(coord.getX(), coord.getY()));
 			}
 			if (Double.isNaN(coord.getZ())) {
 				return (null);

@@ -217,11 +217,21 @@ public class MathUtil {
 	 * @param p2
 	 * @return
 	 */
-	public static double getArea(Vector3 p0, Vector3 p1, Vector3 p2) {
+	public static double getAreaOfTriangle(double x0, double y0, double z0, double x1, double y1, double z1, double x2, double y2, double z2) {
+		Vector3 p0 = Vector3.fetchTempInstance();
+		Vector3 p1 = Vector3.fetchTempInstance();
+		Vector3 p2 = Vector3.fetchTempInstance();
+		p0.set(x0, y0, z0);
+		p1.set(x1, y1, z1);
+		p2.set(x2, y2, z2);
 		p1.subtractLocal(p0);
 		p2.subtractLocal(p0);
 		p1.cross(p2, p0);
-		return(0.5*p0.length());
+		double result = 0.5*p0.length();
+		Vector3.releaseTempInstance(p0);
+		Vector3.releaseTempInstance(p1);
+		Vector3.releaseTempInstance(p2);
+		return(result);
 //		double x, y, z;
 //		x = x1 - x0;
 //		y = y1 - y0;
