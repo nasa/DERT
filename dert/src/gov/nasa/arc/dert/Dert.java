@@ -56,7 +56,10 @@ import javax.swing.JPopupMenu;
 public class Dert {
 
 	public static final boolean isMac, isLinux, is64;
-	public static final String DERT_HOME = "dertstash";
+	public static String DERT_HOME = "dertstash";
+	public static String SPLASH_SCREEN = "html/images/dert.png";
+	public static String LOG_NAME = "dert.log";
+	public static String MAIN_TITLE = "Desktop Exploration of Remote Terrain";
 
 	// Main application window
 	private static MainWindow mainWindow;
@@ -138,7 +141,7 @@ public class Dert {
 		path = pathStr;
 		ColorMap.location = path;
 		ImageBoard.defaultImagePath = path + "html/images/defaultimage.png";
-		BasicScene.imagePath = path + "html/images/dert.png";
+		BasicScene.imagePath = path + SPLASH_SCREEN;
 		userPath = System.getProperty("user.home");
 		Proj4.setProjPath(path + "proj");
 
@@ -172,7 +175,7 @@ public class Dert {
 		}
 		if (!debug) {
 			try {
-				file = new File(file, "dert.log");
+				file = new File(file, LOG_NAME);
 				String logFilename = file.getAbsolutePath();
 				PrintStream pStream = new PrintStream(new FileOutputStream(logFilename, true), true);
 				System.setErr(pStream);
@@ -193,7 +196,7 @@ public class Dert {
 		Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
 
 		// Create the main and console windows.
-		mainWindow = new MainWindow(path, args, dertProperties);
+		mainWindow = new MainWindow(MAIN_TITLE, path, args, dertProperties);
 		consoleView = (ConsoleView) currentConfig.consoleState.open();
 		consoleWindow = (JDialog) currentConfig.consoleState.getViewData().getViewWindow();
 
