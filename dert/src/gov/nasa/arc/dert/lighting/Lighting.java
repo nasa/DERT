@@ -55,9 +55,15 @@ public class Lighting implements Serializable {
 
 	// Main light direction
 	protected Vector3 direction = new Vector3();
+	
+	// Main light reference location on surface (used to compute light direction from Sun)
+	protected Vector3 refLoc;
 
 	// The epoch for LMST
 	protected Date epoch;
+	
+	// Current time
+	protected long timeUTC;
 
 	// Global light state
 	protected transient LightState lightState;
@@ -245,9 +251,11 @@ public class Lighting implements Serializable {
 	 * @param globeName
 	 * @param timeLonLat
 	 */
-	public void setTime(long timeUTC, String globeName, ReadOnlyVector3 timeLonLat) {
+	public void setTime(long timeUTC) {
+		this.timeUTC = timeUTC;
 		if (!isLamp) {
-			light.setTime(timeUTC, globeName, "Sun", timeLonLat.getX(), timeLonLat.getY());
+			light.setTime(timeUTC, Landscape.getInstance().getGlobeName(), "Sun", getRefLoc());
+			World.getInstance().getMarble().setSolarDirection(getLightDirection());
 		}
 	}
 
@@ -292,6 +300,18 @@ public class Lighting implements Serializable {
 	}
 
 	/**
+	 * Set the light position
+	 * 
+	 * @param az
+	 * @param el
+	 */
+	public void setLightPosition(double az, double el) {
+		light.setAzEl(az, el);
+		light.setPositionFromAzEl();
+		World.getInstance().getMarble().setSolarDirection(getLightDirection());
+	}
+
+	/**
 	 * Get the shadow map
 	 * 
 	 * @return
@@ -299,7 +319,9 @@ public class Lighting implements Serializable {
 	public ShadowMap getShadowMap() {
 		if (shadowMap == null) {
 			Landscape landscape = Landscape.getInstance();
-			shadowMap = new ShadowMap(landscape.getCenter(), landscape.getWorldBound().getRadius(), World.getInstance()
+			Vector3 smCenter = new Vector3(getRefLoc());
+			Landscape.getInstance().sphericalToLocalCoordinate(smCenter);
+			shadowMap = new ShadowMap(smCenter, landscape.getWorldBound().getRadius(), World.getInstance()
 				.getContents(), World.getInstance().getContents());
 			shadowMap.setPolygonOffsetFactor(2);
 			shadowMap.setPolygonOffsetUnits(2);
@@ -468,6 +490,26 @@ public class Lighting implements Serializable {
 			timeUtil = new TimeUtil(getEpoch().getTime(), getToEarth());
 		}
 		return (new Date(timeUtil.lmst2Time(sol, hour, minute, second)));
+	}
+	
+	/**
+	 * Set the light surface reference (lon/lat/alt).
+	 */
+	public void setRefLoc(ReadOnlyVector3 refLoc) {
+		if (this.refLoc == null)
+			this.refLoc = new Vector3(refLoc);
+		else
+			this.refLoc.set(refLoc);
+		setTime(timeUTC);
+	}
+	
+	/**
+	 * Get the light surface reference (lon/lat/alt).
+	 */
+	public ReadOnlyVector3 getRefLoc() {
+		if (refLoc == null)
+			refLoc = new Vector3(Landscape.getInstance().getCenterLonLat());
+		return(refLoc);
 	}
 
 	/**

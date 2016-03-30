@@ -50,7 +50,7 @@ public class SpatialReferenceSystem {
 	 * 
 	 * @return
 	 */
-	public ReadOnlyVector3 getCenterLonLat() {
+	public Vector3 getCenterLonLat() {
 		Vector3 lonLat = new Vector3();
 		projection.localToWorld(lonLat);
 		projection.worldToSpherical(lonLat);

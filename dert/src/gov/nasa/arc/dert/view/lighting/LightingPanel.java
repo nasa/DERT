@@ -5,12 +5,12 @@ import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.lighting.Lighting;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DateTextField;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
 import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.ui.GBCHelper;
 import gov.nasa.arc.dert.ui.GroupPanel;
-import gov.nasa.arc.dert.ui.Vector3TextField;
 
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -31,6 +31,7 @@ import javax.swing.event.ChangeEvent;
 
 import com.ardor3d.bounding.BoundingVolume;
 import com.ardor3d.math.Vector3;
+import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.event.DirtyType;
 
 /**
@@ -43,7 +44,7 @@ public class LightingPanel extends JPanel {
 	private JCheckBox headlightButton, shadowButton;
 	private DoubleSpinner mainDiffuseSpinner, mainAmbientSpinner, globalAmbientSpinner, headDiffuseSpinner;
 	private JButton advancedShadow, defaultSphereButton;
-	private Vector3TextField shadowCenterText;
+	private CoordTextField shadowCenterText;
 	private DoubleTextField shadowRadiusText;
 	private DateTextField lmstEpoch;
 	private JLabel modeLabel;
@@ -173,17 +174,23 @@ public class LightingPanel extends JPanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Center"));
-		coord.set(lighting.getShadowMap().getCenter());
-		Landscape.getInstance().localToWorldCoordinate(coord);
-		shadowCenterText = new Vector3TextField(30, coord, Landscape.format, false) {
+//		coord.set(lighting.getShadowMap().getCenter());
+//		Landscape.getInstance().localToWorldCoordinate(coord);
+		shadowCenterText = new CoordTextField(30, "coordinates of shadow sphere center", Landscape.format, false) {
 			@Override
-			public void handleChange(Vector3 store) {
-				coord.set(store);
-				Landscape.getInstance().worldToLocalCoordinate(coord);
+			public void doChange(ReadOnlyVector3 result) {
+				coord.set(result);
+//				Landscape.getInstance().worldToLocalCoordinate(coord);
 				Lighting lighting = World.getInstance().getLighting();
-				lighting.getShadowMap().setCenter(coord);
+//				lighting.getShadowMap().setCenter(coord);
+				Landscape.getInstance().localToWorldCoordinate(coord);
+				Landscape.getInstance().worldToSphericalCoordinate(coord);
+				lighting.setRefLoc(coord);
 			}
 		};
+		coord.set(lighting.getRefLoc());
+		Landscape.getInstance().sphericalToLocalCoordinate(coord);
+		shadowCenterText.setLocalValue(coord);
 		panel.add(shadowCenterText);
 		shadowPanel.add(panel);
 
@@ -206,9 +213,11 @@ public class LightingPanel extends JPanel {
 			public void actionPerformed(ActionEvent event) {
 				BoundingVolume bv = World.getInstance().getContents().getWorldBound();
 				shadowRadiusText.setValue((float) bv.getRadius());
-				coord.set(bv.getCenter());
-				Landscape.getInstance().localToWorldCoordinate(coord);
-				shadowCenterText.setValue(coord);
+//				coord.set(bv.getCenter());
+				coord.set(Landscape.getInstance().getCenter());
+//				Landscape.getInstance().localToWorldCoordinate(coord);
+				shadowCenterText.setLocalValue(coord);
+				lighting.setRefLoc(Landscape.getInstance().getCenterLonLat());
 			}
 		});
 		panel.add(defaultSphereButton);

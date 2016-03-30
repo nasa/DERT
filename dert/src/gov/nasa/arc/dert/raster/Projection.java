@@ -160,7 +160,7 @@ public class Projection {
 		// point.
 		coord.setX(coord.getX() + physicalWidth / 2 + tiePoint[0]);
 		coord.setY(coord.getY() - (physicalLength / 2) + tiePoint[1]);
-		coord.setZ(coord.getZ() + tiePoint[2]);
+		coord.setZ(coord.getZ() + tiePoint[2]);		
 	}
 
 	/**

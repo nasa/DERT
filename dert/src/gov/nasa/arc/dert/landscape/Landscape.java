@@ -386,7 +386,9 @@ public class Landscape extends Node implements ViewDependent {
 	 * @return
 	 */
 	public ReadOnlyVector3 getCenterLonLat() {
-		return (srs.getCenterLonLat());
+		Vector3 cntr = srs.getCenterLonLat();
+		cntr.setZ(getElevation(0,0));
+		return (cntr);
 	}
 
 	/**

@@ -22,7 +22,7 @@ public class MathUtil {
 	public final static float epsilonF = 0.00000001f;
 
 	/**
-	 * Given a direction vector, return the azimuth and elevation angles.
+	 * Given a direction vector, return the azimuth and elevation angles (radians).
 	 * 
 	 * @param direction	the direction vector
 	 * @param angle	the storage for the azimuth and elevation angles (will be allocated if null)

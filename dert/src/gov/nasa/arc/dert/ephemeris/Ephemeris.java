@@ -97,7 +97,7 @@ public class Ephemeris {
 	}
 
 	protected void initialize(String path, Properties properties) {
-		utcDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		utcDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		utcDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 		File file = new File(path);
 		if (!file.exists()) {
@@ -164,82 +164,68 @@ public class Ephemeris {
 	 *            the longitude on the observer surface
 	 * @return the vector
 	 */
-	public static double[] getTargetVector(String observer, String target, String time, double lat, double lon) {
+	public static double[] getTargetVector(String observer, String target, String time, double lon, double lat, double alt) {
 		// SPICE is not thread safe. Allow only one thread to use it at a time
-		// ...
 		synchronized (instance) {
-			double[] vector = instance.getTargetVectorAtLatLon(observer, target, time, lat, lon);
+			double[] vector = instance.getTargetVectorAtLonLatAlt(observer, target, time, lon, lat, alt);
 			return (vector);
 		}
 	}
 
-	protected double[] getTargetVectorAtLatLon(String observer, String target, String time, double lat, double lon) {
-		// System.err.println("Ephemeris.getTargetVectorAtLatLon "+observer+" "+target+" "+time+" "+lat+" "+lon);
+	protected double[] getTargetVectorAtLonLatAlt(String observer, String target, String time, double lon, double lat, double alt) {
+		observer = observer.toUpperCase();
+		target = target.toUpperCase();		
+		alt /= 1000;
+		
+//		System.err.println("Ephemeris.getTargetVectorAtLonLatAlt "+observer+" "+target+" "+time+" "+lon+" "+lat+" "+alt);
+		
 		try {
 			// Convert epoch to ephemeris time
 			double et = CSPICE.str2et(time);
 
+			// Compute target state in observer body-fixed frame
+			double[] pos = new double[6];
+			double[] lt = new double[1];
+			String obsName = observer;
+//			if (obsName.equals("MARS"))
+//				obsName += " BARYCENTER";
+			CSPICE.spkpos(target, et, "IAU_"+observer, "LT+S", obsName, pos, lt);
+			
 			// Get the observer body
 			BodyName obsBody = new BodyName(observer);
 
 			// Get the observer radii
 			double[] obsRadii = CSPICE.bodvcd(obsBody.getIDCode(), "RADII");
 
-			// Compute vector from observer body center to lat, lon (perfect
-			// sphere model)
-			double[] vectorFromObsCntr = CSPICE.latrec(1.0, Math.toRadians(lon), Math.toRadians(lat));
+			// Compute surface point on observer body in body-fixed frame			
+			double[] obsSurfacePt = CSPICE.georec(Math.toRadians(lon), Math.toRadians(lat), alt, obsRadii[0], (obsRadii[0]-obsRadii[2])/obsRadii[0]);
+			obsSurfacePt[2] += alt;
 
-			// Compute surface point on observer body in rectangular coordinates
-			// and with ellipsoid
-			double[] obsCenter = new double[3];
-			double[] obsSurfacePt = new double[3];
-			boolean[] found = new boolean[1];
-			CSPICE.surfpt(obsCenter, vectorFromObsCntr, obsRadii[0], obsRadii[1], obsRadii[2], obsSurfacePt, found);
-
-			// Compute surface normal
+			// Compute surface normal at surface point
 			double[] obsSurfaceNm = CSPICE.surfnm(obsRadii[0], obsRadii[1], obsRadii[2], obsSurfacePt);
+			obsSurfaceNm = CSPICE.vhat(obsSurfaceNm);
+			
+			pos[0] -= obsSurfacePt[0];
+			pos[1] -= obsSurfacePt[1];
+			pos[2] -= obsSurfacePt[2];
 
-			// Compute transform matrix
-			double[][] obsMatrix = CSPICE.twovec(obsSurfaceNm, 3, zAxis, 2); // make
-																				// the
-																				// Y
-																				// axis
-																				// Lon
-																				// =
-																				// 0
-
-			// Compute target state in observer frame with a call to SPKEZR
-			double[] state = new double[6];
-			double[] lt = new double[1];
-			CSPICE.spkezr(target, et, "IAU_" + observer, "LT+S", observer, state, lt);
-			// CSPICE.spkezr(target, et, "J2000", "LT+S",
-			// observer+" barycenter", state, lt);
-
-			// Compute target's pointing vector in observer frame.
-			double[] trgPt = new double[3];
-			trgPt[0] = state[0] - obsSurfacePt[0];
-			trgPt[1] = state[1] - obsSurfacePt[1];
-			trgPt[2] = state[2] - obsSurfacePt[2];
-
-			// Transform observer frame to surface frame and normalize to unit
-			// vector
+			// Compute the matrix to tranform the body-fixed frame to the surface frame
+			// make the Y axis Lon = 0
+			double[][] obsMatrix = CSPICE.twovec(obsSurfaceNm, 3, zAxis, 2);
+			double[] trgPt = new double[] {pos[0], pos[1], pos[2]};
 			trgPt = CSPICE.mxv(obsMatrix, trgPt);
 			trgPt = CSPICE.vhat(trgPt);
-
-			// Copy the vector to the output.
-			state[0] = trgPt[0];
-			state[1] = trgPt[1];
-			state[2] = trgPt[2];
-
+			pos[0] = trgPt[0];
+			pos[1] = trgPt[1];
+			pos[2] = trgPt[2];
+					
 			// convert to radius, lon, and lat
 			trgPt = CSPICE.reclat(trgPt);
+			pos[3] = trgPt[0];
+			pos[4] = trgPt[1];
+			pos[5] = trgPt[2];
 
-			// Copy the coordinates to the output.
-			state[3] = trgPt[0];
-			state[4] = trgPt[1];
-			state[5] = trgPt[2];
-
-			return (state);
+			return (pos);
 		} catch (Exception e) {
 			System.out.println("Unable to get target vector, see log.");
 			e.printStackTrace();

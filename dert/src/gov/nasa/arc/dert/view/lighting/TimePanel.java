@@ -1,10 +1,8 @@
 package gov.nasa.arc.dert.view.lighting;
 
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.ui.CalendarPanel;
 
 import java.awt.BorderLayout;
-import java.util.Date;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -18,7 +16,6 @@ public class TimePanel extends JPanel {
 
 	private CalendarPanel calendar;
 	private LMSTPanel lmstPanel;
-	private long time;
 
 	/**
 	 * Constructor
@@ -27,9 +24,7 @@ public class TimePanel extends JPanel {
 		setLayout(new BorderLayout());
 		JTabbedPane tabbedPane = new JTabbedPane();
 		calendar = new CalendarPanel();
-		time = World.getInstance().getTime();
 		tabbedPane.addTab("UTC", calendar);
-		calendar.setCurrentDate(new Date(time));
 		lmstPanel = new LMSTPanel();
 		tabbedPane.addTab("LMST", lmstPanel);
 		add(tabbedPane, BorderLayout.CENTER);

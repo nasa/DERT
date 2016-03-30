@@ -355,29 +355,16 @@ public class World extends GroupNode {
 	}
 
 	/**
-	 * Set the light position
-	 * 
-	 * @param az
-	 * @param el
-	 */
-	public void setLightPosition(double az, double el) {
-		lighting.getLight().setAzEl(az, el);
-		lighting.getLight().setPositionFromAzEl();
-		marble.setSolarDirection(lighting.getLightDirection());
-	}
-
-	/**
 	 * Set the current time
 	 * 
 	 * @param timeUTC
 	 */
 	public void setTime(long timeUTC) {
 		this.timeUTC = timeUTC;
-		Landscape landscape = Landscape.getInstance();
-		lighting.setTime(timeUTC, landscape.getGlobeName(), landscape.getCenterLonLat());
-		if (marble != null) {
-			marble.setSolarDirection(lighting.getLightDirection());
-		}
+		lighting.setTime(timeUTC);
+//		if (marble != null) {
+//			marble.setSolarDirection(lighting.getLightDirection());
+//		}
 	}
 
 	/**

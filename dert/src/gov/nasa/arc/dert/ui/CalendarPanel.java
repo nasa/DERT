@@ -109,6 +109,7 @@ public class CalendarPanel extends JPanel implements MouseListener {
 	private Calendar cal;
 	private long millisPerDay = 86400000;
 	private boolean doyCommit;
+	private boolean doSetTime;
 
 	/**
 	 * Constructor
@@ -117,6 +118,7 @@ public class CalendarPanel extends JPanel implements MouseListener {
 		super();
 		daysFromEpochToNow = getDay(new Date().getTime());
 		cal = Calendar.getInstance();
+		cal.setTime(new Date(World.getInstance().getTime()));
 		dateFormatter = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
 		formatterYear = new SimpleDateFormat("yyyy");
 		formatterMonth = new SimpleDateFormat("MMM");
@@ -144,7 +146,8 @@ public class CalendarPanel extends JPanel implements MouseListener {
 		hour.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent event) {
-				World.getInstance().setTime(getSelectedDate().getTime());
+				if (doSetTime)
+					World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 		minute = new JSpinner(
@@ -164,7 +167,8 @@ public class CalendarPanel extends JPanel implements MouseListener {
 					}
 				}
 				lastMinute = (Integer) minute.getValue();
-				World.getInstance().setTime(getSelectedDate().getTime());
+				if (doSetTime)
+					World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 		second = new JSpinner(
@@ -184,7 +188,8 @@ public class CalendarPanel extends JPanel implements MouseListener {
 					}
 				}
 				lastSecond = (Integer) second.getValue();
-				World.getInstance().setTime(getSelectedDate().getTime());
+				if (doSetTime)
+					World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 		current = new JButton();
@@ -194,7 +199,10 @@ public class CalendarPanel extends JPanel implements MouseListener {
 		current.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
+				doSetTime = false;
 				setCurrentDate(new Date());
+				doSetTime = true;
+				World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 
@@ -211,7 +219,8 @@ public class CalendarPanel extends JPanel implements MouseListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				shiftDate(Calendar.YEAR, -1);
-				World.getInstance().setTime(getSelectedDate().getTime());
+				if (doSetTime)
+					World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 
@@ -222,7 +231,8 @@ public class CalendarPanel extends JPanel implements MouseListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				shiftDate(Calendar.MONTH, -1);
-				World.getInstance().setTime(getSelectedDate().getTime());
+				if (doSetTime)
+					World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 
@@ -239,7 +249,8 @@ public class CalendarPanel extends JPanel implements MouseListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				shiftDate(Calendar.MONTH, 1);
-				World.getInstance().setTime(getSelectedDate().getTime());
+				if (doSetTime)
+					World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 
@@ -250,7 +261,8 @@ public class CalendarPanel extends JPanel implements MouseListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				shiftDate(Calendar.YEAR, 1);
-				World.getInstance().setTime(getSelectedDate().getTime());
+				if (doSetTime)
+					World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 
@@ -293,7 +305,8 @@ public class CalendarPanel extends JPanel implements MouseListener {
 			@Override
 			public void stateChanged(ChangeEvent event) {
 				setDateFromDOY();
-				World.getInstance().setTime(getSelectedDate().getTime());
+				if (doSetTime)
+					World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 		bottomPanel.add(doy);
@@ -302,6 +315,7 @@ public class CalendarPanel extends JPanel implements MouseListener {
 
 		selectedDate = new Date(cal.getTimeInMillis());
 		setCurrentDate(selectedDate);
+		doSetTime = true;
 
 	}
 
@@ -417,7 +431,8 @@ public class CalendarPanel extends JPanel implements MouseListener {
 			cal.setTime(selectedDate);
 			setDOY(cal.get(Calendar.DAY_OF_YEAR));
 			setDayForDisplay(cal);
-			World.getInstance().setTime(getSelectedDate().getTime());
+			if (doSetTime)
+				World.getInstance().setTime(getSelectedDate().getTime());
 		}
 	}
 

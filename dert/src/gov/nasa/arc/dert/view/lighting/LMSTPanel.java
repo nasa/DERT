@@ -33,6 +33,8 @@ public class LMSTPanel extends JPanel {
 	// Time and date fields
 	private int lastSecond, lastMinute;
 	private Date selectedDate;
+	
+	private boolean doSetTime;
 
 	/**
 	 * Constructor
@@ -52,7 +54,8 @@ public class LMSTPanel extends JPanel {
 		sol.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent event) {
-				World.getInstance().setTime(getSelectedDate().getTime());
+				if (doSetTime)
+					World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 		solPart.add(sol);
@@ -70,7 +73,8 @@ public class LMSTPanel extends JPanel {
 		hour.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent event) {
-				World.getInstance().setTime(getSelectedDate().getTime());
+				if (doSetTime)
+					World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 		minute = new JSpinner(new SpinnerNumberModel(new Integer(0), new Integer(0), new Integer(59), new Integer(1)));
@@ -89,7 +93,8 @@ public class LMSTPanel extends JPanel {
 					}
 				}
 				lastMinute = (Integer) minute.getValue();
-				World.getInstance().setTime(getSelectedDate().getTime());
+				if (doSetTime)
+					World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 		second = new JSpinner(new SpinnerNumberModel(new Integer(0), new Integer(0), new Integer(59), new Integer(1)));
@@ -108,7 +113,8 @@ public class LMSTPanel extends JPanel {
 					}
 				}
 				lastSecond = (Integer) second.getValue();
-				World.getInstance().setTime(getSelectedDate().getTime());
+				if (doSetTime)
+					World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 		current = new JButton();
@@ -118,7 +124,10 @@ public class LMSTPanel extends JPanel {
 		current.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
+				doSetTime = false;
 				setCurrentDate(new Date());
+				doSetTime = true;
+				World.getInstance().setTime(getSelectedDate().getTime());
 			}
 		});
 
@@ -126,8 +135,9 @@ public class LMSTPanel extends JPanel {
 
 		add(mainPanel, BorderLayout.NORTH);
 
-		selectedDate = new Date();
+		selectedDate = new Date(World.getInstance().getTime());
 		setCurrentDate(selectedDate);
+		doSetTime = true;
 
 	}
 

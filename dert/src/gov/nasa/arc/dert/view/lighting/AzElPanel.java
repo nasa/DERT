@@ -59,7 +59,7 @@ public class AzElPanel extends JPanel {
 				direction.negateLocal();
 				direction.toArray(dirArray);
 				dirText.setValue(dirArray);
-				World.getInstance().setLightPosition(az, el);
+				World.getInstance().getLighting().setLightPosition(az, el);
 			}
 		};
 		add(azElDisk, BorderLayout.CENTER);

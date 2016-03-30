@@ -328,7 +328,7 @@ public class PDS extends RasterFileImpl {
 		//
 		// // Lon/Lat bounds
 		// double[] bounds = new double[]
-		// {getMetadataDouble("IMAGE_MAP_PROJECTION.WESTERNMOST_LONGITUDE"),
+		// getMetadataDouble("IMAGE_MAP_PROJECTION.WESTERNMOST_LONGITUDE"),
 		// getMetadataDouble("IMAGE_MAP_PROJECTION.MINIMUM_LATITUDE"),
 		// getMetadataDouble("IMAGE_MAP_PROJECTION.EASTERNMOST_LONGITUDE"),
 		// getMetadataDouble("IMAGE_MAP_PROJECTION.MAXIMUM_LATITUDE")};

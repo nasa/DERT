@@ -257,7 +257,7 @@ public class DirectionalLightNode extends Node {
 	}
 
 	/**
-	 * Set the current time relative to a reference lat/lon. Set the location of
+	 * Set the current time relative to a reference lon/lat/alt. Set the location of
 	 * the light based on the time.
 	 * 
 	 * @param time
@@ -266,9 +266,9 @@ public class DirectionalLightNode extends Node {
 	 * @param refLocLat
 	 * @param refLocLon
 	 */
-	public void setTime(long time, String planet, String source, double refLocLat, double refLocLon) {
+	public void setTime(long time, String planet, String source, ReadOnlyVector3 refLoc) {
 		String timeStr = Ephemeris.getInstance().time2UtcStr(time);
-		double[] val = Ephemeris.getTargetVector(planet, source, timeStr, refLocLat, refLocLon);
+		double[] val = Ephemeris.getTargetVector(planet, source, timeStr, refLoc.getX(), refLoc.getY(), refLoc.getZ());
 		if (val != null) {
 			dirVector.set((float) val[0], (float) val[1], (float) val[2]);
 			azimuth = (float) val[4];

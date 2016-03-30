@@ -16,8 +16,7 @@ import gov.nasa.arc.dert.scene.tapemeasure.ActivateTapeMeasureAction;
 import gov.nasa.arc.dert.state.Configuration;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.State;
-import gov.nasa.arc.dert.ui.Vector3TextField;
-import gov.nasa.arc.dert.view.Console;
+import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.view.lighting.LightPositionView;
 import gov.nasa.arc.dert.view.world.WorldView;
 import gov.nasa.arc.dert.viewpoint.ActivateZoomAction;
@@ -27,7 +26,6 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -47,7 +45,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.plaf.FontUIResource;
 
-import com.ardor3d.math.Vector3;
+import com.ardor3d.math.type.ReadOnlyVector3;
 
 /**
  * A JFrame that provides the main application window for DERT.
@@ -82,7 +80,7 @@ public class MainWindow extends JFrame {
 	private ActivateTapeMeasureAction measuringAction;
 
 	// Tool bar text field that holds the current marble location
-	private Vector3TextField marbleLocField;
+	private CoordTextField marbleLocField;
 
 	// Tool bar button that opens takes the viewpoint to the marble
 	private ButtonAction gotoMarble;
@@ -91,7 +89,7 @@ public class MainWindow extends JFrame {
 	private Compass compass;
 
 	// Marble location object
-	private Vector3 marbleLocation;
+//	private Vector3 marbleLocation;
 
 	// String for about window
 //	private String aboutStr;
@@ -116,7 +114,7 @@ public class MainWindow extends JFrame {
 		super("Desktop Exploration of Remote Terrain");
 
 		// Initialize
-		marbleLocation = new Vector3();
+//		marbleLocation = new Vector3();
 		undoHandler = new UndoHandler();
 		version = properties.getProperty("Dert.Version");
 
@@ -306,34 +304,41 @@ public class MainWindow extends JFrame {
 		toolBar.add(gotoMarble);
 
 		// The marble location field.
-		marbleLocField = new Vector3TextField(20, marbleLocation, "0.000", true) {
-			// User hit return
+//		marbleLocField = new Vector3TextField(20, marbleLocation, "0.000", true) {
+//			// User hit return
+//			@Override
+//			protected void handleChange(Vector3 store) {
+//				Landscape landscape = Landscape.getInstance();
+//				// save a copy
+//				Vector3 old = new Vector3(store);
+//				// convert to OpenGL coordinates
+//				landscape.worldToLocalCoordinate(store);
+//				// get the actual elevation at the point
+//				double z = landscape.getZ(store.getX(), store.getY());
+//				// coordinate is out of bounds or in error, beep the user
+//				if (Double.isNaN(z)) {
+//					Toolkit.getDefaultToolkit().beep();
+//					setError();
+//					Console.getInstance().println("Coordinate " + old + " is outside of landscape.");
+//				}
+//				// Add the elevation to the field
+//				else {
+//					store.setZ(z);
+//					World.getInstance().getMarble().setTranslation(store);
+//					landscape.localToWorldCoordinate(store);
+//					marbleLocation.set(store);
+//					setValue(store);
+//				}
+//			}
+//		};
+//		marbleLocField.setToolTipText("current marble location");
+		marbleLocField = new CoordTextField(20, "current marble location", "0.000", true) {
 			@Override
-			protected void handleChange(Vector3 store) {
-				Landscape landscape = Landscape.getInstance();
-				// save a copy
-				Vector3 old = new Vector3(store);
-				// convert to OpenGL coordinates
-				landscape.worldToLocalCoordinate(store);
-				// get the actual elevation at the point
-				double z = landscape.getZ(store.getX(), store.getY());
-				// coordinate is out of bounds or in error, beep the user
-				if (Double.isNaN(z)) {
-					Toolkit.getDefaultToolkit().beep();
-					setError();
-					Console.getInstance().println("Coordinate " + old + " is outside of landscape.");
-				}
-				// Add the elevation to the field
-				else {
-					store.setZ(z);
-					World.getInstance().getMarble().setTranslation(store);
-					landscape.localToWorldCoordinate(store);
-					marbleLocation.set(store);
-					setValue(store);
-				}
+			public void doChange(ReadOnlyVector3 result) {
+				World.getInstance().getMarble().update(result, null, null);
 			}
 		};
-		marbleLocField.setToolTipText("current marble location");
+		marbleLocField.setEnabled(false);
 		toolBar.add(marbleLocField);
 
 		add(toolBar, BorderLayout.NORTH);
@@ -452,6 +457,7 @@ public class MainWindow extends JFrame {
 		resetAction.setEnabled(true);
 		updateLightIcon();
 		marbleLocField.setFormat(Landscape.format);
+		marbleLocField.setEnabled(true);
 		setTitle("Desktop Exploration of Remote Terrain - " + Landscape.getInstance().getGlobeName() + ":"
 			+ World.getInstance().getName() + ":" + currentConfig.toString());
 		worldView.getScenePanel().getCanvas().requestFocusInWindow();
@@ -482,10 +488,11 @@ public class MainWindow extends JFrame {
 	 * Update the marble location field contents when the marble moves.
 	 */
 	public void updateMarbleLocationField() {
-		marbleLocation.set(World.getInstance().getMarble().getTranslation());
-		// Convert from OpenGL to World coordinates
-		Landscape.getInstance().localToWorldCoordinate(marbleLocation);
-		marbleLocField.setValue(marbleLocation);
+		marbleLocField.setLocalValue(World.getInstance().getMarble().getTranslation());
+//		marbleLocation.set(World.getInstance().getMarble().getTranslation());
+//		// Convert from OpenGL to World coordinates
+//		Landscape.getInstance().localToWorldCoordinate(marbleLocation);
+//		marbleLocField.setValue(marbleLocation);
 	}
 
 	/**

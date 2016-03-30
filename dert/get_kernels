@@ -36,16 +36,16 @@ curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0011.tls > $DEST/
 echo "Retrieving de430.bsp"
 curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de430.bsp > $DEST/de430.bsp
 
-# Update to de430 for New Horizons
-echo "Retrieving de432s.bsp"
-curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de432s.bsp > $DEST/de432s.bsp
-
 # Mars Planet Ephemeris
 echo "Retrieving mar097.bsp"
 curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/mar097.bsp > $DEST/mar097.bsp
 
+# Update to de430 for New Horizons
+#echo "Retrieving de432s.bsp"
+#curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de432s.bsp > $DEST/de432s.bsp
+
 # Pluto Planet Ephemeris
-echo "Retrieving plu055.bsp"
-curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/plu055.bsp > $DEST/plu055.bsp
+#echo "Retrieving plu055.bsp"
+#curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/plu055.bsp > $DEST/plu055.bsp
 
 chmod o+r $DEST/*

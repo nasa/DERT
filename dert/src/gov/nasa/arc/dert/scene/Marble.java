@@ -80,15 +80,6 @@ public class Marble extends FigureMarker implements MapElement {
 	}
 
 	/**
-	 * Get the direction to the light
-	 * 
-	 * @return
-	 */
-	public ReadOnlyVector3 getSolarDirection() {
-		return (solarDirectionArrow.getDirection());
-	}
-
-	/**
 	 * Move the marble
 	 * 
 	 * @param pos

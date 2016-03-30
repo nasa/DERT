@@ -13,6 +13,7 @@ import gov.nasa.arc.dert.view.world.WorldView;
 import gov.nasa.arc.dert.viewpoint.ViewpointStore;
 
 import java.awt.Color;
+import java.util.Date;
 
 import com.ardor3d.math.type.ReadOnlyColorRGBA;
 
@@ -55,6 +56,7 @@ public class WorldState extends State {
 	public WorldState(String name) {
 		super(name, StateType.World, new ViewData());
 		surfaceColor = Color.WHITE;
+		time = System.currentTimeMillis();
 
 		viewData.setVisible(true);
 	}
@@ -131,6 +133,7 @@ public class WorldState extends State {
 		verticalExaggeration = world.getVerticalExaggeration();
 		surfaceColor = Landscape.getInstance().getSurfaceColor();
 		time = world.getTime();
+		System.err.println("WorldState.save "+new Date(time));
 	}
 
 	/**

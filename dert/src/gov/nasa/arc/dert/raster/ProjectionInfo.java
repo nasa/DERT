@@ -530,7 +530,7 @@ public class ProjectionInfo {
 					+ falseNorthing;
 				break;
 			case Code_CT_Equirectangular:
-				proj = "+proj=eqc" + " +lat_ts=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
+				proj = "+proj=eqc" + " +lat_0=0 +lat_ts=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
 					+ " +y_0=" + falseNorthing;
 				break;
 			case Code_CT_TransverseMercator:
@@ -595,6 +595,8 @@ public class ProjectionInfo {
 				proj = "+proj=vandg" + " +lon_0=" + centerLon + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
 				break;
 			}
+			if (proj != null)
+				proj += " +a=" + semiMajorAxis+" +b=" + semiMinorAxis;
 		}
 		if ((proj == null) && (pcsCode > 0)) {
 			proj = "+init=epsg:" + pcsCode;
