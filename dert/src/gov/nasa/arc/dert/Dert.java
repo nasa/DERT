@@ -140,6 +140,7 @@ public class Dert {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		userPath = file.getAbsolutePath();
 
 		// Load default and session properties.
 		installDertProperties();
@@ -250,8 +251,7 @@ public class Dert {
 			File file = new File(path, "dert.properties");
 			dertProperties.load(new FileInputStream(file));
 			// Add properties from user's dertstash directory.
-			file = new File(userPath, DERT_HOME);
-			file = new File(file, "properties");
+			file = new File(userPath, "properties");
 			if (file.exists()) {
 				dertProperties.load(new FileInputStream(file));
 			}
@@ -361,8 +361,7 @@ public class Dert {
 			LineSets.saveDefaultsToProperties(properties);
 
 			// Write file to dertstash.
-			File f = new File(userPath, Dert.DERT_HOME);
-			f = new File(f, "properties");
+			File f = new File(userPath, "properties");
 			properties.store(new FileOutputStream(f), "Dert Properties");
 
 			// Close down UI.
