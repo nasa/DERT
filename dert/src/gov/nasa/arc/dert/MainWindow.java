@@ -110,8 +110,8 @@ public class MainWindow extends JFrame {
 	 * @param properties
 	 *            dert properties
 	 */
-	public MainWindow(String path, String[] args, Properties properties) {
-		super("Desktop Exploration of Remote Terrain");
+	public MainWindow(String title, String path, String[] args, Properties properties) {
+		super(title);
 
 		// Initialize
 //		marbleLocation = new Vector3();
@@ -359,7 +359,7 @@ public class MainWindow extends JFrame {
 		System.err.println("MainWindow.setCursor "+cursor);
 	}
 
-	private void fillFileMenu(JPopupMenu fileMenu) {
+	protected void fillFileMenu(JPopupMenu fileMenu) {
 		fileMenu.add(new AboutAction(version));
 		fileMenu.add(new OpenConfigAction(version));
 		fileMenu.add(getRecentSubmenu());
@@ -400,7 +400,7 @@ public class MainWindow extends JFrame {
 		fileMenu.add(exitItem);
 	}
 
-	private void fillEditMenu(JPopupMenu menu) {
+	protected void fillEditMenu(JPopupMenu menu) {
 		menu.add(undoHandler.getUndoAction());
 		menu.add(undoHandler.getRedoAction());
 		menu.addSeparator();

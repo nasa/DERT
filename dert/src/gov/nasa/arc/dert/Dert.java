@@ -56,7 +56,10 @@ import javax.swing.JPopupMenu;
 public class Dert {
 
 	public static final boolean isMac, isLinux, is64;
-	public static final String DERT_HOME = "dertstash";
+	public static String DERT_HOME = "dertstash";
+	public static String SPLASH_SCREEN = "html/images/dert.png";
+	public static String LOG_NAME = "dert.log";
+	public static String MAIN_TITLE = "Desktop Exploration of Remote Terrain";
 
 	// Main application window
 	private static MainWindow mainWindow;
@@ -117,20 +120,6 @@ public class Dert {
 			e.printStackTrace();
 			System.exit(1);
 		}
-
-		// Initialize DERT.
-		initialize(pathStr, args);
-	}
-
-	/**
-	 * Initialize the DERT session.
-	 * 
-	 * @param pathStr
-	 *            path to the DERT executable
-	 * @param args
-	 *            the command line arguments
-	 */
-	public static void initialize(String pathStr, String[] args) {
 		// Make it possible to use multiple OpenGL contexts in Ardor3D.
 		System.setProperty("ardor3d.useMultipleContexts", "true");
 
@@ -138,7 +127,7 @@ public class Dert {
 		path = pathStr;
 		ColorMap.location = path;
 		ImageBoard.defaultImagePath = path + "html/images/defaultimage.png";
-		BasicScene.imagePath = path + "html/images/dert.png";
+		BasicScene.imagePath = path + SPLASH_SCREEN;
 		userPath = System.getProperty("user.home");
 		Proj4.setProjPath(path + "proj");
 
@@ -172,7 +161,7 @@ public class Dert {
 		}
 		if (!debug) {
 			try {
-				file = new File(file, "dert.log");
+				file = new File(file, LOG_NAME);
 				String logFilename = file.getAbsolutePath();
 				PrintStream pStream = new PrintStream(new FileOutputStream(logFilename, true), true);
 				System.setErr(pStream);
@@ -189,21 +178,9 @@ public class Dert {
 		// any windows).
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 
-		// Get the default configuration.
-		Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
-
-		// Create the main and console windows.
-		mainWindow = new MainWindow(path, args, dertProperties);
-		consoleView = (ConsoleView) currentConfig.consoleState.open();
-		consoleWindow = (JDialog) currentConfig.consoleState.getViewData().getViewWindow();
-
-		// Sleep a second to let the main view be completely realized so its
-		// glContext may be shared.
-		try {
-			Thread.sleep(1000);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// Initialize main window and console.
+		createMainWindows(pathStr, args);
+		
 		Console.getInstance().println("OpenGL Vendor: " + SceneCanvas.openGLVendor);
 		Console.getInstance().println("OpenGL Renderer: " + SceneCanvas.openGLRenderer);
 		Console.getInstance().println("OpenGL Version: " + SceneCanvas.openGLVersion);
@@ -239,7 +216,34 @@ public class Dert {
 		}
 	}
 
-	private static void installDertProperties() {
+	/**
+	 * Initialize the DERT session.
+	 * 
+	 * @param pathStr
+	 *            path to the DERT executable
+	 * @param args
+	 *            the command line arguments
+	 */
+	protected void createMainWindows(String pathStr, String[] args) {
+
+		// Get the default configuration.
+		Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
+
+		// Create the main and console windows.
+		mainWindow = new MainWindow(MAIN_TITLE, path, args, dertProperties);
+		consoleView = (ConsoleView) currentConfig.consoleState.open();
+		consoleWindow = (JDialog) currentConfig.consoleState.getViewData().getViewWindow();
+
+		// Sleep a second to let the main view be completely realized so its
+		// glContext may be shared.
+		try {
+			Thread.sleep(1000);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void installDertProperties() {
 		dertProperties = new Properties();
 		try {
 			// Load properties from file with executable.
