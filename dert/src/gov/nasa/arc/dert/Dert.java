@@ -62,19 +62,19 @@ public class Dert {
 	public static String MAIN_TITLE = "Desktop Exploration of Remote Terrain";
 
 	// Main application window
-	private static MainWindow mainWindow;
+	protected static MainWindow mainWindow;
 
 	// Console window
-	private static JDialog consoleWindow;
+	protected static JDialog consoleWindow;
 
 	// Console view
-	private static ConsoleView consoleView;
+	protected static ConsoleView consoleView;
 
 	// Paths to DERT executable and user current working directory
-	private static String path, userPath;
+	protected static String path, userPath;
 
 	// Application properties
-	private static Properties dertProperties;
+	protected static Properties dertProperties;
 
 	// Operating system flags
 	static {
