@@ -84,7 +84,7 @@ public class LandscapeTest {
 		System.err.println("sphericalToWorldCoordinate "+coord);
 		landscape.worldToSphericalCoordinate(coord);
 		System.err.println("worldToSphericalCoordinate "+coord);
-		if (!((coord.getX() == 0.001) && (coord.getY() == 0.001) && (coord.getZ() == 0))) {
+		if (!MathUtil.equalsFloat(coord, new Vector3(0.001, 0.001, 0))) {
 			System.err.println("Test of Landscape spherical coordinates failed.");
 			return(false);
 		}

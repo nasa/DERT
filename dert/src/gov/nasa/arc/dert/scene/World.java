@@ -362,9 +362,6 @@ public class World extends GroupNode {
 	public void setTime(long timeUTC) {
 		this.timeUTC = timeUTC;
 		lighting.setTime(timeUTC);
-//		if (marble != null) {
-//			marble.setSolarDirection(lighting.getLightDirection());
-//		}
 	}
 
 	/**

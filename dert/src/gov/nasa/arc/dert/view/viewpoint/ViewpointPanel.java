@@ -110,7 +110,7 @@ public class ViewpointPanel extends JPanel {
 		JPanel listPanel = new JPanel(new BorderLayout());
 		listPanel.add(scrollPane, BorderLayout.CENTER);
 		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		prevAction = new ButtonAction("Go to the previous viewpoint", null, "prev_20.png") {
+		prevAction = new ButtonAction("Go to the previous viewpoint", null, "prev_16.png") {
 			@Override
 			protected void run() {
 				int index = list.getSelectedIndex();
@@ -125,7 +125,7 @@ public class ViewpointPanel extends JPanel {
 			}
 		};
 		topPanel.add(prevAction);
-		nextAction = new ButtonAction("Go to the next viewpoint", null, "next_20.png") {
+		nextAction = new ButtonAction("Go to the next viewpoint", null, "next_16.png") {
 			@Override
 			protected void run() {
 				int index = list.getSelectedIndex();

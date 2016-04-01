@@ -136,9 +136,6 @@ public class DertTest {
 		System.err.println();
 		
 		Console.createInstance();
-		
-		// Load SPICE libraries and kernels
-//		Ephemeris.createInstance(path, dertProperties);
 	}
 
 	private static void installDertProperties() {
@@ -183,24 +180,6 @@ public class DertTest {
 		}
 
 	}
-
-	/**
-	 * Get the path to the DERT executable.
-	 * 
-	 * @return the path
-	 */
-	public static String getPath() {
-		return (path);
-	}
-
-	/**
-	 * Get the path to the user's current working directory.
-	 * 
-	 * @return the path
-	 */
-	public static String getUserPath() {
-		return (userPath);
-	}
 	
 	public void runTests(String[] args) {
 		MathUtilTest mut = new MathUtilTest();
@@ -210,5 +189,7 @@ public class DertTest {
 		LandscapeTest lt = new LandscapeTest();
 		if (!lt.testLandscape())
 			System.exit(2);
+		
+		System.err.println("All tests passed.");
 	}
 }

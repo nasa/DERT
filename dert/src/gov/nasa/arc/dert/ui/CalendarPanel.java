@@ -212,7 +212,7 @@ public class CalendarPanel extends JPanel implements MouseListener {
 		gridLayout = new GridLayout(8, 7);
 		calendarPart.setLayout(gridLayout);
 
-		yearUp = new JButton(Icons.getImageIcon("doubleprev_20.png"));
+		yearUp = new JButton(Icons.getImageIcon("doubleprev_16.png"));
 		calendarPart.add(yearUp);
 		yearUp.setToolTipText("previous year");
 		yearUp.addActionListener(new ActionListener() {
@@ -224,7 +224,7 @@ public class CalendarPanel extends JPanel implements MouseListener {
 			}
 		});
 
-		monthUp = new JButton(Icons.getImageIcon("prev_20.png"));
+		monthUp = new JButton(Icons.getImageIcon("prev_16.png"));
 		calendarPart.add(monthUp);
 		monthUp.setToolTipText("previous month");
 		monthUp.addActionListener(new ActionListener() {
@@ -242,7 +242,7 @@ public class CalendarPanel extends JPanel implements MouseListener {
 		selectedMonth = new JLabel(formatterMonth.format(new Date()), SwingConstants.LEFT);
 		calendarPart.add(selectedMonth);
 
-		monthNext = new JButton(Icons.getImageIcon("next_20.png"));
+		monthNext = new JButton(Icons.getImageIcon("next_16.png"));
 		calendarPart.add(monthNext);
 		monthNext.setToolTipText("next month");
 		monthNext.addActionListener(new ActionListener() {
@@ -254,7 +254,7 @@ public class CalendarPanel extends JPanel implements MouseListener {
 			}
 		});
 
-		yearNext = new JButton(Icons.getImageIcon("doublenext_20.png"));
+		yearNext = new JButton(Icons.getImageIcon("doublenext_16.png"));
 		calendarPart.add(yearNext);
 		yearNext.setToolTipText("next year");
 		yearNext.addActionListener(new ActionListener() {
