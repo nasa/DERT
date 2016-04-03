@@ -301,8 +301,8 @@ public class ViewpointPanel extends JPanel {
 		dataPanel.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		tipText = "Viewpoint altitude above ground level";
-		label = new JLabel("Altitude", SwingConstants.RIGHT);
+		tipText = "Viewpoint height above terrain";
+		label = new JLabel("Height", SwingConstants.RIGHT);
 		label.setToolTipText(tipText);
 		panel.add(label);
 		altitudeField = new DoubleTextField(20, 0, false, "0.000") {

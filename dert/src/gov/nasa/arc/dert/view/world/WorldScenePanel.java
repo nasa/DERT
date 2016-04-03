@@ -164,4 +164,22 @@ public class WorldScenePanel extends SceneCanvasPanel {
 		return (worldScene.getShowCrosshair());
 	}
 
+	/**
+	 * Set text overlay visibility
+	 * 
+	 * @param show
+	 */
+	public void setShowTextOverlay(boolean show) {
+		worldScene.setShowTextOverlay(show);
+	}
+
+	/**
+	 * Get text overlay visibility
+	 * 
+	 * @return
+	 */
+	public boolean isShowTextOverlay() {
+		return (worldScene.getShowTextOverlay());
+	}
+
 }

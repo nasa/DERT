@@ -216,6 +216,7 @@ public class ViewpointController {
 		timestamp = System.currentTimeMillis();
 		velocity = 0;
 		amplitude = 0;
+		viewpointNode.floatCrosshair(true);
 	}
 
 	/**
@@ -240,6 +241,7 @@ public class ViewpointController {
 			if (spat != null) {
 				viewpointNode.setLookAt(pickPosition);
 			}
+			viewpointNode.floatCrosshair(false);
 		}
 	}
 
@@ -258,6 +260,7 @@ public class ViewpointController {
 				if (spat != null) {
 					viewpointNode.setLookAt(pickPosition);
 				}
+				viewpointNode.floatCrosshair(false);
 			}
 		}
 	}

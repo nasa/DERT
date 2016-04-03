@@ -118,6 +118,7 @@ public class RasterText extends Text {
 		}
 
 		final GL2 gl2 = GLContext.getCurrentGL().getGL2();
+		gl2.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 		gl2.glRasterPos3d(position.getX(), position.getY(), position.getZ());
 		glut.glutBitmapString(font, textString);
 	}
@@ -126,6 +127,7 @@ public class RasterText extends Text {
 	protected void renderVBO(final Renderer r, final MeshData meshData, final int primcount) {
 		if (!textString.isEmpty()) {
 			final GL2 gl2 = GLContext.getCurrentGL().getGL2();
+			gl2.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 			gl2.glRasterPos3d(position.getX(), position.getY(), position.getZ());
 			glut.glutBitmapString(font, textString);
 		}

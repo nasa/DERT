@@ -23,7 +23,6 @@ import gov.nasa.arc.dert.viewpoint.ActivateZoomAction;
 import gov.nasa.arc.dert.viewpoint.Compass;
 
 import java.awt.BorderLayout;
-import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -354,10 +353,10 @@ public class MainWindow extends JFrame {
 		requestFocus();
 	}
 	
-	public void setCursor(Cursor cursor) {
-		super.setCursor(cursor);
-		System.err.println("MainWindow.setCursor "+cursor);
-	}
+//	public void setCursor(Cursor cursor) {
+//		super.setCursor(cursor);
+//		System.err.println("MainWindow.setCursor "+cursor);
+//	}
 
 	protected void fillFileMenu(JPopupMenu fileMenu) {
 		fileMenu.add(new AboutAction(version));
@@ -423,7 +422,7 @@ public class MainWindow extends JFrame {
 		};
 		menu.add(stereoAction);
 
-		JCheckBoxMenuItem corXhair = new JCheckBoxMenuItem("Show Center of Rotation Crosshair");
+		JCheckBoxMenuItem corXhair = new JCheckBoxMenuItem("Show Crosshair at Center of Rotation");
 		corXhair.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -432,6 +431,16 @@ public class MainWindow extends JFrame {
 		});
 		corXhair.setState(worldView.getScenePanel().isShowCrosshair());
 		menu.add(corXhair);
+
+		JCheckBoxMenuItem textOverlay = new JCheckBoxMenuItem("Show Text Overlay");
+		textOverlay.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				worldView.getScenePanel().setShowTextOverlay(((JCheckBoxMenuItem) event.getSource()).getState());
+			}
+		});
+		textOverlay.setState(worldView.getScenePanel().isShowTextOverlay());
+		menu.add(textOverlay);
 	}
 
 	/**

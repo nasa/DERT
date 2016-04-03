@@ -20,6 +20,7 @@ import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyEventListener;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.event.SceneGraphManager;
+import com.ardor3d.scenegraph.hint.CullHint;
 import com.ardor3d.util.ReadOnlyTimer;
 import com.ardor3d.util.geom.Debugger;
 
@@ -32,9 +33,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	// List of objects that must be updated when the camera position changes
 	private ArrayList<ViewDependent> viewDependentList;
 
-	// Cross hair
-	private RGBAxes crosshair;
-
 	// World object
 	private World world;
 
@@ -43,10 +41,15 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 
 	// Viewpoint
 	private ViewpointNode viewpointNode;
+	
+	// Viewpoint crosshair and text
+	private RGBAxes crosshair;
+	private Node text;
 
 	// Flags
 	private boolean showCrosshair = true;
 	private boolean showNormals = false;
+	private boolean showTextOverlay = true;
 
 	// Countdown used after new scene is created to ensure the quadtrees for the
 	// viewpoint are loaded.
@@ -57,7 +60,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	 * Constructor
 	 */
 	public WorldScene() {
-		crosshair = new RGBAxes();
 		SceneGraphManager.getSceneGraphManager().addDirtyEventListener(this);
 	}
 
@@ -75,12 +77,17 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	 * @param wState
 	 */
 	public void setState(WorldState wState) {
+		
 		world = wState.getWorld();
-		viewpointNode = new ViewpointNode(world.getName() + "_viewpoint", wState.getCurrentViewpoint());
-		viewDependentList = new ArrayList<ViewDependent>();
 		setRootNode(world);
 		world.initialize();
+		
+		viewpointNode = new ViewpointNode(world.getName() + "_viewpoint", wState.getCurrentViewpoint());
+		viewDependentList = new ArrayList<ViewDependent>();
 		world.attachChild(viewpointNode);
+		crosshair = viewpointNode.getCrosshair();
+		world.attachChild(crosshair);
+		text = viewpointNode.getText();
 		initializingCount = Landscape.getInstance().getBaseMapLevel() * 2;
 		updateBounds();
 		spatialDirty(null, DirtyType.Attached); // add the tiles to the
@@ -116,7 +123,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 			initializingCount--;
 		}
 		if (viewpointNode.changed.get()) {
-			crosshair.update(viewpointNode.getCamera());
 			for (int i = 0; i < viewDependentList.size(); ++i) {
 				viewDependentList.get(i).update(viewpointNode.getCamera());
 			}
@@ -125,7 +131,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 
 	@Override
 	public void preRender(Renderer renderer) {
-		// System.err.println("WorldScene.prerender "+renderer);
 		world.getLighting().prerender(viewpointNode.getCamera(), renderer,
 			world.getDirtyEventHandler().getChanged() || viewpointNode.changed.getAndSet(false));
 		if (world.getDirtyEventHandler().getChanged()) {
@@ -148,7 +153,16 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		world.getDirtyEventHandler().setChanged(false);
 		drawNormals(renderer);
 		if (showCrosshair) {
+			crosshair.getSceneHints().setCullHint(CullHint.Never);
 			crosshair.onDraw(renderer);
+			crosshair.getSceneHints().setCullHint(CullHint.Always);
+		}
+		if (showTextOverlay) {
+			renderer.setOrtho();
+			text.getSceneHints().setCullHint(CullHint.Never);
+			text.onDraw(renderer);
+			text.getSceneHints().setCullHint(CullHint.Always);
+			renderer.unsetOrtho();
 		}
 	}
 
@@ -267,6 +281,25 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	 */
 	public boolean getShowCrosshair() {
 		return (showCrosshair);
+	}
+
+	/**
+	 * Set cross hair visibility
+	 * 
+	 * @param show
+	 */
+	public void setShowTextOverlay(boolean show) {
+		showTextOverlay = show;
+		needsRender.set(true);
+	}
+
+	/**
+	 * Get cross hair visibility
+	 * 
+	 * @return
+	 */
+	public boolean getShowTextOverlay() {
+		return (showTextOverlay);
 	}
 
 	/**

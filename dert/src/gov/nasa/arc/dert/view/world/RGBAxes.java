@@ -1,15 +1,13 @@
 package gov.nasa.arc.dert.view.world;
 
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
-import gov.nasa.arc.dert.viewpoint.ViewDependent;
-
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import com.ardor3d.bounding.BoundingBox;
 import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.type.ReadOnlyColorRGBA;
-import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.IndexMode;
+import com.ardor3d.renderer.queue.RenderBucketType;
 import com.ardor3d.renderer.state.MaterialState;
 import com.ardor3d.renderer.state.ZBufferState;
 import com.ardor3d.scenegraph.Line;
@@ -21,7 +19,7 @@ import com.ardor3d.util.geom.BufferUtils;
  * worldview. It provides three axes: green = North, red = East, blue == Up.
  *
  */
-public class RGBAxes extends Line implements ViewDependent {
+public class RGBAxes extends Line {
 
 	// Coordinates and colors
 	private static final ColorRGBA greenColor = new ColorRGBA(0.0f, 0.8f, 0.0f, 1.0f);
@@ -30,7 +28,7 @@ public class RGBAxes extends Line implements ViewDependent {
 	private static final ReadOnlyColorRGBA[] axisColor = { ColorRGBA.BLACK, ColorRGBA.RED, ColorRGBA.GREEN,
 		ColorRGBA.BLUE, greenColor, greenColor, greenColor, greenColor };
 	private static final int[] axisIndex = { 0, 1, 0, 2, 0, 3, 4, 5, 5, 6, 6, 7 };
-	private static MaterialState axisMaterialState;
+	private ZBufferState zBuf;
 
 	/**
 	 * Constructor
@@ -48,26 +46,36 @@ public class RGBAxes extends Line implements ViewDependent {
 		IntBuffer indexBuffer = BufferUtils.createIntBuffer(axisIndex);
 		indexBuffer.rewind();
 		getMeshData().setIndexBuffer(indexBuffer);
-		ZBufferState axisZState = new ZBufferState();
-		axisMaterialState = new MaterialState();
+		setModelBound(new BoundingBox());
+		updateModelBound();
+		
+		MaterialState axisMaterialState = new MaterialState();
 		axisMaterialState.setColorMaterial(MaterialState.ColorMaterial.Emissive);
+		axisMaterialState.setColorMaterialFace(MaterialState.MaterialFace.FrontAndBack);
 		axisMaterialState.setEnabled(true);
-		// axisLines.setIsCollidable(false);
 		getSceneHints().setLightCombineMode(LightCombineMode.Off);
 		setRenderState(axisMaterialState);
-		setRenderState(axisZState);
+		
+		zBuf = new ZBufferState();
+		zBuf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
+		zBuf.setEnabled(true);
+		setRenderState(zBuf);
+		getSceneHints().setRenderBucketType(RenderBucketType.PostBucket);
+		
 		updateGeometricState(0, false);
 	}
-
+	
 	/**
-	 * Update size according to camera location
+	 * Set the crosshair to always pass the ZBuffer test so it will be drawn in front of
+	 * the landscape.
+	 * 
+	 * @param always
 	 */
-	@Override
-	public void update(BasicCamera camera) {
-		ReadOnlyVector3 lookAt = camera.getLookAt();
-		double scale = camera.getPixelSizeAt(lookAt, true) * 20;
-		setScale(scale);
-		setTranslation(lookAt);
-		updateWorldTransform(false);
+	public void alwaysZBuffer(boolean always) {
+		if (always)
+			zBuf.setFunction(ZBufferState.TestFunction.Always);
+		else
+			zBuf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
+		updateGeometricState(0);
 	}
 }

@@ -4,16 +4,21 @@ import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.scenegraph.RasterText;
+import gov.nasa.arc.dert.scenegraph.Text.AlignType;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.view.viewpoint.ViewpointPanel;
+import gov.nasa.arc.dert.view.world.RGBAxes;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.ardor3d.bounding.BoundingSphere;
 import com.ardor3d.bounding.BoundingVolume;
+import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Matrix3;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
+import com.ardor3d.renderer.queue.RenderBucketType;
 import com.ardor3d.scenegraph.Node;
 
 /**
@@ -55,6 +60,12 @@ public class ViewpointNode extends Node {
 	private boolean strictFrustum;
 	private boolean viewpointSelected;
 
+	// Cross hair
+	private RGBAxes crosshair;
+	private Node text;
+	private RasterText corText, dstText, magText;
+	private double textSize = 20;
+
 	/**
 	 * Constructor
 	 * 
@@ -64,6 +75,8 @@ public class ViewpointNode extends Node {
 	public ViewpointNode(String name, ViewpointStore store) {
 		setName(name);
 		setCamera(new BasicCamera(1, 1, 45, 1, 0));
+		crosshair = new RGBAxes();
+		createText();
 		if (store != null) {
 			setViewpoint(store, true, true);
 		}
@@ -101,11 +114,12 @@ public class ViewpointNode extends Node {
 		this.viewpointPanel = viewpointPanel;
 	}
 
-	private void updateStatus() {
+	public void updateStatus() {
 		if (viewpointPanel != null) {
 			viewpointPanel.updateData(viewpointSelected);
 		}
 		viewpointSelected = false;
+		updateText();
 	}
 
 	/**
@@ -133,10 +147,65 @@ public class ViewpointNode extends Node {
 		location.addLocal(seekPoint);
 		// set the camera location and direction
 		camera.setFrame(location, rotate);
+		camera.setLookAt(seekPoint);
 		// update this node
 		updateFromCamera();
+		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
+	}
+	
+	private void updateCrosshair() {
+		tmpVec.set(camera.getLookAt());
+		double scale = camera.getPixelSizeAt(tmpVec, true) * 20;
+		crosshair.setScale(scale);
+		crosshair.setTranslation(tmpVec);
+		crosshair.updateWorldTransform(false);
+	}
+	
+	private void createText() {
+		text = new Node("_text");
+		corText = new RasterText("_cor", "", AlignType.Left);
+		corText.setScaleFactor((float) textSize);
+		corText.setColor(ColorRGBA.WHITE);
+		corText.setVisible(true);
+		text.attachChild(corText);
+		magText = new RasterText("_mag", "", AlignType.Left);
+		magText.setScaleFactor((float) textSize);
+		magText.setColor(ColorRGBA.WHITE);
+		magText.setVisible(true);
+		magText.setTranslation(0, textSize, 0);
+		text.attachChild(magText);
+		dstText = new RasterText("_dst", "", AlignType.Left);
+		dstText.setScaleFactor((float) textSize);
+		dstText.setColor(ColorRGBA.WHITE);
+		dstText.setVisible(true);
+		dstText.setTranslation(0, 2*textSize, 0);
+		text.attachChild(dstText);
+		text.updateGeometricState(0);
+		text.getSceneHints().setRenderBucketType(RenderBucketType.Ortho);
+		updateText();
+	}
+	
+	private void updateText() {
+		tmpVec.set(camera.getLookAt());
+		Landscape.getInstance().localToWorldCoordinate(tmpVec);
+		String str = String.format("CoR: %7.3f %7.3f", tmpVec.getXf(), tmpVec.getYf());
+		corText.setText(str);
+		double dist = camera.getDistanceToCoR();
+		str = String.format("Dist: %7.3f", dist);
+		dstText.setText(str);
+		double mag = camera.getMagnification();
+		str = String.format("Mag: %7.3f", mag);
+		magText.setText(str);
+	}
+	
+	public RGBAxes getCrosshair() {
+		return(crosshair);
+	}
+	
+	public Node getText() {
+		return(text);
 	}
 
 	@Override
@@ -168,6 +237,7 @@ public class ViewpointNode extends Node {
 		camera.setLookAt(tmpVec);
 		camera.setLocation(location);
 		updateFromCamera();
+		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
 		updateStatus();
@@ -202,6 +272,7 @@ public class ViewpointNode extends Node {
 	public void resize(int width, int height) {
 		camera.setAspect(width / (double) height);
 		camera.resize(width, height);
+		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
 	}
@@ -220,6 +291,7 @@ public class ViewpointNode extends Node {
 		camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
 		camera.setFrame(location, rotate);
 		updateFromCamera();
+		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
 	}
@@ -258,8 +330,10 @@ public class ViewpointNode extends Node {
 		}
 		camera.setLocation(location);
 		updateFromCamera();
+		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
+		updateStatus();
 	}
 
 	/**
@@ -310,6 +384,7 @@ public class ViewpointNode extends Node {
 		}
 		rotateTurntable(vps.lookAt.distance(vps.location));
 		updateFromCamera();
+		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
 	}
@@ -407,6 +482,7 @@ public class ViewpointNode extends Node {
 		camera.setLocation(loc);
 		camera.setLookAt(lookAt);
 		updateFromCamera();
+		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
 		return (true);
@@ -448,6 +524,7 @@ public class ViewpointNode extends Node {
 		camera.setLookAt(lookAt);
 		rotateTurntable(camera.getDistanceToCoR());
 		updateFromCamera();
+		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
 	}
@@ -468,6 +545,7 @@ public class ViewpointNode extends Node {
 //		setTranslation(loc);
 		camera.setLocation(loc);
 		updateFromCamera();
+		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
 		return (true);
@@ -493,7 +571,6 @@ public class ViewpointNode extends Node {
 	 * @return
 	 */
 	public double getAltitude() {
-//		ReadOnlyVector3 trans = getWorldTranslation();
 		ReadOnlyVector3 trans = camera.getLocation();
 		Landscape landscape = Landscape.getInstance();
 		return (trans.getZ() - landscape.getZ(trans.getX(), trans.getY()));
@@ -558,6 +635,7 @@ public class ViewpointNode extends Node {
 		camera.setLookAt(cor);
 		rotate(0, 0);
 		updateFromCamera();
+		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
 	}
@@ -570,7 +648,12 @@ public class ViewpointNode extends Node {
 	public void setLookAt(ReadOnlyVector3 lookAt) {
 		camera.setLookAt(lookAt);
 		updateFromCamera();
+		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
+	}
+	
+	public void floatCrosshair(boolean floating) {
+		crosshair.alwaysZBuffer(floating);
 	}
 }
