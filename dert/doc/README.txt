@@ -20,6 +20,9 @@ Put the dert directory in the user's path.
 
 WARNING: The path to dert should not contain any spaces.
 
+A script called "get_kernels" is included. Run this script to download SPICE kernels from NAIF if
+the kernels subdirectory of the dert directory is empty or absent.
+
 
 EXECUTION:
 
