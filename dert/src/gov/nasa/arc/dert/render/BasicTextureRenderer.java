@@ -62,6 +62,29 @@ public class BasicTextureRenderer extends JoglTextureRenderer {
 	public void setIsShadow(boolean isShadow) {
 		this.isShadow = isShadow;
 	}
+	
+	public void clear(final Texture tex, final int clear) {
+//        final GL gl = GLContext.getCurrentGL();
+//        gl.glClearColor(1, 1, 1, 1);
+
+        setupForSingleTexDraw(tex);
+
+        if (_samples > 0 && _supportsMultisample) {
+            setMSFBO();
+        }
+
+        switchCameraIn(clear);
+        switchCameraOut();
+
+        if (_samples > 0 && _supportsMultisample) {
+            blitMSFBO();
+        }
+
+        takedownForSingleTexDraw(tex);
+        
+//        final ReadOnlyColorRGBA bgColor = _parentRenderer.getBackgroundColor();
+//        gl.glClearColor(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), bgColor.getAlpha());
+	}
 
 	@Override
 	public void render(final Spatial toDraw, final Texture tex, final int clear) {

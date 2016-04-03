@@ -241,6 +241,24 @@ public class ProjectedDepthTexture {
 		texture.setTextureMatrix(projectionMatrix);
 	}
 
+	// Render the texture
+	public void clear(final Renderer r) {
+
+		updateProjection();
+
+		// Render only vertices, nothing else
+		setRenderVertexOnly(true);
+
+		// render
+		textureRenderer.clear(texture, Renderer.BUFFER_COLOR_AND_DEPTH);
+
+		// restore states
+		setRenderVertexOnly(false);
+
+		// set the texture coordinate matrix
+		texture.setTextureMatrix(projectionMatrix);
+	}
+
 	private static void setRenderVertexOnly(boolean val) {
 		Mesh.RENDER_VERTEX_ONLY = val;
 	}

@@ -31,14 +31,18 @@ public class LayerEffects extends GLSLShaderObjectsState {
 
 	protected static final String standardUniforms = "uniform float blendFactor[7];\n"
 		+ "uniform bool layersEnabled;\n" + "uniform sampler2DShadow shadowUnit;\n" + "uniform bool shadowEnabled;\n"
+		+ "uniform bool allDark;\n"
 		+ "uniform float xGridOffset;\n" + "uniform float yGridOffset;\n" + "uniform float xGridCell;\n"
 		+ "uniform float yGridCell;\n" + "uniform float gridLineWidth;\n" + "uniform float gridColor[4];\n"
 		+ "uniform bool gridEnabled;\n";
 
 	protected static final String bottom = "		if (color.a > 0.0)\n" + "			color.a = 1.0;\n"
 		+ "	}\n"
-		+ "	if (shadowEnabled) {\n" + "   		shadeFactor = shadow2DProj(shadowUnit, gl_TexCoord[7]).x;\n"
-		+ "   		shadeFactor = (shadeFactor < 1.0) ? 0.5 : 1.0;\n" + "	}\n" + "	if (hasTexture)\n"
+		+ "	if (shadowEnabled) {\n"
+		+ "   		shadeFactor = shadow2DProj(shadowUnit, gl_TexCoord[7]).x;\n"
+		+ "   		shadeFactor = ((shadeFactor < 1.0) || allDark) ? 0.5 : 1.0;\n"
+		+ "	}\n"
+		+ "	if (hasTexture)\n"
 		+ "		gl_FragColor = vec4(shadeFactor*(color.rgb+(blendFactor[0]*gl_Color.rgb)), gl_Color.a);\n"
 		+ "	else if (layersEnabled)\n"
 		+ "		gl_FragColor = vec4(shadeFactor*blendFactor[0]*gl_Color.rgb, gl_Color.a);\n"
@@ -55,6 +59,7 @@ public class LayerEffects extends GLSLShaderObjectsState {
 
 	// show shadows
 	public boolean shadowEnabled;
+	public boolean allDark;
 
 	// show surface grid
 	public boolean gridEnabled;
@@ -106,6 +111,7 @@ public class LayerEffects extends GLSLShaderObjectsState {
 		setUniform("gridEnabled", gridEnabled);
 		setUniform("shadowEnabled", shadowEnabled);
 		setUniform("shadowUnit", ShadowMap.SHADOW_MAP_UNIT);
+		setUniform("allDark", allDark);
 		setUniform("blendFactor", blendFactor);
 
 		setUniform("xGridOffset", xGridOffset);

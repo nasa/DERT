@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.render;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.util.MathUtil;
 
 import com.ardor3d.bounding.BoundingVolume;
 import com.ardor3d.image.Texture.DepthTextureCompareFunc;
@@ -10,10 +11,8 @@ import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.Camera;
 import com.ardor3d.renderer.Renderer;
 import com.ardor3d.renderer.state.TextureState;
-import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
-import com.ardor3d.scenegraph.hint.CullHint;
 
 /**
  * Projected depth texture that implements a shadow map.
@@ -35,9 +34,9 @@ public class ShadowMap extends ProjectedDepthTexture {
 
 	// this shadow map is visible
 	private boolean isEnabled;
-
-	// object that blocks the sunlight when it is underneath the landscape
-	private Mesh sunBlock;
+	
+	// Vector to store solar azimuth and elevation
+	private Vector3 angle;
 
 	public ShadowMap(ReadOnlyVector3 center, double radius, Spatial occluder, Spatial target) {
 		super(occluder, target, DepthTextureCompareFunc.LessThanEqual, true, true);
@@ -49,6 +48,7 @@ public class ShadowMap extends ProjectedDepthTexture {
 		lightCameraLocation = new Vector3();
 		lightDirection = new Vector3();
 		dirTmp = new Vector3();
+		angle = new Vector3();
 	}
 
 	/**
@@ -75,7 +75,6 @@ public class ShadowMap extends ProjectedDepthTexture {
 			textureState.setTexture(null, SHADOW_MAP_UNIT);
 		}
 		target.markDirty(DirtyType.RenderState);
-		sunBlock = Landscape.getInstance().getSunBlock();
 		Landscape.getInstance().getLayerManager().enableShadow(enabled);
 	}
 
@@ -131,6 +130,7 @@ public class ShadowMap extends ProjectedDepthTexture {
 	 */
 	public void updateLightDirection(ReadOnlyVector3 dir) {
 		lightDirection.set(dir);
+		angle = MathUtil.directionToAzEl(dir, angle);
 	}
 
 	@Override
@@ -163,12 +163,11 @@ public class ShadowMap extends ProjectedDepthTexture {
 
 	@Override
 	public void update(final Renderer r) {
-		if (sunBlock == null) {
-			return;
-		}
-		sunBlock.getSceneHints().setCullHint(CullHint.Inherit);
+		if (angle.getY() >= 0)
+			Landscape.getInstance().getLayerManager().setAllDark(true);
+		else
+			Landscape.getInstance().getLayerManager().setAllDark(false);
 		super.update(r);
-		sunBlock.getSceneHints().setCullHint(CullHint.Always);
 		World.getInstance().getTextureState().setTexture(texture, SHADOW_MAP_UNIT);
 
 		target.markDirty(DirtyType.RenderState);

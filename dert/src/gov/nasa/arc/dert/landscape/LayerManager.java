@@ -439,6 +439,10 @@ public class LayerManager implements Serializable {
 	public void enableShadow(boolean enable) {
 		layerEffects.shadowEnabled = enable;
 	}
+	
+	public void setAllDark(boolean allDark) {
+		layerEffects.allDark = allDark;
+	}
 
 	/**
 	 * Set the blend factor for a layer indicated by the index

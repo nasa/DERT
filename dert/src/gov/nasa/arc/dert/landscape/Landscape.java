@@ -22,15 +22,13 @@ import com.ardor3d.math.Ray3;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.state.MaterialState;
-import com.ardor3d.renderer.state.RenderState;
-import com.ardor3d.renderer.state.WireframeState;
 import com.ardor3d.renderer.state.MaterialState.MaterialFace;
+import com.ardor3d.renderer.state.RenderState;
 import com.ardor3d.renderer.state.TextureState;
-import com.ardor3d.scenegraph.Mesh;
+import com.ardor3d.renderer.state.WireframeState;
 import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
-import com.ardor3d.scenegraph.hint.CullHint;
 import com.ardor3d.scenegraph.hint.LightCombineMode;
 
 /**
@@ -84,7 +82,7 @@ public class Landscape extends Node implements ViewDependent {
 	private Node contents;
 
 	// minimum Z value, the Z value at the edge of the landscape
-	private double minZ, edgeZ;
+	private double minZ;
 
 	// surface mesh color
 	private MaterialState materialState;
@@ -100,7 +98,7 @@ public class Landscape extends Node implements ViewDependent {
 	private float pixelScale = 1;
 
 	// blocks sunlight from underneath landscape while shadows are enabled
-	private Mesh sunBlock;
+//	private Mesh sunBlock;
 	
 	private static Landscape INSTANCE;
 	
@@ -142,7 +140,7 @@ public class Landscape extends Node implements ViewDependent {
 		pixelWidth *= pixelScale;
 		pixelLength *= pixelScale;
 		minZ = baseLayer.getMinimumValue()[0];
-		edgeZ = baseLayer.getFillValue();
+//		edgeZ = baseLayer.getFillValue();
 		tileWidth = baseLayer.getTileWidth();
 		tileLength = baseLayer.getTileLength();
 		baseMapLevel = baseLayer.getNumberOfLevels() - 1;
@@ -284,14 +282,15 @@ public class Landscape extends Node implements ViewDependent {
 		contents.setTranslation(0, 0, -minZ * pixelScale);
 		contents.attachChild(quadTree);
 
-		// add an invisible mesh to the landscape to block shadows when sun is
-		// underneath the landscape
-		double z = edgeZ - minZ;
-		sunBlock = factory.createSunBlockMesh(worldWidth, worldLength, z);
-		sunBlock.setTranslation(0, 0, minZ + z / 2);
-		sunBlock.getSceneHints().setCullHint(CullHint.Always);
-		// sunBlock.getSceneHints().setRenderBucketType(RenderBucketType.Transparent);
-		contents.attachChild(sunBlock);
+//		// add an invisible mesh to the landscape to block shadows when sun is
+//		// underneath the landscape
+//		double z = edgeZ - minZ;
+//		sunBlock = factory.createSunBlockMesh(worldWidth, worldLength, z);
+//		System.err.println("Landscape.initialize "+minZ+" "+z);
+//		sunBlock.setTranslation(0, 0, minZ + z / 2);
+//		sunBlock.getSceneHints().setCullHint(CullHint.Always);
+//		// sunBlock.getSceneHints().setRenderBucketType(RenderBucketType.Transparent);
+//		contents.attachChild(sunBlock);
 
 		// attach the contents of this landscape
 		attachChild(contents);
@@ -303,9 +302,9 @@ public class Landscape extends Node implements ViewDependent {
 	 * 
 	 * @return
 	 */
-	public Mesh getSunBlock() {
-		return (sunBlock);
-	}
+//	public Mesh getSunBlock() {
+//		return (sunBlock);
+//	}
 
 	/**
 	 * Remove layers for a field camera.
