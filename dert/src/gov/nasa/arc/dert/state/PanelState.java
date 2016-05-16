@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.ColorBarView;
 import gov.nasa.arc.dert.view.ConsoleView;
 import gov.nasa.arc.dert.view.HelpView;
@@ -12,6 +13,7 @@ import gov.nasa.arc.dert.view.surfaceandlayers.SurfaceAndLayersView;
 import gov.nasa.arc.dert.view.viewpoint.ViewpointView;
 
 import java.awt.Window;
+import java.util.HashMap;
 
 /**
  * Base class for state objects based on AWT or Swing panels.
@@ -38,6 +40,43 @@ public class PanelState extends State {
 		super(type.toString(), StateType.Panel, viewData);
 		this.type = type;
 		this.title = title;
+	}
+	
+	/**
+	 * Constructor from hash map.
+	 */
+	public PanelState(HashMap<String,Object> map) {
+		super(map);
+		String str = StateUtil.getString(map, "PanelType", null);
+		if (str == null)
+			throw new NullPointerException("Panel has no type.");
+		type = PanelType.valueOf(str);
+		title = StateUtil.getString(map, "PanelTitle", "");
+	}
+	
+	@Override
+	public boolean isEqualTo(State state) {
+		if ((state == null) || !(state instanceof PanelState)) 
+			return(false);
+		PanelState that = (PanelState)state;
+		if (!super.isEqualTo(that)) 
+			return(false);
+		if (!this.title.equals(that.title)) 
+			return(false);
+		if (this.type != that.type) 
+			return(false);
+		return(true);
+	}
+
+	/**
+	 * Save contents
+	 */
+	@Override
+	public HashMap<String,Object> save() {
+		HashMap<String,Object> map = super.save();
+		map.put("PanelType", type.toString());
+		map.put("PanelTitle", title);
+		return(map);
 	}
 
 	/**

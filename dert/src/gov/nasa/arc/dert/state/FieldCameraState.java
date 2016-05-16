@@ -5,7 +5,10 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfo;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
+import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.fieldcamera.FieldCameraView;
+
+import java.util.HashMap;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -25,6 +28,9 @@ public class FieldCameraState extends ToolState {
 
 	// Camera viewpoint parameters
 	public double azimuth, tilt, height;
+	
+	// Location of camera
+	public Vector3 location;
 
 	/**
 	 * Constructor
@@ -34,7 +40,7 @@ public class FieldCameraState extends ToolState {
 	public FieldCameraState(ReadOnlyVector3 position) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.FieldCamera), MapElementState.Type.FieldCamera, "Camera", 1,
-			FieldCamera.defaultColor, FieldCamera.defaultLabelVisible, FieldCamera.defaultPinned, position);
+			FieldCamera.defaultColor, FieldCamera.defaultLabelVisible, FieldCamera.defaultPinned);
 		viewData = new ViewData(-1, -1, 600, 500, false);
 		viewData.setVisible(true);
 		fieldCameraDef = FieldCamera.defaultDefinition;
@@ -43,6 +49,48 @@ public class FieldCameraState extends ToolState {
 		azimuth = FieldCamera.defaultAzimuth;
 		tilt = FieldCamera.defaultTilt;
 		height = FieldCamera.defaultHeight;
+		location = new Vector3(position);
+	}
+	
+	/**
+	 * Constructor for hash map.
+	 */
+	public FieldCameraState(HashMap<String,Object> map) {
+		super(map);
+		crosshairVisible = StateUtil.getBoolean(map, "CrosshairVisible", false);
+		location = StateUtil.getVector3(map, "Location", Vector3.ZERO);
+		fieldCameraDef = StateUtil.getString(map, "FieldCameraDefinition", FieldCamera.defaultDefinition);
+		fovVisible = StateUtil.getBoolean(map, "FovVisible", FieldCamera.defaultFovVisible);
+		lineVisible = StateUtil.getBoolean(map, "LineVisible", FieldCamera.defaultLineVisible);
+		azimuth = StateUtil.getDouble(map, "Azimuth", FieldCamera.defaultAzimuth);
+		tilt = StateUtil.getDouble(map, "Tilt", FieldCamera.defaultTilt);
+		height = StateUtil.getDouble(map, "Height", FieldCamera.defaultHeight);
+	}
+	
+	@Override
+	public boolean isEqualTo(State state) {
+		if ((state == null) || !(state instanceof FieldCameraState))
+			return(false);
+		FieldCameraState that = (FieldCameraState)state;
+		if (!super.isEqualTo(that))
+			return(false);
+		if (!this.fieldCameraDef.equals(that.fieldCameraDef))
+			return(false);
+		if (this.fovVisible != that.fovVisible) 
+			return(false);
+		if (this.lineVisible != that.lineVisible) 
+			return(false);
+		if (this.crosshairVisible != that.crosshairVisible) 
+			return(false);
+		if (this.azimuth != that.azimuth) 
+			return(false);
+		if (this.tilt != that.tilt) 
+			return(false);
+		if (this.height != that.height) 
+			return(false);
+		if (!this.location.equals(that.location)) 
+			return(false);
+		return(true);		
 	}
 
 	@Override
@@ -55,15 +103,16 @@ public class FieldCameraState extends ToolState {
 	}
 
 	@Override
-	public void save() {
-		super.save();
+	public HashMap<String,Object> save() {
+		HashMap<String,Object> map = super.save();
 		if (viewData != null) {
 			FieldCameraView fcv = (FieldCameraView) viewData.getView();
-			crosshairVisible = fcv.isCrosshairVisible();
+			if (fcv != null)
+				crosshairVisible = fcv.isCrosshairVisible();
 		}
 		if (mapElement != null) {
 			FieldCamera fieldCamera = (FieldCamera) mapElement;
-			position = new Vector3(fieldCamera.getTranslation());
+			location = new Vector3(fieldCamera.getTranslation());
 			fieldCameraDef = fieldCamera.getFieldCameraDefinition();
 			fovVisible = fieldCamera.isFovVisible();
 			lineVisible = fieldCamera.isLookAtLineVisible();
@@ -71,6 +120,15 @@ public class FieldCameraState extends ToolState {
 			tilt = fieldCamera.getElevation();
 			height = fieldCamera.getHeight();
 		}
+		map.put("CrosshairVisible", new Boolean(crosshairVisible));
+		StateUtil.putVector3(map, "Location", location);
+		map.put("FieldCameraDefinition", fieldCameraDef);
+		map.put("FovVisible", new Boolean(fovVisible));
+		map.put("LineVisible", new Boolean(lineVisible));
+		map.put("Azimuth", new Double(azimuth));
+		map.put("Tilt", new Double(tilt));
+		map.put("Height", new Double(height));
+		return(map);
 	}
 
 	/**
@@ -91,6 +149,13 @@ public class FieldCameraState extends ToolState {
 	protected void createView() {
 		setView(new FieldCameraView((FieldCameraState) this));
 		viewData.createWindow(Dert.getMainWindow(), name, X_OFFSET, Y_OFFSET);
+	}
+	
+	@Override
+	public String toString() {
+		String str = super.toString();
+		str = "["+fieldCameraDef+","+fovVisible+","+lineVisible+","+crosshairVisible+","+azimuth+","+tilt+","+height+","+location+"] "+str;
+		return(str);
 	}
 
 }

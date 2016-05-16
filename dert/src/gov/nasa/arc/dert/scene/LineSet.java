@@ -204,7 +204,7 @@ public class LineSet extends GroupNode implements MapElement {
 	/**
 	 * Get the map element type
 	 */
-	@Override
+//	@Override
 	public Type getType() {
 		return (Type.LineSet);
 	}

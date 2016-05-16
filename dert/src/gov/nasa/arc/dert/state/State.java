@@ -1,8 +1,10 @@
 package gov.nasa.arc.dert.state;
 
+import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.View;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Provides a serialized object for persisting the state of DERT components.
@@ -37,14 +39,48 @@ public class State implements Serializable {
 		this.type = type;
 		this.viewData = viewData;
 	}
+	
+	public State(HashMap<String,Object> map) {
+		name = StateUtil.getString(map, "Name", null);
+		if (name == null)
+			throw new NullPointerException("State has no name.");
+		String str = StateUtil.getString(map, "Type", null);
+		if (str == null)
+			throw new NullPointerException("State has no type.");
+		type = StateType.valueOf(str);
+		viewData = ViewData.fromArray((int[])map.get("ViewData"));
+	}
 
 	/**
 	 * Save contents (called before Configuration is closed)
 	 */
-	public void save() {
+	public HashMap<String,Object> save() {
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		map.put("Name", name);
+		map.put("Type", type.toString());
 		if (viewData != null) {
 			viewData.save();
+			map.put("ViewData", viewData.toArray());
 		}
+		return(map);
+	}
+	
+	public boolean isEqualTo(State that) {
+		if (!this.name.equals(that.name)) 
+			return(false);
+		if (this.type != that.type)
+			return(false);
+		// the same viewdata objects or both are null
+		if (this.viewData == that.viewData)
+			return(true);
+		// this view data is null but the other isn't
+		if (this.viewData == null)
+			return(false);
+		// the other view data is null but this one isn't
+		if (that.viewData == null)
+			return(false);
+		// see if the view datas are equal
+		return(this.viewData.isEqualTo(that.viewData));
 	}
 
 	/**
@@ -67,7 +103,7 @@ public class State implements Serializable {
 
 	@Override
 	public String toString() {
-		return (name);
+		return (" Name="+name+" Type="+type+" ViewData="+viewData);
 	}
 
 	/**
@@ -85,6 +121,10 @@ public class State implements Serializable {
 	 */
 	public ViewData getViewData() {
 		return(viewData);
+	}
+	
+	public void setViewData(ViewData viewData) {
+		this.viewData = viewData;
 	}
 
 }

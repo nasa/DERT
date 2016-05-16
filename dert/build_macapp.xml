@@ -3,7 +3,6 @@
 
 <!-- Set up some directory properties -->
 	
-	<property name="version" value="1.0b2" />
 	<property name="srcdir" value="src" />
 	<property name="classdir" value="bin" />
 	<property name="libdir" value="lib" />
@@ -24,7 +23,6 @@
 		<pathelement path="jogl-all.jar"/>
 		<pathelement path="guava-18.0.jar"/>
 		<pathelement path="spice.jar"/>
-		<pathelement path="xstream-1.4.8.jar"/>
 		<pathelement path="jogl-all-natives-macosx-universal.jar"/>
 		<pathelement path="gluegen-rt-natives-macosx-universal.jar"/>
 		<pathelement path="natives_macosx.jar"/>
@@ -57,7 +55,6 @@
 			<classpath file="lib/jogl-all.jar" />
 			<classpath file="lib/natives_macosx.jar" />
 			<classpath file="lib/spice.jar" />
-			<classpath file="lib/xstream-1.4.8.jar" />
 			<classpath file="dert.jar" />
 			<option value="-Xms256m" />
 			<option value="-Xmx2048m" />
@@ -78,14 +75,6 @@
 			</fileset>
 		</copy>
 		<mkdir dir="${macappdir}/kernels" />
-<!--
-		<copy todir="${macappdir}/kernels">
-			<fileset dir="kernels">
-				<exclude name=".svn"/>
-				<exclude name=".DS_Store"/>
-			</fileset>
-		</copy>
--->
 		<mkdir dir="${macappdir}/colormap" />
 		<copy todir="${macappdir}/colormap">
 			<fileset dir="colormap">
@@ -133,8 +122,10 @@
 <!-- Default Target -->
 		
 	<target name="main" depends="macosx">
+		<zip destfile="${macdeploydir}.zip" basedir="${macdeploydir}"/>
+		<chmod perm="644" file="${macdeploydir}.zip"/>
 		<echo>
-			Build complete.
+			Mac OS X Build complete.
 		</echo>
 	</target>
 </project>

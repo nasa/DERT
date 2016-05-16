@@ -35,7 +35,7 @@ public class Waypoint extends BillboardMarker implements MapElement {
 	 * @param state
 	 */
 	public Waypoint(WaypointState state) {
-		super(state.name, state.position, state.size, state.color, state.labelVisible, state.pinned);
+		super(state.name, state.location, state.size, state.color, state.labelVisible, state.pinned);
 		if (texture == null) {
 			texture = ImageUtil.createTexture(Icons.getIconURL(defaultIconName), true);
 		}

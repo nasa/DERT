@@ -16,7 +16,9 @@ import gov.nasa.arc.dert.scene.tool.Plane;
 import gov.nasa.arc.dert.scene.tool.Profile;
 import gov.nasa.arc.dert.scene.tool.RadialGrid;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
+import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
 import gov.nasa.arc.dert.scenegraph.RasterText;
+import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
@@ -35,6 +37,7 @@ public class DertTest {
 
 	public static final boolean isMac, isLinux, is64;
 	public static final String DERT_HOME = "dertstash";
+	public static final String testLoc = "/tmp/derttest";
 
 	// Paths to DERT executable and user current working directory
 	private static String path, userPath;
@@ -135,6 +138,8 @@ public class DertTest {
 		System.err.println("Java Version: " + System.getProperty("java.version"));
 		System.err.println();
 		
+		ConfigurationManager.createInstance(dertProperties);
+		FieldCameraInfoManager.createInstance(path);
 		Console.createInstance();
 	}
 
@@ -187,9 +192,13 @@ public class DertTest {
 			System.exit(1);
 		
 		LandscapeTest lt = new LandscapeTest();
-		if (!lt.testLandscape())
+		if (!lt.testLandscape(testLoc))
 			System.exit(2);
 		
-		System.err.println("All tests passed.");
+		PersistenceTest pt = new PersistenceTest();
+		if (!pt.testPersistence(testLoc))
+			System.exit(3);
+		
+		System.err.println("\nAll tests passed.");
 	}
 }

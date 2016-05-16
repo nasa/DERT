@@ -7,6 +7,7 @@ import gov.nasa.arc.dert.render.LayerEffects;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.util.ColorMap;
+import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.ColorBarPanel;
 import gov.nasa.arc.dert.view.Console;
@@ -15,6 +16,7 @@ import gov.nasa.arc.dert.view.surfaceandlayers.SurfaceAndLayersView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -71,6 +73,24 @@ public class LayerManager implements Serializable {
 	}
 
 	/**
+	 * Constructor from hash map.
+	 */
+	public LayerManager(HashMap<String,Object> map) {
+		shadingFromSurface = StateUtil.getBoolean(map, "ShadingFromSurface", false);
+		autoAdjustBlendFactor = StateUtil.getBoolean(map, "AutoAdjustBlendFactor", true);
+		layersEnabled = StateUtil.getBoolean(map, "LayersEnabled", true);
+		gridColor = StateUtil.getColorRGBA(map, "GridColor", DEFAULT_GRID_COLOR);
+		gridCellSize = StateUtil.getDouble(map, "GridCellSize", 0);
+		gridEnabled = StateUtil.getBoolean(map, "GridEnabled", false);
+		int n = StateUtil.getInteger(map, "LayerInfoCount", 0);
+		selectedLayerInfo = new LayerInfo[n];
+		for (int i=0; i<n; ++i) {
+			HashMap<String,Object> liMap = (HashMap<String,Object>)map.get("LayerInfo"+i);
+			selectedLayerInfo[i] = new LayerInfo(liMap);
+		}
+	}
+
+	/**
 	 * Initialize this LayerManager with a layer source.
 	 * 
 	 * @param source
@@ -95,7 +115,7 @@ public class LayerManager implements Serializable {
 			if (li.type == LayerType.elevation) {
 				baseLayerInfo = li;
 				baseLayerInfo.layerNumber = 0;
-				baseLayerInfo.autoBlend = false;
+				baseLayerInfo.autoblend = false;
 				baseLayerInfo.blendFactor = 0;
 			} else {
 				LayerInfo lInfo = findLayerInfo(li.name, li.type);
@@ -106,7 +126,7 @@ public class LayerManager implements Serializable {
 				li.isOverlay = StringUtil.getBooleanValue(properties, "Overlay", false, false);
 				if (li.isOverlay) {
 					li.blendFactor = 0.75;
-					li.autoBlend = false;
+					li.autoblend = false;
 				}
 				newInfoList.add(li);
 			}
@@ -188,7 +208,7 @@ public class LayerManager implements Serializable {
 			}
 		}
 		else {
-			baseLayerInfo.autoBlend = selectedLayerInfo[0].autoBlend;
+			baseLayerInfo.autoblend = selectedLayerInfo[0].autoblend;
 			baseLayerInfo.blendFactor = selectedLayerInfo[0].blendFactor;
 			selectedLayerInfo[0] = baseLayerInfo;
 			for (int i=1; i<selectedLayerInfo.length; ++i) {
@@ -573,9 +593,17 @@ public class LayerManager implements Serializable {
 	/**
 	 * Prepare layer info objects for persistence
 	 */
-	public void save() {
-		for (int i = 0; i < selectedLayerInfo.length; ++i) {
-			selectedLayerInfo[i].save();
-		}
+	public HashMap<String,Object> saveAsHashMap() {
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		map.put("ShadingFromSurface", new Boolean(shadingFromSurface));
+		map.put("AutoAdjustBlendFactor", new Boolean(autoAdjustBlendFactor));
+		map.put("LayersEnabled", new Boolean(layersEnabled));
+		StateUtil.putColorRGBA(map, "GridColor", gridColor);
+		map.put("GridCellSize", new Double(gridCellSize));
+		map.put("GridEnabled", new Boolean(gridEnabled));
+		map.put("LayerInfoCount", new Integer(selectedLayerInfo.length));
+		for (int i = 0; i < selectedLayerInfo.length; ++i)
+			map.put("LayerInfo"+i, selectedLayerInfo[i].getAsHashMap());
+		return(map);
 	}
 }

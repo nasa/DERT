@@ -13,12 +13,8 @@ import java.io.File;
  */
 public class OpenConfigAction extends MenuItemAction {
 
-	// Version of DERT to select configurations from.
-	protected String version;
-
-	public OpenConfigAction(String version) {
+	public OpenConfigAction() {
 		super("Open Landscape ...");
-		this.version = version;
 	}
 
 	@Override
@@ -44,7 +40,7 @@ public class OpenConfigAction extends MenuItemAction {
 	}
 
 	protected String getFilePath() {
-		ConfigFileChooserDialog chooser = new ConfigFileChooserDialog(version, false);
+		ConfigFileChooserDialog chooser = new ConfigFileChooserDialog(false);
 		chooser.open();
 		String[] filePaths = chooser.getFilePaths();
 		if ((filePaths == null) || (filePaths.length == 0)) {

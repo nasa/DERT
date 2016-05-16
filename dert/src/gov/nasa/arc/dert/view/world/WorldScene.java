@@ -33,9 +33,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	// List of objects that must be updated when the camera position changes
 	private ArrayList<ViewDependent> viewDependentList;
 
-	// World object
-	private World world;
-
 	// Background color
 	private ReadOnlyColorRGBA backgroundColor = ColorRGBA.LIGHT_GRAY;
 
@@ -78,11 +75,11 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	 */
 	public void setState(WorldState wState) {
 		
-		world = wState.getWorld();
+		World world = World.getInstance();
 		setRootNode(world);
 		world.initialize();
 		
-		viewpointNode = new ViewpointNode(world.getName() + "_viewpoint", wState.getCurrentViewpoint());
+		viewpointNode = new ViewpointNode(world.getName() + "_viewpoint", null);
 		viewDependentList = new ArrayList<ViewDependent>();
 		world.attachChild(viewpointNode);
 		crosshair = viewpointNode.getCrosshair();
@@ -131,6 +128,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 
 	@Override
 	public void preRender(Renderer renderer) {
+		World world = World.getInstance();
 		world.getLighting().prerender(viewpointNode.getCamera(), renderer,
 			world.getDirtyEventHandler().getChanged() || viewpointNode.changed.getAndSet(false));
 		if (world.getDirtyEventHandler().getChanged()) {
@@ -148,6 +146,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 
 	@Override
 	public void postRender(Renderer renderer) {
+		World world = World.getInstance();
 		world.getLighting().postrender(viewpointNode.getCamera(), renderer,
 			world.getDirtyEventHandler().getChanged());
 		world.getDirtyEventHandler().setChanged(false);

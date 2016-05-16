@@ -41,9 +41,6 @@ public class ConfigFileChooserDialog extends AbstractDialog {
 	// List of configuration files
 	private String[] fileList;
 
-	// Version of DERT for selecting configuration files
-	private String version;
-
 	// Paths
 	private String[] configFilePath;
 	private String landscapePath;
@@ -60,9 +57,8 @@ public class ConfigFileChooserDialog extends AbstractDialog {
 	 * @param vrsn
 	 * @param del
 	 */
-	public ConfigFileChooserDialog(String vrsn, boolean del) {
+	public ConfigFileChooserDialog(boolean del) {
 		super(Dert.getMainWindow(), "Select Landscape", true, false);
-		version = vrsn;
 		delete = del;
 		width = 600;
 		height = 500;
@@ -139,7 +135,7 @@ public class ConfigFileChooserDialog extends AbstractDialog {
 					configList.setListData(list);
 					return;
 				}
-				dertFile = new File(dertFile, "config" + version);
+				dertFile = new File(dertFile, "config");
 				if (dertFile.exists()) {
 					list = dertFile.list();
 					if (list == null) {

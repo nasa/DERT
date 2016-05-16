@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.MainWindow;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.Marble;
 import gov.nasa.arc.dert.scene.World;
@@ -10,19 +11,17 @@ import gov.nasa.arc.dert.view.TextView;
 import gov.nasa.arc.dert.view.View;
 
 import java.awt.Color;
+import java.util.HashMap;
 
 import com.ardor3d.math.Vector2;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.scenegraph.Spatial;
 
 /**
  * A state object for the green Marble.
  *
  */
 public class MarbleState extends MapElementState {
-
-	public Vector3 position;
 
 	private transient Vector2 work;
 
@@ -31,20 +30,18 @@ public class MarbleState extends MapElementState {
 	 */
 	public MarbleState() {
 		super(0, MapElementState.Type.Marble, "Marble");
-		position = new Vector3();
 		name = "Marble";
 		viewData = new ViewData(-1, -1, 400, 200, true);
 		labelVisible = false;
 		color = Color.green;
 		size = 0.5;
 	}
-
-	@Override
-	public void save() {
-		super.save();
-		if (mapElement != null) {
-			position = new Vector3(((Spatial) mapElement).getTranslation());
-		}
+	
+	/**
+	 * Constructor for hash map.
+	 */
+	public MarbleState(HashMap<String,Object> map) {
+		super(map);
 	}
 
 	@Override
@@ -58,7 +55,9 @@ public class MarbleState extends MapElementState {
 	 * Update the data displayed in the Marble view
 	 */
 	public void updateText() {
-		Dert.getMainWindow().updateMarbleLocationField();
+		MainWindow mw = Dert.getMainWindow();
+		if (mw != null)
+			mw.updateMarbleLocationField();
 
 		View view = viewData.getView();
 		if (view == null) {

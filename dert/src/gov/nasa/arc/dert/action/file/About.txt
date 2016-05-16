@@ -56,11 +56,6 @@ Copyright © 2010 JogAmp Community. All rights reserved.
 GlueGen Portions - Sun Microsystems
 Copyright © 2003-2005 Sun Microsystems, Inc. All Rights Reserved.
  
-XStream
-Copyright © 2003-2006, Joe Walnes
-Copyright © 2006-2009, 2011 XStream Committers
-All rights reserved.
- 
 SPICE
 Copyright © 2003, California Institute of Technology.
 U.S. Government sponsorship acknowledged.

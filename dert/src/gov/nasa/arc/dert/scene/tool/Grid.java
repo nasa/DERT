@@ -85,7 +85,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 		this.pinned = state.pinned;
 		offset = new Vector3();
 		location = new Vector3();
-		setTranslation(state.position);
+		setTranslation(state.location);
 		colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
 			color.getAlpha() / 255f);
 

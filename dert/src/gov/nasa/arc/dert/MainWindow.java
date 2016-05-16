@@ -360,7 +360,7 @@ public class MainWindow extends JFrame {
 
 	protected void fillFileMenu(JPopupMenu fileMenu) {
 		fileMenu.add(new AboutAction(version));
-		fileMenu.add(new OpenConfigAction(version));
+		fileMenu.add(new OpenConfigAction());
 		fileMenu.add(getRecentSubmenu());
 
 		MenuItemAction saveItem = new MenuItemAction("Save Configuration") {
@@ -386,7 +386,7 @@ public class MainWindow extends JFrame {
 		saveAsItem.setEnabled(haveConfig);
 		fileMenu.add(saveAsItem);
 
-		MenuItemAction deleteConfigItem = new DeleteConfigAction(version);
+		MenuItemAction deleteConfigItem = new DeleteConfigAction();
 		fileMenu.add(deleteConfigItem);
 
 		fileMenu.addSeparator();

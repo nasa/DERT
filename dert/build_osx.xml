@@ -3,7 +3,6 @@
 
 <!-- Set up some directory properties -->
 	
-	<property name="version" value="1.0b2" />
 	<property name="srcdir" value="src" />
 	<property name="classdir" value="bin" />
 	<property name="libdir" value="lib" />
@@ -24,7 +23,6 @@
 		<pathelement path="${libdir}/jogl-all.jar"/>
 		<pathelement path="${libdir}/guava-18.0.jar"/>
 		<pathelement path="${libdir}/spice.jar"/>
-		<pathelement path="${libdir}/xstream-1.4.8.jar"/>
 		<pathelement path="${libdir}/jogl-all-natives-linux-amd64.jar"/>
 		<pathelement path="${libdir}/gluegen-rt-natives-linux-amd64.jar"/>
 		<pathelement path="${libdir}/natives_linux.jar"/>
@@ -44,7 +42,6 @@
 		<pathelement path="jogl-all.jar"/>
 		<pathelement path="guava-18.0.jar"/>
 		<pathelement path="spice.jar"/>
-		<pathelement path="xstream-1.4.8.jar"/>
 		<pathelement path="jogl-all-natives-macosx-universal.jar"/>
 		<pathelement path="gluegen-rt-natives-macosx-universal.jar"/>
 		<pathelement path="natives_macosx.jar"/>

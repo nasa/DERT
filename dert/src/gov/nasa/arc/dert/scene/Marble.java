@@ -34,7 +34,7 @@ public class Marble extends FigureMarker implements MapElement {
 	 * @param state
 	 */
 	public Marble(MarbleState state) {
-		super("Marble", state.position, state.size, state.color, state.labelVisible, false, false);
+		super("Marble", null, state.size, state.color, state.labelVisible, false, false);
 		setShape(ShapeType.sphere);
 		surfaceNormalArrow.getSceneHints().setCullHint(CullHint.Never);
 		getSceneHints().setAllPickingHints(false);

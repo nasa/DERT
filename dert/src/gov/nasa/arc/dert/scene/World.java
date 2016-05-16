@@ -82,6 +82,10 @@ public class World extends GroupNode {
 	// The selection handler for picking
 	private SelectionHandler selectionHandler;
 
+	// Stereo parameters
+	public double stereoFocalDistance = 1;
+	public double stereoEyeSeparation = stereoFocalDistance / 30;
+
 	/**
 	 * Create a new world
 	 * 

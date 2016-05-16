@@ -5,17 +5,18 @@ import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.state.PanelState.PanelType;
+import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.surfaceandlayers.SurfaceAndLayersView;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A collection of State objects that represents a snapshot of a DERT session.
  *
  */
-public class Configuration implements Serializable {
+public class Configuration {
 
 	// States for views
 	public final PanelState helpState;
@@ -34,7 +35,7 @@ public class Configuration implements Serializable {
 	public final MarbleState marbleState;
 
 	// States for MapElements
-	protected ArrayList<MapElementState> mapElementStateList;
+	public ArrayList<MapElementState> mapElementStateList;
 
 	// A name for this configuration
 	protected String label;
@@ -52,20 +53,159 @@ public class Configuration implements Serializable {
 	 */
 	public Configuration(String label) {
 		this.label = label;
-		worldState = new WorldState(null);
+		worldState = new WorldState((String)null);
 		consoleState = new PanelState(PanelType.Console, "DERT Console", new ViewData(-1, 624, 900, 250, false));
 		consoleState.viewData.setVisible(true);
-		helpState = new PanelState(PanelType.Help, "DERT Help", new ViewData());
+		helpState = new PanelState(PanelType.Help, "DERT Help", new ViewData(-1, -1, ViewData.DEFAULT_WINDOW_WIDTH, ViewData.DEFAULT_WINDOW_HEIGHT, false));
 		mapElementsState = new MapElementsState();
-		surfAndLayerState = new PanelState(PanelType.SurfaceAndLayers, "DERT Surface and Layers", new ViewData(-1, -1,
+		surfAndLayerState = new PanelState(PanelType.SurfaceAndLayers, "DERT Surface and Layers", new ViewData(-1, -1, ViewData.DEFAULT_WINDOW_WIDTH, ViewData.DEFAULT_WINDOW_HEIGHT,
 			false));
-		lightingState = new PanelState(PanelType.Lighting, "DERT Lighting and Shadows", new ViewData(-1, -1, false));
+		lightingState = new PanelState(PanelType.Lighting, "DERT Lighting and Shadows", new ViewData(-1, -1, ViewData.DEFAULT_WINDOW_WIDTH, ViewData.DEFAULT_WINDOW_HEIGHT, false));
 		viewPtState = new ViewpointState();
-		lightPosState = new PanelState(PanelType.LightPosition, "DERT Light Position", new ViewData(-1, -1, false));
+		lightPosState = new PanelState(PanelType.LightPosition, "DERT Light Position", new ViewData(-1, -1, ViewData.DEFAULT_WINDOW_WIDTH, ViewData.DEFAULT_WINDOW_HEIGHT, false));
 		colorBarsState = new PanelState(PanelType.ColorBars, "DERT Color Bars", new ViewData(-1, -1, 700, 200, false));
 		marbleState = new MarbleState();
 		mapElementStateList = new ArrayList<MapElementState>();
 		mapElementCount = new int[MapElementState.Type.values().length];
+	}
+	
+	public Configuration(HashMap<String,Object> map) {
+		label = StateUtil.getString(map, "Label", null);
+		mapElementCount = (int[])map.get("MapElementCount");
+		consoleState = new PanelState((HashMap<String,Object>)map.get("ConsoleState"));
+		marbleState = new MarbleState((HashMap<String,Object>)map.get("MarbleState"));
+		worldState = new WorldState((HashMap<String,Object>)map.get("WorldState"));
+		helpState = new PanelState((HashMap<String,Object>)map.get("HelpState"));
+		surfAndLayerState = new PanelState((HashMap<String,Object>)map.get("SurfaceAndLayerState"));
+		mapElementsState = new MapElementsState((HashMap<String,Object>)map.get("MapElementsState"));
+		colorBarsState = new PanelState((HashMap<String,Object>)map.get("ColorBarsState"));
+		lightingState = new PanelState((HashMap<String,Object>)map.get("LightingState"));
+		lightPosState = new PanelState((HashMap<String,Object>)map.get("LightPositionState"));
+		viewPtState = new ViewpointState((HashMap<String,Object>)map.get("ViewpointState"));
+
+		int n = StateUtil.getInteger(map, "MapElementStateCount", 0);
+		mapElementStateList = new ArrayList<MapElementState>();
+		for (int i = 0; i < n; ++i) {
+			HashMap<String,Object> meMap = (HashMap<String,Object>)map.get("MapElementState"+i);
+			String str = StateUtil.getString(meMap, "MapElementType", null);
+			if (str != null) {
+				try {
+					MapElementState.Type type = MapElementState.Type.valueOf(str);
+					if (type != null)
+						switch (type) {
+						case Placemark:
+							mapElementStateList.add(new PlacemarkState(meMap));
+							break;
+						case Figure:
+							mapElementStateList.add(new FigureState(meMap));
+							break;
+						case Billboard:
+							mapElementStateList.add(new ImageBoardState(meMap));
+							break;
+						case LineSet:
+							mapElementStateList.add(new LineSetState(meMap));
+							break;
+						case Path:
+							mapElementStateList.add(new PathState(meMap));
+							break;
+						case Plane:
+							mapElementStateList.add(new PlaneState(meMap));
+							break;
+						case CartesianGrid:
+							mapElementStateList.add(new GridState(meMap));
+							break;
+						case RadialGrid:
+							mapElementStateList.add(new GridState(meMap));
+							break;
+						case Profile:
+							mapElementStateList.add(new ProfileState(meMap));
+							break;
+						case FieldCamera:
+							mapElementStateList.add(new FieldCameraState(meMap));
+							break;
+						case Waypoint:
+							mapElementStateList.add(new WaypointState(meMap));
+							break;
+						case Marble:
+							mapElementStateList.add(new MarbleState(meMap));
+							break;
+						}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+	}
+	
+	public boolean isEqualTo(Configuration that) {
+		if (!this.label.equals(that.label)) {
+			System.err.println("Configuration labels not eaual ("+this.label+","+that.label+")");
+			return(false);
+		}
+		if (this.mapElementCount.length != that.mapElementCount.length) {
+			System.err.println("Configuration map element counts not equal ("+this.mapElementCount.length+","+that.mapElementCount.length+")");
+			return(false);
+		}
+		for (int i=0; i<mapElementCount.length; ++i)
+			if (this.mapElementCount[i] != that.mapElementCount[i]) {
+				System.err.println("Configuration map element count "+i+" not equal ("+this.mapElementCount[i]+","+that.mapElementCount[i]+")");
+				return(false);
+			}
+		if (!this.consoleState.isEqualTo(that.consoleState)) { 
+			System.err.println("Configuration console state not equal");
+			return(false);
+		}
+		if (!this.marbleState.isEqualTo(that.marbleState)) {
+			System.err.println("Configuration marble state not equal");
+			return(false);
+		}
+		if (!this.worldState.isEqualTo(that.worldState)) {
+			System.err.println("Configuration world state not equal");
+			return(false);
+		}
+		if (!this.helpState.isEqualTo(that.helpState)) {
+			System.err.println("Configuration world state not equal");
+			return(false);
+		}
+		if (!this.surfAndLayerState.isEqualTo(that.surfAndLayerState)) {
+			System.err.println("Configuration surface and layer state not equal");
+			return(false);
+		}
+		if (!this.mapElementsState.isEqualTo(that.mapElementsState)) {
+			System.err.println("Configuration map elements state not equal");
+			return(false);
+		}
+		if (!this.colorBarsState.isEqualTo(that.colorBarsState)) {
+			System.err.println("Configuration color bars state not equal");
+			return(false);
+		}
+		if (!this.lightingState.isEqualTo(that.lightingState)) {
+			System.err.println("Configuration lighting state not equal");
+			return(false);
+		}
+		if (!this.lightPosState.isEqualTo(that.lightPosState)) {
+			System.err.println("Configuration light position state not equal");
+			return(false);
+		}
+		if (!this.viewPtState.isEqualTo(that.viewPtState)) {
+			System.err.println("Configuration viewpoint state not equal");
+			return(false);
+		}
+		if (this.mapElementStateList.size() != that.mapElementStateList.size()) {
+			System.err.println("Configuration map elements state list size not equal");
+			return(false);
+		}
+		for (int i=0; i<this.mapElementStateList.size(); ++i) {
+			MapElementState mps0 = this.mapElementStateList.get(i);
+			MapElementState mps1 = that.mapElementStateList.get(i);
+			if (!mps0.isEqualTo(mps1)) {
+				System.err.println("Configuration map element state "+i+" not equal");
+				return(false);
+			}
+		}
+		return(true);
 	}
 
 	/**
@@ -195,22 +335,28 @@ public class Configuration implements Serializable {
 	/**
 	 * Save all states
 	 */
-	public void saveStates() {
-		worldState.save();
+	public HashMap<String,Object> save() {
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		
+		map.put("Label", label);
+		map.put("MapElementCount", mapElementCount);
+		
+		map.put("WorldState", worldState.save());
+		map.put("HelpState", helpState.save());
+		map.put("SurfaceAndLayerState", surfAndLayerState.save());
+		map.put("MapElementsState", mapElementsState.save());
+		map.put("ColorBarsState", colorBarsState.save());
+		map.put("LightingState", lightingState.save());
+		map.put("LightPositionState", lightPosState.save());
+		map.put("ViewpointState", viewPtState.save());
+		map.put("ConsoleState", consoleState.save());
+		map.put("MarbleState", marbleState.save());
 
-		helpState.save();
-		surfAndLayerState.save();
-		mapElementsState.save();
-		colorBarsState.save();
-		lightingState.save();
-		lightPosState.save();
-		viewPtState.save();
-		consoleState.save();
-		marbleState.save();
-
-		for (int i = 0; i < mapElementStateList.size(); ++i) {
-			mapElementStateList.get(i).save();
-		}
+		map.put("MapElementStateCount", new Integer(mapElementStateList.size()));
+		for (int i = 0; i < mapElementStateList.size(); ++i)
+			map.put("MapElementState"+i, mapElementStateList.get(i).save());		
+		
+		return(map);
 	}
 
 	/**

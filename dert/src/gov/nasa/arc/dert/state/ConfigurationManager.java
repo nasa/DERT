@@ -1,7 +1,6 @@
 package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
-import gov.nasa.arc.dert.MainWindow;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
@@ -10,20 +9,17 @@ import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.Console;
 
 import java.awt.EventQueue;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import javax.swing.JOptionPane;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 /**
  * Manages Configuration objects.
@@ -39,9 +35,6 @@ public class ConfigurationManager {
 
 	// A list of recently used configurations
 	private LinkedHashMap<String, String> recentConfigMap;
-
-	// The DERT version
-	private String version;
 
 	// The maximum number of recent configurations to keep
 	private int maxRecent = 10;
@@ -80,7 +73,7 @@ public class ConfigurationManager {
 	public String getConfigFilePath(String configStr) {
 		int p = configStr.indexOf(':');
 		if (p > 0) {
-			File f = new File(configStr.substring(0, p), "dert" + File.separator + "config" + version + File.separator
+			File f = new File(configStr.substring(0, p), "dert" + File.separator + "config" + File.separator
 				+ configStr.substring(p + 1) + ".xml");
 			return (f.getAbsolutePath());
 		}
@@ -94,7 +87,6 @@ public class ConfigurationManager {
 	 * @param properties
 	 */
 	protected ConfigurationManager(Properties properties) {
-		version = properties.getProperty("Dert.Version");
 		loadRecent(properties);
 		currentConfig = new Configuration((String) null);
 	}
@@ -155,28 +147,28 @@ public class ConfigurationManager {
 		return (true);
 	}
 
-	protected void saveConfiguration(Configuration dertConfig) {
+	/**
+	 * Save the current configuration.
+	 */
+	public void saveConfiguration(Configuration dertConfig) {
 		File file = new File(dertConfig.getLandscapePath(), "dert");
-		file = new File(file, "config" + version);
-		if (!file.exists()) {
+		file = new File(file, "config");
+		if (!file.exists())
 			file.mkdirs();
-		}
-		dertConfig.saveStates();
-		XStream xstream = new XStream(new StaxDriver());
-		String xml = xstream.toXML(dertConfig);
+		HashMap<String, Object> savedState = dertConfig.save();
 		try {
-			file = new File(file, dertConfig.toString() + ".xml");
-			String configPath = file.getAbsolutePath();
-			PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-			writer.println(xml);
-			writer.flush();
-			writer.close();
-			addRecent(configPath);
+			file = new File(file, dertConfig.label);
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
+			oos.writeObject(savedState);
+			oos.flush();
+			oos.close();
+			addRecent(file.getAbsolutePath());
 		} catch (Exception e) {
-			Console.getInstance().println("Error writing view list.  See log.");
+			Console.getInstance().println("Error writing configuration.  See log.");
 			e.printStackTrace();
 		}
 	}
+
 
 	/**
 	 * Remove a configuration
@@ -197,23 +189,23 @@ public class ConfigurationManager {
 	 * @param configPath
 	 * @return
 	 */
-	private Configuration loadConfiguration(String configPath) {
+	public Configuration loadConfiguration(String configPath) {
 		Configuration config = null;
 		try {
 			int p = configPath.lastIndexOf("/dert/");
 			String landPath = configPath.substring(0, p);
 			File file = new File(configPath).getCanonicalFile();
 			if (file.exists()) {
-				BufferedReader reader = new BufferedReader(new FileReader(file));
-				String xml = reader.readLine();
-				reader.close();
-				XStream xstream = new XStream(new StaxDriver());
-				xstream.setClassLoader(MainWindow.class.getClassLoader());
-				Object obj = xstream.fromXML(xml);
-				if (obj instanceof Configuration) {
-					config = (Configuration) obj;
+				Console.getInstance().println("Loading configuration from " + file.getAbsolutePath());
+				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+				Object obj = ois.readObject();
+				ois.close();
+				if (obj instanceof HashMap<?,?>) {
+					config = new Configuration((HashMap<String,Object>)obj);
 					config.setLandscapePath(landPath);
 					addRecent(configPath);
+				} else {
+					JOptionPane.showMessageDialog(null, "Configuration for " + landPath + " is invalid.");
 				}
 			} else {
 				JOptionPane.showMessageDialog(null, "Configuration for " + landPath + " does not exist.");
@@ -247,7 +239,6 @@ public class ConfigurationManager {
 		}
 		currentConfig = config;
 		String landscapePath = config.getLandscapePath();
-		Console.getInstance().println("Loading configuration " + config + " from " + landscapePath);
 		File dertFile = new File(landscapePath, "dert");
 		String configLocation = dertFile.getAbsolutePath();
 		File f = new File(dertFile, "colormap");
@@ -306,15 +297,14 @@ public class ConfigurationManager {
 	}
 
 	/**
-	 * Get the list of Configurations for the given landscape. Get only those
-	 * for the current version.
+	 * Get the list of Configurations for the given landscape.
 	 * 
 	 * @param landscapePath
 	 * @return
 	 */
 	public String[] getConfigList(String landscapePath) {
 		File dertFile = new File(landscapePath, "dert");
-		File file = new File(dertFile, "config" + version);
+		File file = new File(dertFile, "config");
 		if (!file.exists()) {
 			return (new String[0]);
 		}
@@ -370,7 +360,7 @@ public class ConfigurationManager {
 		for (int i = 0; i < maxRecent; ++i) {
 			String configPath = properties.getProperty("RecentConfig." + i);
 			if (configPath != null) {
-				if (!configPath.contains("dert/config" + version)) {
+				if (!configPath.contains("dert/config")) {
 					continue;
 				}
 				File file = new File(configPath);

@@ -14,17 +14,12 @@ import javax.swing.JOptionPane;
  */
 public class DeleteConfigAction extends MenuItemAction {
 
-	// Version of DERT for configuration selection.
-	protected String version;
-
 	/**
 	 * Constructor
 	 * 
-	 * @param version
 	 */
-	public DeleteConfigAction(String version) {
+	public DeleteConfigAction() {
 		super("Delete Configuration ...");
-		this.version = version;
 	}
 
 	@Override
@@ -55,7 +50,7 @@ public class DeleteConfigAction extends MenuItemAction {
 	}
 
 	protected String[] getFilePaths() {
-		ConfigFileChooserDialog chooser = new ConfigFileChooserDialog(version, true);
+		ConfigFileChooserDialog chooser = new ConfigFileChooserDialog(true);
 		chooser.open();
 		return (chooser.getFilePaths());
 	}

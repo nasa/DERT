@@ -146,7 +146,7 @@ public class LayersPanel extends GroupPanel {
 			str += ", overlay";
 		}
 		layer[index].setText(str);
-		lockBox[index].setSelected(!current.autoBlend);
+		lockBox[index].setSelected(!current.autoblend);
 		blendFactorSpinner[index].setValueNoChange((int)(current.blendFactor*100));
 		blendFactorSpinner[index].setEnabled(current.type != LayerType.none);
 	}
@@ -164,14 +164,14 @@ public class LayersPanel extends GroupPanel {
 		if (index >= 0) {
 			
 			// not automatically blended, return
-			if (!current[index].autoBlend) {
+			if (!current[index].autoblend) {
 				return;
 			}
 			
 			// get number of auto blended layers
 			int n = 0;
 			for (int i=0; i<current.length; ++i)
-				if (current[i].autoBlend && (i != index))
+				if (current[i].autoblend && (i != index))
 					n ++;
 			
 			// only one unlocked spinner, return
@@ -183,7 +183,7 @@ public class LayersPanel extends GroupPanel {
 			
 			// set the spinners and update the layer manager
 			for (int i=0; i<current.length; ++i)
-				if (current[i].autoBlend && (i != index)) {
+				if (current[i].autoblend && (i != index)) {
 					float bf = (float)current[i].blendFactor;
 					bf += d;
 					bf = Math.max(0, bf);
@@ -198,7 +198,7 @@ public class LayersPanel extends GroupPanel {
 			// count the number of unlocked spinners
 			int n = 0;
 			for (int i=0; i<current.length; ++i) {
-				if (current[i].autoBlend) {
+				if (current[i].autoblend) {
 					n ++;
 				}
 			}
@@ -207,7 +207,7 @@ public class LayersPanel extends GroupPanel {
 			
 			// set the unlocked spinners
 			for (int i = 0; i < current.length; ++i) {
-				if (current[i].autoBlend) {
+				if (current[i].autoblend) {
 					blendFactorSpinner[i].setValueNoChange((int)(bf*100));
 					layerManager.setLayerBlendFactor(i, bf);
 				}
@@ -228,7 +228,7 @@ public class LayersPanel extends GroupPanel {
 			public void actionPerformed(ActionEvent event) {
 				LayerManager layerManager = Landscape.getInstance().getLayerManager();
 				LayerInfo[] current = layerManager.getLayerSelection();
-				current[index].autoBlend = !lockBox[index].isSelected();
+				current[index].autoblend = !lockBox[index].isSelected();
 			}
 		});
 		panel.add(lockBox[index]);

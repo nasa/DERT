@@ -90,7 +90,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	private int currentIndex = -1;
 
 	// map element properties for rendering
-	private float lineWidth;
+	private double lineWidth;
 	private ColorRGBA colorRGBA;
 	private Color color;
 	private double size;
@@ -143,7 +143,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		pointSet = new PointSet("_points");
 		attachChild(pointSet);
 		line = pointSet.createLine();
-		line.setLineWidth(lineWidth);
+		line.setLineWidth((float)lineWidth);
 		attachChild(line);
 		poly = pointSet.createPolygon();
 		attachChild(poly);
@@ -411,7 +411,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	 * @return
 	 */
 	public float getLineWidth() {
-		return (lineWidth);
+		return ((float)lineWidth);
 	}
 
 	/**
@@ -1047,5 +1047,29 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		properties.setProperty("MapElement.Path.defaultWaypointsVisible", Boolean.toString(defaultWaypointsVisible));
 		properties.setProperty("MapElement.Path.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
 		properties.setProperty("MapElement.Path.defaultPinned", Boolean.toString(defaultPinned));
+	}
+	
+	public static BodyType stringToBodyType(String str) {
+		if (str == null)
+			return(defaultBodyType);
+		try {
+			BodyType bt = BodyType.valueOf(str);
+			return(bt);
+		}
+		catch (Exception e) {
+			return(defaultBodyType);
+		}
+	}
+	
+	public static LabelType stringToLabelType(String str) {
+		if (str == null)
+			return(defaultLabelType);
+		try {
+			LabelType lt = LabelType.valueOf(str);
+			return(lt);
+		}
+		catch (Exception e) {
+			return(defaultLabelType);
+		}
 	}
 }

@@ -5,10 +5,12 @@ import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Path.BodyType;
 import gov.nasa.arc.dert.scene.tool.Path.LabelType;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
+import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.TextView;
 import gov.nasa.arc.dert.view.View;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
 
@@ -31,7 +33,7 @@ public class PathState extends ToolState {
 	public boolean waypointsVisible;
 
 	// Line width
-	public float lineWidth;
+	public double lineWidth;
 	
 	// Z-Buffer
 	public boolean zBufferEnabled;
@@ -46,7 +48,7 @@ public class PathState extends ToolState {
 	public PathState(ReadOnlyVector3 position) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.Path), MapElementState.Type.Path, "Path", Path.defaultSize,
-			Path.defaultColor, Path.defaultLabelVisible, Path.defaultPinned, position);
+			Path.defaultColor, Path.defaultLabelVisible, Path.defaultPinned);
 		zBufferEnabled = true;
 		bodyType = Path.defaultBodyType;
 		labelType = Path.defaultLabelType;
@@ -57,10 +59,52 @@ public class PathState extends ToolState {
 		WaypointState wp = new WaypointState(0, position, name + ".", size, color, labelVisible, pinned);
 		pointList.add(wp);
 	}
+	
+	/**
+	 * Constructor for hash map.
+	 */
+	public PathState(HashMap<String,Object> map) {
+		super(map);
+		bodyType = Path.stringToBodyType(StateUtil.getString(map, "BodyType", null));
+		labelType = Path.stringToLabelType(StateUtil.getString(map, "LabelType", null));
+		lineWidth = StateUtil.getDouble(map, "LineWidth", 1);
+		waypointsVisible = StateUtil.getBoolean(map, "WaypointsVisible", Path.defaultWaypointsVisible);
+		zBufferEnabled = StateUtil.getBoolean(map, "ZBufferEnabled", true);
+		int n = StateUtil.getInteger(map, "WaypointCount", 0);
+		pointList = new ArrayList<WaypointState>();
+		for (int i=0; i<n; ++i)
+			pointList.add(new WaypointState((HashMap<String,Object>)map.get("Waypoint"+i)));
+	}
+	
+	@Override
+	public boolean isEqualTo(State state) {
+		if ((state == null) || !(state instanceof PathState)) 
+			return(false);
+		PathState that = (PathState)state;
+		if (!super.isEqualTo(that)) 
+			return(false);
+		if (this.bodyType != that.bodyType)
+			return(false);
+		if (this.labelType != that.labelType)
+			return(false);
+		if (this.waypointsVisible != that.waypointsVisible) 
+			return(false);
+		if (this.lineWidth != that.lineWidth)
+			return(false);
+		if (this.zBufferEnabled != that.zBufferEnabled) 
+			return(false);
+		if (this.pointList.size() != that.pointList.size()) 
+			return(false);
+		for (int i=0; i<this.pointList.size(); ++i) {
+			if (!this.pointList.get(i).isEqualTo(that.pointList.get(i)))
+				return(false);
+		}
+		return(true);
+	}
 
 	@Override
-	public void save() {
-		super.save();
+	public HashMap<String,Object> save() {
+		HashMap<String,Object> map = super.save();
 		if (mapElement != null) {
 			Path path = (Path) mapElement;
 			getWaypointList();
@@ -70,6 +114,15 @@ public class PathState extends ToolState {
 			waypointsVisible = path.areWaypointsVisible();
 			zBufferEnabled = path.isZBufferEnabled();
 		}
+		map.put("BodyType", bodyType.toString());
+		map.put("LabelType", labelType.toString());
+		map.put("LineWidth", new Double(lineWidth));
+		map.put("WaypointsVisible", new Boolean(waypointsVisible));
+		map.put("ZBufferEnabled", new Boolean(zBufferEnabled));
+		map.put("WaypointCount", new Integer(pointList.size()));
+		for (int i=0; i<pointList.size(); ++i)
+			map.put("Waypoint"+i, pointList.get(i).save());
+		return(map);
 	}
 
 	/**
@@ -148,5 +201,11 @@ public class PathState extends ToolState {
 			}
 		});
 		statThread.start();
+	}
+	
+	@Override
+	public String toString() {
+		String str = "["+bodyType+","+labelType+","+waypointsVisible+","+lineWidth+","+zBufferEnabled+"]"+super.toString();
+		return(str);
 	}
 }

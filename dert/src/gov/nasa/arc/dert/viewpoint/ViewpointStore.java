@@ -1,8 +1,10 @@
 package gov.nasa.arc.dert.viewpoint;
 
 import gov.nasa.arc.dert.util.MathUtil;
+import gov.nasa.arc.dert.util.StateUtil;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import com.ardor3d.math.Vector3;
 
@@ -23,21 +25,83 @@ public class ViewpointStore implements Serializable {
 	public int magIndex;
 
 	public ViewpointStore() {
+		name = "";
+		location = new Vector3();
+		direction = new Vector3();
+		lookAt = new Vector3();
 	}
 
 	public ViewpointStore(String name, BasicCamera camera) {
 		this.name = name;
+		location = new Vector3();
+		direction = new Vector3();
+		lookAt = new Vector3();
 		set(camera);
+	}
+	
+	public static ViewpointStore fromHashMap(HashMap<String,Object> map) {
+		if (map == null)
+			return(null);
+		ViewpointStore store = new ViewpointStore();
+		store.name = StateUtil.getString(map, "Name", null);
+		store.location = StateUtil.getVector3(map, "Location", null);
+		store.direction = StateUtil.getVector3(map, "Direction", null);
+		store.lookAt = StateUtil.getVector3(map, "LookAt", null);
+		store.frustumLeft = StateUtil.getDouble(map, "FrustumLeft", 0);
+		store.frustumRight = StateUtil.getDouble(map, "FrustumRight", 0);
+		store.frustumBottom = StateUtil.getDouble(map, "FrustumBottom", 0);
+		store.frustumTop = StateUtil.getDouble(map, "FrustumTop", 0);
+		store.frustumNear = StateUtil.getDouble(map, "FrustumNear", 0);
+		store.frustumFar = StateUtil.getDouble(map, "FrustumFar", 0);
+		store.distance = StateUtil.getDouble(map, "Distance", 0);
+		store.azimuth = StateUtil.getDouble(map, "Azimuth", 0);
+		store.elevation = StateUtil.getDouble(map, "Elevation", 0);
+		store.magIndex = StateUtil.getInteger(map, "MagnificationIndex", 0);
+		return(store);
+	}
+	
+	public boolean isEqualTo(ViewpointStore that) {
+		if (that == null)
+			return(false);
+		if (!this.name.equals(that.name)) 
+			return(false);
+		if (this.frustumLeft != that.frustumLeft) 
+			return(false);
+		if (this.frustumRight != that.frustumRight) 
+			return(false);
+		if (this.frustumBottom != that.frustumBottom) 
+			return(false);
+		if (this.frustumTop != that.frustumTop) 
+			return(false);
+		if (this.frustumNear != that.frustumNear) 
+			return(false);
+		if (this.frustumFar != that.frustumFar) 
+			return(false);
+		if (this.distance != that.distance)
+			return(false);
+		if (this.azimuth != that.azimuth) 
+			return(false);
+		if (this.elevation != that.elevation) 
+			return(false);
+		if (this.magIndex != that.magIndex) 
+			return(false);
+		if (!this.location.equals(that.location)) 
+			return(false);
+		if (!this.direction.equals(that.direction)) 
+			return(false);
+		if (!this.lookAt.equals(that.lookAt)) 
+			return(false);
+		return(true);
 	}
 
 	public void set(BasicCamera camera) {
-		location = new Vector3(camera.getLocation());
-		direction = new Vector3(camera.getDirection());
+		location.set(camera.getLocation());
+		direction.set(camera.getDirection());
 		Vector3 angle =  MathUtil.directionToAzEl(direction, null);
 		azimuth = angle.getX();
 		elevation = angle.getY();
 		distance = camera.getDistanceToCoR();
-		lookAt = new Vector3(camera.getLookAt());
+		lookAt.set(camera.getLookAt());
 		magIndex = camera.getMagIndex();
 		frustumLeft = camera.getFrustumLeft();
 		frustumRight = camera.getFrustumRight();
@@ -45,6 +109,25 @@ public class ViewpointStore implements Serializable {
 		frustumTop = camera.getFrustumTop();
 		frustumNear = camera.getFrustumNear();
 		frustumFar = camera.getFrustumFar();
+	}
+	
+	public HashMap<String,Object> toHashMap() {
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		map.put("Name", name);
+		StateUtil.putVector3(map, "Location", location);
+		StateUtil.putVector3(map, "Direction", direction);
+		StateUtil.putVector3(map, "LookAt", lookAt);
+		map.put("FrustumLeft", new Double(frustumLeft));
+		map.put("FrustumRight", new Double(frustumRight));
+		map.put("FrustumBottom", new Double(frustumBottom));
+		map.put("FrustumTop", new Double(frustumTop));
+		map.put("FrustumNear", new Double(frustumNear));
+		map.put("FrustumFar", new Double(frustumFar));
+		map.put("Distance", new Double(distance));
+		map.put("Azimuth", new Double(azimuth));
+		map.put("Elevation", new Double(elevation));
+		map.put("MagnificationIndex", new Integer(magIndex));
+		return(map);
 	}
 
 	@Override

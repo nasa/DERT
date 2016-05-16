@@ -3,9 +3,11 @@ package gov.nasa.arc.dert.state;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.ui.TextDialog;
+import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 
 import java.awt.Color;
+import java.util.HashMap;
 
 import javax.swing.Icon;
 
@@ -21,7 +23,7 @@ public class WaypointState extends MapElementState {
 	public static final Icon icon = Icons.getImageIcon("waypoint_24.png");
 
 	// Waypoint location
-	public Vector3 position;
+	public Vector3 location;
 
 	// State object for waypoint parent path
 	public transient PathState parent;
@@ -40,17 +42,37 @@ public class WaypointState extends MapElementState {
 	public WaypointState(long id, ReadOnlyVector3 position, String prefix, double size, Color color,
 		boolean labelVisible, boolean pinned) {
 		super(id, MapElementState.Type.Waypoint, prefix, size, color, labelVisible, pinned);
-		this.position = new Vector3(position);
+		location = new Vector3(position);
+	}
+	
+	/**
+	 * Constructor from hash map.
+	 */
+	public WaypointState(HashMap<String,Object> map) {
+		super(map);
+		location = StateUtil.getVector3(map, "Location", null);
+		if (location == null)
+			throw new NullPointerException("Waypoint location is missing.");
+	}
+	
+	@Override
+	public boolean isEqualTo(State state) {
+		WaypointState that = (WaypointState)state;
+		if (!super.isEqualTo(that))
+			return(false);
+		return(this.location.equals(that.location));
 	}
 
 	@Override
-	public void save() {
-		super.save();
+	public HashMap<String,Object> save() {
+		HashMap<String,Object> map = super.save();
 		if (mapElement != null) {
 			Waypoint waypoint = (Waypoint) mapElement;
-			position = new Vector3(waypoint.getTranslation());
+			location = new Vector3(waypoint.getTranslation());
 			parent = (PathState) waypoint.getPath().getState();
 		}
+		StateUtil.putVector3(map, "Location", location);
+		return(map);
 	}
 
 	@Override
@@ -81,6 +103,12 @@ public class WaypointState extends MapElementState {
 			}
 			annotationDialog.setText(annot);
 		}
+	}
+	
+	@Override
+	public String toString() {
+		String str = "["+location+"]"+super.toString();
+		return(str);
 	}
 
 }

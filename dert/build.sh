@@ -8,15 +8,17 @@ setenv JAVACMD /System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/
 
 echo $JAVACMD
 
-ant -v -buildfile build_linux.xml clean
-ant -v -buildfile build_linux.xml main
+set VERSION = "1.0b2"
 
-ant -v -buildfile build_osx.xml clean
-ant -v -buildfile build_osx.xml main
+ant -v -buildfile build_linux.xml clean -Dversion=$VERSION
+ant -v -buildfile build_linux.xml main -Dversion=$VERSION
+
+ant -v -buildfile build_osx.xml clean -Dversion=$VERSION
+ant -v -buildfile build_osx.xml main -Dversion=$VERSION
 
 # Set back to Java 1.8 to create the Mac app bundle.
 setenv JAVACMD
 
 echo $JAVACMD
 
-ant -v -buildfile build_macapp.xml
+ant -v -buildfile build_macapp.xml -Dversion=$VERSION

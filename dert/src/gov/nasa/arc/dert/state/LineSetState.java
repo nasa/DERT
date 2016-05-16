@@ -1,8 +1,10 @@
 package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.scene.LineSet;
+import gov.nasa.arc.dert.util.StateUtil;
 
 import java.awt.Color;
+import java.util.HashMap;
 
 /**
  * Provides a state object for a LineSet.
@@ -42,13 +44,41 @@ public class LineSetState extends MapElementState {
 		this.filePath = filePath;
 		this.annotation = notes;
 	}
+	
+	/**
+	 * Constructor for hash map
+	 */
+	public LineSetState(HashMap<String,Object> map) {
+		super(map);
+		filePath = StateUtil.getString(map, "FilePath", null);
+	}
+	
+	@Override
+	public boolean isEqualTo(State state) {
+		if ((state == null) || !(state instanceof LineSetState)) 
+			return(false);
+		LineSetState that = (LineSetState)state;
+		if (!super.isEqualTo(that)) 
+			return(false);
+		if (!this.filePath.equals(that.filePath)) 
+			return(false);
+		return(true);
+	}
 
 	@Override
-	public void save() {
-		super.save();
+	public HashMap<String,Object> save() {
+		HashMap<String,Object> map = super.save();
 		if (mapElement != null) {
 			LineSet lineSet = (LineSet) mapElement;
 			filePath = lineSet.getFilePath();
 		}
+		map.put("FilePath", filePath);
+		return(map);
+	}
+	
+	@Override
+	public String toString() {
+		String str = filePath+" "+super.toString();
+		return(str);
 	}
 }

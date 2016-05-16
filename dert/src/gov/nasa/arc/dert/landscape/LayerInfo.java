@@ -1,14 +1,15 @@
 package gov.nasa.arc.dert.landscape;
 
 import gov.nasa.arc.dert.util.ColorMap;
+import gov.nasa.arc.dert.util.StateUtil;
 
-import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Data structure for information about a landscape layer.
  *
  */
-public class LayerInfo implements Serializable, Comparable<LayerInfo> {
+public class LayerInfo implements /*Serializable,*/ Comparable<LayerInfo> {
 
 	public static enum LayerType {
 		none, elevation, colorimage, grayimage, floatfield, intfield, unsignedbytefield, footprint, viewshed
@@ -43,7 +44,7 @@ public class LayerInfo implements Serializable, Comparable<LayerInfo> {
 	public double maximum;
 	
 	// Auto blending enabled for this layer
-	public boolean autoBlend;
+	public boolean autoblend;
 
 	// The color map object
 	public transient ColorMap colorMap;
@@ -76,27 +77,36 @@ public class LayerInfo implements Serializable, Comparable<LayerInfo> {
 	 * @param layerNumber
 	 */
 	public LayerInfo(String name, String type, float blendFactor, int layerNumber) {
-		this(name, LayerType.valueOf(type), blendFactor, layerNumber);
-	}
-
-	/**
-	 * Constructor
-	 * 
-	 * @param name
-	 * @param type
-	 * @param blendFactor
-	 * @param isOverlay
-	 * @param layerNumber
-	 */
-	public LayerInfo(String name, LayerType type, float blendFactor, int layerNumber) {
 		this.name = name;
-		this.type = type;
+		this.type = LayerType.valueOf(type);
 		this.blendFactor = blendFactor;
 		this.layerNumber = layerNumber;
-		if (type == LayerType.none)
-			autoBlend = false;
+		if (this.type == LayerType.none)
+			autoblend = false;
 		else
-			autoBlend = !isOverlay;
+			autoblend = !isOverlay;
+	}
+	
+	/**
+	 * Constructor from hash map.
+	 */
+	public LayerInfo(HashMap<String,Object> map) {
+		name = StateUtil.getString(map, "Name", null);
+		if (name == null)
+			throw new NullPointerException("Name for LayerInfo is null.");
+		String str = StateUtil.getString(map, "Type", "none");
+		type = LayerType.valueOf(str);
+		blendFactor = StateUtil.getDouble(map, "BlendFactor", blendFactor);
+		isOverlay = StateUtil.getBoolean(map, "IsOverlay", false);
+		layerNumber = StateUtil.getInteger(map, "LayerNumber", layerNumber);
+		autoblend = StateUtil.getBoolean(map, "Autoblend", autoblend);
+		str = StateUtil.getString(map, "ColorMap.name", null);
+		if (str != null) {
+			colorMapName = str;
+			gradient = StateUtil.getBoolean(map, "ColorMap.gradient", gradient);
+			minimum = StateUtil.getDouble(map, "ColorMap.minimum", minimum);
+			maximum = StateUtil.getDouble(map, "ColorMap.maximum", maximum);
+		}
 	}
 
 	/**
@@ -115,7 +125,7 @@ public class LayerInfo implements Serializable, Comparable<LayerInfo> {
 		this.minimum = that.minimum;
 		this.maximum = that.maximum;
 		this.colorMap = that.colorMap;
-		this.autoBlend = that.autoBlend;
+		this.autoblend = that.autoblend;
 	}
 
 	/**
@@ -138,13 +148,25 @@ public class LayerInfo implements Serializable, Comparable<LayerInfo> {
 	/**
 	 * Prepare this LayerInfo object to be persisted.
 	 */
-	public void save() {
+	public HashMap<String,Object> getAsHashMap() {
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		map.put("Name", name);
+		map.put("Type", type.toString());
+		map.put("BlendFactor", new Double(blendFactor));
+		map.put("IsOverlay", new Boolean(isOverlay));
+		map.put("LayerNumber", new Integer(layerNumber));
+		map.put("Autoblend", new Boolean(autoblend));
 		if (colorMap != null) {
-			colorMapName = colorMap.getName();
-			gradient = colorMap.isGradient();
-			minimum = colorMap.getMinimum();
-			maximum = colorMap.getMaximum();
+//			colorMapName = colorMap.getName();
+//			gradient = colorMap.isGradient();
+//			minimum = colorMap.getMinimum();
+//			maximum = colorMap.getMaximum();
+			map.put("ColorMap.name", colorMap.getName());
+			map.put("ColorMap.gradient", new Boolean(colorMap.isGradient()));
+			map.put("ColorMap.minimum", new Double(colorMap.getMinimum()));
+			map.put("ColorMap.maximum", new Double(colorMap.getMaximum()));
 		}
+		return(map);
 	}
 
 }

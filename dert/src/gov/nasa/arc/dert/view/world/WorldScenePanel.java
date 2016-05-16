@@ -8,7 +8,6 @@ import gov.nasa.arc.dert.viewpoint.AnaglyphCamera;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
 import gov.nasa.arc.dert.viewpoint.ViewpointNode;
-import gov.nasa.arc.dert.viewpoint.ViewpointStore;
 
 import java.awt.Dimension;
 
@@ -66,9 +65,8 @@ public class WorldScenePanel extends SceneCanvasPanel {
 		controller.setViewpointNode(worldScene.getViewpointNode());
 		Dimension size = canvas.getSize();
 		resizeCanvas(size.width, size.height);
-		ViewpointStore currentViewpoint = wState.getCurrentViewpoint();
-		if (currentViewpoint != null) {
-			worldScene.getViewpointNode().setViewpoint(currentViewpoint, true, false);
+		if (wState.currentViewpoint != null) {
+			worldScene.getViewpointNode().setViewpoint(wState.currentViewpoint, true, false);
 		} else {
 			worldScene.getViewpointNode().reset();
 		}

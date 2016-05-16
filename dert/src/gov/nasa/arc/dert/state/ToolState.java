@@ -3,19 +3,13 @@ package gov.nasa.arc.dert.state;
 import gov.nasa.arc.dert.scene.tool.Tool;
 
 import java.awt.Color;
-
-import com.ardor3d.math.Vector3;
-import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.scenegraph.Node;
+import java.util.HashMap;
 
 /**
  * Base class for state objects for Tools.
  *
  */
-public class ToolState extends MapElementState {
-
-	// Location of tool
-	public Vector3 position;
+public abstract class ToolState extends MapElementState {
 
 	/**
 	 * Constructor
@@ -30,12 +24,17 @@ public class ToolState extends MapElementState {
 	 * @param position
 	 */
 	public ToolState(long id, MapElementState.Type mapElementType, String prefix, double size, Color color,
-		boolean labelVisible, boolean pinned, ReadOnlyVector3 position) {
+		boolean labelVisible, boolean pinned) {
 		super(id, mapElementType, prefix, size, color, labelVisible, pinned);
-		if (position != null) {
-			this.position = new Vector3(position);
-		}
 	}
+	
+	/**
+	 * Constructor for hash map.
+	 */
+	public ToolState(HashMap<String,Object> map) {
+		super(map);
+	}
+		
 
 	/**
 	 * Get the Tool.
@@ -44,16 +43,6 @@ public class ToolState extends MapElementState {
 	 */
 	public Tool getTool() {
 		return ((Tool) mapElement);
-	}
-
-	@Override
-	public void save() {
-		super.save();
-		if (mapElement != null) {
-			Tool tool = (Tool) mapElement;
-			Node node = (Node) tool;
-			position = new Vector3(node.getTranslation());
-		}
 	}
 
 }

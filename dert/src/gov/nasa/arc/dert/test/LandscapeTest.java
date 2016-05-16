@@ -18,10 +18,9 @@ import com.ardor3d.util.geom.BufferUtils;
 
 public class LandscapeTest {
 	
-	private String testLoc = "/tmp/derttest";
 	private TestDemFactory demFactory;
 	
-	public boolean testLandscape() {
+	public boolean testLandscape(String testLoc) {
 		
 		System.err.println("Create "+testLoc);
 		File testDir = new File(testLoc);

@@ -3,7 +3,6 @@
 
 <!-- Set up some directory properties -->
 	
-	<property name="version" value="1.0b2" />
 	<property name="srcdir" value="src" />
 	<property name="classdir" value="bin" />
 	<property name="libdir" value="lib" />
@@ -23,7 +22,6 @@
 		<pathelement path="${libdir}/jogl-all.jar"/>
 		<pathelement path="${libdir}/guava-18.0.jar"/>
 		<pathelement path="${libdir}/spice.jar"/>
-		<pathelement path="${libdir}/xstream-1.4.8.jar"/>
 		<pathelement path="${libdir}/jogl-all-natives-linux-amd64.jar"/>
 		<pathelement path="${libdir}/gluegen-rt-natives-linux-amd64.jar"/>
 		<pathelement path="${libdir}/natives_linux.jar"/>
@@ -90,14 +88,6 @@
 			</fileset>
 		</copy>
 		<mkdir dir="${linuxdeploydir}/kernels" />
-<!--
-		<copy todir="${linuxdeploydir}/kernels">
-			<fileset dir="kernels">
-				<exclude name=".svn"/>
-				<exclude name=".DS_Store"/>
-			</fileset>
-		</copy>
--->
 		<mkdir dir="${linuxdeploydir}/colormap" />
 		<copy todir="${linuxdeploydir}/colormap">
 			<fileset dir="colormap">
@@ -150,8 +140,10 @@
 <!-- Default Target -->
 		
 	<target name="main" depends="linux">
+		<zip destfile="${linuxdeploydir}.zip" basedir="${linuxdeploydir}"/>
+		<chmod perm="644" file="${linuxdeploydir}.zip"/>
 		<echo>
-			Build complete.
+			Linux Build complete.
 		</echo>
 	</target>
 </project>

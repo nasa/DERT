@@ -3,9 +3,12 @@ package gov.nasa.arc.dert.state;
 import gov.nasa.arc.dert.scene.tool.CartesianGrid;
 import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.scene.tool.RadialGrid;
+import gov.nasa.arc.dert.util.StateUtil;
 
 import java.awt.Color;
+import java.util.HashMap;
 
+import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 
 /**
@@ -22,6 +25,9 @@ public class GridState extends ToolState {
 
 	// Number of columns and rows in Cartesian grid
 	public int columns, rows;
+	
+	// Location of center of grid
+	public Vector3 location;
 
 	/**
 	 * Create a CartesianGrid state
@@ -50,6 +56,26 @@ public class GridState extends ToolState {
 		state.compassRose = RadialGrid.defaultCompassRose;
 		return (state);
 	}
+	
+	@Override
+	public boolean isEqualTo(State state) {
+		if ((state == null) || !(state instanceof GridState))
+			return(false);
+		GridState that = (GridState)state;
+		if (!super.isEqualTo(that))
+			return(false);
+		if (this.rings != that.rings) 
+			return(false);
+		if (this.columns != that.columns) 
+			return(false);
+		if (this.rows != that.rows) 
+			return(false);
+		if (this.compassRose != that.compassRose) 
+			return(false);
+		if (!this.location.equals(that.location)) 
+			return(false);
+		return(true);
+	}
 
 	/**
 	 * Constructor
@@ -65,12 +91,25 @@ public class GridState extends ToolState {
 	protected GridState(MapElementState.Type type, String prefix, double size, Color color, boolean labelVisible,
 		boolean pinned, ReadOnlyVector3 position) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration().incrementMapElementCount(type), type,
-			prefix, size, color, labelVisible, pinned, position);
+			prefix, size, color, labelVisible, pinned);
+		location = new Vector3(position);
+	}
+	
+	/**
+	 * Constructor for hash map.
+	 */
+	public GridState(HashMap<String,Object> map) {
+		super(map);
+		rings = StateUtil.getInteger(map, "Rings", 0);
+		columns = StateUtil.getInteger(map, "Columns", 0);
+		rows = StateUtil.getInteger(map, "Rows", 0);
+		compassRose = StateUtil.getBoolean(map, "CompassRose", false);
+		location = StateUtil.getVector3(map, "Location", Vector3.ZERO);
 	}
 
 	@Override
-	public void save() {
-		super.save();
+	public HashMap<String,Object> save() {
+		HashMap<String,Object> map = super.save();
 		if (mapElement != null) {
 			if (mapElementType == MapElementState.Type.RadialGrid) {
 				rings = ((RadialGrid) mapElement).getRings();
@@ -80,5 +119,17 @@ public class GridState extends ToolState {
 				rows = ((CartesianGrid) mapElement).getRows();
 			}
 		}
+		map.put("Rings", new Integer(rings));
+		map.put("Columns", new Integer(columns));
+		map.put("Rows", new Integer(rows));
+		map.put("CompassRose", new Boolean(compassRose));
+		StateUtil.putVector3(map, "Location", location);
+		return(map);
+	}
+	
+	@Override
+	public String toString() {
+		String str = "["+columns+","+rows+","+rings+","+compassRose+","+location+"] "+super.toString();
+		return(str);
 	}
 }

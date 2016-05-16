@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.render.ShadowEffects;
 import gov.nasa.arc.dert.render.ShadowMap;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.TimeUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
@@ -12,6 +13,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -86,6 +88,25 @@ public class Lighting implements Serializable {
 		azimuth = defaultAz;
 		elevation = defaultEl;
 		direction = new Vector3(Vector3.NEG_UNIT_Z);
+	}
+
+	/**
+	 * Constructor from hash map
+	 */
+	public Lighting(HashMap<String,Object> map) {
+		azimuth = StateUtil.getDouble(map, "Azimuth", defaultAz);
+		elevation = StateUtil.getDouble(map, "Elevation", defaultEl);
+		direction = StateUtil.getVector3(map, "Direction", Vector3.NEG_UNIT_Z);
+		globalAmbientIntensity = StateUtil.getColorRGBA(map, "GlobalAmbientIntensity", globalAmbientIntensity);
+		diffuseIntensity = StateUtil.getColorRGBA(map, "DiffuseIntensity", diffuseIntensity);
+		ambientIntensity = StateUtil.getColorRGBA(map, "AmbientIntensity", ambientIntensity);
+		headlightIntensity = StateUtil.getColorRGBA(map, "HeadlightIntensity", headlightIntensity);
+		lightEnabled = StateUtil.getBoolean(map, "LightEnabled", lightEnabled);
+		isLamp = StateUtil.getBoolean(map, "IsLamp", isLamp);
+		headlightEnabled = StateUtil.getBoolean(map, "HeadlightEnabled", headlightEnabled);
+		refLoc = StateUtil.getVector3(map, "ReferenceLocation", refLoc);
+		epoch = (Date)map.get("Epoch");
+		timeUTC = StateUtil.getLong(map, "TimeUTC", timeUTC);
 	}
 
 	/**
@@ -332,10 +353,25 @@ public class Lighting implements Serializable {
 	/**
 	 * Prepare lighting for persistence
 	 */
-	public void save() {
-		azimuth = light.getAzimuth();
-		elevation = light.getElevation();
-		direction = light.getDirection();
+	public HashMap<String,Object> saveAsHashMap() {
+//		azimuth = light.getAzimuth();
+//		elevation = light.getElevation();
+//		direction = light.getDirection();
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		map.put("Azimuth", new Double(light.getAzimuth()));
+		map.put("Elevation", new Double(light.getElevation()));
+		StateUtil.putVector3(map, "Direction", direction);
+		StateUtil.putColorRGBA(map, "GlobalAmbientIntensity", globalAmbientIntensity);
+		StateUtil.putColorRGBA(map, "DiffuseIntensity", diffuseIntensity);
+		StateUtil.putColorRGBA(map, "AmbientIntensity", ambientIntensity);
+		StateUtil.putColorRGBA(map, "HeadlightIntensity", headlightIntensity);
+		map.put("LightEnabled", new Boolean(lightEnabled));
+		map.put("IsLamp", new Boolean(isLamp));
+		map.put("HeadlightEnabled", new Boolean(headlightEnabled));
+		StateUtil.putVector3(map, "ReferenceLocation", refLoc);
+		map.put("Epoch", epoch);
+		map.put("TimeUTC", new Long(timeUTC));
+		return(map);
 	}
 
 	/**

@@ -10,7 +10,6 @@ import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.Serializable;
 
 import javax.swing.JDialog;
 
@@ -19,7 +18,10 @@ import javax.swing.JDialog;
  * of a View.
  *
  */
-public class ViewData implements Serializable {
+public class ViewData /*implements Serializable*/ {
+	
+	public static int DEFAULT_WINDOW_WIDTH = 800;
+	public static int DEFAULT_WINDOW_HEIGHT = 600;
 
 	// Window dimensions
 	private int windowX = -1, windowY = -1, windowWidth = 900, windowHeight = 600;
@@ -39,26 +41,6 @@ public class ViewData implements Serializable {
 
 	/**
 	 * Constructor
-	 */
-	public ViewData() {
-	}
-
-	/**
-	 * Constructor
-	 * 
-	 * @param windowX
-	 * @param windowY
-	 * @param onTop
-	 */
-	public ViewData(int windowX, int windowY, boolean onTop) {
-		this.windowX = windowX;
-		this.windowY = windowY;
-		this.onTop = onTop;
-		this.packIt = true;
-	}
-
-	/**
-	 * Constructor
 	 * 
 	 * @param windowX
 	 * @param windowY
@@ -69,16 +51,44 @@ public class ViewData implements Serializable {
 	public ViewData(int windowX, int windowY, int windowWidth, int windowHeight, boolean onTop) {
 		this.windowX = windowX;
 		this.windowY = windowY;
-		if (windowWidth < 0) {
-			windowWidth = 800;
-		}
 		this.windowWidth = windowWidth;
-		if (windowHeight < 0) {
-			windowHeight = 600;
-		}
 		this.windowHeight = windowHeight;
 		this.onTop = onTop;
-		this.packIt = false;
+		if ((windowWidth < 0) || (windowHeight < 0)) {
+			packIt = true;
+		}
+	}
+	
+	/**
+	 * Copy constructor
+	 * @param that
+	 */
+	public ViewData(ViewData that) {
+		this.windowX = that.windowX;
+		this.windowY = that.windowY;
+		this.windowWidth = that.windowWidth;
+		this.windowHeight = that.windowHeight;
+		this.onTop = that.onTop;
+		this.packIt = that.packIt;
+		this.visible = that.visible;
+	}
+	
+	public boolean isEqualTo(ViewData that) {
+		if (this.windowX != that.windowX) 
+			return(false);
+		if (this.windowY != that.windowY) 
+			return(false);
+		if (this.windowWidth != that.windowWidth) 
+			return(false);
+		if (this.windowHeight != that.windowHeight) 
+			return(false);
+		if (this.onTop != that.onTop) 
+			return(false);
+		if (this.packIt != that.packIt) 
+			return(false);
+		if (this.visible != that.visible) 
+			return(false);
+		return(true);
 	}
 
 	/**
@@ -190,16 +200,21 @@ public class ViewData implements Serializable {
 	}
 
 	/**
-	 * Save the view metadata
+	 * Get the window X position
+	 * 
+	 * @return
 	 */
-	public void save() {
-		if (viewWindow != null) {
-			windowX = viewWindow.getX();
-			windowY = viewWindow.getY();
-			windowWidth = viewWindow.getWidth();
-			windowHeight = viewWindow.getHeight();
-			visible = viewWindow.isVisible();
-		}
+	public int getX() {
+		return (windowX);
+	}
+
+	/**
+	 * Get the window Y position
+	 * 
+	 * @return
+	 */
+	public int getY() {
+		return (windowY);
 	}
 
 	/**
@@ -247,5 +262,41 @@ public class ViewData implements Serializable {
 		}
 		window.setVisible(false);
 		window.dispose();
+	}
+	
+	public void save() {
+		Window window = getViewWindow();
+		if (window == null)
+			return;
+		windowX = window.getX();
+		windowY = window.getY();
+		windowWidth = window.getWidth();
+		windowHeight = window.getHeight();
+		visible = window.isVisible();
+	}
+		
+	public int[] toArray() {
+		int[] array = new int[6];
+		array[0] = windowX;
+		array[1] = windowY;
+		array[2] = windowWidth;
+		array[3] = windowHeight;
+		array[4] = (visible ? 1 : 0);
+		array[5] = (onTop ? 1 : 0);
+		return(array);
+	}
+
+	public static ViewData fromArray(int[] array) {
+		if (array == null)
+			return(null);
+		ViewData viewData = new ViewData(array[0], array[1], array[2], array[3], (array[5] == 1));
+		viewData.setVisible((array[4] == 1));
+		return(viewData);
+	}
+	
+	@Override
+	public String toString() {
+		String str = "ViewData["+windowX+","+windowY+","+windowWidth+","+windowHeight+","+visible+","+onTop+","+packIt+"]";
+		return(str);
 	}
 }

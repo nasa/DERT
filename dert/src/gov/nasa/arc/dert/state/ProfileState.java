@@ -4,11 +4,13 @@ import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.scene.tool.Profile;
+import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.View;
 import gov.nasa.arc.dert.view.graph.Graph;
 import gov.nasa.arc.dert.view.graph.GraphView;
 
 import java.awt.Color;
+import java.util.HashMap;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -33,10 +35,10 @@ public class ProfileState extends ToolState {
 	public ProfileState(ReadOnlyVector3 position) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.Profile), MapElementState.Type.Profile, "Profile",
-			Profile.defaultSize, Profile.defaultColor, Profile.defaultLabelVisible, Profile.defaultPinned, position);
-		viewData = new ViewData(-1, -1, -1, 300, false);
+			Profile.defaultSize, Profile.defaultColor, Profile.defaultLabelVisible, Profile.defaultPinned);
+		viewData = new ViewData(-1, -1, ViewData.DEFAULT_WINDOW_WIDTH, 300, false);
 		viewData.setVisible(true);
-		p0 = new Vector3(this.position);
+		p0 = new Vector3(position);
 		p1 = new Vector3(Landscape.getInstance().getCenter());
 		p1.subtractLocal(p0);
 		p1.normalizeLocal();
@@ -44,15 +46,41 @@ public class ProfileState extends ToolState {
 		p1.addLocal(p0);
 		p1.setZ(Landscape.getInstance().getZ(p1.getX(), p1.getY()));
 	}
+	
+	/**
+	 * Constructor for hash map
+	 */
+	public ProfileState(HashMap<String,Object> map) {
+		super(map);
+		p0 = StateUtil.getVector3(map, "P0", Vector3.ZERO);
+		p1 = StateUtil.getVector3(map, "P1", Vector3.ZERO);
+	}
+	
+	@Override
+	public boolean isEqualTo(State state) {
+		if ((state == null) || !(state instanceof ProfileState)) 
+			return(false);
+		ProfileState that = (ProfileState)state;
+		if (!super.isEqualTo(that)) 
+			return(false);
+		if (!this.p0.equals(that.p0)) 
+			return(false);
+		if (!this.p1.equals(that.p1)) 
+			return(false);
+		return(true);
+	}
 
 	@Override
-	public void save() {
-		super.save();
+	public HashMap<String,Object> save() {
+		HashMap<String,Object> map = super.save();
 		if (mapElement != null) {
 			Profile profile = (Profile) mapElement;
 			p0 = new Vector3(profile.getEndpointA());
 			p1 = new Vector3(profile.getEndpointB());
 		}
+		StateUtil.putVector3(map, "P0", p0);
+		StateUtil.putVector3(map, "P1", p1);
+		return(map);
 	}
 
 	/**
@@ -122,6 +150,12 @@ public class ProfileState extends ToolState {
 	protected void createView() {
 		setView(new GraphView(this));
 		viewData.createWindow(Dert.getMainWindow(), name + " Graph", X_OFFSET, Y_OFFSET);
+	}
+	
+	@Override
+	public String toString() {
+		String str = "["+p0+","+p1+"]"+super.toString();
+		return(str);
 	}
 
 }

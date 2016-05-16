@@ -5,9 +5,12 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.scene.tool.Plane;
 import gov.nasa.arc.dert.util.ColorMap;
+import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.View;
 import gov.nasa.arc.dert.view.contour.ContourScenePanel;
 import gov.nasa.arc.dert.view.contour.ContourView;
+
+import java.util.HashMap;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -44,7 +47,7 @@ public class PlaneState extends ToolState {
 	public PlaneState(ReadOnlyVector3 position) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.Plane), MapElementState.Type.Plane, "Plane",
-			Plane.defaultSize, Plane.defaultColor, Plane.defaultLabelVisible, Plane.defaultPinned, position);
+			Plane.defaultSize, Plane.defaultColor, Plane.defaultLabelVisible, Plane.defaultPinned);
 		p0 = new Vector3(position);
 		p1 = new Vector3(Landscape.getInstance().getCenter());
 		p1.subtractLocal(p0);
@@ -62,10 +65,54 @@ public class PlaneState extends ToolState {
 		widthScale = Plane.defaultSize;
 		viewData = new ViewData(-1, -1, 550, 400, false);
 	}
+	
+	/**
+	 * Constructor for hash map.
+	 */
+	public PlaneState(HashMap<String,Object> map) {
+		super(map);
+		p0 = StateUtil.getVector3(map, "P0", Vector3.ZERO);
+		p1 = StateUtil.getVector3(map, "P1", Vector3.ZERO);
+		p2 = StateUtil.getVector3(map, "P2", Vector3.ZERO);
+		triangleVisible = StateUtil.getBoolean(map, "TriangleVisible", Plane.defaultTriangleVisible);
+		lengthScale = StateUtil.getDouble(map, "LengthScale", Plane.defaultSize);
+		widthScale = StateUtil.getDouble(map, "WidthScale", Plane.defaultSize);
+		colorMapName = StateUtil.getString(map, "ColorMapName", Plane.defaultColorMap);
+		minimum = StateUtil.getDouble(map, "ColorMapMinimum", minimum);
+		maximum = StateUtil.getDouble(map, "ColorMapMaximum", maximum);
+	}
+	
+	@Override
+	public boolean isEqualTo(State state) {
+		if ((state == null) || !(state instanceof PlaneState)) 
+			return(false);
+		PlaneState that = (PlaneState)state;
+		if (!super.isEqualTo(that)) 
+			return(false);
+		if (this.triangleVisible != that.triangleVisible)
+			return(false);
+		if (this.lengthScale != that.lengthScale)
+			return(false);
+		if (this.widthScale != that.widthScale)
+			return(false);
+		if (this.minimum != that.minimum)
+			return(false);
+		if (this.maximum != that.maximum)
+			return(false);
+		if (!this.p0.equals(that.p0)) 
+			return(false);
+		if (!this.p1.equals(that.p1)) 
+			return(false);
+		if (!this.p2.equals(that.p2)) 
+			return(false);
+		if (!this.colorMapName.equals(that.colorMapName)) 
+			return(false);
+		return(true);
+	}
 
 	@Override
-	public void save() {
-		super.save();
+	public HashMap<String,Object> save() {
+		HashMap<String,Object> map = super.save();
 		if (mapElement != null) {
 			Plane plane = (Plane) mapElement;
 			p0 = new Vector3(plane.getPoint(0));
@@ -82,6 +129,18 @@ public class PlaneState extends ToolState {
 			minimum = colorMap.getMinimum();
 			maximum = colorMap.getMaximum();
 		}
+		
+		StateUtil.putVector3(map, "P0", p0);
+		StateUtil.putVector3(map, "P1", p1);
+		StateUtil.putVector3(map, "P2", p2);
+		map.put("TriangleVisible", new Boolean(triangleVisible));
+		map.put("LengthScale", new Double(lengthScale));
+		map.put("WidthScale", new Double(widthScale));
+		map.put("ColorMapName", colorMapName);
+		map.put("ColorMapMinimum", new Double(minimum));
+		map.put("ColorMapMaximum", new Double(maximum));
+		
+		return(map);
 	}
 
 	@Override
@@ -95,5 +154,11 @@ public class PlaneState extends ToolState {
 	public void createView() {
 		setView(new ContourView(this));
 		viewData.createWindow(Dert.getMainWindow(), name + " Elevation Difference Map", X_OFFSET, Y_OFFSET);
+	}
+	
+	@Override
+	public String toString() {
+		String str = "["+triangleVisible+","+lengthScale+","+widthScale+","+colorMapName+","+gradient+","+minimum+","+maximum+","+p0+","+p1+","+p2+"]"+super.toString();
+		return(str);
 	}
 }

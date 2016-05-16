@@ -79,6 +79,7 @@ public class ViewpointNode extends Node {
 		createText();
 		if (store != null) {
 			setViewpoint(store, true, true);
+			updateText();
 		}
 	}
 
@@ -184,7 +185,6 @@ public class ViewpointNode extends Node {
 		text.attachChild(dstText);
 		text.updateGeometricState(0);
 		text.getSceneHints().setRenderBucketType(RenderBucketType.Ortho);
-		updateText();
 	}
 	
 	private void updateText() {
@@ -386,6 +386,7 @@ public class ViewpointNode extends Node {
 		updateFromCamera();
 		updateCrosshair();
 		updateGeometricState(0);
+		updateText();
 		changed.set(true);
 	}
 	

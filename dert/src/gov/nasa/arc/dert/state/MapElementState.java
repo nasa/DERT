@@ -4,11 +4,13 @@ import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scenegraph.MotionListener;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.ui.TextDialog;
+import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.View;
 
 import java.awt.Color;
 import java.awt.Window;
+import java.util.HashMap;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Node;
@@ -81,6 +83,53 @@ public abstract class MapElementState extends State {
 		this.mapElementType = mapElementType;
 		annotation = "";
 	}
+	
+	/**
+	 * Constructor from hash map.
+	 */
+	public MapElementState(HashMap<String,Object> map) {
+		super(map);
+		annotation = StateUtil.getString(map, "Annotation", "");
+		visible = StateUtil.getBoolean(map, "Visible", true);
+		pinned = StateUtil.getBoolean(map, "Pinned", false);
+		labelVisible = StateUtil.getBoolean(map, "LabelVisible", true);
+		size = StateUtil.getDouble(map, "Size", 1);
+		color = StateUtil.getColor(map, "Color", Color.white);
+		String str = StateUtil.getString(map, "MapElementType", null);
+		mapElementType = Type.valueOf(str);
+		id = StateUtil.getLong(map, "MapElementId", 0);
+	}
+	
+	@Override
+	public boolean isEqualTo(State state) {
+		MapElementState that = (MapElementState)state;
+		if (!super.isEqualTo(that))
+			return(false);
+		if (!this.annotation.equals(that.annotation))
+			return(false);
+		if (this.visible != that.visible)
+			return(false);
+		if (this.pinned != that.pinned)
+			return(false);
+		if (this.labelVisible != that.labelVisible) 
+			return(false);
+		if (this.size != that.size) 
+			return(false);
+		if (!this.color.equals(that.color))
+			return(false);
+		if (this.mapElementType != that.mapElementType) 
+			return(false);
+		if (this.id != that.id) 
+			return(false);
+		return(true);
+	}
+	
+	@Override
+	public String toString() {
+		String str = super.toString();
+		str += " Visible="+visible+" Pinned="+pinned+" LabelVisible="+labelVisible+" Size="+size+" MapElementType="+mapElementType+" Color="+color+" Id="+id+" Note="+annotation;
+		return(str);
+	}
 
 	/**
 	 * Get the MapElement
@@ -112,8 +161,8 @@ public abstract class MapElementState extends State {
 	}
 
 	@Override
-	public void save() {
-		super.save();
+	public HashMap<String,Object> save() {
+		HashMap<String,Object> map = super.save();
 		if (mapElement != null) {
 			name = mapElement.getName();
 			size = mapElement.getSize();
@@ -122,6 +171,16 @@ public abstract class MapElementState extends State {
 			visible = mapElement.isVisible();
 			labelVisible = mapElement.isLabelVisible();
 		}
+		map.put("Name", name);
+		map.put("Size", new Double(size));
+		map.put("Color", color);
+		map.put("Pinned", new Boolean(pinned));
+		map.put("Annotation", annotation);
+		map.put("Visible", new Boolean(visible));
+		map.put("LabelVisible", new Boolean(labelVisible));
+		map.put("MapElementType", mapElementType.toString());
+		map.put("MapElementId", new Long(id));
+		return(map);
 	}
 
 	/**

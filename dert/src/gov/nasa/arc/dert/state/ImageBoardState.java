@@ -1,8 +1,10 @@
 package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
+import gov.nasa.arc.dert.util.StateUtil;
 
 import java.awt.Color;
+import java.util.HashMap;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
 
@@ -26,10 +28,39 @@ public class ImageBoardState extends LandmarkState {
 			ImageBoard.defaultSize, Color.white, ImageBoard.defaultLabelVisible, ImageBoard.defaultPinned, position);
 		imagePath = ImageBoard.defaultImagePath;
 	}
+	
+	/**
+	 * Constructor for hash map.
+	 */
+	public ImageBoardState(HashMap<String,Object> map) {
+		super(map);
+		imagePath = StateUtil.getString(map, "ImagePath", ImageBoard.defaultImagePath);
+	}
+	
+	@Override
+	public boolean isEqualTo(State state) {
+		if ((state == null) || !(state instanceof ImageBoardState)) 
+			return(false);
+		ImageBoardState that = (ImageBoardState)state;
+		if (!super.isEqualTo(that)) 
+			return(false);
+		if (!this.imagePath.equals(that.imagePath)) 
+			return(false);
+		return(true);
+	}
 
 	@Override
-	public void save() {
-		super.save();
-		imagePath = ((ImageBoard) mapElement).getImagePath();
+	public HashMap<String,Object> save() {
+		HashMap<String,Object> map = super.save();
+		if (mapElement != null)
+			imagePath = ((ImageBoard) mapElement).getImagePath();
+		map.put("ImagePath", imagePath);
+		return(map);
+	}
+	
+	@Override
+	public String toString() {
+		String str = imagePath+" "+super.toString();
+		return(str);
 	}
 }

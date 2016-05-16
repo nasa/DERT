@@ -135,8 +135,8 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	public FieldCamera(FieldCameraState state) {
 		super(state.name);
 		this.state = state;
-		if (state.position != null) {
-			super.setTranslation(state.position);
+		if (state.location != null) {
+			super.setTranslation(state.location);
 		}
 
 		// camera stand
