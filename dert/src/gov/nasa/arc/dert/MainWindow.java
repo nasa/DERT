@@ -432,6 +432,16 @@ public class MainWindow extends JFrame {
 		corXhair.setState(worldView.getScenePanel().isShowCrosshair());
 		menu.add(corXhair);
 
+		JCheckBoxMenuItem marble = new JCheckBoxMenuItem("Show Marble");
+		marble.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				World.getInstance().getMarble().setVisible(((JCheckBoxMenuItem) event.getSource()).getState());
+			}
+		});
+		marble.setState(World.getInstance().getMarble().isVisible());
+		menu.add(marble);
+
 		JCheckBoxMenuItem textOverlay = new JCheckBoxMenuItem("Show Text Overlay");
 		textOverlay.addActionListener(new ActionListener() {
 			@Override
