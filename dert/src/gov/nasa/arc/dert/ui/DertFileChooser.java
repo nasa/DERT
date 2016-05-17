@@ -57,9 +57,9 @@ public class DertFileChooser extends JFileChooser {
 	 * @param directoryOnly
 	 * @param newLandscape
 	 */
-	public DertFileChooser(String lastPath, boolean directoryOnly, boolean newLandscape) {
+	public DertFileChooser(String lastPath, boolean dirOnly, boolean newLandscape) {
 		super(new File(lastPath));
-		this.directoryOnly = directoryOnly;
+		this.directoryOnly = dirOnly;
 		setMultiSelectionEnabled(false);
 
 		if (directoryOnly) {
@@ -80,18 +80,6 @@ public class DertFileChooser extends JFileChooser {
 			return (Icons.getImageIcon("landscape-icon.png"));
 		}
 		return (super.getIcon(f));
-	}
-
-	@Override
-	public boolean isTraversable(File f) {
-		File dertFile = new File(f, ".landscape");
-		if (dertFile.exists() && directoryOnly) {
-			return (false);
-		}
-		if (f.isDirectory()) {
-			return (true);
-		}
-		return (false);
 	}
 
 	private void removeFileType(Component[] child) {

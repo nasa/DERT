@@ -13,6 +13,7 @@ import gov.nasa.arc.dert.render.SceneCanvas;
 import gov.nasa.arc.dert.render.SceneFramework;
 import gov.nasa.arc.dert.scene.LineSet;
 import gov.nasa.arc.dert.scene.LineSets;
+import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
 import gov.nasa.arc.dert.scene.landmark.Landmarks;
@@ -256,6 +257,8 @@ public class Dert {
 				dertProperties.load(new FileInputStream(file));
 			}
 
+			World.defaultStereoEyeSeparation = StringUtil.getDoubleValue(dertProperties, "Stereo.eyeSeparation", false, World.defaultStereoEyeSeparation, false);
+			World.defaultStereoFocalDistance = StringUtil.getDoubleValue(dertProperties, "Stereo.focalDistance", false, World.defaultStereoFocalDistance, false);
 			RasterText.setFont(StringUtil.getIntegerValue(dertProperties, "RasterText.Font", true, 18, false));
 			Lighting.loadProperties(dertProperties);
 			QuadTreeCache.MAX_CACHE_MEMORY = StringUtil.getLongValue(dertProperties, "QuadTree.MaxCacheSize", true,

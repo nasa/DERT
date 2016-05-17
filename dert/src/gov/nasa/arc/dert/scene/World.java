@@ -33,6 +33,8 @@ public class World extends GroupNode {
 
 	// Defaults
 	public static ReadOnlyColorRGBA defaultBackgroundColor = ColorRGBA.DARK_GRAY;
+	public static double defaultStereoFocalDistance = 1;
+	public static double defaultStereoEyeSeparation = 0.0333333;
 
 	// The world is a singleton, holds viewpoint node
 	private static World INSTANCE;
@@ -83,8 +85,8 @@ public class World extends GroupNode {
 	private SelectionHandler selectionHandler;
 
 	// Stereo parameters
-	public double stereoFocalDistance = 1;
-	public double stereoEyeSeparation = stereoFocalDistance / 30;
+	public double stereoFocalDistance = defaultStereoFocalDistance;
+	public double stereoEyeSeparation = defaultStereoEyeSeparation;
 
 	/**
 	 * Create a new world

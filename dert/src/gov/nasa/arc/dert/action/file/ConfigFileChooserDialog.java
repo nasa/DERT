@@ -109,6 +109,27 @@ public class ConfigFileChooserDialog extends AbstractDialog {
 				String[] list = new String[] {};
 				configList.setListData(list);
 				contentArea.revalidate();
+				
+				// double click
+				if (event.getPropertyName().equals(JFileChooser.DIRECTORY_CHANGED_PROPERTY)) {
+					File f = (File) event.getNewValue();
+					if (f == null) {
+						return;
+					}
+					landscapePath = f.getAbsolutePath();
+					lastLandscape = landscapePath;
+					// Check if the selection is a landscape directory.
+					// If so, the user has double-clicked on the landscape so we will create a new configuration.
+					File idFile = new File(f, ".landscape");
+					if (idFile.exists()) {
+						configFilePath = new String[] { landscapePath };
+						lastPath = fileChooser.getCurrentDirectory().getAbsolutePath();
+						dispose();
+					}
+					return;
+				}
+				
+				// single click
 				if (!event.getPropertyName().equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
 					return;
 				}
