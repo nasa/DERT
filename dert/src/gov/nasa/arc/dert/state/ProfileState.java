@@ -23,9 +23,10 @@ public class ProfileState extends ToolState {
 
 	// Profile end points
 	public Vector3 p0, p1;
+	public boolean axesEqualScale;
 
 	// Graph
-	protected transient Graph graph;
+	protected Graph graph;
 
 	/**
 	 * Constructor
@@ -45,6 +46,7 @@ public class ProfileState extends ToolState {
 		p1.multiplyLocal(Grid.defaultCellSize / 2);
 		p1.addLocal(p0);
 		p1.setZ(Landscape.getInstance().getZ(p1.getX(), p1.getY()));
+		axesEqualScale = true;
 	}
 	
 	/**
@@ -54,6 +56,7 @@ public class ProfileState extends ToolState {
 		super(map);
 		p0 = StateUtil.getVector3(map, "P0", Vector3.ZERO);
 		p1 = StateUtil.getVector3(map, "P1", Vector3.ZERO);
+		axesEqualScale = StateUtil.getBoolean(map, "AxesEqualScale", true);
 	}
 	
 	@Override
@@ -62,6 +65,8 @@ public class ProfileState extends ToolState {
 			return(false);
 		ProfileState that = (ProfileState)state;
 		if (!super.isEqualTo(that)) 
+			return(false);
+		if (this.axesEqualScale != that.axesEqualScale) 
 			return(false);
 		if (!this.p0.equals(that.p0)) 
 			return(false);
@@ -78,8 +83,11 @@ public class ProfileState extends ToolState {
 			p0 = new Vector3(profile.getEndpointA());
 			p1 = new Vector3(profile.getEndpointB());
 		}
+		if (graph != null)
+			axesEqualScale = graph.isAxesEqualScale();
 		StateUtil.putVector3(map, "P0", p0);
 		StateUtil.putVector3(map, "P1", p1);
+		map.put("AxesEqualScale", new Boolean(axesEqualScale));
 		return(map);
 	}
 
@@ -93,9 +101,9 @@ public class ProfileState extends ToolState {
 	 * @param yMin
 	 * @param yMax
 	 */
-	public void setData(float[] vertex, int vertexCount, float xMin, float xMax, float yMin, float yMax) {
+	public void setData(float[] vertex, int vertexCount, float xMin, float xMax, float yMin, float yMax, float[] origVertex) {
 		if (graph != null) {
-			((GraphView)viewData.view).setData(vertex, vertexCount, xMin, xMax, yMin, yMax);
+			((GraphView)viewData.view).setData(vertex, vertexCount, xMin, xMax, yMin, yMax, origVertex);
 		}
 	}
 
@@ -132,7 +140,7 @@ public class ProfileState extends ToolState {
 		}
 		try {
 			color = getMapElement().getColor();
-			graph = new Graph(100000, color);
+			graph = new Graph(100000, color, axesEqualScale);
 			return (graph);
 		} catch (Exception e) {
 			System.out.println("Unable to load graph, see log.");

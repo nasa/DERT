@@ -25,9 +25,12 @@ public class Graph {
 	// Vertices for graph line
 	private float[] vertex;
 	private int vertexCount;
+	
+	// Original 3D vertices
+	private float[] origVertex;
 
 	// Range
-	private float xMin, yMin, xMax, yMax;
+	private float xMin=0, yMin=0, xMax=100, yMax=100;
 
 	// Colors
 	private Color color, pickColor = Color.RED;
@@ -52,7 +55,7 @@ public class Graph {
 	 * @param n
 	 * @param color
 	 */
-	public Graph(int n, Color color) {
+	public Graph(int n, Color color, boolean axesEqualScale) {
 		valueX = -1;
 		this.color = color;
 		length = n;
@@ -60,7 +63,8 @@ public class Graph {
 		axes = new Axes();
 		createLine(length);
 		createPick();
-		axes.setRange(xMin, xMax, yMin, yMax);
+		axes.equalScale = axesEqualScale;
+		axes.setRange(0, 100, 0, 100);
 	}
 
 	/**
@@ -92,7 +96,7 @@ public class Graph {
 		g2d.drawPolyline(lineX, lineY, numPoints);
 		g2d.setStroke(defaultStroke);
 		// render pick line
-		if ((pickX[0] > Axes.LEFT_MARGIN) && (pickX[0] < (width - Axes.RIGHT_MARGIN))) {
+		if ((pickX[0] > axes.leftMargin) && (pickX[0] < (width - axes.rightMargin))) {
 			g2d.setColor(pickColor);
 			g2d.drawPolyline(pickX, pickY, 2);
 		}
@@ -106,21 +110,23 @@ public class Graph {
 	 * @return
 	 */
 	public float[] getValueAt(int mouseX, int mouseY) {
-		valueX = (mouseX - Axes.LEFT_MARGIN) / axes.getXScale() + xMin;
+		valueX = (mouseX - axes.leftMargin) / axes.xScale + axes.xMin;
 		double y = Double.NaN;
-		if ((valueX >= xMin) && (vertex != null)) {
-			for (int i = 3; i < vertex.length; i += 3) {
+		int index = 0;
+		if ((valueX >= axes.xMin) && (vertex != null)) {
+			for (int i = 2; i < vertex.length; i += 2) {
 				if (valueX < vertex[i]) {
-					double w = (valueX - vertex[i - 3]) / (vertex[i] - vertex[i - 3]);
-					y = w * (vertex[i + 1] - vertex[i - 2]) + vertex[i - 2];
+					double w = (valueX - vertex[i - 2]) / (vertex[i] - vertex[i - 2]);
+					y = w * (vertex[i + 1] - vertex[i - 1]) + vertex[i - 1];
+					index = 3*i/2;
 					break;
 				}
 			}
 		}
 		pickX[0] = mouseX;
 		pickX[1] = mouseX;
-		if ((valueX > xMin) && (valueX < xMax)) {
-			return (new float[] { (float) valueX, (float) y });
+		if ((valueX > axes.xMin) && (valueX < axes.xMax)) {
+			return (new float[] { (float) valueX, (float) y, origVertex[index], origVertex[index + 1], origVertex[index + 2] });
 		} else {
 			return (null);
 		}
@@ -136,7 +142,8 @@ public class Graph {
 	 * @param yMin
 	 * @param yMax
 	 */
-	public void setData(float[] vertex, int vertexCount, float xMin, float xMax, float yMin, float yMax) {
+	public void setData(float[] vertex, int vertexCount, float xMin, float xMax, float yMin, float yMax, float[] origVertex) {
+		this.origVertex = origVertex;
 		if ((xMax - xMin) == 0) {
 			xMax += 0.0001;
 		}
@@ -157,9 +164,9 @@ public class Graph {
 	}
 
 	private void setData() {
-		buildLine(vertex, vertexCount, xMin, yMin, axes.getXScale(), axes.getYScale());
-		pickY[0] = height - Axes.BOTTOM_MARGIN;
-		pickY[1] = height - (axes.getHeight() + Axes.BOTTOM_MARGIN);
+		buildLine(vertex, vertexCount);
+		pickY[0] = height - axes.bottomMargin;
+		pickY[1] = height - (axes.getHeight() + axes.bottomMargin);
 	}
 
 	/**
@@ -173,17 +180,17 @@ public class Graph {
 		this.height = height;
 		axes.resize(width, height);
 		setData();
-		pickX[0] = (int) ((valueX - xMin) * axes.getXScale()) + Axes.LEFT_MARGIN;
+		pickX[0] = (int) ((valueX - axes.xMin) * axes.getXScale()) + axes.leftMargin;
 		pickX[1] = pickX[0];
 	}
 
 	protected void createLine(int n) {
 		lineX = new int[n];
 		lineY = new int[n];
-		lineX[0] = Axes.LEFT_MARGIN;
-		lineX[1] = Axes.LEFT_MARGIN;
-		lineY[0] = height - Axes.BOTTOM_MARGIN;
-		lineY[1] = height - Axes.BOTTOM_MARGIN;
+		lineX[0] = axes.leftMargin;
+		lineX[1] = axes.leftMargin;
+		lineY[0] = height - axes.bottomMargin;
+		lineY[1] = height - axes.bottomMargin;
 	}
 
 	protected void createPick() {
@@ -191,11 +198,11 @@ public class Graph {
 		pickY = new int[2];
 		pickX[0] = 0;
 		pickX[1] = 0;
-		pickY[0] = height - Axes.BOTTOM_MARGIN;
-		pickY[1] = height - (axes.getHeight() + Axes.BOTTOM_MARGIN);
+		pickY[0] = height - axes.bottomMargin;
+		pickY[1] = height - (axes.getHeight() + axes.bottomMargin);
 	}
 
-	protected void buildLine(float[] vertex, int n, double xMin, double yMin, double xScale, double yScale) {
+	protected void buildLine(float[] vertex, int n) {
 		// increase buffer size if necessary
 		if (n > length) {
 			lineX = new int[n];
@@ -205,9 +212,9 @@ public class Graph {
 		// fill buffers
 		numPoints = n;
 		for (int i = 0; i < n; ++i) {
-			int ii = i * 3;
-			lineX[i] = (int) ((vertex[ii] - xMin) * xScale) + Axes.LEFT_MARGIN;
-			lineY[i] = height - (int) ((vertex[ii + 1] - yMin) * yScale + Axes.BOTTOM_MARGIN);
+			int ii = i * 2;
+			lineX[i] = (int) ((vertex[ii] - axes.xMin) * axes.xScale) + axes.leftMargin;
+			lineY[i] = height - (int) ((vertex[ii + 1] - axes.yMin) * axes.yScale + axes.bottomMargin);
 		}
 	}
 
@@ -225,8 +232,8 @@ public class Graph {
 			String[] value = new String[column.length];
 			if (vertex != null) {
 				for (int i = 0; i < vertexCount; ++i) {
-					value[0] = StringUtil.format(vertex[i * 3]);
-					value[1] = StringUtil.format(vertex[i * 3 + 1]);
+					value[0] = StringUtil.format(vertex[i * 2]);
+					value[1] = StringUtil.format(vertex[i * 2 + 1]);
 					csvWriter.writeLine(value);
 				}
 			}
@@ -243,5 +250,14 @@ public class Graph {
 			}
 		}
 	}
-
+	
+	public void setAxesEqualScale(boolean equalScale) {
+		axes.equalScale = equalScale;
+		axes.setRange(xMin, xMax, yMin, yMax);
+		setData();
+	}
+	
+	public boolean isAxesEqualScale() {
+		return(axes.equalScale);
+	}
 }

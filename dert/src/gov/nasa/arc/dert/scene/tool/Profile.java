@@ -160,7 +160,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	public void updateGraph() {
 		buildLine();
 		if (vertexCount > -1) {
-			state.setData(graphVertex, vertexCount, graphXMin, graphXMax, graphYMin, graphYMax);
+			state.setData(graphVertex, vertexCount, graphXMin, graphXMax, graphYMin, graphYMax, vertex);
 		}
 	}
 
@@ -234,19 +234,18 @@ public class Profile extends Node implements ViewDependent, Tool {
 		graphXMax = -Float.MAX_VALUE;
 		graphYMin = Float.MAX_VALUE;
 		graphYMax = -Float.MAX_VALUE;
+		int iii = 0;
 		int ii = 0;
 		float lastX = vertex[0];
 		float lastY = vertex[1];
 		float lastGraphX = 0;
 		for (int i = 0; i < numVertex; ++i) {
-			ii = i * 3;
-			if (ii >= graphVertex.length) {
-				continue;
-			}
-			float dx = vertex[ii] - lastX;
-			float dy = vertex[ii + 1] - lastY;
+			iii = i * 3;
+			ii = i*2;
+			float dx = vertex[iii] - lastX;
+			float dy = vertex[iii + 1] - lastY;
 			graphVertex[ii] = (float) Math.sqrt(dx * dx + dy * dy) + lastGraphX;
-			graphVertex[ii + 1] = vertex[ii + 2];
+			graphVertex[ii + 1] = vertex[iii + 2];
 			if (graphVertex[ii] > graphXMax) {
 				graphXMax = graphVertex[ii];
 			}
@@ -259,8 +258,8 @@ public class Profile extends Node implements ViewDependent, Tool {
 			if (graphVertex[ii + 1] < graphYMin) {
 				graphYMin = graphVertex[ii + 1];
 			}
-			lastX = vertex[ii];
-			lastY = vertex[ii + 1];
+			lastX = vertex[iii];
+			lastY = vertex[iii + 1];
 			lastGraphX = graphVertex[ii];
 		}
 	}

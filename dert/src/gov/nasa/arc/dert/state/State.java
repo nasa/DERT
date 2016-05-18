@@ -3,7 +3,6 @@ package gov.nasa.arc.dert.state;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.View;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -11,7 +10,7 @@ import java.util.HashMap;
  * Components are reconstituted from these objects.
  *
  */
-public class State implements Serializable {
+public class State {
 
 	// Types of State object
 	public static enum StateType {

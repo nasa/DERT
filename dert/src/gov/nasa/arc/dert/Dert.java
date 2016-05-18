@@ -34,6 +34,7 @@ import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.view.ConsoleView;
+import gov.nasa.arc.dert.view.graph.Axes;
 import gov.nasa.arc.dert.view.world.WorldView;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
 
@@ -272,6 +273,7 @@ public class Dert {
 			Landscape.MAX_LEVELS = StringUtil.getIntegerValue(dertProperties, "Landscape.MaximumLevels", true,
 				Landscape.MAX_LEVELS, false);
 			TapeMeasure.zBufferEnabled = StringUtil.getBooleanValue(dertProperties, "TapeMeasure.ZBuffer", true, false);
+			Axes.TIC_PIXELS = StringUtil.getIntegerValue(dertProperties, "Profile.tickInterval", true, 60, false);
 
 			// Get map element preferences.
 			Placemark.setDefaultsFromProperties(dertProperties);
