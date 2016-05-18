@@ -58,11 +58,10 @@ public class Configuration {
 		consoleState.viewData.setVisible(true);
 		helpState = new PanelState(PanelType.Help, "DERT Help", new ViewData(-1, -1, ViewData.DEFAULT_WINDOW_WIDTH, ViewData.DEFAULT_WINDOW_HEIGHT, false));
 		mapElementsState = new MapElementsState();
-		surfAndLayerState = new PanelState(PanelType.SurfaceAndLayers, "DERT Surface and Layers", new ViewData(-1, -1, ViewData.DEFAULT_WINDOW_WIDTH, ViewData.DEFAULT_WINDOW_HEIGHT,
-			false));
-		lightingState = new PanelState(PanelType.Lighting, "DERT Lighting and Shadows", new ViewData(-1, -1, ViewData.DEFAULT_WINDOW_WIDTH, ViewData.DEFAULT_WINDOW_HEIGHT, false));
+		surfAndLayerState = new PanelState(PanelType.SurfaceAndLayers, "DERT Surface and Layers", new ViewData(-1, -1, -1, -1, false));
+		lightingState = new PanelState(PanelType.Lighting, "DERT Lighting and Shadows", new ViewData(-1, -1, -1, -1, false));
 		viewPtState = new ViewpointState();
-		lightPosState = new PanelState(PanelType.LightPosition, "DERT Light Position", new ViewData(-1, -1, ViewData.DEFAULT_WINDOW_WIDTH, ViewData.DEFAULT_WINDOW_HEIGHT, false));
+		lightPosState = new PanelState(PanelType.LightPosition, "DERT Light Position", new ViewData(-1, -1, -1, -1, false));
 		colorBarsState = new PanelState(PanelType.ColorBars, "DERT Color Bars", new ViewData(-1, -1, 700, 200, false));
 		marbleState = new MarbleState();
 		mapElementStateList = new ArrayList<MapElementState>();

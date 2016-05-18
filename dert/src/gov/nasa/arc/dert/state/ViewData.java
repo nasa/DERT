@@ -276,13 +276,14 @@ public class ViewData /*implements Serializable*/ {
 	}
 		
 	public int[] toArray() {
-		int[] array = new int[6];
+		int[] array = new int[7];
 		array[0] = windowX;
 		array[1] = windowY;
 		array[2] = windowWidth;
 		array[3] = windowHeight;
 		array[4] = (visible ? 1 : 0);
 		array[5] = (onTop ? 1 : 0);
+		array[6] = (packIt ? 1 : 0);
 		return(array);
 	}
 
@@ -291,6 +292,7 @@ public class ViewData /*implements Serializable*/ {
 			return(null);
 		ViewData viewData = new ViewData(array[0], array[1], array[2], array[3], (array[5] == 1));
 		viewData.setVisible((array[4] == 1));
+		viewData.packIt = (array[6] == 1);
 		return(viewData);
 	}
 	
