@@ -6,7 +6,7 @@
 	<property name="srcdir" value="src" />
 	<property name="classdir" value="bin" />
 	<property name="libdir" value="lib" />
-	<property name="linuxdeploydir" value="dert_${version}_linux" />
+	<property name="linuxdeploydir" value="dert_${dertversion}_linux" />
 	
 	<path id="linuxclasspath">
 		<pathelement path="${libdir}/ardor3d-animation-1.0-SNAPSHOT.jar"/>
@@ -140,10 +140,8 @@
 <!-- Default Target -->
 		
 	<target name="main" depends="linux">
-		<zip destfile="${linuxdeploydir}.zip" basedir="${linuxdeploydir}"/>
-		<chmod perm="644" file="${linuxdeploydir}.zip"/>
 		<echo>
-			Linux Build complete.
+			${dertversion} Linux build complete.
 		</echo>
 	</target>
 </project>

@@ -6,7 +6,7 @@
 	<property name="srcdir" value="src" />
 	<property name="classdir" value="bin" />
 	<property name="libdir" value="lib" />
-	<property name="macdeploydir" value="dert_${version}_osx" />
+	<property name="macdeploydir" value="dert_${dertversion}_osx" />
 	<property name="macappdir" value="${macdeploydir}/dert.app/Contents/Java" />
 	
 	<path id="libclasspath">
@@ -96,7 +96,7 @@
 		
 	<target name="main" depends="macosx">
 		<echo>
-			Build complete.
+			${dertversion} Mac OS X build complete.
 		</echo>
 	</target>
 </project>

@@ -6,7 +6,7 @@
 	<property name="srcdir" value="src" />
 	<property name="classdir" value="bin" />
 	<property name="libdir" value="lib" />
-	<property name="macdeploydir" value="dert_${version}_osx" />
+	<property name="macdeploydir" value="dert_${dertversion}_osx" />
 	<property name="macappdir" value="${macdeploydir}/dert.app/Contents/Java" />
 	
 	<path id="macclasspath">
@@ -38,7 +38,7 @@
 	<target name="macosx">
 		<bundleapp outputdirectory="${macdeploydir}" name="dert" displayname="DERT" identifier="gov.nasa.arc.dert.Dert"
 			icon="derticon.icns" mainclassname="gov.nasa.arc.dert.Dert"
-			signature="NASA" shortversion="${version}" >
+			signature="NASA" shortversion="${dertversion}" >
 			<classpath file="lib/ardor3d-animation-1.0-SNAPSHOT.jar" />
 			<classpath file="lib/ardor3d-awt-1.0-SNAPSHOT.jar" />
 			<classpath file="lib/ardor3d-core-1.0-SNAPSHOT.jar" />
@@ -122,10 +122,8 @@
 <!-- Default Target -->
 		
 	<target name="main" depends="macosx">
-		<zip destfile="${macdeploydir}.zip" basedir="${macdeploydir}"/>
-		<chmod perm="644" file="${macdeploydir}.zip"/>
 		<echo>
-			Mac OS X Build complete.
+			${dertversion} Mac OS X app build complete.
 		</echo>
 	</target>
 </project>
