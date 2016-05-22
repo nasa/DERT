@@ -35,4 +35,12 @@ public class MapElementsView extends JPanelView {
 		panel.selectMapElement(mapElement);
 	}
 
+	/**
+	 * Close this view
+	 */
+	@Override
+	public void close() {
+		panel.dispose();
+	}
+
 }

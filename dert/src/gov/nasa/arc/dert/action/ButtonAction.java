@@ -14,6 +14,9 @@ import javax.swing.JButton;
  */
 public abstract class ButtonAction extends JButton {
 
+	// This is enabled (for toggle buttons)
+	protected boolean enabled;
+
 	public ButtonAction(String toolTipText, String label, String iconFileName) {
 		this(toolTipText, label, iconFileName, false);
 	}

@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.view.lighting;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.lighting.Lighting;
@@ -188,6 +189,7 @@ public class LightingPanel extends JPanel {
 				lighting.setRefLoc(coord);
 			}
 		};
+		CoordAction.listenerList.add(shadowCenterText);
 		coord.set(lighting.getRefLoc());
 		Landscape.getInstance().sphericalToLocalCoordinate(coord);
 		shadowCenterText.setLocalValue(coord);
@@ -260,6 +262,10 @@ public class LightingPanel extends JPanel {
 		Dert.getMainWindow().updateLightIcon();
 		World.getInstance().getMarble().setSolarDirection(lighting.getLightDirection());
 		World.getInstance().markDirty(DirtyType.RenderState);
+	}
+	
+	public void dispose() {
+		CoordAction.listenerList.remove(shadowCenterText);
 	}
 
 }

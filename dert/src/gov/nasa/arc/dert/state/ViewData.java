@@ -254,6 +254,8 @@ public class ViewData /*implements Serializable*/ {
 	 * Close the view
 	 */
 	public void close() {
+		if (view != null)
+			view.close();
 		Window window = getViewWindow();
 		setView(null);
 		setViewWindow(null, false, 0, 0);

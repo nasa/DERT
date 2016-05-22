@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.action.ButtonAction;
 import gov.nasa.arc.dert.action.MenuItemAction;
 import gov.nasa.arc.dert.action.PopupMenuAction;
 import gov.nasa.arc.dert.action.edit.BackgroundColorDialog;
+import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.action.edit.StereoDialog;
 import gov.nasa.arc.dert.action.file.AboutAction;
 import gov.nasa.arc.dert.action.file.DeleteConfigAction;
@@ -71,6 +72,7 @@ public class MainWindow extends JFrame {
 	private ButtonAction marbleAction, helpAction, consoleAction, colorbarAction;
 	private ButtonAction surfaceAndLayersAction, lightingAndShadowsAction, mapElementsAction;
 	private ButtonAction viewpointAction, lightAction, resetAction;
+	private CoordAction coordAction;
 
 	// Tool bar button for activating magnify mode
 	private ActivateZoomAction zoomAction;
@@ -205,11 +207,6 @@ public class MainWindow extends JFrame {
 		mapElementsAction.setEnabled(false);
 		toolBar.add(mapElementsAction);
 
-		// Activate the tape measure.
-		measuringAction = new ActivateTapeMeasureAction();
-		measuringAction.setEnabled(false);
-		toolBar.add(measuringAction);
-
 		// Open the color bar view.
 		colorbarAction = new ButtonAction("show color maps", null, "colorbar.png", buttonBorder) {
 			@Override
@@ -220,6 +217,16 @@ public class MainWindow extends JFrame {
 		};
 		colorbarAction.setEnabled(false);
 		toolBar.add(colorbarAction);
+
+		// Activate the tape measure.
+		measuringAction = new ActivateTapeMeasureAction();
+		measuringAction.setEnabled(false);
+		toolBar.add(measuringAction);
+
+		// Change between projected and unprojected coordinates.
+		coordAction = new CoordAction();
+		coordAction.setEnabled(false);
+		toolBar.add(coordAction);
 
 		toolBar.add(new JLabel(filler));
 
@@ -303,40 +310,13 @@ public class MainWindow extends JFrame {
 		toolBar.add(gotoMarble);
 
 		// The marble location field.
-//		marbleLocField = new Vector3TextField(20, marbleLocation, "0.000", true) {
-//			// User hit return
-//			@Override
-//			protected void handleChange(Vector3 store) {
-//				Landscape landscape = Landscape.getInstance();
-//				// save a copy
-//				Vector3 old = new Vector3(store);
-//				// convert to OpenGL coordinates
-//				landscape.worldToLocalCoordinate(store);
-//				// get the actual elevation at the point
-//				double z = landscape.getZ(store.getX(), store.getY());
-//				// coordinate is out of bounds or in error, beep the user
-//				if (Double.isNaN(z)) {
-//					Toolkit.getDefaultToolkit().beep();
-//					setError();
-//					Console.getInstance().println("Coordinate " + old + " is outside of landscape.");
-//				}
-//				// Add the elevation to the field
-//				else {
-//					store.setZ(z);
-//					World.getInstance().getMarble().setTranslation(store);
-//					landscape.localToWorldCoordinate(store);
-//					marbleLocation.set(store);
-//					setValue(store);
-//				}
-//			}
-//		};
-//		marbleLocField.setToolTipText("current marble location");
 		marbleLocField = new CoordTextField(20, "current marble location", "0.000", true) {
 			@Override
 			public void doChange(ReadOnlyVector3 result) {
 				World.getInstance().getMarble().update(result, null, null);
 			}
 		};
+		CoordAction.listenerList.add(marbleLocField);
 		marbleLocField.setEnabled(false);
 		toolBar.add(marbleLocField);
 
@@ -470,6 +450,7 @@ public class MainWindow extends JFrame {
 		colorbarAction.setEnabled(true);
 		lightAction.setEnabled(true);
 		measuringAction.setEnabled(true);
+		coordAction.setEnabled(true);
 		viewpointAction.setEnabled(true);
 		zoomAction.setEnabled(true);
 		gotoMarble.setEnabled(true);

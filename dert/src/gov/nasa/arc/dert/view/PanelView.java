@@ -31,12 +31,4 @@ public abstract class PanelView extends Panel implements View {
 	public State getState() {
 		return (state);
 	}
-
-	/**
-	 * Close the view
-	 */
-	@Override
-	public void close() {
-		// nothing here
-	}
 }

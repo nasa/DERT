@@ -1,15 +1,16 @@
 package gov.nasa.arc.dert.view.fieldcamera;
 
+import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.render.SceneCanvasPanel;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfo;
 import gov.nasa.arc.dert.state.FieldCameraState;
 import gov.nasa.arc.dert.state.State;
+import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DoubleArrayTextField;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.ui.Vector3TextField;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.awt.BorderLayout;
@@ -45,8 +46,8 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 
 	// Camera pointing controls
 	private DoubleSpinner azSpinner, tiltSpinner, heightSpinner;
-	private DoubleArrayTextField fovLocationText, fovDirectionText;
-	private Vector3TextField seekText;
+	private DoubleArrayTextField fovDirectionText;
+	private CoordTextField seekText, fovLocationText;
 	private DoubleTextField distanceText;
 
 	// Cross hair visibility
@@ -141,19 +142,21 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 		seekButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				ReadOnlyVector3 value = seekText.getValue();
-				if (value != null) {
-					seekPoint.set(value);
-					Landscape.getInstance().worldToLocalCoordinate(seekPoint);
-					Vector3 angle = fieldCamera.seek(seekPoint);
-					azSpinner.setValue(Math.toDegrees(angle.getX()));
-					tiltSpinner.setValue(Math.toDegrees(angle.getY()));
-				}
+				Vector3 store = new Vector3(seekText.getValue());
+				seekText.handleChange(store);
 			}
 		});
 		panel.add(seekButton);
-		seekText = new Vector3TextField(20, seekPoint, Landscape.format, true);
+		seekText = new CoordTextField(20, "pointing coordinates", seekPoint, Landscape.format, true) {
+			@Override
+			public void doChange(ReadOnlyVector3 seekPoint) {
+				Vector3 angle = fieldCamera.seek(seekPoint);
+				azSpinner.setValue(Math.toDegrees(angle.getX()));
+				tiltSpinner.setValue(Math.toDegrees(angle.getY()));				
+			}
+		};
 		panel.add(seekText);
+		CoordAction.listenerList.add(seekText);
 		JButton distanceButton = new JButton("Distance");
 		distanceButton.setToolTipText("press to display distance to crosshair");
 		distanceButton.addActionListener(new ActionListener() {
@@ -172,10 +175,15 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("VwPt Location:"));
-		fovLocationText = new DoubleArrayTextField(20, new double[3], Landscape.format);
+		fovLocationText = new CoordTextField(20, "location of camera viewpoint", Landscape.format, true) {
+			@Override
+			public void doChange(ReadOnlyVector3 coord) {
+				// nothing here
+			}
+		};
+		CoordAction.listenerList.add(fovLocationText);
 		fovLocationText.setBackground(panel.getBackground());
 		fovLocationText.setEditable(false);
-		fovLocationText.setToolTipText("location of camera viewpoint");
 		panel.add(fovLocationText);
 		panel.add(new JLabel("  Direction:"));
 		fovDirectionText = new DoubleArrayTextField(12, new double[3], "0.000");
@@ -219,6 +227,15 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 		fovLocationText.setValue(coord);
 		coord.set(cam.getDirection());
 		fovDirectionText.setValue(coord);
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (seekText != null) 
+			CoordAction.listenerList.remove(seekText);
+		if (fovLocationText != null)
+			CoordAction.listenerList.remove(fovLocationText);
 	}
 
 }

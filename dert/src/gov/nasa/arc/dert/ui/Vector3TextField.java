@@ -97,7 +97,7 @@ public class Vector3TextField extends JTextField {
 		return (store);
 	}
 
-	protected void handleChange(Vector3 store) {
+	public void handleChange(Vector3 store) {
 		// nothing here
 	}
 

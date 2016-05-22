@@ -1,13 +1,14 @@
 package gov.nasa.arc.dert.view.mapelement;
 
+import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.Plane;
 import gov.nasa.arc.dert.scene.tool.Profile;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
+import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
 import gov.nasa.arc.dert.ui.GroupPanel;
-import gov.nasa.arc.dert.ui.Vector3TextField;
 import gov.nasa.arc.dert.util.StringUtil;
 
 import java.awt.Color;
@@ -22,7 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 
-import com.ardor3d.math.Vector3;
+import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.event.DirtyType;
 
 /**
@@ -33,7 +34,7 @@ public class PlanePanel extends MapElementBasePanel {
 
 	// Controls
 	private ColorSelectionPanel colorList;
-	private Vector3TextField p0Location, p1Location, p2Location;
+	private CoordTextField p0Location, p1Location, p2Location;
 	private JLabel elevLabel0, elevLabel1, elevLabel2;
 	private JButton openButton;
 	private DoubleSpinner lengthSpinner, widthSpinner;
@@ -61,17 +62,15 @@ public class PlanePanel extends MapElementBasePanel {
 
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Point 0"));
-		p0Location = new Vector3TextField(18, new Vector3(), Landscape.format, false) {
+		p0Location = new CoordTextField(18, "location of first point of triangle", Landscape.format, false) {
 			@Override
-			protected void handleChange(Vector3 coord) {
-				Landscape landscape = Landscape.getInstance();
-				landscape.worldToLocalCoordinate(coord);
-				coord.setZ(landscape.getZ(coord.getX(), coord.getY()));
+			public void doChange(ReadOnlyVector3 coord) {
 				if (!coord.equals(plane.getPoint(0))) {
 					plane.setPoint(0, coord);
 				}
-			}
+			}			
 		};
+		CoordAction.listenerList.add(p0Location);
 		panel.add(p0Location);
 		panel.add(new JLabel("Elev:"));
 		elevLabel0 = new JLabel("            ");
@@ -80,17 +79,15 @@ public class PlanePanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Point 1"));
-		p1Location = new Vector3TextField(18, new Vector3(), Landscape.format, false) {
+		p1Location = new CoordTextField(18, "location of second point of triangle", Landscape.format, false) {
 			@Override
-			protected void handleChange(Vector3 coord) {
-				Landscape landscape = Landscape.getInstance();
-				landscape.worldToLocalCoordinate(coord);
-				coord.setZ(landscape.getZ(coord.getX(), coord.getY()));
+			public void doChange(ReadOnlyVector3 coord) {
 				if (!coord.equals(plane.getPoint(1))) {
 					plane.setPoint(1, coord);
 				}
-			}
+			}			
 		};
+		CoordAction.listenerList.add(p1Location);
 		panel.add(p1Location);
 		panel.add(new JLabel("Elev:"));
 		elevLabel1 = new JLabel("            ");
@@ -99,17 +96,15 @@ public class PlanePanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Point 2"));
-		p2Location = new Vector3TextField(18, new Vector3(), Landscape.format, false) {
+		p2Location = new CoordTextField(18, "location of third point of triangle", Landscape.format, false) {
 			@Override
-			protected void handleChange(Vector3 coord) {
-				Landscape landscape = Landscape.getInstance();
-				landscape.worldToLocalCoordinate(coord);
-				coord.setZ(landscape.getZ(coord.getX(), coord.getY()));
+			public void doChange(ReadOnlyVector3 coord) {
 				if (!coord.equals(plane.getPoint(2))) {
 					plane.setPoint(2, coord);
 				}
-			}
+			}			
 		};
+		CoordAction.listenerList.add(p2Location);
 		panel.add(p2Location);
 		panel.add(new JLabel("Elev:"));
 		elevLabel2 = new JLabel("            ");
@@ -205,6 +200,17 @@ public class PlanePanel extends MapElementBasePanel {
 		}
 		str += "   Dip: " + StringUtil.format(plane.getDip()) + StringUtil.DEGREE;
 		strikeAndDip.setText(str);
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (p0Location != null)
+			CoordAction.listenerList.remove(p0Location);
+		if (p1Location != null)
+			CoordAction.listenerList.remove(p1Location);
+		if (p2Location != null)
+			CoordAction.listenerList.remove(p2Location);
 	}
 
 }

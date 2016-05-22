@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.viewpoint;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.action.edit.CoordListener;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
@@ -27,7 +28,9 @@ import com.ardor3d.scenegraph.Node;
  * in the scene graph that is listened to for events.
  *
  */
-public class ViewpointNode extends Node {
+public class ViewpointNode
+	extends Node
+	implements CoordListener {
 
 	// Viewpoint has changed
 	public AtomicBoolean changed = new AtomicBoolean();
@@ -79,7 +82,7 @@ public class ViewpointNode extends Node {
 		createText();
 		if (store != null) {
 			setViewpoint(store, true, true);
-			updateText();
+			updateOverlay();
 		}
 	}
 
@@ -120,7 +123,7 @@ public class ViewpointNode extends Node {
 			viewpointPanel.updateData(viewpointSelected);
 		}
 		viewpointSelected = false;
-		updateText();
+		updateOverlay();
 	}
 
 	/**
@@ -187,9 +190,16 @@ public class ViewpointNode extends Node {
 		text.getSceneHints().setRenderBucketType(RenderBucketType.Ortho);
 	}
 	
-	private void updateText() {
+	public void coordDisplayChanged() {
+		updateOverlay();
+		changed.set(true);
+	}
+	
+	private void updateOverlay() {
 		tmpVec.set(camera.getLookAt());
 		Landscape.getInstance().localToWorldCoordinate(tmpVec);
+		if (World.getInstance().getUseLonLat())
+			Landscape.getInstance().worldToSphericalCoordinate(tmpVec);
 		String str = String.format("CoR: %7.3f %7.3f", tmpVec.getXf(), tmpVec.getYf());
 		corText.setText(str);
 		double dist = camera.getDistanceToCoR();
@@ -204,7 +214,7 @@ public class ViewpointNode extends Node {
 		return(crosshair);
 	}
 	
-	public Node getText() {
+	public Node getOverlay() {
 		return(text);
 	}
 
@@ -281,6 +291,8 @@ public class ViewpointNode extends Node {
 	 * Reset the viewpoint to the overhead position
 	 */
 	public void reset() {
+		World.getInstance().getRoot().updateWorldBound(true);
+		setSceneBounds();
 		rotate.setIdentity();
 		azimuth = 0;
 		elevation = 0;
@@ -290,9 +302,11 @@ public class ViewpointNode extends Node {
 		camera.setLookAt(sceneBounds.getCenter());
 		camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
 		camera.setFrame(location, rotate);
+		camera.setFrustum(sceneBounds);
 		updateFromCamera();
 		updateCrosshair();
 		updateGeometricState(0);
+		Dert.getMainWindow().updateCompass(azimuth);
 		changed.set(true);
 	}
 
@@ -386,7 +400,7 @@ public class ViewpointNode extends Node {
 		updateFromCamera();
 		updateCrosshair();
 		updateGeometricState(0);
-		updateText();
+		updateOverlay();
 		changed.set(true);
 	}
 	
@@ -652,9 +666,5 @@ public class ViewpointNode extends Node {
 		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
-	}
-	
-	public void floatCrosshair(boolean floating) {
-		crosshair.alwaysZBuffer(floating);
 	}
 }

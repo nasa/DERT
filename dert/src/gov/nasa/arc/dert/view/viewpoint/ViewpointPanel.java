@@ -2,11 +2,12 @@ package gov.nasa.arc.dert.view.viewpoint;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.ButtonAction;
+import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.icon.Icons;
-import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.state.ViewpointState;
+import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DoubleArrayTextField;
 import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.ui.Vector3TextField;
@@ -37,6 +38,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.ardor3d.math.Vector3;
+import com.ardor3d.math.type.ReadOnlyVector3;
 
 /**
  * Provides content for the ViewpointView.
@@ -49,13 +51,13 @@ public class ViewpointPanel extends JPanel {
 	private ButtonAction addButton, deleteButton, flyListButton, flyPathButton;
 	private JSplitPane splitPane;
 	private JPanel buttonBar;
-	private Vector3TextField locationField;
+	private CoordTextField locationField;
 	private Vector3TextField directionField;
 	private DoubleTextField distanceField;
 	private DoubleArrayTextField azElField;
 	private DoubleTextField altitudeField;
 	private DoubleTextField magnificationField;
-	private DoubleArrayTextField corField;
+	private CoordTextField corField;
 	private ButtonAction prevAction;
 	private ButtonAction nextAction;
 
@@ -101,6 +103,7 @@ public class ViewpointPanel extends JPanel {
 				if (currentVPS != null) {
 					controller.gotoViewpoint(currentVPS);
 				}
+				updateData(true);
 			}
 		});
 
@@ -228,21 +231,19 @@ public class ViewpointPanel extends JPanel {
 		dataPanel.setLayout(boxLayout);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		tipText = "Location of viewpoint in East(+X), North(+Y), Elevation(+Z) coordinates";
+		tipText = "location of viewpoint";
 		label = new JLabel("Location", SwingConstants.RIGHT);
 		label.setToolTipText(tipText);
 		panel.add(label);
-		locationField = new Vector3TextField(20, new Vector3(), "0.000", true) {
+		locationField = new CoordTextField(20, tipText, "0.000", true) {
 			@Override
-			protected void handleChange(Vector3 loc) {
-				Landscape landscape = Landscape.getInstance();
-				landscape.worldToLocalCoordinate(loc);
+			public void doChange(ReadOnlyVector3 loc) {
 				if (!controller.getViewpointNode().changeLocation(loc)) {
 					Toolkit.getDefaultToolkit().beep();
-				}
+				}				
 			}
 		};
-		locationField.setToolTipText(tipText);
+		CoordAction.listenerList.add(locationField);
 		panel.add(locationField);
 		dataPanel.add(panel);
 
@@ -253,7 +254,7 @@ public class ViewpointPanel extends JPanel {
 		panel.add(label);
 		directionField = new Vector3TextField(20, new Vector3(), "0.000", true) {
 			@Override
-			protected void handleChange(Vector3 dir) {
+			public void handleChange(Vector3 dir) {
 				controller.getViewpointNode().changeDirection(dir);
 			}
 		};
@@ -343,8 +344,13 @@ public class ViewpointPanel extends JPanel {
 		label = new JLabel("Cntr of Rot", SwingConstants.RIGHT);
 		label.setToolTipText(tipText);
 		panel.add(label);
-		corField = new DoubleArrayTextField(20, new double[3], "0.000");
-		corField.setToolTipText(tipText);
+		corField = new CoordTextField(20, tipText, "0.000", true) {
+			@Override
+			public void doChange(ReadOnlyVector3 coord) {
+				// do nothing
+			}
+		};
+		CoordAction.listenerList.add(corField);
 		corField.setEditable(false);
 		corField.setBackground(panel.getBackground());
 		panel.add(corField);
@@ -362,10 +368,8 @@ public class ViewpointPanel extends JPanel {
 			list.clearSelection();
 		ViewpointNode viewpointNode = controller.getViewpointNode();
 		viewpointNode.getViewpoint(tempVPS);
-		Landscape landscape = Landscape.getInstance();
 		coord.set(tempVPS.location);
-		landscape.localToWorldCoordinate(coord);
-		locationField.setValue(coord);
+		locationField.setLocalValue(coord);
 		directionField.setValue(tempVPS.direction);
 		distanceField.setValue(tempVPS.distance);
 		azEl[0] = Math.toDegrees(tempVPS.azimuth);
@@ -379,11 +383,17 @@ public class ViewpointPanel extends JPanel {
 			altitudeField.setValue(alt);
 		}
 		coord.set(tempVPS.lookAt);
-		landscape.localToWorldCoordinate(coord);
-		corField.setValue(coord);
+		corField.setLocalValue(coord);
 	}
 	
 	public void clearSelection() {
 		list.clearSelection();
+	}
+	
+	public void dispose() {
+		if (locationField != null)
+			CoordAction.listenerList.remove(locationField);
+		if (corField != null)
+			CoordAction.listenerList.remove(corField);
 	}
 }

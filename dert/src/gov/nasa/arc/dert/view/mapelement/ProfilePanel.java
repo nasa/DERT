@@ -1,10 +1,11 @@
 package gov.nasa.arc.dert.view.mapelement;
 
+import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.Profile;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
-import gov.nasa.arc.dert.ui.Vector3TextField;
+import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.util.FileHelper;
 
 import java.awt.Color;
@@ -16,7 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.ardor3d.math.Vector3;
+import com.ardor3d.math.type.ReadOnlyVector3;
 
 /**
  * Provides controls for setting options for profile tools.
@@ -26,7 +27,7 @@ public class ProfilePanel extends MapElementBasePanel {
 
 	// Controls
 	private ColorSelectionPanel colorList;
-	private Vector3TextField pALocation, pBLocation;
+	private CoordTextField pALocation, pBLocation;
 	private JLabel aElevLabel, bElevLabel;
 	private JButton saveAsCSV, openButton;
 
@@ -51,17 +52,15 @@ public class ProfilePanel extends MapElementBasePanel {
 
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Location A"));
-		pALocation = new Vector3TextField(20, new Vector3(), Landscape.format, false) {
+		pALocation = new CoordTextField(20, "location of end point A", Landscape.format, false) {
 			@Override
-			protected void handleChange(Vector3 coord) {
-				Landscape landscape = Landscape.getInstance();
-				landscape.worldToLocalCoordinate(coord);
-				coord.setZ(landscape.getZ(coord.getX(), coord.getY()));
+			public void doChange(ReadOnlyVector3 coord) {
 				if (!coord.equals(profile.getEndpointA())) {
 					profile.setEndpointA(coord);
-				}
+				}				
 			}
 		};
+		CoordAction.listenerList.add(pALocation);
 		panel.add(pALocation);
 		contents.add(panel);
 
@@ -73,17 +72,15 @@ public class ProfilePanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Location B"));
-		pBLocation = new Vector3TextField(20, new Vector3(), Landscape.format, false) {
+		pBLocation = new CoordTextField(20, "location of end point B", Landscape.format, false) {
 			@Override
-			protected void handleChange(Vector3 coord) {
-				Landscape landscape = Landscape.getInstance();
-				landscape.worldToLocalCoordinate(coord);
-				coord.setZ(landscape.getZ(coord.getX(), coord.getY()));
+			public void doChange(ReadOnlyVector3 coord) {
 				if (!coord.equals(profile.getEndpointB())) {
 					profile.setEndpointB(coord);
-				}
+				}				
 			}
 		};
+		CoordAction.listenerList.add(pBLocation);
 		panel.add(pBLocation);
 		contents.add(panel);
 
@@ -152,6 +149,15 @@ public class ProfilePanel extends MapElementBasePanel {
 	public void updateLocation(MapElement mapElement) {
 		setLocation(pALocation, aElevLabel, profile.getEndpointA());
 		setLocation(pBLocation, bElevLabel, profile.getEndpointB());
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (pALocation != null)
+			CoordAction.listenerList.remove(pALocation);
+		if (pBLocation != null)
+			CoordAction.listenerList.remove(pBLocation);
 	}
 
 }

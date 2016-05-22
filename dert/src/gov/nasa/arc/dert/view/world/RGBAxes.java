@@ -57,25 +57,12 @@ public class RGBAxes extends Line {
 		setRenderState(axisMaterialState);
 		
 		zBuf = new ZBufferState();
-		zBuf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
+		zBuf.setFunction(ZBufferState.TestFunction.Always);
 		zBuf.setEnabled(true);
 		setRenderState(zBuf);
 		getSceneHints().setRenderBucketType(RenderBucketType.PostBucket);
 		
+		
 		updateGeometricState(0, false);
-	}
-	
-	/**
-	 * Set the crosshair to always pass the ZBuffer test so it will be drawn in front of
-	 * the landscape.
-	 * 
-	 * @param always
-	 */
-	public void alwaysZBuffer(boolean always) {
-		if (always)
-			zBuf.setFunction(ZBufferState.TestFunction.Always);
-		else
-			zBuf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
-		updateGeometricState(0);
 	}
 }

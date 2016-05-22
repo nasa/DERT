@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.view.contour;
 
+import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.render.SceneCanvasPanel;
@@ -8,7 +9,7 @@ import gov.nasa.arc.dert.scene.tool.Plane;
 import gov.nasa.arc.dert.state.PlaneState;
 import gov.nasa.arc.dert.state.State;
 import gov.nasa.arc.dert.ui.ColorBar;
-import gov.nasa.arc.dert.ui.Vector3TextField;
+import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.InputManager;
@@ -26,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.ardor3d.math.Vector3;
+import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.util.ReadOnlyTimer;
 
 /**
@@ -47,7 +49,7 @@ public class ContourScenePanel extends SceneCanvasPanel {
 	private JLabel messageLabel;
 
 	// Current cursor location
-	private Vector3TextField coordTextField;
+	private CoordTextField coordTextField;
 
 	// Handle input
 	private ContourInputHandler inputHandler;
@@ -71,9 +73,14 @@ public class ContourScenePanel extends SceneCanvasPanel {
 		contourScene = (ContourScene) scene;
 
 		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		coordTextField = new Vector3TextField(20, new Vector3(), Landscape.format, true);
-		coordTextField.setToolTipText("current cursor location in landscape");
+		coordTextField = new CoordTextField(20, "current cursor location in landscape", Landscape.format, true) {
+			@Override
+			public void doChange(ReadOnlyVector3 coord) {
+				// nothing here
+			}
+		};
 		coordTextField.setEditable(false);
+		CoordAction.listenerList.add(coordTextField);
 		topPanel.add(coordTextField);
 		JButton refreshButton = new JButton(Icons.getImageIcon("refresh.png"));
 		refreshButton.setToolTipText("refresh");
@@ -160,9 +167,8 @@ public class ContourScenePanel extends SceneCanvasPanel {
 			return (null);
 		}
 		double z = coord.getZ();
-		Landscape.getInstance().localToWorldCoordinate(coord);
 		coord.setZ(z);
-		coordTextField.setValue(coord);
+		coordTextField.setLocalValue(coord);
 		return (coord);
 	}
 
@@ -205,6 +211,13 @@ public class ContourScenePanel extends SceneCanvasPanel {
 	 */
 	public ColorMap getColorMap() {
 		return (contourScene.getColorMap());
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (coordTextField != null)
+			CoordAction.listenerList.remove(coordTextField);
 	}
 
 }

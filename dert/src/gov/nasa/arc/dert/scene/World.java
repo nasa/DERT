@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.scene;
 
+import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.lighting.Lighting;
 import gov.nasa.arc.dert.render.DirtyEventHandler;
@@ -87,6 +88,9 @@ public class World extends GroupNode {
 	// Stereo parameters
 	public double stereoFocalDistance = defaultStereoFocalDistance;
 	public double stereoEyeSeparation = defaultStereoEyeSeparation;
+	
+	// Coordinate display
+	private boolean useLonLat;
 
 	/**
 	 * Create a new world
@@ -195,6 +199,7 @@ public class World extends GroupNode {
 		// initialize the ruler
 		ruler = new TapeMeasure();
 		ruler.getSceneHints().setCullHint(CullHint.Always);
+		CoordAction.listenerList.add(ruler);
 		contents.attachChild(ruler);
 
 		// initialize shadows
@@ -263,6 +268,8 @@ public class World extends GroupNode {
 	public void dispose() {
 		Landscape.getInstance().dispose();
 		lighting.dispose();
+		if (ruler != null)
+			CoordAction.listenerList.remove(ruler);
 	}
 
 	/**
@@ -414,5 +421,13 @@ public class World extends GroupNode {
 	public void setBackgroundColor(ReadOnlyColorRGBA color) {
 		backgroundColor = color;
 		root.markDirty(DirtyType.RenderState);
+	}
+	
+	public void setUseLonLat(boolean useLonLat) {
+		this.useLonLat = useLonLat;
+	}
+	
+	public boolean getUseLonLat() {
+		return(useLonLat);
 	}
 }

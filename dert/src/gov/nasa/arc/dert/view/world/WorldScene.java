@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.view.world;
 
+import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.render.BasicScene;
 import gov.nasa.arc.dert.scene.World;
@@ -79,12 +80,15 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		setRootNode(world);
 		world.initialize();
 		
+		if (viewpointNode != null)
+			CoordAction.listenerList.remove(viewpointNode);
 		viewpointNode = new ViewpointNode(world.getName() + "_viewpoint", null);
 		viewDependentList = new ArrayList<ViewDependent>();
 		world.attachChild(viewpointNode);
 		crosshair = viewpointNode.getCrosshair();
 		world.attachChild(crosshair);
-		text = viewpointNode.getText();
+		text = viewpointNode.getOverlay();
+		CoordAction.listenerList.add(viewpointNode);
 		initializingCount = Landscape.getInstance().getBaseMapLevel() * 2;
 		updateBounds();
 		spatialDirty(null, DirtyType.Attached); // add the tiles to the

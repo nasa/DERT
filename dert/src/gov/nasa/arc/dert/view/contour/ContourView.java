@@ -28,4 +28,11 @@ public class ContourView extends PanelView {
 		return (panel);
 	}
 
+	/**
+	 * Close the view
+	 */
+	@Override
+	public void close() {
+		panel.dispose();
+	}
 }

@@ -1,6 +1,8 @@
 package gov.nasa.arc.dert.scene.tapemeasure;
 
+import gov.nasa.arc.dert.action.edit.CoordListener;
 import gov.nasa.arc.dert.landscape.Landscape;
+import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.ui.TextDialog;
@@ -36,7 +38,7 @@ import com.ardor3d.util.geom.BufferUtils;
  * of two dots with a line inbetween that stretches like a rubberband.
  *
  */
-public class TapeMeasure extends Node implements ViewDependent {
+public class TapeMeasure extends Node implements ViewDependent, CoordListener {
 	
 	// Use Z Buffer when drawing
 	public static boolean zBufferEnabled;
@@ -60,7 +62,7 @@ public class TapeMeasure extends Node implements ViewDependent {
 	protected FigureMarker currentPoint, anchorPoint;
 
 	// Anchor point coordinate
-	protected Vector3 anchor = new Vector3();
+	protected Vector3 anchor = new Vector3(), current = new Vector3();
 
 	// Size of the end points
 	protected float pointSize = 0.4f;
@@ -115,9 +117,10 @@ public class TapeMeasure extends Node implements ViewDependent {
 	public void setAnchorPoint(ReadOnlyVector3 ap) {
 		anchor.set(ap);
 		anchorPoint.setTranslation(ap);
+		current.set(ap);
 		currentPoint.setTranslation(ap);
 		updateWorldBound(true);
-		updateLine(anchor, ap);
+		updateLine();
 	}
 
 	/**
@@ -126,19 +129,21 @@ public class TapeMeasure extends Node implements ViewDependent {
 	 * @param cp
 	 */
 	public void setCurrentPoint(ReadOnlyVector3 cp) {
+		current.set(cp);
 		currentPoint.setTranslation(cp);
 		updateWorldBound(true);
-		updateLine(anchor, cp);
+		updateLine();
+		coordDisplayChanged();
 	}
 
-	protected void updateLine(ReadOnlyVector3 pos0, ReadOnlyVector3 pos1) {
+	protected void updateLine() {
 		FloatBuffer vertexBuffer = line.getMeshData().getVertexBuffer();
-		vertexBuffer.put(0, (float) pos0.getX());
-		vertexBuffer.put(1, (float) pos0.getY());
-		vertexBuffer.put(2, (float) pos0.getZ());
-		vertexBuffer.put(3, (float) pos1.getX());
-		vertexBuffer.put(4, (float) pos1.getY());
-		vertexBuffer.put(5, (float) pos1.getZ());
+		vertexBuffer.put(0, (float) anchor.getX());
+		vertexBuffer.put(1, (float) anchor.getY());
+		vertexBuffer.put(2, (float) anchor.getZ());
+		vertexBuffer.put(3, (float) current.getX());
+		vertexBuffer.put(4, (float) current.getY());
+		vertexBuffer.put(5, (float) current.getZ());
 		line.markDirty(DirtyType.Bounding);
 	}
 
@@ -198,34 +203,7 @@ public class TapeMeasure extends Node implements ViewDependent {
 			break;
 		case Current:
 			setCurrentPoint(pos);
-			setCurrentPosition(pos);
 			break;
-		}
-	}
-
-	private void setAnchorPosition(ReadOnlyVector3 coord) {
-		tmpVec.set(coord);
-		Landscape.getInstance().localToWorldCoordinate(tmpVec);
-		anchorStr = StringUtil.format(tmpVec);
-		distanceStr = "0.0";
-		gradientStr = "0.0";
-		deltaZStr = "0.0";
-		azStr = "0.0";
-	}
-
-	private void setCurrentPosition(ReadOnlyVector3 coord) {
-		tmpVec.set(coord);
-		Landscape.getInstance().localToWorldCoordinate(tmpVec);
-		currentStr = StringUtil.format(tmpVec);
-		distanceStr = StringUtil.format(coord.distance(anchor));
-		gradientStr = StringUtil.format(MathUtil.getSlopeFromLine(anchor, coord));
-		deltaZStr = StringUtil.format(coord.getZf() - anchor.getZf());
-		azStr = StringUtil.format(MathUtil.getAspectFromLine(anchor, coord));
-		if (textDialog != null) {
-			String str = "Anchor (m) = " + anchorStr + "\nCurrent (m) = " + currentStr + "\nDistance (m) = "
-				+ distanceStr + "\nSlope = " + gradientStr + StringUtil.DEGREE + "\nAzimuth = " + azStr
-				+ StringUtil.DEGREE + "\nChange in Elevation (m) = " + deltaZStr;
-			textDialog.setText(str);
 		}
 	}
 
@@ -240,12 +218,7 @@ public class TapeMeasure extends Node implements ViewDependent {
 		if (currentPoint != null) {
 			currentPoint.update(camera);
 		}
-		if (textDialog != null) {
-			String str = "Anchor (m) = " + anchorStr + "\nCurrent (m) = " + currentStr + "\nDistance (m) = "
-				+ distanceStr + "\nSlope = " + gradientStr + StringUtil.DEGREE + "\nAzimuth = " + azStr
-				+ StringUtil.DEGREE + "\nChange in Elevation (m) = " + deltaZStr;
-			textDialog.setText(str);
-		}
+		coordDisplayChanged();
 	}
 
 	/**
@@ -257,14 +230,38 @@ public class TapeMeasure extends Node implements ViewDependent {
 		switch (mode) {
 		case Anchor:
 			setAnchorPoint(vec);
-			setAnchorPosition(vec);
 			mode = ModeType.Current;
 			break;
 		case Current:
 			setCurrentPoint(vec);
-			setCurrentPosition(vec);
 			mode = ModeType.Anchor;
 			break;
 		}
+	}
+	
+	public void coordDisplayChanged() {
+		if (textDialog == null)
+			return;
+		tmpVec.set(anchor);
+		Landscape.getInstance().localToWorldCoordinate(tmpVec);
+		if (World.getInstance().getUseLonLat()) 
+			Landscape.getInstance().worldToSphericalCoordinate(tmpVec);
+		anchorStr = StringUtil.format(tmpVec);
+		
+		tmpVec.set(current);
+		Landscape.getInstance().localToWorldCoordinate(tmpVec);
+		if (World.getInstance().getUseLonLat()) 
+			Landscape.getInstance().worldToSphericalCoordinate(tmpVec);
+		currentStr = StringUtil.format(tmpVec);
+		
+		distanceStr = StringUtil.format(current.distance(anchor));
+		gradientStr = StringUtil.format(MathUtil.getSlopeFromLine(anchor, current));
+		deltaZStr = StringUtil.format(current.getZf() - anchor.getZf());
+		azStr = StringUtil.format(MathUtil.getAspectFromLine(anchor, current));
+		
+		String str = "Anchor (m) = " + anchorStr + "\nCurrent (m) = " + currentStr + "\nDistance (m) = "
+			+ distanceStr + "\nSlope = " + gradientStr + StringUtil.DEGREE + "\nAzimuth = " + azStr
+			+ StringUtil.DEGREE + "\nChange in Elevation (m) = " + deltaZStr;
+		textDialog.setText(str);	
 	}
 }

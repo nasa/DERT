@@ -36,6 +36,9 @@ public class WorldState extends State {
 
 	// Viewpoint
 	public ViewpointStore currentViewpoint;
+	
+	// Coordinate display
+	public boolean useLonLat;
 
 	// Persisted components
 	private Lighting lighting;
@@ -62,6 +65,7 @@ public class WorldState extends State {
 	
 	public WorldState(HashMap<String,Object> map) {
 		super(map);
+		useLonLat = StateUtil.getBoolean(map, "UseLonLat", false);
 		surfaceColor = StateUtil.getColor(map, "SurfaceColor", Color.WHITE);
 		background = StateUtil.getColorRGBA(map, "Background", World.defaultBackgroundColor);
 		verticalExaggeration = StateUtil.getDouble(map, "VerticalExaggeration", verticalExaggeration);
@@ -77,6 +81,8 @@ public class WorldState extends State {
 			return(false);
 		WorldState that = (WorldState)state;
 		if (!super.isEqualTo(that)) 
+			return(false);
+		if (this.useLonLat != that.useLonLat)
 			return(false);
 		if (this.time != that.time)
 			return(false);
@@ -131,6 +137,7 @@ public class WorldState extends State {
 		Landscape.createInstance(tileSource, layerManager, surfaceColor);
 		world = World.createInstance(name, new Landmarks(config.getLandmarkStates()),
 			new Tools(config.getToolStates()), new LineSets(config.getLineSetStates()), lighting, background, time);
+		world.setUseLonLat(useLonLat);
 		if (verticalExaggeration != 1) {
 			world.setVerticalExaggeration(verticalExaggeration);
 		}
@@ -165,6 +172,8 @@ public class WorldState extends State {
 		map.put("SurfaceColor", surfaceColor);
 		time = world.getTime();
 		map.put("Time", new Long(time));
+		useLonLat = world.getUseLonLat();
+		map.put("UseLonLat", new Boolean(useLonLat));
 		
 		return(map);
 	}

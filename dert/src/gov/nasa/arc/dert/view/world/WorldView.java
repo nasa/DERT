@@ -52,4 +52,12 @@ public class WorldView extends PanelView {
 		panel.setState(state);
 	}
 
+	/**
+	 * Close the view
+	 */
+	@Override
+	public void close() {
+		panel.dispose();
+	}
+
 }

@@ -23,5 +23,10 @@ public class LightingView extends JPanelView {
 		panel = new LightingPanel();
 		add(panel, BorderLayout.CENTER);
 	}
+	
+	@Override
+	public void close() {
+		panel.dispose();
+	}
 
 }

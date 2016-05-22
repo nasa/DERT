@@ -849,4 +849,38 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	public boolean spatialClean(Spatial spatial, DirtyType type) {
 		return (false);
 	}
+	
+	public void dispose() {
+		if (placemarkPanel != null) {
+			placemarkPanel.dispose();
+		}
+		if (figurePanel != null) {
+			figurePanel.dispose();
+		}
+		if (imageBoardPanel != null) {
+			imageBoardPanel.dispose();
+		}
+		if (lineSetPanel != null) {
+			lineSetPanel.dispose();
+		}
+		if (pathPanel != null) {
+			pathPanel.dispose();
+		}
+		if (planePanel != null) {
+			planePanel.dispose();
+		}
+		if (radialGridPanel != null) {
+			radialGridPanel.dispose();
+		}
+		if (cartesianGridPanel != null) {
+			cartesianGridPanel.dispose();
+		}
+		if (fieldCameraPanel != null) {
+			fieldCameraPanel.dispose();
+		}
+		if (profilePanel != null) {
+			profilePanel.dispose();
+		}
+		
+	}
 }

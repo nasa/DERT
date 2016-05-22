@@ -1,12 +1,13 @@
 package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
+import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.GroupPanel;
-import gov.nasa.arc.dert.ui.Vector3TextField;
 import gov.nasa.arc.dert.view.world.MoveEdit;
 
 import java.awt.BorderLayout;
@@ -46,7 +47,7 @@ public abstract class MapElementBasePanel extends JPanel {
 	protected JButton saveButton;
 	protected JCheckBox pinnedCheckBox, labelCheckBox;
 	protected JLabel typeLabel, nameLabel, elevLabel;
-	protected Vector3TextField locationText;
+	protected CoordTextField locationText;
 	protected JPanel container;
 
 	// Map element icon and type
@@ -92,23 +93,24 @@ public abstract class MapElementBasePanel extends JPanel {
 		if (addLoc) {
 			panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 			panel.add(new JLabel("Location"));
-			locationText = new Vector3TextField(18, new Vector3(), Landscape.format, false) {
+			locationText = new CoordTextField(18, "location of map element", Landscape.format, false) {
 				@Override
-				protected void handleChange(Vector3 coord) {
-					if (mapElement instanceof Path) {
+				public void handleChange(Vector3 store) {
+					if (mapElement instanceof Path)
 						return;
-					}
-					Landscape landscape = Landscape.getInstance();
-					landscape.worldToLocalCoordinate(coord);
-					coord.setZ(landscape.getZ(coord.getX(), coord.getY()));
+					super.handleChange(store);
+				}
+				@Override
+				public void doChange(ReadOnlyVector3 coord) {
 					ReadOnlyVector3 trans = new Vector3(((Spatial) mapElement).getTranslation());
 					if (!coord.equals(trans)) {
 						((Spatial) mapElement).setTranslation(coord);
 						Dert.getMainWindow().getUndoHandler()
 							.addEdit(new MoveEdit((Spatial) mapElement, new Vector3(trans)));
-					}
+					}					
 				}
 			};
+			CoordAction.listenerList.add(locationText);
 			panel.add(locationText);
 			panel.add(new JLabel("Elev:"));
 			elevLabel = new JLabel("            ");
@@ -185,13 +187,11 @@ public abstract class MapElementBasePanel extends JPanel {
 		add(container, BorderLayout.CENTER);
 	}
 
-	protected void setLocation(Vector3TextField locationText, JLabel elevLabel, ReadOnlyVector3 position) {
+	protected void setLocation(CoordTextField locationText, JLabel elevLabel, ReadOnlyVector3 position) {
 		if (position == null) {
 			position = World.getInstance().getMarble().getTranslation();
 		}
-		coord.set(position);
-		Landscape.getInstance().localToWorldCoordinate(coord);
-		locationText.setValue(coord);
+		locationText.setLocalValue(position);
 		elevLabel.setText(formatter.format(coord.getZ()));
 	}
 
@@ -225,4 +225,8 @@ public abstract class MapElementBasePanel extends JPanel {
 	 */
 	public abstract void setMapElement(MapElement mapElement);
 
+	public void dispose() {
+		if (locationText != null)
+			CoordAction.listenerList.remove(locationText);
+	}
 }

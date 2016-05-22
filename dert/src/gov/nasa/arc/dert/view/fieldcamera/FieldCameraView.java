@@ -34,4 +34,12 @@ public class FieldCameraView extends PanelView {
 		return (scene.isCrosshairVisible());
 	}
 
+	/**
+	 * Close the view
+	 */
+	@Override
+	public void close() {
+		panel.dispose();
+	}
+
 }

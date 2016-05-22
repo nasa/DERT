@@ -19,9 +19,6 @@ public class ActivateTapeMeasureAction extends ButtonAction {
 	// Measurement information dialog
 	private TextDialog dialog;
 
-	// This is enabled
-	private boolean enabled;
-
 	/**
 	 * Constructor
 	 */

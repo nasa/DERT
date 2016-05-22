@@ -31,4 +31,12 @@ public class ViewpointView extends JPanelView {
 		return(panel);
 	}
 
+	/**
+	 * Close this view
+	 */
+	@Override
+	public void close() {
+		panel.dispose();
+	}
+
 }
