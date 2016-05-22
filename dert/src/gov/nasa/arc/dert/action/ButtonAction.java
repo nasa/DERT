@@ -13,9 +13,8 @@ import javax.swing.JButton;
  *
  */
 public abstract class ButtonAction extends JButton {
-
-	// This is enabled (for toggle buttons)
-	protected boolean enabled;
+	
+	protected boolean selected;
 
 	public ButtonAction(String toolTipText, String label, String iconFileName) {
 		this(toolTipText, label, iconFileName, false);
@@ -38,6 +37,10 @@ public abstract class ButtonAction extends JButton {
 				run();
 			}
 		});
+	}
+	
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 
 	protected abstract void run();

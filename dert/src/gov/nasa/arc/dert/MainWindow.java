@@ -451,6 +451,7 @@ public class MainWindow extends JFrame {
 		lightAction.setEnabled(true);
 		measuringAction.setEnabled(true);
 		coordAction.setEnabled(true);
+		coordAction.setSelected(World.getInstance().getUseLonLat());
 		viewpointAction.setEnabled(true);
 		zoomAction.setEnabled(true);
 		gotoMarble.setEnabled(true);

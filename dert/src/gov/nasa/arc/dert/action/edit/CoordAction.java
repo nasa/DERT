@@ -16,9 +16,18 @@ public class CoordAction
 	}
 	
 	@Override
+	public void setSelected(boolean selected) {
+		super.setSelected(selected);
+		if (selected) 
+			setIcon(Icons.getImageIcon("graticule_checked.png"));
+		else
+			setIcon(Icons.getImageIcon("graticule.png"));
+	}
+	
+	@Override
 	public void run() {
-		enabled = !enabled;
-		if (enabled) {
+		selected = !selected;
+		if (selected) {
 			setIcon(Icons.getImageIcon("graticule_checked.png"));
 			World.getInstance().setUseLonLat(true);
 		}

@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
@@ -258,6 +259,7 @@ public class ConfigurationManager {
 			Console.getInstance().println("Unable to create world for " + currentConfig);
 			return;
 		}
+		CoordAction.listenerList.clear();
 
 		try {
 			// Perform UI operations on UI event thread

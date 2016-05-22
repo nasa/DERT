@@ -39,8 +39,8 @@ public class ActivateTapeMeasureAction extends ButtonAction {
 		}
 		TapeMeasure tape = World.getInstance().getTapeMeasure();
 		WorldScenePanel worldScenePanel = Dert.getWorldView().getScenePanel();
-		enabled = !enabled;
-		if (enabled) {
+		selected = !selected;
+		if (selected) {
 			setIcon(Icons.getImageIcon("tapecheck.png"));
 			worldScenePanel.getInputHandler().setTapeMeasure(tape);
 			tape.setDialog(dialog);
@@ -58,7 +58,7 @@ public class ActivateTapeMeasureAction extends ButtonAction {
 	 * Deactivate the tape measure
 	 */
 	public void deactivate() {
-		enabled = false;
+		selected = false;
 		setIcon(Icons.getImageIcon("tape.png"));
 		WorldScenePanel worldScenePanel = Dert.getWorldView().getScenePanel();
 		worldScenePanel.getInputHandler().setTapeMeasure(null);
