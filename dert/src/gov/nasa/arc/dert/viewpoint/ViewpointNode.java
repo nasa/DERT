@@ -198,9 +198,13 @@ public class ViewpointNode
 	private void updateOverlay() {
 		tmpVec.set(camera.getLookAt());
 		Landscape.getInstance().localToWorldCoordinate(tmpVec);
-		if (World.getInstance().getUseLonLat())
+		String str = null;
+		if (World.getInstance().getUseLonLat()) {
 			Landscape.getInstance().worldToSphericalCoordinate(tmpVec);
-		String str = String.format("CoR: %7.3f %7.3f", tmpVec.getXf(), tmpVec.getYf());
+			str = String.format("CoR: %7.3f %s %7.3f %s", Math.abs(tmpVec.getXf()), (tmpVec.getXf() < 0 ? "W" : "E"), Math.abs(tmpVec.getYf()), (tmpVec.getYf() < 0 ? "S" : "N"));
+		}
+		else
+			str = String.format("CoR: %7.3f %7.3f", tmpVec.getXf(), tmpVec.getYf());
 		corText.setText(str);
 		double dist = camera.getDistanceToCoR();
 		str = String.format("Dist: %7.3f", dist);

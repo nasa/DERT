@@ -189,7 +189,7 @@ public class Projection {
 	}
 
 	/**
-	 * Convert world (OpenGL) coordinates to lon/lat. Results are in degrees.
+	 * Convert virtual world coordinates to lon/lat. Results are in degrees.
 	 * 
 	 * @param vec
 	 */
@@ -218,7 +218,7 @@ public class Projection {
 	}
 
 	/**
-	 * Convert lon/lat (degree) coordinate to world (OpenGL) coordinates.
+	 * Convert lon/lat (degree) coordinate to virtual world coordinates.
 	 * 
 	 * @param vec
 	 */
