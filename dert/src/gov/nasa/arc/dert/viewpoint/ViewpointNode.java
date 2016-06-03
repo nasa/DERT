@@ -311,6 +311,7 @@ public class ViewpointNode
 		updateCrosshair();
 		updateGeometricState(0);
 		Dert.getMainWindow().updateCompass(azimuth);
+		updateOverlay();
 		changed.set(true);
 	}
 
