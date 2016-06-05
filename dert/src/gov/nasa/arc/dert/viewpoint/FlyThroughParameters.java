@@ -1,12 +1,11 @@
 package gov.nasa.arc.dert.viewpoint;
 
-import java.io.Serializable;
 
 /**
  * Data structure that provides fly through parameters and can be persisted.
  *
  */
-public class FlyThroughParameters implements Serializable {
+public class FlyThroughParameters {
 
 	public int numInbetweens;
 	public int millisPerFrame;

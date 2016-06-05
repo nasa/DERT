@@ -9,7 +9,6 @@ import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.TimeUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -28,7 +27,7 @@ import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.CullHint;
 
-public class Lighting implements Serializable {
+public class Lighting {
 
 	public static String DATE_FORMAT;
 

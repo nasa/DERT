@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.scene.tool.fieldcamera;
 
 import gov.nasa.arc.dert.util.StringUtil;
 
-import java.io.Serializable;
 import java.util.Properties;
 
 import com.ardor3d.math.ColorRGBA;
@@ -14,7 +13,7 @@ import com.ardor3d.math.type.ReadOnlyVector3;
  * Data structure that contains the information to define a camera.
  *
  */
-public class FieldCameraInfo implements Serializable {
+public class FieldCameraInfo {
 
 	protected static float[] defaultColor = { 1, 1, 1, 1 };
 	protected static double[] defaultMountingOffset = { 0, 0, 0 };

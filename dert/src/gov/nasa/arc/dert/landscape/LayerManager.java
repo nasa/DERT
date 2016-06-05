@@ -13,7 +13,6 @@ import gov.nasa.arc.dert.view.ColorBarPanel;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.view.surfaceandlayers.SurfaceAndLayersView;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,7 +27,7 @@ import com.ardor3d.renderer.Renderer;
  * Helper class to aid Landscape with layers.
  *
  */
-public class LayerManager implements Serializable {
+public class LayerManager {
 
 	public static int NUM_LAYERS = 8;
 	public static final ReadOnlyColorRGBA DEFAULT_GRID_COLOR = ColorRGBA.WHITE;

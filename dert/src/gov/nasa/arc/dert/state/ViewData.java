@@ -18,7 +18,7 @@ import javax.swing.JDialog;
  * of a View.
  *
  */
-public class ViewData /*implements Serializable*/ {
+public class ViewData {
 	
 	public static int DEFAULT_WINDOW_WIDTH = 800;
 	public static int DEFAULT_WINDOW_HEIGHT = 600;

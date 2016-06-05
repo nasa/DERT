@@ -3,7 +3,6 @@ package gov.nasa.arc.dert.viewpoint;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.StateUtil;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 import com.ardor3d.math.Vector3;
@@ -12,7 +11,7 @@ import com.ardor3d.math.Vector3;
  * Data structure for storing viewpoint attributes.
  *
  */
-public class ViewpointStore implements Serializable {
+public class ViewpointStore {
 
 	public String name;
 	public Vector3 location;
