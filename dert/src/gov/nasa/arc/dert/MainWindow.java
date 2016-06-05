@@ -18,14 +18,17 @@ import gov.nasa.arc.dert.state.Configuration;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.State;
 import gov.nasa.arc.dert.ui.CoordTextField;
+import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.view.lighting.LightPositionView;
 import gov.nasa.arc.dert.view.world.WorldView;
 import gov.nasa.arc.dert.viewpoint.ActivateZoomAction;
 import gov.nasa.arc.dert.viewpoint.Compass;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -38,6 +41,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
@@ -327,7 +331,7 @@ public class MainWindow extends JFrame {
 		worldView = new WorldView();
 		add(worldView, BorderLayout.CENTER);
 
-		setSize(900, 600);
+		pack();
 		setLocation(20, 20);
 		setVisible(true);
 		requestFocus();
@@ -431,6 +435,31 @@ public class MainWindow extends JFrame {
 		});
 		textOverlay.setState(worldView.getScenePanel().isShowTextOverlay());
 		menu.add(textOverlay);
+
+		MenuItemAction canvasSizeAction = new MenuItemAction("Set WorldView Canvas Dimensions") {
+			@Override
+			protected void run() {
+				String result = JOptionPane.showInputDialog(this, "Enter dimensions (width,height).", worldView.getScenePanel().getWidth()+","+worldView.getScenePanel().getHeight());
+				if ((result != null) && !result.isEmpty()) {
+					String[] token = result.trim().split(",");
+					if (token.length < 2) {
+						Toolkit.getDefaultToolkit().beep();
+						return;
+					}
+					try {
+						int width = Integer.parseInt(token[0]);
+						int height = Integer.parseInt(token[1]);
+						worldView.getScenePanel().setPreferredSize(new Dimension(width, height));
+						pack();
+						Console.getInstance().println("WorldView Canvas Dimensions: "+worldView.getScenePanel().getCanvas().getWidth()+","+worldView.getScenePanel().getCanvas().getHeight());
+					}
+					catch (Exception e) {
+						Toolkit.getDefaultToolkit().beep();
+					}
+				}
+			}
+		};
+		menu.add(canvasSizeAction);
 	}
 
 	/**

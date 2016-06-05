@@ -3,6 +3,7 @@ package gov.nasa.arc.dert.view.world;
 import gov.nasa.arc.dert.render.SceneCanvasPanel;
 import gov.nasa.arc.dert.state.State;
 import gov.nasa.arc.dert.state.WorldState;
+import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.view.InputManager;
 import gov.nasa.arc.dert.viewpoint.AnaglyphCamera;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;

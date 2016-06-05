@@ -54,7 +54,7 @@ public class Configuration {
 	public Configuration(String label) {
 		this.label = label;
 		worldState = new WorldState((String)null);
-		consoleState = new PanelState(PanelType.Console, "DERT Console", new ViewData(-1, 624, 900, 250, false));
+		consoleState = new PanelState(PanelType.Console, "DERT Console", new ViewData(-1, 624, 960, 250, false));
 		consoleState.viewData.setVisible(true);
 		helpState = new PanelState(PanelType.Help, "DERT Help", new ViewData(-1, -1, ViewData.DEFAULT_WINDOW_WIDTH, ViewData.DEFAULT_WINDOW_HEIGHT, false));
 		mapElementsState = new MapElementsState();

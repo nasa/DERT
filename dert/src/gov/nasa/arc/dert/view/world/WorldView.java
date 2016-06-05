@@ -20,7 +20,7 @@ public class WorldView extends PanelView {
 	public WorldView() {
 		super(null);
 		setFocusTraversalKeysEnabled(false);
-		panel = new WorldScenePanel(800, 600);
+		panel = new WorldScenePanel(960, 540);
 		add(panel, BorderLayout.CENTER);
 	}
 

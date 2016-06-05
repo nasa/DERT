@@ -92,8 +92,8 @@ public class FileHelper {
 	 * @param title
 	 * @return
 	 */
-	public static String getDirectoryPathForSave(String title) {
-		JFileChooser chooser = new DertFileChooser(lastPath, true, true);
+	public static String getDirectoryPathForSave(String title, boolean newLandscape) {
+		JFileChooser chooser = new DertFileChooser(lastPath, true, newLandscape);
 		chooser.setDialogTitle(title);
 		int state = chooser.showOpenDialog(null);
 		File file = chooser.getSelectedFile();

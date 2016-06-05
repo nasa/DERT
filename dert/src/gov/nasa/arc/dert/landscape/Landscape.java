@@ -172,8 +172,8 @@ public class Landscape extends Node implements ViewDependent {
 			layerManager.setGridCellSize(Grid.defaultCellSize);
 		}
 		Console.getInstance().println(
-			"Landscape size (meters): East/West range = " + worldWidth + ", North/South range = " + worldLength + " "
-				+ ", Elevation range = " + (baseLayer.getMaximumValue()[0] - minZ) + "\n");
+			"Landscape size: East/West range = " + String.format(stringFormat, worldWidth) + ", North/South range = " + String.format(stringFormat, worldLength) + " "
+				+ ", Elevation range = " + String.format(stringFormat, (baseLayer.getMaximumValue()[0] - minZ)) + "\n");
 
 	}
 

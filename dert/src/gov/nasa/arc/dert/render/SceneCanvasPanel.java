@@ -3,6 +3,7 @@ package gov.nasa.arc.dert.render;
 import gov.nasa.arc.dert.state.State;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Panel;
 
 import com.ardor3d.framework.Updater;
@@ -77,6 +78,7 @@ public class SceneCanvasPanel extends Panel implements Updater {
 		setLayout(new BorderLayout());
 		add(canvas, BorderLayout.CENTER);
 		this.scene = scene;
+		setPreferredSize(new Dimension(width, height));
 	}
 
 	/**
@@ -128,5 +130,9 @@ public class SceneCanvasPanel extends Panel implements Updater {
 
 	public void setState(State state) {
 		this.state = state;
+	}
+	
+	public void enableFrameGrab(String grabFilePath) {
+		canvasRenderer.enableFrameGrab(grabFilePath, 0, 0, scene.getWidth(), scene.getHeight());
 	}
 }

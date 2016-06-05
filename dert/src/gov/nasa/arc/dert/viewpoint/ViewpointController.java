@@ -1,5 +1,7 @@
 package gov.nasa.arc.dert.viewpoint;
 
+import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.render.SceneFramework;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.view.viewpoint.FlyThroughDialog;
@@ -411,6 +413,8 @@ public class ViewpointController {
 	public void stopFlyThrough() {
 		flyThroughTimer.stop();
 		flyIndex = 0;
+		Dert.getWorldView().getScenePanel().enableFrameGrab(null);
+		SceneFramework.getInstance().suspend(false);
 	}
 
 	/**
@@ -424,12 +428,17 @@ public class ViewpointController {
 	 * Start flight
 	 */
 	public void startFlyThrough() {
+		if (flyParams.grab) {
+			Dert.getWorldView().getScenePanel().enableFrameGrab(flyParams.imageSequencePath);
+		}
+		SceneFramework.getInstance().suspend(true);
 		if (flyThroughTimer == null) {
 			flyIndex = 0;
 			flyThroughTimer = new Timer(flyParams.millisPerFrame, new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					viewpointNode.setViewpoint(flyList.get(flyIndex), true, false);
+					SceneFramework.getInstance().getFrameHandler().updateFrame();
 					double t = (flyIndex * flyParams.millisPerFrame) / 1000.0;
 					int hr = (int) (t / 3600);
 					t -= hr * 3600;
@@ -442,7 +451,9 @@ public class ViewpointController {
 					if (flyIndex == flyList.size()) {
 						if (!flyParams.loop) {
 							flyThroughTimer.stop();
-							flyThroughDialog.enableApply(true);
+							flyThroughDialog.enableParameters(true);
+							Dert.getWorldView().getScenePanel().enableFrameGrab(null);
+							SceneFramework.getInstance().suspend(false);
 						}
 						flyIndex = 0;
 					}
@@ -481,6 +492,8 @@ public class ViewpointController {
 	 * Close the fly through dialog
 	 */
 	public void closeFlyThrough() {
+		Dert.getWorldView().getScenePanel().enableFrameGrab(null);
+		SceneFramework.getInstance().suspend(false);
 		if (flyThroughDialog != null) {
 			flyThroughDialog.setVisible(false);
 		}
@@ -494,30 +507,28 @@ public class ViewpointController {
 	 * @param millis
 	 * @param loop
 	 */
-	public void flyViewpoints(int numInbetweens, int millis, final boolean loop) {
+	public void flyViewpoints(int numInbetweens, int millis, boolean loop, boolean grab, String seqPath) {
     	if (numInbetweens <= 1)
     		return;
     	
 		flyParams.numInbetweens = numInbetweens;
 		flyParams.millisPerFrame = millis;
 		flyParams.loop = loop;
+		flyParams.grab = grab;
+		flyParams.imageSequencePath = seqPath;
 
 		flyList = new Vector<ViewpointStore>();
 		
-		// Less than 4 viewpoints - linear interpolation
 		int vpCount = viewpointList.size();
-//		if (vpCount < 4) {
-			double delta = 1.0/numInbetweens;
-			ViewpointStore vps = viewpointList.get(0);
-			for (int i = 1; i < vpCount; ++i) {
-				for (float t = 0; t < 1.0; t += delta) {
-					flyList.add(vps.getInbetween(viewpointList.get(i), t));
-				}
-				vps = viewpointList.get(i);
+		double delta = 1.0/numInbetweens;
+		ViewpointStore vps = viewpointList.get(0);
+		for (int i = 1; i < vpCount; ++i) {
+			for (float t = 0; t < 1.0; t += delta) {
+				flyList.add(vps.getInbetween(viewpointList.get(i), t));
 			}
-			flyList.add(viewpointList.get(viewpointList.size() - 1));
-			return;
-//		}
+			vps = viewpointList.get(i);
+		}
+		flyList.add(viewpointList.get(viewpointList.size() - 1));
 
 //		// Use spline interpolation
 //		if (spline == null) 
@@ -557,11 +568,13 @@ public class ViewpointController {
 	 * @param loop
 	 * @param height
 	 */
-	public void flyPath(Path path, int numInbetweens, int millis, boolean loop, double height) {
+	public void flyPath(Path path, int numInbetweens, int millis, boolean loop, double height, boolean grab, String seqPath) {
 		flyParams.numInbetweens = numInbetweens;
 		flyParams.millisPerFrame = millis;
 		flyParams.loop = loop;
 		flyParams.pathHeight = height;
+		flyParams.grab = grab;
+		flyParams.imageSequencePath = seqPath;
 		
 		Vector3[] curve = path.getCurve(numInbetweens);
 

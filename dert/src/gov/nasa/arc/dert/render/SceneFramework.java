@@ -24,6 +24,10 @@ public class SceneFramework {
 
 	// Count of queued events
 	private int count = 0;
+	
+	// Framework is suspended
+	private boolean suspended;
+	
 
 	// Execute a single update on the AWT event queue.
 	private final Runnable runnable = new Runnable() {
@@ -75,9 +79,9 @@ public class SceneFramework {
 				while (doit) {
 					try {
 						Thread.sleep(sleepyTime);
-						if (count < 3) {
+						if ((count < 3) && !suspended) {
 							// single assignment should be thread safe - could
-							// make count an Atom
+							// make count atomic
 							count++;
 							EventQueue.invokeLater(runnable);
 						}
@@ -104,6 +108,10 @@ public class SceneFramework {
 	 */
 	public FrameHandler getFrameHandler() {
 		return (frameHandler);
+	}
+	
+	public void suspend(boolean val) {
+		suspended = val;
 	}
 
 }

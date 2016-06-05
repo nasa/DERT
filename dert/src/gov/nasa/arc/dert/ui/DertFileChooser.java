@@ -63,6 +63,7 @@ public class DertFileChooser extends JFileChooser {
 		setMultiSelectionEnabled(false);
 
 		if (directoryOnly) {
+			setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			setFileFilter(new ConfigFileFilter());
 			removeFileType(getComponents());
 		}
@@ -70,6 +71,8 @@ public class DertFileChooser extends JFileChooser {
 		if (newLandscape) {
 			addNewLandscapeButton(getComponents());
 		}
+		else
+			addNewDirectoryButton(getComponents());
 	}
 
 	@Override
@@ -130,6 +133,35 @@ public class DertFileChooser extends JFileChooser {
 				}
 			} else if (child[i] instanceof Container) {
 				addNewLandscapeButton(((Container) child[i]).getComponents());
+			}
+		}
+	}
+
+	private void addNewDirectoryButton(Component[] child) {
+		for (int i = 0; i < child.length; ++i) {
+			if (child[i] instanceof JButton) {
+				JButton button = (JButton) child[i];
+				String s = button.getText();
+				if ((s != null) && s.equals("Cancel")) {
+					JButton nd = new JButton("New Directory");
+					nd.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent event) {
+							String str = JOptionPane.showInputDialog(null,
+								"Please enter the directory name (no spaces).");
+							if (str == null) {
+								return;
+							}
+							File file = new File(getCurrentDirectory(), str);
+							file.mkdirs();
+							rescanCurrentDirectory();
+							setSelectedFiles(new File[] { file });
+						}
+					});
+					button.getParent().add(nd, 0);
+				}
+			} else if (child[i] instanceof Container) {
+				addNewDirectoryButton(((Container) child[i]).getComponents());
 			}
 		}
 	}

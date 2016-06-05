@@ -403,7 +403,7 @@ public class RasterLayerPanel extends JPanel {
 	 * Get the destination landscape directory.
 	 */
 	protected void setLandscapeDirectory() {
-		String fPath = FileHelper.getDirectoryPathForSave("Landscape Selection");
+		String fPath = FileHelper.getDirectoryPathForSave("Landscape Selection", true);
 		if (fPath != null) {
 			landscapeText.setText(fPath);
 		}
