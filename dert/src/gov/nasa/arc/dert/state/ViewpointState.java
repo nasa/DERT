@@ -31,6 +31,7 @@ public class ViewpointState extends PanelState {
 	public ViewpointState(HashMap<String,Object> map) {
 		super(map);
 		flyParams = FlyThroughParameters.fromArray((double[])map.get("FlyParams"));
+		flyParams.imageSequencePath = StateUtil.getString(map, "ImageSequencePath", null);
 		int n = StateUtil.getInteger(map, "ViewpointCount", 0);
 		viewpointList = new Vector<ViewpointStore>();
 		for (int i=0; i<n; ++i)
@@ -44,6 +45,7 @@ public class ViewpointState extends PanelState {
 	public HashMap<String,Object> save() {
 		HashMap<String,Object> map = super.save();
 		map.put("FlyParams", flyParams.toArray());
+		map.put("ImageSequencePath", flyParams.imageSequencePath);
 		map.put("ViewpointCount", new Integer(viewpointList.size()));
 		for (int i=0; i<viewpointList.size(); ++i)
 			map.put("Viewpoint"+i, viewpointList.get(i).toHashMap());
