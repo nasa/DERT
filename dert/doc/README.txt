@@ -5,7 +5,7 @@ Desktop Exploration of Remote Terrain
 
 SYSTEM REQUIREMENTS:
 
-DERT requires 64-bit Java 1.6, 1.7, or 1.8.  Mac OS X 10.8 and Red Hat Linux 6 have
+DERT requires 64-bit Java 1.7, or 1.8.  Mac OS X 10.8 and Red Hat Linux 6 have
 been tested successfully.  A 3-button mouse is recommended.
 
 
@@ -27,7 +27,6 @@ the kernels subdirectory of the dert directory is empty or absent.
 EXECUTION:
 
 To execute DERT on a Mac with Java 1.7 or later double-click on the dert application or run the dert script found in the directory.
-To execute DERT on a Mac with Java 1.6 only, run the dert script found in the directory.
 To execute DERT on Linux, run the dert script.  See the user guide for instructions.
 
 To execute LayerFactory run the layerfactory script found in the dert directory.
