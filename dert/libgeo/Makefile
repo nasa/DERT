@@ -15,7 +15,7 @@ LIBS = -lz
 
 # Setup for Linux
 #PLATFORM = linux
-#JAVA_INCLUDE = -I/usr/lib/gcc/x86_64-redhat-linux/4.4.6/include
+#JAVA_INCLUDE = -I/usr/lib/gcc/x86_64-redhat-linux/4.4.7/include
 #LIBEXT = so
 #CFLAGS = -O2 -fPIC
 #LFLAGS = -shared

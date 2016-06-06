@@ -90,14 +90,19 @@
 	JNIEXPORT jint JNICALL Java_gov_nasa_arc_dert_raster_geotiff_GTIF_getTIFFFieldString
 		(JNIEnv *env, jobject theObject, jlong handle, jint tag, jobjectArray value) {
 		
-		TIFF* tiff = (TIFF*)handle;
-		if ( !tiff )
-			return( 0 );
-//		fprintf(stderr, "getTIFFFieldString %d\n", tag);
 		void* val;
 		uint16 c;
-		int count;
-		int n = TIFFGetFieldDefaulted( tiff, (ttag_t)tag, &val );
+		int count, n;
+		TIFF* tiff;
+		
+		tiff = (TIFF*)handle;
+		if ( !tiff )
+			return( 0 );
+			
+		n = TIFFGetFieldDefaulted( tiff, (ttag_t)tag, &val );
+//		fprintf(stderr, "getTIFFFieldString %d %d\n", tag, val);
+		if ( !val )
+			return(0);
 		count = strlen((char*)val);
 		if ( n > 0 ) {
 //			fprintf(stderr, "getTIFFFieldString %d %d %d %s\n", tag, n, count, (char*)val);
