@@ -8,7 +8,7 @@ setenv JAVACMD /System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/
 
 echo $JAVACMD
 
-set DERT_VERSION = "1.0b3"
+set DERT_VERSION = "1.0b4"
 
 ant -v -buildfile build_linux.xml clean -Ddertversion=$DERT_VERSION
 ant -v -buildfile build_linux.xml main -Ddertversion=$DERT_VERSION
