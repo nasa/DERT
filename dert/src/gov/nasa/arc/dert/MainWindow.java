@@ -320,7 +320,6 @@ public class MainWindow extends JFrame {
 				World.getInstance().getMarble().update(result, null, null);
 			}
 		};
-		CoordAction.listenerList.add(marbleLocField);
 		marbleLocField.setEnabled(false);
 		toolBar.add(marbleLocField);
 
@@ -488,6 +487,7 @@ public class MainWindow extends JFrame {
 		updateLightIcon();
 		marbleLocField.setFormat(Landscape.format);
 		marbleLocField.setEnabled(true);
+		CoordAction.listenerList.add(marbleLocField);
 		setTitle("Desktop Exploration of Remote Terrain - " + Landscape.getInstance().getGlobeName() + ":"
 			+ World.getInstance().getName() + ":" + currentConfig.toString());
 		worldView.getScenePanel().getCanvas().requestFocusInWindow();

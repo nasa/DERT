@@ -66,7 +66,7 @@ public class ViewpointNode
 	// Cross hair
 	private RGBAxes crosshair;
 	private Node text;
-	private RasterText corText, dstText, magText;
+	private RasterText corText, dstText, magText, altText;
 	private double textSize = 20;
 
 	/**
@@ -178,14 +178,20 @@ public class ViewpointNode
 		magText.setScaleFactor((float) textSize);
 		magText.setColor(ColorRGBA.WHITE);
 		magText.setVisible(true);
-		magText.setTranslation(0, textSize, 0);
+		magText.setTranslation(0, 2*textSize, 0);
 		text.attachChild(magText);
 		dstText = new RasterText("_dst", "", AlignType.Left);
 		dstText.setScaleFactor((float) textSize);
 		dstText.setColor(ColorRGBA.WHITE);
 		dstText.setVisible(true);
-		dstText.setTranslation(0, 2*textSize, 0);
+		dstText.setTranslation(0, textSize, 0);
 		text.attachChild(dstText);
+		altText = new RasterText("_alt", "", AlignType.Left);
+		altText.setScaleFactor((float) textSize);
+		altText.setColor(ColorRGBA.WHITE);
+		altText.setVisible(true);
+		altText.setTranslation(0, 3*textSize, 0);
+		text.attachChild(altText);
 		text.updateGeometricState(0);
 		text.getSceneHints().setRenderBucketType(RenderBucketType.Ortho);
 	}
@@ -201,13 +207,16 @@ public class ViewpointNode
 		String str = null;
 		if (World.getInstance().getUseLonLat()) {
 			Landscape.getInstance().worldToSphericalCoordinate(tmpVec);
-			str = String.format("CoR: %7.3f %s %7.3f %s", Math.abs(tmpVec.getXf()), (tmpVec.getXf() < 0 ? "W" : "E"), Math.abs(tmpVec.getYf()), (tmpVec.getYf() < 0 ? "S" : "N"));
+			str = String.format("CoR Loc: %7.3f %s %7.3f %s", Math.abs(tmpVec.getXf()), (tmpVec.getXf() < 0 ? "W" : "E"), Math.abs(tmpVec.getYf()), (tmpVec.getYf() < 0 ? "S" : "N"));
 		}
 		else
-			str = String.format("CoR: %7.3f %7.3f", tmpVec.getXf(), tmpVec.getYf());
+			str = String.format("CoR Loc: %7.3f %7.3f", tmpVec.getXf(), tmpVec.getYf());
 		corText.setText(str);
+		tmpVec.set(camera.getLocation());
+		Landscape.getInstance().localToWorldCoordinate(tmpVec);
+		altText.setText(String.format("Alt: %7.3f", tmpVec.getZ()));
 		double dist = camera.getDistanceToCoR();
-		str = String.format("Dist: %7.3f", dist);
+		str = String.format("CoR Dist: %7.3f", dist);
 		dstText.setText(str);
 		double mag = camera.getMagnification();
 		str = String.format("Mag: %7.3f", mag);

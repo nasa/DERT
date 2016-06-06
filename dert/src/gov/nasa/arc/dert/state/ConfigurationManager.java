@@ -238,6 +238,7 @@ public class ConfigurationManager {
 				return;
 			}
 		}
+		CoordAction.listenerList.clear();
 		currentConfig = config;
 		String landscapePath = config.getLandscapePath();
 		File dertFile = new File(landscapePath, "dert");
@@ -259,7 +260,6 @@ public class ConfigurationManager {
 			Console.getInstance().println("Unable to create world for " + currentConfig);
 			return;
 		}
-		CoordAction.listenerList.clear();
 
 		try {
 			// Perform UI operations on UI event thread
