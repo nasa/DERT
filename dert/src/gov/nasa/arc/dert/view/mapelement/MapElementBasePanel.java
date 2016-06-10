@@ -191,8 +191,8 @@ public abstract class MapElementBasePanel extends JPanel {
 		if (position == null) {
 			position = World.getInstance().getMarble().getTranslation();
 		}
-		locationText.setLocalValue(position);
-		elevLabel.setText(formatter.format(coord.getZ()));
+		float elev = locationText.setLocalValue(position);
+		elevLabel.setText(formatter.format(elev));
 	}
 
 	/**

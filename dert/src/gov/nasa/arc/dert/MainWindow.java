@@ -519,10 +519,6 @@ public class MainWindow extends JFrame {
 	 */
 	public void updateMarbleLocationField() {
 		marbleLocField.setLocalValue(World.getInstance().getMarble().getTranslation());
-//		marbleLocation.set(World.getInstance().getMarble().getTranslation());
-//		// Convert from OpenGL to World coordinates
-//		Landscape.getInstance().localToWorldCoordinate(marbleLocation);
-//		marbleLocField.setValue(marbleLocation);
 	}
 
 	/**

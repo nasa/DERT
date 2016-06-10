@@ -57,7 +57,7 @@ public abstract class CoordTextField
 		}
 	}
 	
-	public void setLocalValue(ReadOnlyVector3 value) {
+	public float setLocalValue(ReadOnlyVector3 value) {
 		coord.set(value);
 		valueVec.set(value);
 		// Convert from OpenGL to World coordinates
@@ -65,6 +65,7 @@ public abstract class CoordTextField
 		if (World.getInstance().getUseLonLat())
 			Landscape.getInstance().worldToSphericalCoordinate(valueVec);
 		setValue(valueVec);
+		return(valueVec.getZf());
 	}
 	
 	public void coordDisplayChanged() {
