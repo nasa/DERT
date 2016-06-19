@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 import javax.swing.JOptionPane;
 
 import com.ardor3d.renderer.state.TextureState;
+import com.ardor3d.renderer.state.ZBufferState;
 import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
 
@@ -29,6 +30,8 @@ public class LineSets extends GroupNode {
 
 	// Thread service for updating
 	private ExecutorService executor;
+	
+	private ZBufferState zBufferState;
 
 	/**
 	 * Constructor
@@ -52,6 +55,11 @@ public class LineSets extends GroupNode {
 			LineSetState state = lineSetList.get(i);
 			addLineSet(state, false);
 		}
+
+		zBufferState = new ZBufferState();
+		zBufferState.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
+		zBufferState.setEnabled(true);
+		setRenderState(zBufferState);
 	}
 
 	/**
@@ -113,6 +121,14 @@ public class LineSets extends GroupNode {
 		for (int i = 0; i < getNumberOfChildren(); ++i) {
 			((LineSet) getChild(i)).setVisible(visible);
 		}
+	}
+	
+	public void setOnTop(boolean onTop) {
+		zBufferState.setEnabled(!onTop);
+	}
+	
+	public boolean isOnTop() {
+		return(!zBufferState.isEnabled());
 	}
 
 	/**

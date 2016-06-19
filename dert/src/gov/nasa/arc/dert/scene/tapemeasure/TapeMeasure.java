@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.action.edit.CoordListener;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
+import gov.nasa.arc.dert.scenegraph.HiddenLine;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.ui.TextDialog;
 import gov.nasa.arc.dert.util.MathUtil;
@@ -13,25 +14,19 @@ import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
 import java.awt.Color;
-import java.nio.FloatBuffer;
 
 import com.ardor3d.bounding.BoundingBox;
 import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.renderer.IndexMode;
 import com.ardor3d.renderer.state.MaterialState;
 import com.ardor3d.renderer.state.MaterialState.MaterialFace;
 import com.ardor3d.renderer.state.RenderState.StateType;
-import com.ardor3d.renderer.state.ZBufferState;
-import com.ardor3d.scenegraph.Line;
 import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.CullHint;
 import com.ardor3d.scenegraph.hint.PickingHint;
-import com.ardor3d.scenegraph.hint.TextureCombineMode;
-import com.ardor3d.util.geom.BufferUtils;
 
 /**
  * Provides a measuring tool that simulates a tape measure. It consists
@@ -39,9 +34,6 @@ import com.ardor3d.util.geom.BufferUtils;
  *
  */
 public class TapeMeasure extends Node implements ViewDependent, CoordListener {
-	
-	// Use Z Buffer when drawing
-	public static boolean zBufferEnabled;
 
 	// The type of end point, the anchor is placed with the first click, the
 	// current remains with the cursor
@@ -56,7 +48,7 @@ public class TapeMeasure extends Node implements ViewDependent, CoordListener {
 	protected Color anchorColor = Color.blue, currentColor = Color.white;
 
 	// The line segment
-	protected Line line;
+	protected HiddenLine line;
 
 	// The figures for the end points
 	protected FigureMarker currentPoint, anchorPoint;
@@ -92,7 +84,7 @@ public class TapeMeasure extends Node implements ViewDependent, CoordListener {
 		materialState.setEmissive(MaterialFace.FrontAndBack, UIUtil.colorToColorRGBA(anchorColor));
 		attachChild(anchorPoint);
 
-		currentPoint = new FigureMarker("_current", Vector3.ZERO, pointSize, currentColor, false, false, false);
+		currentPoint = new FigureMarker("_current", new Vector3(0, 0, 1), pointSize, currentColor, false, false, false);
 		currentPoint.setShape(ShapeType.sphere);
 		currentPoint.getSceneHints().setAllPickingHints(false);
 		materialState = (MaterialState) currentPoint.getLocalRenderState(StateType.Material);
@@ -102,11 +94,11 @@ public class TapeMeasure extends Node implements ViewDependent, CoordListener {
 		createLine();
 		attachChild(line);
 
-		ZBufferState zBufferState = new ZBufferState();
-		zBufferState.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
-		zBufferState.setEnabled(zBufferEnabled);
-		setRenderState(zBufferState);
 		updateGeometricState(0);
+	}
+	
+	public void setHiddenDashed(boolean hiddenDashed) {
+		line.enableDash(hiddenDashed);
 	}
 
 	/**
@@ -137,42 +129,15 @@ public class TapeMeasure extends Node implements ViewDependent, CoordListener {
 	}
 
 	protected void updateLine() {
-		FloatBuffer vertexBuffer = line.getMeshData().getVertexBuffer();
-		vertexBuffer.put(0, (float) anchor.getX());
-		vertexBuffer.put(1, (float) anchor.getY());
-		vertexBuffer.put(2, (float) anchor.getZ());
-		vertexBuffer.put(3, (float) current.getX());
-		vertexBuffer.put(4, (float) current.getY());
-		vertexBuffer.put(5, (float) current.getZ());
-		line.markDirty(DirtyType.Bounding);
+		line.setPoints(anchor, current);
 	}
 
 	protected void createLine() {
-		line = new Line("_tapeline");
-		FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(6);
-		vertexBuffer.limit(6);
-		vertexBuffer.rewind();
-		ReadOnlyVector3 trans = anchorPoint.getTranslation();
-		vertexBuffer.put(0, (float) trans.getX());
-		vertexBuffer.put(1, (float) trans.getY());
-		vertexBuffer.put(2, (float) trans.getZ());
-		trans = currentPoint.getTranslation();
-		vertexBuffer.put(3, (float) trans.getX());
-		vertexBuffer.put(4, (float) trans.getY());
-		vertexBuffer.put(5, (float) trans.getZ());
-		line.getMeshData().setIndexMode(IndexMode.LineStrip);
-		line.getMeshData().setVertexBuffer(vertexBuffer);
-		line.getSceneHints().setCastsShadows(false);
-		line.getSceneHints().setTextureCombineMode(TextureCombineMode.Off);
+		line = new HiddenLine("_tapeline", anchorPoint.getTranslation(), currentPoint.getTranslation());
 		line.getSceneHints().setPickingHint(PickingHint.Pickable, false);
 		line.setModelBound(new BoundingBox());
 		line.updateModelBound();
-
-		MaterialState lineMS = new MaterialState();
-		lineMS.setDiffuse(new ColorRGBA(0, 0, 0, 1));
-		lineMS.setAmbient(new ColorRGBA(0, 0, 0, 1));
-		lineMS.setEmissive(MaterialState.MaterialFace.FrontAndBack, lineColor);
-		line.setRenderState(lineMS);
+		line.setColor(lineColor);
 	}
 
 	/**

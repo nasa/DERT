@@ -194,20 +194,20 @@ public class WorldInputHandler implements InputHandler {
 	 * Mouse was scrolled
 	 */
 	@Override
-	public void mouseScroll(int delta, boolean isControlled) {
+	public void mouseScroll(int delta) {
 		mouseButton = 4;
-		controller.mouseScroll(delta, isControlled);
+		controller.mouseScroll(delta);
 	}
 
 	/**
 	 * Mouse button was pressed
 	 */
 	@Override
-	public void mousePress(int x, int y, int mouseButton, boolean shiftDown) {
+	public void mousePress(int x, int y, int mouseButton, boolean cntlDown, boolean shiftDown) {
 		mouseX = x;
 		mouseY = y;
 		this.mouseButton = mouseButton;
-		controller.mousePress(x, y, mouseButton, shiftDown);
+		controller.mousePress(x, y, mouseButton);
 		Spatial spatial = controller.doPick(mouseX, mouseY, pickPosition, pickNormal, shiftDown);
 		if (spatial != null) {
 			if (mouseButton == 1) {
@@ -250,25 +250,27 @@ public class WorldInputHandler implements InputHandler {
 	 * Mouse was moved
 	 */
 	@Override
-	public void mouseMove(int x, int y, int dx, int dy, int mouseButton, boolean isControlled, boolean shiftDown) {
+	public void mouseMove(int x, int y, int dx, int dy, int mouseButton, boolean cntlDown, boolean shiftDown) {
 		mouseX = x;
 		mouseY = y;
 		this.mouseButton = mouseButton;
 		if (mouseButton > 1) {
-			controller.mouseMove(x, y, dx, dy, mouseButton, isControlled);
+			controller.mouseMove(x, y, dx, dy, mouseButton);
 		} else if (!hasMouse()) {
-			controller.mouseMove(x, y, dx, dy, mouseButton, isControlled);
+			controller.mouseMove(x, y, dx, dy, mouseButton);
 		}
 		if (tape != null) {
-			controller.doPick(mouseX, mouseY, pickPosition, pickNormal, false);
+			controller.doPick(mouseX, mouseY, pickPosition, pickNormal, shiftDown);
 			tape.move(pickPosition);
 		}
 		if (hasMouse()) {
-			if (shiftDown) {
-				controller.getViewpointNode().coordInScreenPlane(dx, dy, tmpVec, pickPosition);
+			if (cntlDown) {
+//				controller.getViewpointNode().coordInScreenPlane(dx, dy, tmpVec, pickPosition);
+				double s = controller.getViewpointNode().getCamera().getPixelSizeAt(pickPosition, false);
+				tmpVec.set(0, 0, dy * s);
 				pickPosition.addLocal(tmpVec);
 			} else {
-				controller.doPick(mouseX, mouseY, pickPosition, pickNormal, false);
+				controller.doPick(mouseX, mouseY, pickPosition, pickNormal, shiftDown);
 			}
 			move(pickPosition, pickNormal);
 		}
@@ -380,23 +382,23 @@ public class WorldInputHandler implements InputHandler {
 	}
 
 	@Override
-	public void stepUp() {
-		controller.stepUp();
+	public void stepUp(boolean shiftDown) {
+		controller.stepUp(shiftDown);
 	}
 
 	@Override
-	public void stepDown() {
-		controller.stepDown();
+	public void stepDown(boolean shiftDown) {
+		controller.stepDown(shiftDown);
 	}
 
 	@Override
-	public void stepRight() {
-		controller.stepRight();
+	public void stepRight(boolean shiftDown) {
+		controller.stepRight(shiftDown);
 	}
 
 	@Override
-	public void stepLeft() {
-		controller.stepLeft();
+	public void stepLeft(boolean shiftDown) {
+		controller.stepLeft(shiftDown);
 	}
 
 	public void setCenterOfRotation() {

@@ -9,16 +9,13 @@ import java.util.ArrayList;
 import com.ardor3d.bounding.BoundingBox;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.renderer.IndexMode;
 import com.ardor3d.renderer.queue.RenderBucketType;
-import com.ardor3d.scenegraph.Line;
 import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.CullHint;
 import com.ardor3d.scenegraph.hint.PickingHint;
-import com.ardor3d.scenegraph.hint.TextureCombineMode;
 import com.ardor3d.spline.CatmullRomSpline;
 import com.ardor3d.util.geom.BufferUtils;
 
@@ -175,20 +172,20 @@ public class PointSet extends Node {
 	/**
 	 * Create the line among points
 	 */
-	public Line createLine() {
-		FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(3);
-		vertexBuffer.limit(0);
-		Line line = new Line("_polyline");
-		line.getMeshData().setIndexMode(IndexMode.LineStrip);
-		line.getMeshData().setVertexBuffer(vertexBuffer);
-		line.getSceneHints().setCastsShadows(false);
-		line.getSceneHints().setTextureCombineMode(TextureCombineMode.Off);
-		line.setModelBound(new BoundingBox());
-		line.updateModelBound();
-		line.getSceneHints().setCullHint(CullHint.Always);
-		line.getSceneHints().setPickingHint(PickingHint.Pickable, false);
-		return (line);
-	}
+//	public Line createLine() {
+//		FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(3);
+//		vertexBuffer.limit(0);
+//		Line line = new Line("_polyline");
+//		line.getMeshData().setIndexMode(IndexMode.LineStrip);
+//		line.getMeshData().setVertexBuffer(vertexBuffer);
+//		line.getSceneHints().setCastsShadows(false);
+//		line.getSceneHints().setTextureCombineMode(TextureCombineMode.Off);
+//		line.setModelBound(new BoundingBox());
+//		line.updateModelBound();
+//		line.getSceneHints().setCullHint(CullHint.Always);
+//		line.getSceneHints().setPickingHint(PickingHint.Pickable, false);
+//		return (line);
+//	}
 
 	/**
 	 * Create the polygon among points
@@ -212,12 +209,12 @@ public class PointSet extends Node {
 	 * 
 	 * @param line
 	 */
-	public void updateLine(Mesh line) {
+	public void updateLine(HiddenLine line) {
 		int pointCount = getNumberOfChildren();
 		if (pointCount < 2) {
 			return;
 		}
-		FloatBuffer vertexBuffer = line.getMeshData().getVertexBuffer();
+		FloatBuffer vertexBuffer = line.getVertexBuffer();
 		if ((pointCount * 3) > vertexBuffer.capacity()) {
 			vertexBuffer = BufferUtils.createFloatBuffer(pointCount * 3);
 		}
@@ -232,7 +229,7 @@ public class PointSet extends Node {
 		}
 		vertexBuffer.limit(pointCount * 3);
 		vertexBuffer.rewind();
-		line.getMeshData().setVertexBuffer(vertexBuffer);
+		line.setVertexBuffer(vertexBuffer);
 		line.updateModelBound();
 	}
 

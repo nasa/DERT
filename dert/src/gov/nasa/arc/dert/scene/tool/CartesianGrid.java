@@ -27,6 +27,7 @@ public class CartesianGrid extends Grid {
 	public static boolean defaultLabelVisible = false;
 	public static boolean defaultPinned = false;
 	public static boolean defaultActualCoordinates = false;
+	public static float defaultLineWidth = 2;
 
 	// Dimensions
 	private double min[], max[];
@@ -100,12 +101,8 @@ public class CartesianGrid extends Grid {
 		max[0] = columns * cellSize;
 		max[1] = rows * cellSize;
 
-		FloatBuffer vertices = buildBodyVertices();
-		body.getMeshData().setVertexBuffer(vertices);
-		body.updateModelBound();
-
-		vertices = buildLatticeVertices(rows, columns);
-		lattice.getMeshData().setVertexBuffer(vertices);
+		FloatBuffer vertices = buildLatticeVertices(rows, columns);
+		lattice.setVertexBuffer(vertices);
 		lattice.updateModelBound();
 
 		text.detachAllChildren();
@@ -116,18 +113,6 @@ public class CartesianGrid extends Grid {
 		updateWorldBound(true);
 	}
 
-	private FloatBuffer buildBodyVertices() {
-		FloatBuffer vertex = BufferUtils.createFloatBuffer(18);
-		vertex.put((float) min[0]).put((float) min[1]).put(0);
-		vertex.put((float) (max[0])).put((float) min[1]).put(0);
-		vertex.put((float) (max[0])).put((float) (max[1])).put(0);
-
-		vertex.put((float) min[0]).put((float) (min[1])).put(0);
-		vertex.put((float) (max[0])).put((float) (max[1])).put(0);
-		vertex.put((float) min[0]).put((float) max[1]).put(0);
-		vertex.flip();
-		return (vertex);
-	}
 
 	private FloatBuffer buildLatticeVertices(int rows, int columns) {
 
@@ -213,6 +198,8 @@ public class CartesianGrid extends Grid {
 			false);
 		defaultColumns = StringUtil.getIntegerValue(properties, "MapElement.CartesianGrid.defaultColumns", true,
 			defaultColumns, false);
+		defaultLineWidth = (float)StringUtil.getDoubleValue(properties, "MapElement.CartesianGrid.defaultLineWidth", true,
+				defaultLineWidth, false);
 		defaultLabelVisible = StringUtil.getBooleanValue(properties, "MapElement.CartesianGrid.defaultLabelVisible",
 			defaultLabelVisible, false);
 		defaultPinned = StringUtil.getBooleanValue(properties, "MapElement.CartesianGrid.defaultPinned", defaultPinned,
@@ -230,6 +217,7 @@ public class CartesianGrid extends Grid {
 		properties.setProperty("MapElement.CartesianGrid.defaultColor", StringUtil.colorToString(defaultColor));
 		properties.setProperty("MapElement.CartesianGrid.defaultRows", Integer.toString(defaultRows));
 		properties.setProperty("MapElement.CartesianGrid.defaultColumns", Integer.toString(defaultColumns));
+		properties.setProperty("MapElement.CartesianGrid.defaultLineWidth", Double.toString(defaultLineWidth));
 		properties.setProperty("MapElement.CartesianGrid.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
 		properties.setProperty("MapElement.CartesianGrid.defaultPinned", Boolean.toString(defaultPinned));
 		properties.setProperty("MapElement.CartesianGrid.defaultActualCoordinates",

@@ -156,6 +156,7 @@ public class ConfigurationManager {
 		file = new File(file, "config");
 		if (!file.exists())
 			file.mkdirs();
+		Console.getInstance().println("Saving configuration to "+dertConfig.label);
 		HashMap<String, Object> savedState = dertConfig.save();
 		try {
 			file = new File(file, dertConfig.label);
@@ -319,8 +320,8 @@ public class ConfigurationManager {
 		}
 		ArrayList<String> name = new ArrayList<String>();
 		for (int i = 0; i < list.length; ++i) {
-			if (list[i].endsWith(".xml")) {
-				name.add(list[i].substring(0, list[i].length() - 4));
+			if (!list[i].startsWith(".")) {
+				name.add(list[i]);
 			}
 		}
 		String[] result = new String[name.size()];

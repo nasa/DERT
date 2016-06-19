@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 import com.ardor3d.renderer.state.TextureState;
+import com.ardor3d.renderer.state.ZBufferState;
 import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
 
@@ -26,6 +27,8 @@ public class Tools extends GroupNode {
 
 	// List of tool states
 	private ArrayList<ToolState> toolList;
+	
+	private ZBufferState zBufferState;
 
 	/**
 	 * Constructor
@@ -48,6 +51,11 @@ public class Tools extends GroupNode {
 			ToolState state = toolList.get(i);
 			addTool(state, false);
 		}
+
+		zBufferState = new ZBufferState();
+		zBufferState.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
+		zBufferState.setEnabled(true);
+		setRenderState(zBufferState);
 	}
 
 	/**
@@ -132,6 +140,11 @@ public class Tools extends GroupNode {
 		}
 		return (tool);
 	}
+	
+	public void setHiddenDashed(boolean hiddenDashed) {
+		for (int i=0; i<getNumberOfChildren(); ++i)
+			((Tool)getChild(i)).setHiddenDashed(hiddenDashed);
+	}
 
 	/**
 	 * Show all tools
@@ -161,6 +174,14 @@ public class Tools extends GroupNode {
 			}
 		}
 		return (list);
+	}
+	
+	public void setOnTop(boolean onTop) {
+		zBufferState.setEnabled(!onTop);
+	}
+	
+	public boolean isOnTop() {
+		return(!zBufferState.isEnabled());
 	}
 
 	/**

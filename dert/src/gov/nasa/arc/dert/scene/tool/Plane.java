@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.scenegraph.BillboardMarker;
+import gov.nasa.arc.dert.scenegraph.HiddenLine;
 import gov.nasa.arc.dert.scenegraph.MotionListener;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.state.MapElementState;
@@ -62,7 +63,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	protected static Texture texture;
 
 	// Scene graph element to draw triangle
-	private Line triangleLine;
+	private HiddenLine triangleLine;
 
 	// Scene graph element to draw strike/dip line
 	private Line[] strikeLine, dipLine;
@@ -182,7 +183,12 @@ public class Plane extends Node implements Tool, ViewDependent {
 		createPolygon();
 		attachChild(poly);
 		setColor(state.color);
+		
 		setVisible(state.visible);
+	}
+	
+	public void setHiddenDashed(boolean hiddenDashed) {
+		triangleLine.enableDash(hiddenDashed);
 	}
 
 	/**
@@ -215,9 +221,8 @@ public class Plane extends Node implements Tool, ViewDependent {
 	private void createTriangleLine() {
 		FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(9);
 		vertexBuffer.limit(0);
-		triangleLine = new Line("_polyline");
-		triangleLine.getMeshData().setIndexMode(IndexMode.LineLoop);
-		triangleLine.getMeshData().setVertexBuffer(vertexBuffer);
+		triangleLine = new HiddenLine("_polyline", IndexMode.LineLoop);
+		triangleLine.setVertexBuffer(vertexBuffer);
 		triangleLine.getSceneHints().setCastsShadows(false);
 		triangleLine.getSceneHints().setTextureCombineMode(TextureCombineMode.Off);
 		triangleLine.setModelBound(new BoundingBox());
@@ -238,6 +243,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		poly.getMeshData().setNormalBuffer(normalBuffer);
 		poly.setModelBound(new BoundingBox());
 		poly.getSceneHints().setRenderBucketType(RenderBucketType.Transparent);
+//		SpatialUtil.setPickHost(poly, this);
 		poly.getSceneHints().setPickingHint(PickingHint.Pickable, false);
 		poly.getSceneHints().setCastsShadows(false);
 		updatePolygon();
@@ -284,14 +290,14 @@ public class Plane extends Node implements Tool, ViewDependent {
 
 	private void updateTriangleLine() {
 
-		FloatBuffer vertexBuffer = triangleLine.getMeshData().getVertexBuffer();
+		FloatBuffer vertexBuffer = triangleLine.getVertexBuffer();
 		vertexBuffer.clear();
 		for (int i = 0; i < point.length; ++i) {
 			ReadOnlyVector3 trans = point[i].getWorldTranslation();
 			vertexBuffer.put(trans.getXf()).put(trans.getYf()).put(trans.getZf());
 		}
 		vertexBuffer.rewind();
-		triangleLine.getMeshData().setVertexBuffer(vertexBuffer);
+		triangleLine.setVertexBuffer(vertexBuffer);
 		triangleLine.updateModelBound();
 	}
 

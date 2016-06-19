@@ -137,7 +137,6 @@ public class PersistenceTest {
 		p.labelType = LabelType.Elevation;
 		p.waypointsVisible = false;
 		p.lineWidth = 20;
-		p.zBufferEnabled = false;
 		config.mapElementStateList.add(p);	
 		
 		PlacemarkState pl = new PlacemarkState(new Vector3(19,20,21));
@@ -162,7 +161,7 @@ public class PersistenceTest {
 		pr.p1.set(0, -999, 0);
 		config.mapElementStateList.add(pr);
 		
-		WaypointState wp = new WaypointState(1, new Vector3(28,29,30), "Test", 1, Color.gray, false, true);
+		WaypointState wp = new WaypointState(1, new Vector3(28,29,30), "Test", 1, Color.gray, false, true, true);
 		wp.location.set(0, -1, 0);
 		p.pointList.add(wp);
 		

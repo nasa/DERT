@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.render.SceneFramework;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
+import gov.nasa.arc.dert.scenegraph.Ray3WithLine;
 import gov.nasa.arc.dert.view.viewpoint.FlyThroughDialog;
 
 import java.awt.Dialog;
@@ -105,11 +106,11 @@ public class ViewpointController {
 	 * @param noQuadTree
 	 * @return
 	 */
-	public Spatial doPick(int x, int y, Vector3 position, Vector3 normal, boolean noQuadTree) {
+	public Spatial doPick(int x, int y, Vector3 position, Vector3 normal, boolean shiftDown) {
 		mousePos.set(x, y);
-		Ray3 pickRay = new Ray3();
+		Ray3 pickRay = new Ray3WithLine();
 		viewpointNode.getCamera().getPickRay(mousePos, false, pickRay);
-		return (World.getInstance().select(pickRay, position, normal, null, noQuadTree));
+		return (World.getInstance().select(pickRay, position, normal, null, shiftDown));
 	}
 
 	/**
@@ -132,7 +133,7 @@ public class ViewpointController {
 	 * @param isControlled
 	 *            control key held down for smaller movements
 	 */
-	public void mouseMove(int x, int y, int dx, int dy, int button, boolean isControlled) {
+	public void mouseMove(int x, int y, int dx, int dy, int button) {
 		if ((mouseX < 0) || (Math.abs(dx) > 100) || (Math.abs(dy) > 100)) {
 			dx = 0;
 			dy = 0;
@@ -149,34 +150,22 @@ public class ViewpointController {
 			break;
 		// Translating the terrain along its plane
 		case 1:
-			if (isControlled) {
-				viewpointNode.drag(0.1 * dx, 0.1 * dy);
-			} else {
-				long now = System.currentTimeMillis();
-				long elapsed = now - timestamp;
-				timestamp = now;
-				double delta = Math.sqrt(dx * dx + dy * dy);
-				velocity = (100 * delta / (1 + elapsed)) * 0.8 + 0.2 * velocity;
-				viewpointNode.drag(dx, dy);
-				lastDx = dx;
-				lastDy = dy;
-			}
+			long now = System.currentTimeMillis();
+			long elapsed = now - timestamp;
+			timestamp = now;
+			double delta = Math.sqrt(dx * dx + dy * dy);
+			velocity = (100 * delta / (1 + elapsed)) * 0.8 + 0.2 * velocity;
+			viewpointNode.drag(dx, dy);
+			lastDx = dx;
+			lastDy = dy;
 			break;
 		// translating the terrain in the screen plane
 		case 2:
-			if (isControlled) {
-				viewpointNode.translateInScreenPlane(-0.1 * dx, -0.1 * dy);
-			} else {
-				viewpointNode.translateInScreenPlane(-dx, -dy);
-			}
+			viewpointNode.translateInScreenPlane(-dx, -dy);
 			break;
 		// rotating the terrain
 		case 3:
-			if (isControlled) {
-				viewpointNode.rotate(0.1f * dy, 0.1f * dx);
-			} else {
-				viewpointNode.rotate(dy, dx);
-			}
+			viewpointNode.rotate(dy, dx);
 			break;
 		}
 	}
@@ -185,18 +174,12 @@ public class ViewpointController {
 	 * The mouse was scrolled
 	 * 
 	 * @param delta
-	 * @param isControlled
-	 *            control key held down for smaller movements
 	 */
-	public void mouseScroll(int delta, boolean isControlled) {
+	public void mouseScroll(int delta) {
 		if (isZoom) {
 			viewpointNode.magnify(-mouseScrollDirection * delta);
 		} else {
-			if (isControlled) {
-				viewpointNode.dolly(mouseScrollDirection * 0.2 * delta);
-			} else {
-				viewpointNode.dolly(mouseScrollDirection * 2 * delta);
-			}
+			viewpointNode.dolly(mouseScrollDirection * 2 * delta);
 			Spatial spat = doPick(centerX, centerY, pickPosition, pickNormal, false);
 			if (spat != null) {
 				viewpointNode.setLookAt(pickPosition);
@@ -210,9 +193,8 @@ public class ViewpointController {
 	 * @param x
 	 * @param y
 	 * @param mouseButton
-	 * @param shiftDown
 	 */
-	public void mousePress(int x, int y, int mouseButton, boolean shiftDown) {
+	public void mousePress(int x, int y, int mouseButton) {
 		mouseX = x;
 		mouseY = y;
 		timestamp = System.currentTimeMillis();
@@ -267,29 +249,41 @@ public class ViewpointController {
 	/**
 	 * Left arrow key
 	 */
-	public void stepLeft() {
-		viewpointNode.rotate(0, 1);
+	public void stepLeft(boolean shiftDown) {
+		if (shiftDown)
+			viewpointNode.drag(-1, 0);
+		else
+			viewpointNode.rotate(0, 1);
 	}
 
 	/**
 	 * Right arrow key
 	 */
-	public void stepRight() {
-		viewpointNode.rotate(0, -1);
+	public void stepRight(boolean shiftDown) {
+		if (shiftDown)
+			viewpointNode.drag(1, 0);
+		else
+			viewpointNode.rotate(0, -1);
 	}
 
 	/**
 	 * Up arrow key
 	 */
-	public void stepUp() {
-		viewpointNode.rotate(1, 0);
+	public void stepUp(boolean shiftDown) {
+		if (shiftDown)
+			viewpointNode.drag(0, 1);
+		else
+			viewpointNode.rotate(1, 0);
 	}
 
 	/**
 	 * Down arrow key
 	 */
-	public void stepDown() {
-		viewpointNode.rotate(-1, 0);
+	public void stepDown(boolean shiftDown) {
+		if (shiftDown)
+			viewpointNode.drag(0, -1);
+		else
+			viewpointNode.rotate(-1, 0);
 	}
 
 	/**

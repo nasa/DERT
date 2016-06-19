@@ -20,6 +20,7 @@ import java.util.Properties;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.state.TextureState;
+import com.ardor3d.renderer.state.ZBufferState;
 import com.ardor3d.scenegraph.Spatial;
 
 /**
@@ -30,6 +31,8 @@ public class Landmarks extends GroupNode {
 
 	// Landmark state list
 	private ArrayList<LandmarkState> landmarkList;
+	
+	private ZBufferState zBufferState;
 
 	/**
 	 * Constructor
@@ -55,6 +58,11 @@ public class Landmarks extends GroupNode {
 			LandmarkState state = landmarkList.get(i);
 			addLandmark(state, false);
 		}
+
+		zBufferState = new ZBufferState();
+		zBufferState.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
+		zBufferState.setEnabled(true);
+		setRenderState(zBufferState);
 	}
 
 	/**
@@ -167,6 +175,14 @@ public class Landmarks extends GroupNode {
 				}
 			}
 		}
+	}
+	
+	public void setOnTop(boolean onTop) {
+		zBufferState.setEnabled(!onTop);
+	}
+	
+	public boolean isOnTop() {
+		return(!zBufferState.isEnabled());
 	}
 
 	/**

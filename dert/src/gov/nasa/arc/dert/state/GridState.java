@@ -28,6 +28,8 @@ public class GridState extends ToolState {
 	
 	// Location of center of grid
 	public Vector3 location;
+	
+	public float lineWidth;
 
 	/**
 	 * Create a CartesianGrid state
@@ -37,7 +39,8 @@ public class GridState extends ToolState {
 	 */
 	public static GridState createCartesianGridState(ReadOnlyVector3 position) {
 		GridState state = new GridState(MapElementState.Type.CartesianGrid, "CartesianGrid", Grid.defaultCellSize,
-			CartesianGrid.defaultColor, CartesianGrid.defaultLabelVisible, CartesianGrid.defaultPinned, position);
+			CartesianGrid.defaultColor, CartesianGrid.defaultLabelVisible, CartesianGrid.defaultPinned, position,
+			CartesianGrid.defaultLineWidth);
 		state.columns = CartesianGrid.defaultColumns;
 		state.rows = CartesianGrid.defaultRows;
 		return (state);
@@ -51,7 +54,8 @@ public class GridState extends ToolState {
 	 */
 	public static GridState createRadialGridState(ReadOnlyVector3 position) {
 		GridState state = new GridState(MapElementState.Type.RadialGrid, "RadialGrid", Grid.defaultCellSize,
-			RadialGrid.defaultColor, RadialGrid.defaultLabelVisible, RadialGrid.defaultPinned, position);
+			RadialGrid.defaultColor, RadialGrid.defaultLabelVisible, RadialGrid.defaultPinned, position,
+			RadialGrid.defaultLineWidth);
 		state.rings = RadialGrid.defaultRings;
 		state.compassRose = RadialGrid.defaultCompassRose;
 		return (state);
@@ -72,6 +76,8 @@ public class GridState extends ToolState {
 			return(false);
 		if (this.compassRose != that.compassRose) 
 			return(false);
+		if (this.lineWidth != that.lineWidth) 
+			return(false);
 		if (!this.location.equals(that.location)) 
 			return(false);
 		return(true);
@@ -89,10 +95,11 @@ public class GridState extends ToolState {
 	 * @param position
 	 */
 	protected GridState(MapElementState.Type type, String prefix, double size, Color color, boolean labelVisible,
-		boolean pinned, ReadOnlyVector3 position) {
+		boolean pinned, ReadOnlyVector3 position, float lineWidth) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration().incrementMapElementCount(type), type,
 			prefix, size, color, labelVisible, pinned);
 		location = new Vector3(position);
+		this.lineWidth = lineWidth;
 	}
 	
 	/**
@@ -105,6 +112,7 @@ public class GridState extends ToolState {
 		rows = StateUtil.getInteger(map, "Rows", 0);
 		compassRose = StateUtil.getBoolean(map, "CompassRose", false);
 		location = StateUtil.getVector3(map, "Location", Vector3.ZERO);
+		lineWidth = (float)StateUtil.getDouble(map, "LineWidth", 1);
 	}
 
 	@Override
@@ -118,11 +126,13 @@ public class GridState extends ToolState {
 				columns = ((CartesianGrid) mapElement).getColumns();
 				rows = ((CartesianGrid) mapElement).getRows();
 			}
+			location = new Vector3(((Grid)mapElement).getTranslation());
 		}
 		map.put("Rings", new Integer(rings));
 		map.put("Columns", new Integer(columns));
 		map.put("Rows", new Integer(rows));
 		map.put("CompassRose", new Boolean(compassRose));
+		map.put("LineWidth", new Double(lineWidth));
 		StateUtil.putVector3(map, "Location", location);
 		return(map);
 	}

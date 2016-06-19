@@ -179,7 +179,7 @@ public class ToolsPanel extends JPanel {
 		topPanel.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Preferences"));
+		panel.add(new JLabel("Tools Preferences"));
 		topPanel.add(panel);
 
 		add(topPanel, BorderLayout.NORTH);
@@ -285,7 +285,7 @@ public class ToolsPanel extends JPanel {
 
 		// Cartesian Grid Preferences
 		gPanel = new GroupPanel("Cartesian Grid");
-		gPanel.setLayout(new GridLayout(5, 2));
+		gPanel.setLayout(new GridLayout(6, 2));
 
 		gPanel.add(new JLabel("Label", SwingConstants.RIGHT));
 		checkBox = new JCheckBox("visible");
@@ -339,11 +339,23 @@ public class ToolsPanel extends JPanel {
 		};
 		gPanel.add(sizeText);
 
+		gPanel.add(new JLabel("Linewidth", SwingConstants.RIGHT));
+		DoubleTextField clwText = new DoubleTextField(8, CartesianGrid.defaultLineWidth, true, "0.00") {
+			@Override
+			protected void handleChange(double value) {
+				if (Double.isNaN(value)) {
+					return;
+				}
+				CartesianGrid.defaultCellSize = value;
+			}
+		};
+		gPanel.add(clwText);
+
 		bottomPanel.add(gPanel);
 
 		// Radial Grid Preferences
 		gPanel = new GroupPanel("Radial Grid");
-		gPanel.setLayout(new GridLayout(5, 2));
+		gPanel.setLayout(new GridLayout(6, 2));
 
 		gPanel.add(new JLabel("Label", SwingConstants.RIGHT));
 		checkBox = new JCheckBox("visible");
@@ -386,6 +398,18 @@ public class ToolsPanel extends JPanel {
 			}
 		};
 		gPanel.add(sizeText);
+
+		gPanel.add(new JLabel("Linewidth", SwingConstants.RIGHT));
+		DoubleTextField rlwText = new DoubleTextField(8, RadialGrid.defaultLineWidth, true, "0.00") {
+			@Override
+			protected void handleChange(double value) {
+				if (Double.isNaN(value)) {
+					return;
+				}
+				RadialGrid.defaultCellSize = value;
+			}
+		};
+		gPanel.add(rlwText);
 
 		gPanel.add(new JLabel("Rose", SwingConstants.RIGHT));
 		checkBox = new JCheckBox("visible");

@@ -14,5 +14,7 @@ public interface Tool extends MapElement {
 	public Icon getIcon();
 
 	public void update(BasicCamera camera);
+	
+	public void setHiddenDashed(boolean hiddenDashed);
 
 }

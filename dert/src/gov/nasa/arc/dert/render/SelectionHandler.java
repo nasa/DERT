@@ -46,7 +46,7 @@ public class SelectionHandler {
 	 * @return
 	 */
 	public Spatial doSelection(Ray3 pickRay, Vector3 position, Vector3 normal, SpatialPickResults boundsPick,
-		boolean noQuadTree) {
+		boolean shiftDown) {
 
 		// First do a pick on the object bounds to reduce time spent on more
 		// expensive pick.
@@ -61,9 +61,8 @@ public class SelectionHandler {
 		int index = -1;
 		double dist = Double.MAX_VALUE;
 		for (int i = 0; i < mesh.length; ++i) {
-			if (noQuadTree && (mesh[i] instanceof QuadTreeMesh)) {
+			if (shiftDown && !(mesh[i] instanceof QuadTreeMesh))
 				continue;
-			}
 			// get the mesh bounds
 			PickData pd = boundsPick.getPickData(i);
 			IntersectionRecord ir = pd.getIntersectionRecord();

@@ -8,10 +8,10 @@ package gov.nasa.arc.dert.view;
 public interface InputHandler {
 
 	// Mouse was scrolled
-	public void mouseScroll(int delta, boolean isControlled);
+	public void mouseScroll(int delta);
 
 	// Mouse button was pressed
-	public void mousePress(int x, int y, int mouseButton, boolean shiftDown);
+	public void mousePress(int x, int y, int mouseButton, boolean isControlled, boolean shiftDown);
 
 	// Mouse button was released
 	public void mouseRelease(int x, int y, int mouseButton);
@@ -26,15 +26,15 @@ public interface InputHandler {
 	public void mouseDoubleClick(int x, int y, int mouseButton);
 
 	// Up arrow was pressed
-	public void stepUp();
+	public void stepUp(boolean shiftDown);
 
 	// Down arrow was pressed
-	public void stepDown();
+	public void stepDown(boolean shiftDown);
 
 	// Right arrow was pressed
-	public void stepRight();
+	public void stepRight(boolean shiftDown);
 
 	// Left arrow was pressed
-	public void stepLeft();
+	public void stepLeft(boolean shiftDown);
 
 }

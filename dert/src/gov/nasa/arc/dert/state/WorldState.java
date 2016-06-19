@@ -30,6 +30,7 @@ public class WorldState extends State {
 
 	// Vertical exaggeration value
 	public double verticalExaggeration = 1;
+	public boolean hiddenDashed;
 
 	// The time
 	public long time;
@@ -73,6 +74,7 @@ public class WorldState extends State {
 		currentViewpoint = ViewpointStore.fromHashMap((HashMap<String,Object>)map.get("CurrentViewpoint"));		
 		lighting = new Lighting((HashMap<String,Object>)map.get("Lighting"));
 		layerManager = new LayerManager((HashMap<String,Object>)map.get("LayerManager"));
+		hiddenDashed = StateUtil.getBoolean(map, "HiddenDashed", World.defaultHiddenDashed);
 	}
 	
 	@Override
@@ -87,6 +89,8 @@ public class WorldState extends State {
 		if (this.time != that.time)
 			return(false);
 		if (this.verticalExaggeration != that.verticalExaggeration)
+			return(false);
+		if (this.hiddenDashed != that.hiddenDashed)
 			return(false);
 		if (!surfaceColor.equals(that.surfaceColor)) 
 			return(false);
@@ -174,6 +178,7 @@ public class WorldState extends State {
 		map.put("Time", new Long(time));
 		useLonLat = world.getUseLonLat();
 		map.put("UseLonLat", new Boolean(useLonLat));
+		map.put("HiddenDashed", new Boolean(world.isHiddenDashed()));
 		
 		return(map);
 	}

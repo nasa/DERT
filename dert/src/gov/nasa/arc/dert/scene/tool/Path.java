@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.io.CsvWriter;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
+import gov.nasa.arc.dert.scenegraph.HiddenLine;
 import gov.nasa.arc.dert.scenegraph.MotionListener;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.scenegraph.PointSet;
@@ -26,9 +27,8 @@ import javax.swing.Icon;
 import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
+import com.ardor3d.renderer.IndexMode;
 import com.ardor3d.renderer.state.MaterialState;
-import com.ardor3d.renderer.state.ZBufferState;
-import com.ardor3d.scenegraph.Line;
 import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.event.DirtyType;
@@ -67,6 +67,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	public static boolean defaultLabelVisible = true;
 	public static boolean defaultWaypointsVisible = true;
 	public static boolean defaultPinned = false;
+//	public static boolean defaultHiddenDashed = false;
 
 	// Type of waypoint label
 	private LabelType labelType = LabelType.Name;
@@ -75,7 +76,8 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	private BodyType bodyType;
 
 	// Scene graph element to draw line body
-	private Line line;
+	private HiddenLine line;
+//	private Line dashedLine;
 
 	// Scene graph element to draw polygon (area) body
 	private Mesh poly;
@@ -109,8 +111,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	private Vector3 lowerBound, upperBound, tmpVec, location;
 	
 	private Thread statThread;
-	
-	private ZBufferState zBufferState;
 
 	/**
 	 * Constructor
@@ -142,7 +142,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		// Create scene graph elements
 		pointSet = new PointSet("_points");
 		attachChild(pointSet);
-		line = pointSet.createLine();
+		line = new HiddenLine("_line", IndexMode.LineStrip);
 		line.setLineWidth((float)lineWidth);
 		attachChild(line);
 		poly = pointSet.createPolygon();
@@ -154,22 +154,12 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			WaypointState wps = state.pointList.get(i);
 			addWaypoint(wps);
 		}
-
-		zBufferState = new ZBufferState();
-		zBufferState.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
-		zBufferState.setEnabled(state.zBufferEnabled);
-		setRenderState(zBufferState);
 		
 		setVisible(state.visible);
 	}
 	
-	public void enableZBuffer(boolean enable) {
-		zBufferState.setEnabled(enable);
-		markDirty(DirtyType.RenderState);
-	}
-	
-	public boolean isZBufferEnabled() {
-		return(zBufferState.isEnabled());
+	public void setHiddenDashed(boolean hiddenDashed) {
+		line.enableDash(hiddenDashed);
 	}
 
 	/**
@@ -334,7 +324,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			index = pointSet.getNumberOfChildren();
 		}
 		// create a way point state
-		WaypointState wpState = new WaypointState(index, p, getName() + ".", size, color, labelVisible, pinned);
+		WaypointState wpState = new WaypointState(index, p, getName() + ".", size, color, labelVisible, pinned, true);
 		// add the new way point and return it
 		return (addWaypoint(wpState));
 	}
@@ -402,6 +392,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	public void setLineWidth(float width) {
 		lineWidth = width;
 		line.setLineWidth(width);
+//		dashedLine.setLineWidth(width);
 		markDirty(DirtyType.RenderState);
 	}
 
@@ -431,12 +422,19 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		// set the color of the body
 		float[] col = color.getRGBComponents(null);
 		colorRGBA = new ColorRGBA(col[0], col[1], col[2], col[3]);
-
-		MaterialState lineMS = new MaterialState();
-		lineMS.setDiffuse(new ColorRGBA(0, 0, 0, 1));
-		lineMS.setAmbient(new ColorRGBA(0, 0, 0, 1));
-		lineMS.setEmissive(MaterialState.MaterialFace.FrontAndBack, colorRGBA);
-		line.setRenderState(lineMS);
+		line.setColor(colorRGBA);
+//
+//		MaterialState lineMS = new MaterialState();
+//		lineMS.setDiffuse(new ColorRGBA(0, 0, 0, 1));
+//		lineMS.setAmbient(new ColorRGBA(0, 0, 0, 1));
+//		lineMS.setEmissive(MaterialState.MaterialFace.FrontAndBack, colorRGBA);
+//		line.setRenderState(lineMS);
+////		lineMS = new MaterialState();
+////		lineMS.setDiffuse(new ColorRGBA(0, 0, 0, 1));
+////		lineMS.setAmbient(new ColorRGBA(0, 0, 0, 1));
+////		ColorRGBA dashColor = new ColorRGBA(colorRGBA.getRed(), colorRGBA.getGreen(), colorRGBA.getBlue(), colorRGBA.getAlpha()*0.5f);
+////		lineMS.setEmissive(MaterialState.MaterialFace.FrontAndBack, dashColor);
+//		dashedLine.setRenderState(lineMS);
 
 		MaterialState polyMS = new MaterialState();
 		ColorRGBA polyColor = new ColorRGBA(colorRGBA);
@@ -730,6 +728,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		}
 		if (lineIsEnabled) {
 			pointSet.updateLine(line);
+//			pointSet.updateLine(dashedLine);
 		}
 		if (polyIsEnabled) {
 			pointSet.updatePolygon(poly);

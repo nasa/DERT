@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
+import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.tool.CartesianGrid;
 import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
@@ -35,6 +36,7 @@ public class CartesianGridPanel extends MapElementBasePanel {
 	private JSpinner rowsSpinner;
 	private JSpinner columnsSpinner;
 	private JLabel dimensions;
+	private DoubleTextField lineWidthText;
 
 	// Grid
 	private CartesianGrid grid;
@@ -109,6 +111,18 @@ public class CartesianGridPanel extends MapElementBasePanel {
 			}
 		};
 		panel.add(colorList);
+
+		panel.add(new JLabel("Line Width", SwingConstants.RIGHT));
+		lineWidthText = new DoubleTextField(8, Figure.defaultSize, true, Landscape.format) {
+			@Override
+			protected void handleChange(double value) {
+				if (Double.isNaN(value)) {
+					return;
+				}
+				grid.setLineWidth((float) value);
+			}
+		};
+		panel.add(lineWidthText);
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -132,6 +146,7 @@ public class CartesianGridPanel extends MapElementBasePanel {
 		pinnedCheckBox.setSelected(grid.isPinned());
 		colorList.setColor(grid.getColor());
 		sizeText.setValue(grid.getSize());
+		lineWidthText.setValue(grid.getLineWidth());
 		labelCheckBox.setSelected(grid.isLabelVisible());
 		setLocation(locationText, elevLabel, grid.getTranslation());
 		columnsSpinner.setValue(grid.getColumns());

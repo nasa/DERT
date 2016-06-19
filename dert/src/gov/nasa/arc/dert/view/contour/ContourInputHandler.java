@@ -38,13 +38,13 @@ public class ContourInputHandler implements InputHandler {
 	}
 
 	@Override
-	public void mouseScroll(int delta, boolean isControlled) {
+	public void mouseScroll(int delta) {
 		camera.magnify(-ViewpointController.mouseScrollDirection * delta);
 		canvasPanel.viewpointChanged();
 	}
 
 	@Override
-	public void mousePress(int x, int y, int mouseButton, boolean shiftDown) {
+	public void mousePress(int x, int y, int mouseButton, boolean isControlled, boolean shiftDown) {
 		if (mouseButton == 1) {
 			canvasPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			mouseDown = true;
@@ -84,7 +84,7 @@ public class ContourInputHandler implements InputHandler {
 	}
 
 	@Override
-	public void stepUp() {
+	public void stepUp(boolean shiftDown) {
 		double s = camera.getPixelSizeAt(camera.getLookAt(), true);
 		workVec.set(0, -s, 0);
 		workVec.addLocal(camera.getLocation());
@@ -95,7 +95,7 @@ public class ContourInputHandler implements InputHandler {
 	}
 
 	@Override
-	public void stepDown() {
+	public void stepDown(boolean shiftDown) {
 		double s = camera.getPixelSizeAt(camera.getLookAt(), true);
 		workVec.set(0, s, 0);
 		workVec.addLocal(camera.getLocation());
@@ -106,7 +106,7 @@ public class ContourInputHandler implements InputHandler {
 	}
 
 	@Override
-	public void stepRight() {
+	public void stepRight(boolean shiftDown) {
 		double s = camera.getPixelSizeAt(camera.getLookAt(), true);
 		workVec.set(-s, 0, 0);
 		workVec.addLocal(camera.getLocation());
@@ -117,7 +117,7 @@ public class ContourInputHandler implements InputHandler {
 	}
 
 	@Override
-	public void stepLeft() {
+	public void stepLeft(boolean shiftDown) {
 		double s = camera.getPixelSizeAt(camera.getLookAt(), true);
 		workVec.set(s, 0, 0);
 		workVec.addLocal(camera.getLocation());

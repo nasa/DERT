@@ -35,7 +35,7 @@ public class PathPanel extends MapElementBasePanel {
 	private JComboBox typeCombo;
 	private JComboBox labelCombo;
 	private JButton saveAsCSV, addPoints, statistics;
-	private JCheckBox showWaypoints, zBuffer;
+	private JCheckBox showWaypoints;
 	private DoubleTextField lineWidthText;
 
 	// Current map element
@@ -79,14 +79,6 @@ public class PathPanel extends MapElementBasePanel {
 		});
 		panel.add(showWaypoints);
 
-		zBuffer = new JCheckBox("Z-Buffer");
-		zBuffer.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				path.enableZBuffer(zBuffer.isSelected());
-			}
-		});
-		panel.add(zBuffer);
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -180,7 +172,6 @@ public class PathPanel extends MapElementBasePanel {
 			typeCombo.setSelectedItem(path.getBodyType());
 			labelCheckBox.setSelected(path.isLabelVisible());
 			showWaypoints.setSelected(path.areWaypointsVisible());
-			zBuffer.setSelected(path.isZBufferEnabled());
 			lineWidthText.setValue(path.getLineWidth());
 
 			locationText.setEnabled(false);
@@ -194,7 +185,6 @@ public class PathPanel extends MapElementBasePanel {
 			addPoints.setEnabled(true);
 			statistics.setEnabled(true);
 			showWaypoints.setEnabled(true);
-			zBuffer.setEnabled(true);
 			lineWidthText.setEnabled(true);
 		}
 		// map element is a Waypoint
@@ -211,7 +201,6 @@ public class PathPanel extends MapElementBasePanel {
 			typeCombo.setSelectedItem(path.getBodyType());
 			labelCheckBox.setSelected(path.isLabelVisible());
 			showWaypoints.setSelected(path.areWaypointsVisible());
-			zBuffer.setSelected(path.isZBufferEnabled());
 			lineWidthText.setValue(path.getLineWidth());
 
 			locationText.setEnabled(true);
@@ -225,7 +214,6 @@ public class PathPanel extends MapElementBasePanel {
 			addPoints.setEnabled(true);
 			statistics.setEnabled(false);
 			showWaypoints.setEnabled(false);
-			zBuffer.setEnabled(true);
 			lineWidthText.setEnabled(false);
 		}
 	}

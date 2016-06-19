@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.scene.tool;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
+import gov.nasa.arc.dert.scenegraph.HiddenLine;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.scenegraph.RasterText;
 import gov.nasa.arc.dert.scenegraph.Text.AlignType;
@@ -20,14 +21,9 @@ import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.renderer.queue.RenderBucketType;
-import com.ardor3d.renderer.state.BlendState;
+import com.ardor3d.renderer.IndexMode;
 import com.ardor3d.renderer.state.MaterialState;
 import com.ardor3d.renderer.state.MaterialState.ColorMaterial;
-import com.ardor3d.renderer.state.MaterialState.MaterialFace;
-import com.ardor3d.renderer.state.RenderState;
-import com.ardor3d.scenegraph.Line;
-import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.CullHint;
@@ -39,14 +35,13 @@ import com.ardor3d.scenegraph.hint.PickingHint;
  */
 public abstract class Grid extends Movable implements Tool, ViewDependent {
 
-	protected static float AMBIENT_FACTOR = 0.75f;
+//	protected static float AMBIENT_FACTOR = 0.75f;
 
 	// Defaults
 	public static double defaultCellSize = 1;
 
 	// Grid parts
-	protected Line lattice;
-	protected Mesh body;
+	protected HiddenLine lattice;
 
 	// Label
 	protected Node text;
@@ -64,6 +59,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	// Color
 	protected Color color = Color.white;
 	protected ColorRGBA colorRGBA;
+	protected float lineWidth;
 
 	// scale factor for viewpoint resizing
 	protected double scale = 1, oldScale = 1;
@@ -82,23 +78,25 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 		this.state = state;
 		this.cellSize = state.size;
 		this.color = state.color;
-		this.pinned = state.pinned;
 		offset = new Vector3();
 		location = new Vector3();
 		setTranslation(state.location);
 		colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
 			color.getAlpha() / 255f);
 
-		MaterialState ms = new MaterialState();
-		ms.setDiffuse(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK);
-		ms.setAmbient(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK);
-		ms.setEmissive(MaterialState.MaterialFace.FrontAndBack, colorRGBA);
-		lattice = new Line("_lattice");
-		lattice.setRenderState(ms);
-		lattice.getSceneHints().setPickingHint(PickingHint.Pickable, false);
+//		MaterialState ms = new MaterialState();
+//		ms.setDiffuse(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK);
+//		ms.setAmbient(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK);
+//		ms.setEmissive(MaterialState.MaterialFace.FrontAndBack, colorRGBA);
+		lattice = new HiddenLine("_lattice", IndexMode.LineStrip);
+		SpatialUtil.setPickHost(lattice, this);
+//		lattice.setRenderState(ms);
+		lattice.setColor(colorRGBA);
+//		lattice.getSceneHints().setCastsShadows(false);
+//		lattice.getSceneHints().setTextureCombineMode(TextureCombineMode.Off);
 		lattice.setModelBound(new BoundingBox());
 
-		ms = new MaterialState();
+		MaterialState ms = new MaterialState();
 		ms.setColorMaterial(ColorMaterial.Emissive);
 		ms.setColorMaterialFace(MaterialState.MaterialFace.FrontAndBack);
 		ms.setEnabled(true);
@@ -108,25 +106,12 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 		text.setRenderState(ms);
 		setLabelVisible(state.labelVisible);
 
-		// invisible body used for selection
-		body = new Mesh("_body");
-		SpatialUtil.setPickHost(body, this);
-		MaterialState bms = new MaterialState();
-		bms.setDiffuse(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK_NO_ALPHA);
-		bms.setEnabled(true);
-		BlendState bs = new BlendState();
-		bs.setBlendEnabled(true);
-		body.setRenderState(bms);
-		body.setRenderState(bs);
-		// body.getSceneHints().setLightCombineMode(LightCombineMode.Off);
-		body.getSceneHints().setRenderBucketType(RenderBucketType.Transparent);
-		body.setModelBound(new BoundingBox());
-
-		attachChild(body);
 		attachChild(lattice);
 		attachChild(text);
 
 		setVisible(state.visible);
+		setPinned(state.pinned);
+		
 		state.setMapElement(this);
 	}
 
@@ -172,11 +157,12 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 			this.color = color;
 			colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
 				color.getAlpha() / 255f);
-			MaterialState ms = new MaterialState();
-			ms.setDiffuse(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK);
-			ms.setAmbient(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK);
-			ms.setEmissive(MaterialState.MaterialFace.FrontAndBack, colorRGBA);
-			lattice.setRenderState(ms);
+//			MaterialState ms = new MaterialState();
+//			ms.setDiffuse(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK);
+//			ms.setAmbient(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK);
+//			ms.setEmissive(MaterialState.MaterialFace.FrontAndBack, colorRGBA);
+//			lattice.setRenderState(ms);
+			lattice.setColor(colorRGBA);
 		}
 	}
 
@@ -190,19 +176,20 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 
 	@Override
 	protected void enableHighlight(boolean enable) {
-		MaterialState materialState = (MaterialState) lattice.getLocalRenderState(RenderState.StateType.Material);
-		if (enable) {
-			materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * AMBIENT_FACTOR,
-				colorRGBA.getGreen() * AMBIENT_FACTOR, colorRGBA.getBlue() * AMBIENT_FACTOR, colorRGBA.getAlpha()));
-			materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
-			materialState.setEmissive(MaterialFace.FrontAndBack, colorRGBA);
-			lattice.setRenderState(materialState);
-		} else {
-			materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * AMBIENT_FACTOR,
-				colorRGBA.getGreen() * AMBIENT_FACTOR, colorRGBA.getBlue() * AMBIENT_FACTOR, colorRGBA.getAlpha()));
-			materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
-			materialState.setEmissive(MaterialFace.FrontAndBack, ColorRGBA.BLACK);
-		}
+		lattice.highlight(enable, colorRGBA);
+//		MaterialState materialState = (MaterialState) lattice.getLocalRenderState(RenderState.StateType.Material);
+//		if (enable) {
+//			materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * AMBIENT_FACTOR,
+//				colorRGBA.getGreen() * AMBIENT_FACTOR, colorRGBA.getBlue() * AMBIENT_FACTOR, colorRGBA.getAlpha()));
+//			materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
+//			materialState.setEmissive(MaterialFace.FrontAndBack, colorRGBA);
+//			lattice.setRenderState(materialState);
+//		} else {
+//			materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * AMBIENT_FACTOR,
+//				colorRGBA.getGreen() * AMBIENT_FACTOR, colorRGBA.getBlue() * AMBIENT_FACTOR, colorRGBA.getAlpha()));
+//			materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
+//			materialState.setEmissive(MaterialFace.FrontAndBack, ColorRGBA.BLACK);
+//		}
 	}
 
 	/**
@@ -292,6 +279,25 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	}
 
 	/**
+	 * Set the line width.
+	 * 
+	 * @param width
+	 */
+	public void setLineWidth(float width) {
+		lineWidth = width;
+		lattice.setLineWidth(width);
+		markDirty(DirtyType.RenderState);
+	}
+	
+	public float getLineWidth() {
+		return(lineWidth);
+	}
+	
+	public void setHiddenDashed(boolean hiddenDashed) {
+		lattice.enableDash(hiddenDashed);
+	}
+
+	/**
 	 * Update the elevation (Z coordinate)
 	 */
 	@Override
@@ -344,6 +350,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	@Override
 	public void setPinned(boolean pinned) {
 		this.pinned = pinned;
+		lattice.getSceneHints().setPickingHint(PickingHint.Pickable, !pinned);
 	}
 
 	/**

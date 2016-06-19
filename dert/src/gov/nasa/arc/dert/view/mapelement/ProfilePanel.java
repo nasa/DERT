@@ -99,6 +99,7 @@ public class ProfilePanel extends MapElementBasePanel {
 			}
 		};
 		panel.add(colorList);
+
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));

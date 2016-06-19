@@ -29,6 +29,8 @@ public class RadialGrid extends Grid {
 	public static double defaultRadius = 10;
 	public static boolean defaultActualCoordinates = false;
 	public static boolean defaultCompassRose = false;
+	public static boolean defaultZBufferEnabled = true;
+	public static float defaultLineWidth = 2;
 
 	// Number of rings
 	private int rings;
@@ -86,14 +88,8 @@ public class RadialGrid extends Grid {
 
 		radius = rings * cellSize;
 
-		detachChild(body);
-		FloatBuffer vertices = buildBodyVertices();
-		body.getMeshData().setVertexBuffer(vertices);
-		body.updateModelBound();
-		attachChild(body);
-
-		vertices = buildLatticeVertices(rings);
-		lattice.getMeshData().setVertexBuffer(vertices);
+		FloatBuffer vertices = buildLatticeVertices(rings);
+		lattice.setVertexBuffer(vertices);
 		lattice.updateModelBound();
 
 		text.detachAllChildren();
@@ -246,10 +242,14 @@ public class RadialGrid extends Grid {
 		defaultColor = StringUtil.getColorValue(properties, "MapElement.RadialGrid.defaultColor", defaultColor, false);
 		defaultRings = StringUtil.getIntegerValue(properties, "MapElement.RadialGrid.defaultRings", true, defaultRings,
 			false);
+		defaultLineWidth = (float)StringUtil.getDoubleValue(properties, "MapElement.RadialGrid.defaultLineWidth", true,
+				defaultLineWidth, false);
 		defaultLabelVisible = StringUtil.getBooleanValue(properties, "MapElement.RadialGrid.defaultLabelVisible",
 			defaultLabelVisible, false);
 		defaultPinned = StringUtil.getBooleanValue(properties, "MapElement.RadialGrid.defaultPinned", defaultPinned,
 			false);
+		defaultZBufferEnabled = StringUtil.getBooleanValue(properties, "MapElement.RadialGrid.defaultZBufferEnabled", defaultZBufferEnabled,
+				false);
 		defaultActualCoordinates = StringUtil.getBooleanValue(properties,
 			"MapElement.RadialGrid.defaultActualCoordinates", defaultActualCoordinates, false);
 		defaultCompassRose = StringUtil.getBooleanValue(properties, "MapElement.RadialGrid.defaultCompassRose",
@@ -264,8 +264,10 @@ public class RadialGrid extends Grid {
 	public static void saveDefaultsToProperties(Properties properties) {
 		properties.setProperty("MapElement.RadialGrid.defaultColor", StringUtil.colorToString(defaultColor));
 		properties.setProperty("MapElement.RadialGrid.defaultRings", Integer.toString(defaultRings));
+		properties.setProperty("MapElement.RadialGrid.defaultLineWidth", Double.toString(defaultLineWidth));
 		properties.setProperty("MapElement.RadialGrid.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
 		properties.setProperty("MapElement.RadialGrid.defaultPinned", Boolean.toString(defaultPinned));
+		properties.setProperty("MapElement.RadialGrid.defaultZBufferEnabled", Boolean.toString(defaultZBufferEnabled));
 		properties.setProperty("MapElement.RadialGrid.defaultActualCoordinates",
 			Boolean.toString(defaultActualCoordinates));
 		properties.setProperty("MapElement.RadialGrid.defaultCompassRose", Boolean.toString(defaultCompassRose));

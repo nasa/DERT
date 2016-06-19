@@ -139,6 +139,7 @@ public abstract class MapElementBasePanel extends JPanel {
 				}
 			});
 			panel.add(labelCheckBox);
+
 			container.add(panel);
 		}
 

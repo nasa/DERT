@@ -27,7 +27,6 @@ public class InputManager {
 	protected int width, height;
 	protected KeyListener keyListener;
 	protected Timer stepTimer;
-	protected int keyCode;
 
 	public InputManager(final SceneCanvas canvas, InputHandler hndler) {
 		handler = hndler;
@@ -56,7 +55,7 @@ public class InputManager {
 			public void mousePressed(MouseEvent event) {
 				mouseX = event.getX();
 				mouseY = height - event.getY();
-				handler.mousePress(mouseX, mouseY, event.getButton(), event.isShiftDown());
+				handler.mousePress(mouseX, mouseY, event.getButton(), event.isControlDown(), event.isShiftDown());
 			}
 
 			@Override
@@ -70,7 +69,7 @@ public class InputManager {
 		canvas.addMouseWheelListener(new MouseWheelListener() {
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent event) {
-				handler.mouseScroll(event.getWheelRotation(), event.isControlDown());
+				handler.mouseScroll(event.getWheelRotation());
 			}
 		});
 
@@ -100,13 +99,14 @@ public class InputManager {
 			@Override
 			public void keyPressed(KeyEvent event) {
 				// System.err.println("InputManager.keyPressed "+event.getKeyCode()+" "+KeyEvent.VK_ESCAPE);
-				keyCode = event.getKeyCode();
-				handleStep(keyCode);
+				final int keyCode = event.getKeyCode();
+				final boolean shiftDown = event.isShiftDown();
+				handleStep(keyCode, shiftDown);
 				if (stepTimer == null) {
 					stepTimer = new Timer(500, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent aE) {
-							handleStep(keyCode);
+							handleStep(keyCode, shiftDown);
 						}
 					});
 					stepTimer.setInitialDelay(500);
@@ -130,23 +130,23 @@ public class InputManager {
 		resize(canvas.getWidth(), canvas.getHeight());
 	}
 
-	private void handleStep(int keyCode) {
+	private void handleStep(int keyCode, boolean shiftDown) {
 		switch (keyCode) {
 		case KeyEvent.VK_UP:
 		case KeyEvent.VK_KP_UP:
-			handler.stepUp();
+			handler.stepUp(shiftDown);
 			break;
 		case KeyEvent.VK_DOWN:
 		case KeyEvent.VK_KP_DOWN:
-			handler.stepDown();
+			handler.stepDown(shiftDown);
 			break;
 		case KeyEvent.VK_LEFT:
 		case KeyEvent.VK_KP_LEFT:
-			handler.stepLeft();
+			handler.stepLeft(shiftDown);
 			break;
 		case KeyEvent.VK_RIGHT:
 		case KeyEvent.VK_KP_RIGHT:
-			handler.stepRight();
+			handler.stepRight(shiftDown);
 			break;
 		}
 	}

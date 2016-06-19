@@ -435,6 +435,26 @@ public class MainWindow extends JFrame {
 		textOverlay.setState(worldView.getScenePanel().isShowTextOverlay());
 		menu.add(textOverlay);
 
+		JCheckBoxMenuItem mapElementsOnTopAction = new JCheckBoxMenuItem("Map Elements On Top");
+		mapElementsOnTopAction.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				World.getInstance().setMapElementsOnTop(((JCheckBoxMenuItem) event.getSource()).getState());
+			}
+		});
+		mapElementsOnTopAction.setState(World.getInstance().isMapElementsOnTop());
+		menu.add(mapElementsOnTopAction);
+
+		JCheckBoxMenuItem toolHiddenDashedAction = new JCheckBoxMenuItem("Show Tool Hidden Lines As Dashes");
+		toolHiddenDashedAction.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				World.getInstance().setHiddenDashed(((JCheckBoxMenuItem) event.getSource()).getState());
+			}
+		});
+		toolHiddenDashedAction.setState(World.getInstance().isHiddenDashed());
+		menu.add(toolHiddenDashedAction);
+
 		MenuItemAction canvasSizeAction = new MenuItemAction("Set WorldView Canvas Dimensions") {
 			@Override
 			protected void run() {

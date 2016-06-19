@@ -145,6 +145,10 @@ public class Profile extends Node implements ViewDependent, Tool {
 		setVisible(state.visible);
 		state.setMapElement(this);
 	}
+	
+	public void setHiddenDashed(boolean hiddenDashed) {
+		// do nothing
+	}
 
 	/**
 	 * Get the map element state
@@ -489,11 +493,11 @@ public class Profile extends Node implements ViewDependent, Tool {
 			csvWriter = new CsvWriter(filename, column);
 			csvWriter.open();
 			String[] value = new String[column.length];
-			for (int i = 0; i < vertexCount; i += 3) {
-				value[0] = Double.toString(vertex[i]);
-				value[1] = Double.toString(vertex[i + 1]);
-				value[2] = Double.toString(graphVertex[i + 1]);
-				value[3] = Double.toString(graphVertex[i]);
+			for (int i = 0; i < vertexCount; ++i) {
+				value[0] = Double.toString(vertex[i*3]);
+				value[1] = Double.toString(vertex[i*3 + 1]);
+				value[2] = Double.toString(graphVertex[i*2 + 1]);
+				value[3] = Double.toString(graphVertex[i*2]);
 				csvWriter.writeLine(value);
 			}
 			csvWriter.close();

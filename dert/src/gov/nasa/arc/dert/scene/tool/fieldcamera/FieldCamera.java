@@ -7,10 +7,11 @@ import gov.nasa.arc.dert.render.Viewshed;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Tool;
 import gov.nasa.arc.dert.scenegraph.Billboard;
-import gov.nasa.arc.dert.scenegraph.Text.AlignType;
+import gov.nasa.arc.dert.scenegraph.HiddenLine;
 import gov.nasa.arc.dert.scenegraph.LineSegment;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.scenegraph.RasterText;
+import gov.nasa.arc.dert.scenegraph.Text.AlignType;
 import gov.nasa.arc.dert.state.FieldCameraState;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
@@ -112,7 +113,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 
 	// Frustum and LookAtLine
 	private FrustumPyramid frustum;
-	private LineSegment lookAtLine;
+	private HiddenLine lookAtLine;
 	private double fovLength, lineLength;
 	private boolean fovVisible;
 
@@ -164,7 +165,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		setFieldCameraDefinition(state.fieldCameraDef);
 
 		// create lookat line
-		lookAtLine = new LineSegment("_line", Vector3.ZERO, new Vector3(0, 0, -1));
+		lookAtLine = new HiddenLine("_line", Vector3.ZERO, new Vector3(0, 0, -1));
 		lookAtLine.setModelBound(new BoundingBox());
 		setLookAtLineLength(2 * fovLength);
 		setLookAtLineVisible(state.lineVisible);
@@ -223,6 +224,10 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		state.setMapElement(this);
 
 		getSceneHints().setRenderBucketType(RenderBucketType.Transparent);
+	}
+	
+	public void setHiddenDashed(boolean hiddenDashed) {
+		lookAtLine.enableDash(hiddenDashed);
 	}
 
 	/**
@@ -443,7 +448,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		Vector2 mousePos = new Vector2(centerX, centerY);
 		Ray3 pickRay = new Ray3();
 		basicCamera.getPickRay(mousePos, false, pickRay);
-		Spatial spat = World.getInstance().select(pickRay, position, normal, null, false);
+		Spatial spat = World.getInstance().select(pickRay, position, normal, null, true);
 		getSceneHints().setPickingHint(PickingHint.Pickable, true);
 		if (spat == null) {
 			return (Double.NaN);

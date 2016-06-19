@@ -34,9 +34,6 @@ public class PathState extends ToolState {
 
 	// Line width
 	public double lineWidth;
-	
-	// Z-Buffer
-	public boolean zBufferEnabled;
 
 	private transient Thread statThread;
 
@@ -49,14 +46,13 @@ public class PathState extends ToolState {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.Path), MapElementState.Type.Path, "Path", Path.defaultSize,
 			Path.defaultColor, Path.defaultLabelVisible, Path.defaultPinned);
-		zBufferEnabled = true;
 		bodyType = Path.defaultBodyType;
 		labelType = Path.defaultLabelType;
 		lineWidth = Path.defaultLineWidth;
 		waypointsVisible = Path.defaultWaypointsVisible;
 		viewData = new ViewData(-1, -1, 600, 250, true);
 		pointList = new ArrayList<WaypointState>();
-		WaypointState wp = new WaypointState(0, position, name + ".", size, color, labelVisible, pinned);
+		WaypointState wp = new WaypointState(0, position, name + ".", size, color, labelVisible, pinned, true);
 		pointList.add(wp);
 	}
 	
@@ -67,9 +63,8 @@ public class PathState extends ToolState {
 		super(map);
 		bodyType = Path.stringToBodyType(StateUtil.getString(map, "BodyType", null));
 		labelType = Path.stringToLabelType(StateUtil.getString(map, "LabelType", null));
-		lineWidth = StateUtil.getDouble(map, "LineWidth", 1);
+		lineWidth = StateUtil.getDouble(map, "LineWidth", Path.defaultLineWidth);
 		waypointsVisible = StateUtil.getBoolean(map, "WaypointsVisible", Path.defaultWaypointsVisible);
-		zBufferEnabled = StateUtil.getBoolean(map, "ZBufferEnabled", true);
 		int n = StateUtil.getInteger(map, "WaypointCount", 0);
 		pointList = new ArrayList<WaypointState>();
 		for (int i=0; i<n; ++i)
@@ -91,8 +86,6 @@ public class PathState extends ToolState {
 			return(false);
 		if (this.lineWidth != that.lineWidth)
 			return(false);
-		if (this.zBufferEnabled != that.zBufferEnabled) 
-			return(false);
 		if (this.pointList.size() != that.pointList.size()) 
 			return(false);
 		for (int i=0; i<this.pointList.size(); ++i) {
@@ -112,13 +105,11 @@ public class PathState extends ToolState {
 			labelType = path.getLabelType();
 			lineWidth = path.getLineWidth();
 			waypointsVisible = path.areWaypointsVisible();
-			zBufferEnabled = path.isZBufferEnabled();
 		}
 		map.put("BodyType", bodyType.toString());
 		map.put("LabelType", labelType.toString());
 		map.put("LineWidth", new Double(lineWidth));
 		map.put("WaypointsVisible", new Boolean(waypointsVisible));
-		map.put("ZBufferEnabled", new Boolean(zBufferEnabled));
 		map.put("WaypointCount", new Integer(pointList.size()));
 		for (int i=0; i<pointList.size(); ++i)
 			map.put("Waypoint"+i, pointList.get(i).save());
@@ -205,7 +196,7 @@ public class PathState extends ToolState {
 	
 	@Override
 	public String toString() {
-		String str = "["+bodyType+","+labelType+","+waypointsVisible+","+lineWidth+","+zBufferEnabled+"]"+super.toString();
+		String str = "["+bodyType+","+labelType+","+waypointsVisible+","+lineWidth+"]"+super.toString();
 		return(str);
 	}
 }

@@ -36,6 +36,7 @@ public class World extends GroupNode {
 	public static ReadOnlyColorRGBA defaultBackgroundColor = ColorRGBA.DARK_GRAY;
 	public static double defaultStereoFocalDistance = 1;
 	public static double defaultStereoEyeSeparation = 0.0333333;
+	public static boolean defaultHiddenDashed = false;
 
 	// The world is a singleton, holds viewpoint node
 	private static World INSTANCE;
@@ -75,6 +76,9 @@ public class World extends GroupNode {
 
 	// The background color
 	private ReadOnlyColorRGBA backgroundColor;
+	
+	// Show hidden lines as dashed lines
+	private boolean hiddenDashed;
 
 	// The texture state for shadows
 	private TextureState textureState;
@@ -236,10 +240,10 @@ public class World extends GroupNode {
 	 * @param noQuadTree
 	 * @return
 	 */
-	public Spatial select(Ray3 pickRay, Vector3 position, Vector3 normal, Node pickTop, boolean noQuadTree) {
+	public Spatial select(Ray3 pickRay, Vector3 position, Vector3 normal, Node pickTop, boolean shiftDown) {
 		SpatialPickResults boundsPick = SpatialUtil.pickBounds(contents, pickRay, pickTop);
 		if (boundsPick != null) {
-			return (selectionHandler.doSelection(pickRay, position, normal, boundsPick, noQuadTree));
+			return (selectionHandler.doSelection(pickRay, position, normal, boundsPick, shiftDown));
 		}
 		return (null);
 	}
@@ -412,6 +416,13 @@ public class World extends GroupNode {
 	public ReadOnlyColorRGBA getBackgroundColor() {
 		return (backgroundColor);
 	}
+	
+	/**
+	 * Get the hidden line representation flag
+	 */
+	public boolean isHiddenDashed() {
+		return(hiddenDashed);
+	}
 
 	/**
 	 * Set the background color
@@ -421,6 +432,27 @@ public class World extends GroupNode {
 	public void setBackgroundColor(ReadOnlyColorRGBA color) {
 		backgroundColor = color;
 		root.markDirty(DirtyType.RenderState);
+	}
+	
+	/**
+	 * Set the hidden line representation flag
+	 */
+	public void setHiddenDashed(boolean hiddenDashed) {
+		this.hiddenDashed = hiddenDashed;
+		tools.setHiddenDashed(hiddenDashed);
+		ruler.setHiddenDashed(hiddenDashed);
+		root.markDirty(DirtyType.RenderState);
+	}
+	
+	public void setMapElementsOnTop(boolean onTop) {
+		landmarks.setOnTop(onTop);
+		tools.setOnTop(onTop);
+		lineSets.setOnTop(onTop);
+		root.markDirty(DirtyType.RenderState);
+	}
+	
+	public boolean isMapElementsOnTop() {
+		return(landmarks.isOnTop());
 	}
 	
 	public void setUseLonLat(boolean useLonLat) {

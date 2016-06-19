@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
+import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.scene.tool.RadialGrid;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
@@ -34,6 +35,7 @@ public class RadialGridPanel extends MapElementBasePanel {
 	private JCheckBox actualCoordButton;
 	private JSpinner ringsSpinner;
 	private JLabel radius;
+	private DoubleTextField lineWidthText;
 
 	// The grid
 	private RadialGrid grid;
@@ -95,6 +97,17 @@ public class RadialGridPanel extends MapElementBasePanel {
 			}
 		};
 		panel.add(colorList);
+		panel.add(new JLabel("Line Width", SwingConstants.RIGHT));
+		lineWidthText = new DoubleTextField(8, Figure.defaultSize, true, Landscape.format) {
+			@Override
+			protected void handleChange(double value) {
+				if (Double.isNaN(value)) {
+					return;
+				}
+				grid.setLineWidth((float) value);
+			}
+		};
+		panel.add(lineWidthText);
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -120,6 +133,7 @@ public class RadialGridPanel extends MapElementBasePanel {
 				grid.setCompassRose(compassRoseCheckBox.isSelected());
 			}
 		});
+
 		contents.add(panel);
 	}
 
@@ -131,6 +145,7 @@ public class RadialGridPanel extends MapElementBasePanel {
 		pinnedCheckBox.setSelected(grid.isPinned());
 		colorList.setColor(grid.getColor());
 		sizeText.setValue(grid.getSize());
+		lineWidthText.setValue(grid.getLineWidth());
 
 		setLocation(locationText, elevLabel, grid.getTranslation());
 		ringsSpinner.setValue(grid.getRings());
