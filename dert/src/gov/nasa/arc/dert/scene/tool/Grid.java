@@ -35,8 +35,6 @@ import com.ardor3d.scenegraph.hint.PickingHint;
  */
 public abstract class Grid extends Movable implements Tool, ViewDependent {
 
-//	protected static float AMBIENT_FACTOR = 0.75f;
-
 	// Defaults
 	public static double defaultCellSize = 1;
 
@@ -78,22 +76,16 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 		this.state = state;
 		this.cellSize = state.size;
 		this.color = state.color;
+		this.lineWidth = state.lineWidth;
 		offset = new Vector3();
 		location = new Vector3();
 		setTranslation(state.location);
 		colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
 			color.getAlpha() / 255f);
 
-//		MaterialState ms = new MaterialState();
-//		ms.setDiffuse(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK);
-//		ms.setAmbient(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK);
-//		ms.setEmissive(MaterialState.MaterialFace.FrontAndBack, colorRGBA);
-		lattice = new HiddenLine("_lattice", IndexMode.LineStrip);
+		lattice = new HiddenLine("_lattice", IndexMode.Lines);
 		SpatialUtil.setPickHost(lattice, this);
-//		lattice.setRenderState(ms);
 		lattice.setColor(colorRGBA);
-//		lattice.getSceneHints().setCastsShadows(false);
-//		lattice.getSceneHints().setTextureCombineMode(TextureCombineMode.Off);
 		lattice.setModelBound(new BoundingBox());
 
 		MaterialState ms = new MaterialState();
@@ -157,11 +149,6 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 			this.color = color;
 			colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
 				color.getAlpha() / 255f);
-//			MaterialState ms = new MaterialState();
-//			ms.setDiffuse(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK);
-//			ms.setAmbient(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK);
-//			ms.setEmissive(MaterialState.MaterialFace.FrontAndBack, colorRGBA);
-//			lattice.setRenderState(ms);
 			lattice.setColor(colorRGBA);
 		}
 	}
@@ -177,19 +164,6 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	@Override
 	protected void enableHighlight(boolean enable) {
 		lattice.highlight(enable, colorRGBA);
-//		MaterialState materialState = (MaterialState) lattice.getLocalRenderState(RenderState.StateType.Material);
-//		if (enable) {
-//			materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * AMBIENT_FACTOR,
-//				colorRGBA.getGreen() * AMBIENT_FACTOR, colorRGBA.getBlue() * AMBIENT_FACTOR, colorRGBA.getAlpha()));
-//			materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
-//			materialState.setEmissive(MaterialFace.FrontAndBack, colorRGBA);
-//			lattice.setRenderState(materialState);
-//		} else {
-//			materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * AMBIENT_FACTOR,
-//				colorRGBA.getGreen() * AMBIENT_FACTOR, colorRGBA.getBlue() * AMBIENT_FACTOR, colorRGBA.getAlpha()));
-//			materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
-//			materialState.setEmissive(MaterialFace.FrontAndBack, ColorRGBA.BLACK);
-//		}
 	}
 
 	/**

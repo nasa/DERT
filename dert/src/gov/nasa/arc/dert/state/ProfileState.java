@@ -24,6 +24,7 @@ public class ProfileState extends ToolState {
 	// Profile end points
 	public Vector3 p0, p1;
 	public boolean axesEqualScale;
+	public float lineWidth;
 
 	// Graph
 	protected Graph graph;
@@ -47,6 +48,7 @@ public class ProfileState extends ToolState {
 		p1.addLocal(p0);
 		p1.setZ(Landscape.getInstance().getZ(p1.getX(), p1.getY()));
 		axesEqualScale = true;
+		lineWidth = Profile.defaultLineWidth;
 	}
 	
 	/**
@@ -57,6 +59,7 @@ public class ProfileState extends ToolState {
 		p0 = StateUtil.getVector3(map, "P0", Vector3.ZERO);
 		p1 = StateUtil.getVector3(map, "P1", Vector3.ZERO);
 		axesEqualScale = StateUtil.getBoolean(map, "AxesEqualScale", true);
+		lineWidth = (float)StateUtil.getDouble(map, "LineWidth", Profile.defaultLineWidth);
 	}
 	
 	@Override
@@ -67,6 +70,8 @@ public class ProfileState extends ToolState {
 		if (!super.isEqualTo(that)) 
 			return(false);
 		if (this.axesEqualScale != that.axesEqualScale) 
+			return(false);
+		if (this.lineWidth != that.lineWidth)
 			return(false);
 		if (!this.p0.equals(that.p0)) 
 			return(false);
@@ -88,6 +93,7 @@ public class ProfileState extends ToolState {
 		StateUtil.putVector3(map, "P0", p0);
 		StateUtil.putVector3(map, "P1", p1);
 		map.put("AxesEqualScale", new Boolean(axesEqualScale));
+		map.put("LineWidth", new Double(lineWidth));
 		return(map);
 	}
 

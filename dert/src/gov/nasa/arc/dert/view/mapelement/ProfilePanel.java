@@ -6,6 +6,7 @@ import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.Profile;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.CoordTextField;
+import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.util.FileHelper;
 
 import java.awt.Color;
@@ -16,6 +17,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
 
@@ -30,6 +32,7 @@ public class ProfilePanel extends MapElementBasePanel {
 	private CoordTextField pALocation, pBLocation;
 	private JLabel aElevLabel, bElevLabel;
 	private JButton saveAsCSV, openButton;
+	private DoubleTextField lineWidthText;
 
 	// The profile
 	private Profile profile;
@@ -100,6 +103,18 @@ public class ProfilePanel extends MapElementBasePanel {
 		};
 		panel.add(colorList);
 
+		panel.add(new JLabel("Line Width", SwingConstants.RIGHT));
+		lineWidthText = new DoubleTextField(8, Profile.defaultLineWidth, true, Landscape.format) {
+			@Override
+			protected void handleChange(double value) {
+				if (Double.isNaN(value)) {
+					return;
+				}
+				profile.setLineWidth((float) value);
+			}
+		};
+		panel.add(lineWidthText);
+
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -138,6 +153,7 @@ public class ProfilePanel extends MapElementBasePanel {
 		setLocation(pALocation, aElevLabel, profile.getEndpointA());
 		setLocation(pBLocation, bElevLabel, profile.getEndpointB());
 		pinnedCheckBox.setSelected(profile.isPinned());
+		lineWidthText.setValue(profile.getLineWidth());
 		nameLabel.setText(profile.getName());
 		colorList.setColor(profile.getColor());
 		noteText.setText(profile.getState().getAnnotation());

@@ -324,7 +324,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			index = pointSet.getNumberOfChildren();
 		}
 		// create a way point state
-		WaypointState wpState = new WaypointState(index, p, getName() + ".", size, color, labelVisible, pinned, true);
+		WaypointState wpState = new WaypointState(index, p, getName() + ".", size, color, labelVisible, pinned);
 		// add the new way point and return it
 		return (addWaypoint(wpState));
 	}

@@ -264,7 +264,7 @@ public class WorldInputHandler implements InputHandler {
 			tape.move(pickPosition);
 		}
 		if (hasMouse()) {
-			if (cntlDown) {
+			if (shiftDown) {
 //				controller.getViewpointNode().coordInScreenPlane(dx, dy, tmpVec, pickPosition);
 				double s = controller.getViewpointNode().getCamera().getPixelSizeAt(pickPosition, false);
 				tmpVec.set(0, 0, dy * s);

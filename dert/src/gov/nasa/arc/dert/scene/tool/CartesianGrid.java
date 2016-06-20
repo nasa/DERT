@@ -104,6 +104,7 @@ public class CartesianGrid extends Grid {
 		FloatBuffer vertices = buildLatticeVertices(rows, columns);
 		lattice.setVertexBuffer(vertices);
 		lattice.updateModelBound();
+		lattice.setLineWidth(lineWidth);
 
 		text.detachAllChildren();
 		buildText(rows, columns);

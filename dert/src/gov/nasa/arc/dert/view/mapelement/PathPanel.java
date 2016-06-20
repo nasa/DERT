@@ -3,7 +3,6 @@ package gov.nasa.arc.dert.view.mapelement;
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
-import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Path.BodyType;
 import gov.nasa.arc.dert.scene.tool.Path.LabelType;
@@ -107,7 +106,7 @@ public class PathPanel extends MapElementBasePanel {
 		panel.add(new JLabel("        "));
 
 		panel.add(new JLabel("Line Width", SwingConstants.RIGHT));
-		lineWidthText = new DoubleTextField(8, Figure.defaultSize, true, Landscape.format) {
+		lineWidthText = new DoubleTextField(8, Path.defaultLineWidth, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
 				if (Double.isNaN(value)) {

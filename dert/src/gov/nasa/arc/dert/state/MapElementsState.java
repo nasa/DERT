@@ -24,7 +24,7 @@ public class MapElementsState extends PanelState {
 	 * Constructor
 	 */
 	public MapElementsState() {
-		super(PanelType.MapElements, "Map Elements", new ViewData(-1, -1, 550, ViewData.DEFAULT_WINDOW_HEIGHT, false));
+		super(PanelType.MapElements, "Map Elements", new ViewData(-1, -1, 600, ViewData.DEFAULT_WINDOW_HEIGHT, false));
 	}
 	
 	/**

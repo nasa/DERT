@@ -52,7 +52,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	public static Color defaultColor = Color.blue;
 	public static boolean defaultLabelVisible = true;
 	public static boolean defaultPinned = false;
-	public static float lineWidth = 2.0f;
+	public static float defaultLineWidth = 2.0f;
 
 	// Endpoint icon texture
 	protected static Texture texture;
@@ -81,6 +81,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	private ColorRGBA colorRGBA;
 	private Color color;
 	private boolean labelVisible, pinned;
+	private float lineWidth;
 
 	// MapElement state
 	private ProfileState state;
@@ -96,6 +97,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 		this.labelVisible = state.labelVisible;
 		this.color = state.color;
 		this.size = state.size;
+		this.lineWidth = state.lineWidth;
 		pALoc = new Vector3(state.p0);
 		pBLoc = new Vector3(state.p1);
 		colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
@@ -438,6 +440,16 @@ public class Profile extends Node implements ViewDependent, Tool {
 		state.setColor(color);
 		line.markDirty(DirtyType.RenderState);
 	}
+	
+	public void setLineWidth(float lineWidth) {
+		this.lineWidth = lineWidth;
+		line.setLineWidth(lineWidth);
+		line.markDirty(DirtyType.RenderState);
+	}
+	
+	public float getLineWidth() {
+		return(lineWidth);
+	}
 
 	@Override
 	public Icon getIcon() {
@@ -463,6 +475,8 @@ public class Profile extends Node implements ViewDependent, Tool {
 		defaultColor = StringUtil.getColorValue(properties, "MapElement.Profile.defaultColor", defaultColor, false);
 		defaultSize = (float) StringUtil.getDoubleValue(properties, "MapElement.Profile.defaultSize", true,
 			defaultSize, false);
+		defaultLineWidth = (float) StringUtil.getDoubleValue(properties, "MapElement.Profile.defaultLineWidth", true,
+				defaultLineWidth, false);
 		defaultLabelVisible = StringUtil.getBooleanValue(properties, "MapElement.Profile.defaultLabelVisible",
 			defaultLabelVisible, false);
 		defaultPinned = StringUtil
@@ -477,6 +491,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	public static void saveDefaultsToProperties(Properties properties) {
 		properties.setProperty("MapElement.Profile.defaultColor", StringUtil.colorToString(defaultColor));
 		properties.setProperty("MapElement.Profile.defaultSize", Float.toString(defaultSize));
+		properties.setProperty("MapElement.Profile.defaultLineWidth", Float.toString(defaultLineWidth));
 		properties.setProperty("MapElement.Profile.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
 		properties.setProperty("MapElement.Profile.defaultPinned", Boolean.toString(defaultPinned));
 	}

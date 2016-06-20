@@ -161,7 +161,7 @@ public class PersistenceTest {
 		pr.p1.set(0, -999, 0);
 		config.mapElementStateList.add(pr);
 		
-		WaypointState wp = new WaypointState(1, new Vector3(28,29,30), "Test", 1, Color.gray, false, true, true);
+		WaypointState wp = new WaypointState(1, new Vector3(28,29,30), "Test", 1, Color.gray, false, true);
 		wp.location.set(0, -1, 0);
 		p.pointList.add(wp);
 		

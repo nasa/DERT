@@ -189,7 +189,7 @@ public class ToolsPanel extends JPanel {
 
 		// Path Preferences
 		GroupPanel gPanel = new GroupPanel("Path");
-		gPanel.setLayout(new GridLayout(4, 2));
+		gPanel.setLayout(new GridLayout(5, 2));
 
 		gPanel.add(new JLabel("Label", SwingConstants.RIGHT));
 		JCheckBox checkBox = new JCheckBox("visible");
@@ -232,6 +232,18 @@ public class ToolsPanel extends JPanel {
 			}
 		};
 		gPanel.add(colorList);
+
+		gPanel.add(new JLabel("Linewidth", SwingConstants.RIGHT));
+		DoubleTextField ptlwText = new DoubleTextField(8, Path.defaultLineWidth, true, "0.00") {
+			@Override
+			protected void handleChange(double value) {
+				if (Double.isNaN(value)) {
+					return;
+				}
+				Path.defaultLineWidth = (float)value;
+			}
+		};
+		gPanel.add(ptlwText);
 
 		bottomPanel.add(gPanel);
 
@@ -346,7 +358,7 @@ public class ToolsPanel extends JPanel {
 				if (Double.isNaN(value)) {
 					return;
 				}
-				CartesianGrid.defaultCellSize = value;
+				CartesianGrid.defaultLineWidth = (float)value;
 			}
 		};
 		gPanel.add(clwText);
@@ -406,7 +418,7 @@ public class ToolsPanel extends JPanel {
 				if (Double.isNaN(value)) {
 					return;
 				}
-				RadialGrid.defaultCellSize = value;
+				RadialGrid.defaultLineWidth = (float)value;
 			}
 		};
 		gPanel.add(rlwText);
@@ -462,7 +474,7 @@ public class ToolsPanel extends JPanel {
 
 		// Profile Preferences
 		gPanel = new GroupPanel("Profile");
-		gPanel.setLayout(new GridLayout(2, 2));
+		gPanel.setLayout(new GridLayout(3, 2));
 
 		gPanel.add(new JLabel("Label", SwingConstants.RIGHT));
 		checkBox = new JCheckBox("visible");
@@ -483,6 +495,18 @@ public class ToolsPanel extends JPanel {
 			}
 		};
 		gPanel.add(colorList);
+
+		gPanel.add(new JLabel("Linewidth", SwingConstants.RIGHT));
+		DoubleTextField plwText = new DoubleTextField(8, Profile.defaultLineWidth, true, "0.00") {
+			@Override
+			protected void handleChange(double value) {
+				if (Double.isNaN(value)) {
+					return;
+				}
+				Profile.defaultLineWidth = (float)value;
+			}
+		};
+		gPanel.add(plwText);
 		bottomPanel.add(gPanel);
 
 		add(new JScrollPane(bottomPanel), BorderLayout.CENTER);

@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
-import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.scene.tool.RadialGrid;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
@@ -98,7 +97,7 @@ public class RadialGridPanel extends MapElementBasePanel {
 		};
 		panel.add(colorList);
 		panel.add(new JLabel("Line Width", SwingConstants.RIGHT));
-		lineWidthText = new DoubleTextField(8, Figure.defaultSize, true, Landscape.format) {
+		lineWidthText = new DoubleTextField(8, RadialGrid.defaultLineWidth, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
 				if (Double.isNaN(value)) {

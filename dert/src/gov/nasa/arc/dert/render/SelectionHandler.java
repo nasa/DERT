@@ -61,8 +61,6 @@ public class SelectionHandler {
 		int index = -1;
 		double dist = Double.MAX_VALUE;
 		for (int i = 0; i < mesh.length; ++i) {
-			if (shiftDown && !(mesh[i] instanceof QuadTreeMesh))
-				continue;
 			// get the mesh bounds
 			PickData pd = boundsPick.getPickData(i);
 			IntersectionRecord ir = pd.getIntersectionRecord();

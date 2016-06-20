@@ -29,7 +29,6 @@ public class RadialGrid extends Grid {
 	public static double defaultRadius = 10;
 	public static boolean defaultActualCoordinates = false;
 	public static boolean defaultCompassRose = false;
-	public static boolean defaultZBufferEnabled = true;
 	public static float defaultLineWidth = 2;
 
 	// Number of rings
@@ -39,7 +38,7 @@ public class RadialGrid extends Grid {
 	private boolean compassRose;
 
 	// Dimensions
-	private int numSegments = 30, bodySegments = 120;
+	private int numSegments = 30;
 	private double radius;
 
 	/**
@@ -91,6 +90,7 @@ public class RadialGrid extends Grid {
 		FloatBuffer vertices = buildLatticeVertices(rings);
 		lattice.setVertexBuffer(vertices);
 		lattice.updateModelBound();
+		lattice.setLineWidth(lineWidth);
 
 		text.detachAllChildren();
 		buildText();
@@ -98,26 +98,6 @@ public class RadialGrid extends Grid {
 		updateGeometricState(0, true);
 		updateWorldTransform(true);
 		updateWorldBound(true);
-	}
-
-	protected FloatBuffer buildBodyVertices() {
-		FloatBuffer vertex = BufferUtils.createFloatBuffer(bodySegments * 3 * 3);
-		double xOrg = 0;
-		double yOrg = 0;
-		double step = 360 / bodySegments;
-		for (int i = 0; i < bodySegments; ++i) {
-			vertex.put((float) xOrg).put((float) yOrg).put(0);
-			double angle = Math.toRadians(i * step);
-			float x = (float) (Math.cos(angle) * radius + xOrg);
-			float y = (float) (Math.sin(angle) * radius + yOrg);
-			vertex.put(x).put(y).put(0);
-			angle = Math.toRadians((i + 1) * step);
-			x = (float) (Math.cos(angle) * radius + xOrg);
-			y = (float) (Math.sin(angle) * radius + yOrg);
-			vertex.put(x).put(y).put(0);
-		}
-		vertex.flip();
-		return (vertex);
 	}
 
 	protected FloatBuffer buildLatticeVertices(int circles) {
@@ -248,8 +228,6 @@ public class RadialGrid extends Grid {
 			defaultLabelVisible, false);
 		defaultPinned = StringUtil.getBooleanValue(properties, "MapElement.RadialGrid.defaultPinned", defaultPinned,
 			false);
-		defaultZBufferEnabled = StringUtil.getBooleanValue(properties, "MapElement.RadialGrid.defaultZBufferEnabled", defaultZBufferEnabled,
-				false);
 		defaultActualCoordinates = StringUtil.getBooleanValue(properties,
 			"MapElement.RadialGrid.defaultActualCoordinates", defaultActualCoordinates, false);
 		defaultCompassRose = StringUtil.getBooleanValue(properties, "MapElement.RadialGrid.defaultCompassRose",
@@ -267,7 +245,6 @@ public class RadialGrid extends Grid {
 		properties.setProperty("MapElement.RadialGrid.defaultLineWidth", Double.toString(defaultLineWidth));
 		properties.setProperty("MapElement.RadialGrid.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
 		properties.setProperty("MapElement.RadialGrid.defaultPinned", Boolean.toString(defaultPinned));
-		properties.setProperty("MapElement.RadialGrid.defaultZBufferEnabled", Boolean.toString(defaultZBufferEnabled));
 		properties.setProperty("MapElement.RadialGrid.defaultActualCoordinates",
 			Boolean.toString(defaultActualCoordinates));
 		properties.setProperty("MapElement.RadialGrid.defaultCompassRose", Boolean.toString(defaultCompassRose));
