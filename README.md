@@ -14,6 +14,10 @@ See an example of DERT [here](https://byss.arc.nasa.gov/dert/dert.m4v).
 
 [Download](https://github.com/nasa/DERT/wiki/Download)
 
+##Contributions
+
+DERT v1.0 is currently undergoing beta testing and we are not adding contributors at this time.  However, we could use help with the testing. If you are interested, you can test DERT by running the examples in the user guide. Please let us know of any issues you find by submitting them to this site.
+
 ##LICENSE
 
 DERT is a viewer for digital terrain models created from data collected during NASA missions.
@@ -56,7 +60,7 @@ separate “DERT Third Party Licenses” pdf document found where you downloaded
 
 **XStream**, Copyright © 2003-2006, Joe Walnes, Copyright © 2006-2009, 2011 XStream Committers. All rights reserved.
 
- 
+
 **SPICE**, Copyright © 2003, California Institute of Technology. U.S. Government sponsorship acknowledged.
 
  
