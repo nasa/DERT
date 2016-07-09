@@ -13,7 +13,6 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
@@ -119,7 +118,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 		contentArea.add(listPanel,
 			GBCHelper.getGBC(0, 0, 4, 4, GridBagConstraints.WEST, GridBagConstraints.BOTH, 1, 1));
 
-		JPanel buttonPanel = new JPanel(new GridLayout(4, 1));
+		JPanel buttonPanel = new JPanel(new GridBagLayout());
 		// Button to move currently selected layer up in the list
 		up = new JButton("Up");
 		up.setToolTipText("move selected visible layer up");
@@ -139,10 +138,10 @@ public class LayerConfigurationDialog extends AbstractDialog {
 				selectedLayerList.setSelectedIndex(selectedIndex - 1);
 			}
 		});
-		buttonPanel.add(up);
+		buttonPanel.add(up, GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, 0, 0));
 
 		// Button to move a layer from the available list to the display list
-		add = new JButton(Icons.getImageIcon("left.png"));
+		add = new JButton(Icons.getImageIcon("prev_16.png"));
 		add.setToolTipText("move selected available layer to the selected position in the visible list");
 		add.setEnabled(false);
 		add.addActionListener(new ActionListener() {
@@ -163,11 +162,11 @@ public class LayerConfigurationDialog extends AbstractDialog {
 				selectedLayerList.setSelectedIndex(selectedIndex);
 			}
 		});
-		buttonPanel.add(add);
+		buttonPanel.add(add, GBCHelper.getGBC(0, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, 0, 0));
 
 		// Button to move the selected layer from the display list to the
 		// available list
-		remove = new JButton(Icons.getImageIcon("right.png"));
+		remove = new JButton(Icons.getImageIcon("next_16.png"));
 		remove.setToolTipText("move selected visible layer to the available list");
 		remove.setEnabled(false);
 		remove.addActionListener(new ActionListener() {
@@ -186,7 +185,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 				selectedLayerList.setSelectedIndex(selectedIndex);
 			}
 		});
-		buttonPanel.add(remove);
+		buttonPanel.add(remove, GBCHelper.getGBC(0, 2, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, 0, 0));
 
 		// Button to move the selected layer down in the display list
 		down = new JButton("Down");
@@ -207,7 +206,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 				selectedLayerList.setSelectedIndex(selectedIndex + 1);
 			}
 		});
-		buttonPanel.add(down);
+		buttonPanel.add(down, GBCHelper.getGBC(0, 3, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, 0, 0));
 		contentArea.add(buttonPanel,
 			GBCHelper.getGBC(5, 0, 1, 4, GridBagConstraints.CENTER, GridBagConstraints.NONE, 0, 0));
 

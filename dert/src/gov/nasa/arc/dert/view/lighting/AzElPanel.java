@@ -12,6 +12,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -40,6 +41,7 @@ public class AzElPanel extends JPanel {
 	 * Constructor
 	 */
 	public AzElPanel() {
+		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		setLayout(new BorderLayout());
 		direction = new Vector3();
 		dirArray = direction.toArray(null);

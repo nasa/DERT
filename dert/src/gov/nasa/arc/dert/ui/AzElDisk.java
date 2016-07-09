@@ -3,10 +3,12 @@ package gov.nasa.arc.dert.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -44,6 +46,7 @@ public class AzElDisk extends JPanel {
 		super();
 		azimuth = az;
 		elevation = el;
+		
 		setLayout(new BorderLayout());
 
 		canvas = new AzElCanvas();
@@ -179,8 +182,9 @@ public class AzElDisk extends JPanel {
 			setPuckFromCurrentAzEl();
 
 			Graphics2D gc = (Graphics2D) g;
-			gc.setFont(gc.getFont().deriveFont(10.0f)); // arg must be float to
+			gc.setFont(gc.getFont().deriveFont(Font.BOLD, 10.0f)); // arg must be float to
 														// adjust size
+			gc.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			gc.setBackground(Color.white);
 			gc.setPaint(Color.white);
 			gc.fill(background);
@@ -198,7 +202,7 @@ public class AzElDisk extends JPanel {
 			gc.drawOval(limit.x, limit.y, limit.width, limit.height);
 			int h = gc.getFontMetrics().getHeight();
 			int w = gc.getFontMetrics().stringWidth("West");
-			gc.drawString("West", limit.x - w - 2, background.width / 2 + h / 2);
+			gc.drawString("West", limit.x - w - 2, background.height / 2 + h / 2);
 			gc.drawString("East", limit.x + limit.width + 2, background.height / 2 + h / 2);
 			w = gc.getFontMetrics().stringWidth("North");
 			gc.drawString("North", background.width / 2 - w / 2, limit.y - 2);

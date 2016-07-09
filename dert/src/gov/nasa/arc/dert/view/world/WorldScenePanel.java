@@ -133,6 +133,7 @@ public class WorldScenePanel extends SceneCanvasPanel {
 				canvasRenderer.setCamera(bc);
 			}
 		}
+		worldScene.needsRender.set(true);
 	}
 
 	/**
