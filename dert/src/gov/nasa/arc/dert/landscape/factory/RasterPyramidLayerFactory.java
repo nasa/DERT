@@ -357,7 +357,12 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 		}
 
 		if (layerType == LayerType.elevation) {
-			edgeFillValue = padded.computeEdgeFill();
+			// If the terrain dips below the edge (that is the minimum value < edgeFillValue),
+			// the shadows don't work correctly (this is the case with the Victoria Crater landscape).
+			// So here we use the minimum value by default.
+			// The user can change this in the layer.properties file for the elevation.
+//			edgeFillValue = padded.computeEdgeFill();
+			edgeFillValue = (float)minimumSampleValue[0];
 		}
 
 		raster.dispose();
