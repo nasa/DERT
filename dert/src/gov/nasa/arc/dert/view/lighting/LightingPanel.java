@@ -216,6 +216,7 @@ public class LightingPanel extends JPanel {
 				shadowCenterText.setLocalValue(coord);
 				World.getInstance().getLighting().setRefLoc(Landscape.getInstance().getCenterLonLat());
 				lighting.getShadowMap().setCenter(coord);
+				lighting.getShadowMap().setRadius((float) bv.getRadius());
 			}
 		});
 		panel.add(defaultSphereButton);
