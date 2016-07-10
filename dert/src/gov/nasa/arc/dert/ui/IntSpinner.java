@@ -60,9 +60,9 @@ public class IntSpinner extends JSpinner implements ChangeListener {
 					int maximum = (Integer) super.getMaximum();
 					int minimum = (Integer) super.getMinimum();
 					if (val < minimum) {
-						val = maximum + (val - maximum);
+						val = maximum - (minimum-val)+1;
 					} else if (val > maximum) {
-						val = minimum + (val - maximum);
+						val = val-maximum-1;
 					}
 					super.setValue(new Integer(val));
 				}

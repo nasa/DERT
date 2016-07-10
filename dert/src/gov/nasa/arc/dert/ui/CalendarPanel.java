@@ -62,9 +62,9 @@ public class CalendarPanel extends JPanel implements MouseListener {
 			int maximum = (Integer) super.getMaximum();
 			int minimum = (Integer) super.getMinimum();
 			if (val < minimum) {
-				val = maximum + (val - maximum);
+				val = maximum - (minimum-val)+1;
 			} else if (val > maximum) {
-				val = minimum + (val - maximum);
+				val = val-maximum-1;
 			}
 			super.setValue(new Integer(val));
 		}
@@ -159,11 +159,11 @@ public class CalendarPanel extends JPanel implements MouseListener {
 			public void stateChanged(ChangeEvent event) {
 				if ((Integer) minute.getValue() == 0) {
 					if (lastMinute == 59) {
-						hour.setValue(new Integer((Integer) hour.getValue() + 1));
+						hour.setValue(new Integer((Integer)hour.getValue()+1));
 					}
 				} else if ((Integer) minute.getValue() == 59) {
 					if (lastMinute == 0) {
-						hour.setValue(new Integer((Integer) hour.getValue() - 1));
+						hour.setValue(new Integer((Integer)hour.getValue()-1));
 					}
 				}
 				lastMinute = (Integer) minute.getValue();
@@ -180,7 +180,7 @@ public class CalendarPanel extends JPanel implements MouseListener {
 			public void stateChanged(ChangeEvent event) {
 				if ((Integer) second.getValue() == 0) {
 					if (lastSecond == 59) {
-						minute.setValue(new Integer((Integer) minute.getValue() + 1));
+						minute.setValue(new Integer((Integer)minute.getValue()+1));
 					}
 				} else if ((Integer) second.getValue() == 59) {
 					if (lastSecond == 0) {
