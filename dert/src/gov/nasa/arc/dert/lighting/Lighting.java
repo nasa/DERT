@@ -273,10 +273,9 @@ public class Lighting {
 	 */
 	public void setTime(long timeUTC) {
 		this.timeUTC = timeUTC;
-		if (!isLamp) {
+		if (!isLamp)
 			light.setTime(timeUTC, Landscape.getInstance().getGlobeName(), "Sun", getRefLoc());
-			World.getInstance().getMarble().setSolarDirection(getLightDirection());
-		}
+		World.getInstance().getMarble().setSolarDirection(getLightDirection());
 	}
 
 	/**
@@ -341,7 +340,7 @@ public class Lighting {
 			Landscape landscape = Landscape.getInstance();
 			Vector3 smCenter = new Vector3(getRefLoc());
 			Landscape.getInstance().sphericalToLocalCoordinate(smCenter);
-			shadowMap = new ShadowMap(smCenter, landscape.getWorldBound().getRadius(), World.getInstance()
+			shadowMap = new ShadowMap(Landscape.getInstance().getCenter(), landscape.getWorldBound().getRadius(), World.getInstance()
 				.getContents(), World.getInstance().getContents());
 			shadowMap.setPolygonOffsetFactor(2);
 			shadowMap.setPolygonOffsetUnits(2);

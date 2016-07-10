@@ -53,7 +53,6 @@ public class LightingPanel extends JPanel {
 	private Vector3 coord = new Vector3();
 
 	public LightingPanel() {
-		final Lighting lighting = World.getInstance().getLighting();
 		setLayout(new GridBagLayout());
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
@@ -61,7 +60,7 @@ public class LightingPanel extends JPanel {
 		mainPanel.setLayout(new GridLayout(4, 1, 0, 0));
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		modeLabel = new JLabel("Mode");
-		if (lighting.isLampMode()) {
+		if (World.getInstance().getLighting().isLampMode()) {
 			modeLabel.setIcon(Icons.getImageIcon("luxo.png"));
 		} else {
 			modeLabel.setIcon(Icons.getImageIcon("sun.png"));
@@ -70,12 +69,12 @@ public class LightingPanel extends JPanel {
 		ButtonGroup group = new ButtonGroup();
 		solButton = new JRadioButton("Solar");
 		solButton.setToolTipText("light is positioned by time");
-		solButton.setSelected(!lighting.isLampMode());
+		solButton.setSelected(!World.getInstance().getLighting().isLampMode());
 		group.add(solButton);
 		panel.add(solButton);
 		lampButton = new JRadioButton("Artificial");
 		lampButton.setToolTipText("light is positioned by azimuth and elevation");
-		lampButton.setSelected(lighting.isLampMode());
+		lampButton.setSelected(World.getInstance().getLighting().isLampMode());
 		group.add(lampButton);
 		panel.add(lampButton);
 		mainPanel.add(panel);
@@ -119,10 +118,10 @@ public class LightingPanel extends JPanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("LMST Epoch"));
-		lmstEpoch = new DateTextField(30, lighting.getEpoch(), Lighting.DATE_FORMAT) {
+		lmstEpoch = new DateTextField(30, World.getInstance().getLighting().getEpoch(), Lighting.DATE_FORMAT) {
 			@Override
 			public void handleChange(Date value) {
-				lighting.setEpoch(value);
+				World.getInstance().getLighting().setEpoch(value);
 			}
 		};
 		panel.add(lmstEpoch);
@@ -131,7 +130,7 @@ public class LightingPanel extends JPanel {
 		GroupPanel headPanel = new GroupPanel("Headlight");
 		headPanel.setLayout(new GridLayout(2, 1, 0, 0));
 		headlightButton = new JCheckBox("Enable");
-		headlightButton.setSelected(lighting.isHeadlightEnabled());
+		headlightButton.setSelected(World.getInstance().getLighting().isHeadlightEnabled());
 		headPanel.add(headlightButton);
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Diffuse Intensity"));
@@ -150,7 +149,7 @@ public class LightingPanel extends JPanel {
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		shadowButton = new JCheckBox("Enable Shadows");
 		shadowButton.setToolTipText("display shadows");
-		shadowButton.setSelected(lighting.isShadowEnabled());
+		shadowButton.setSelected(World.getInstance().getLighting().isShadowEnabled());
 		shadowButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -175,22 +174,19 @@ public class LightingPanel extends JPanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Center"));
-//		coord.set(lighting.getShadowMap().getCenter());
-//		Landscape.getInstance().localToWorldCoordinate(coord);
 		shadowCenterText = new CoordTextField(30, "coordinates of shadow sphere center", Landscape.format, false) {
 			@Override
 			public void doChange(ReadOnlyVector3 result) {
 				coord.set(result);
-//				Landscape.getInstance().worldToLocalCoordinate(coord);
 				Lighting lighting = World.getInstance().getLighting();
-//				lighting.getShadowMap().setCenter(coord);
+				lighting.getShadowMap().setCenter(coord);
 				Landscape.getInstance().localToWorldCoordinate(coord);
 				Landscape.getInstance().worldToSphericalCoordinate(coord);
 				lighting.setRefLoc(coord);
 			}
 		};
 		CoordAction.listenerList.add(shadowCenterText);
-		coord.set(lighting.getRefLoc());
+		coord.set(World.getInstance().getLighting().getRefLoc());
 		Landscape.getInstance().sphericalToLocalCoordinate(coord);
 		shadowCenterText.setLocalValue(coord);
 		panel.add(shadowCenterText);
@@ -198,7 +194,7 @@ public class LightingPanel extends JPanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Radius"));
-		shadowRadiusText = new DoubleTextField(10, lighting.getShadowMap().getRadius(), true, Landscape.format) {
+		shadowRadiusText = new DoubleTextField(10, World.getInstance().getLighting().getShadowMap().getRadius(), true, Landscape.format) {
 			@Override
 			public void handleChange(double radius) {
 				Lighting lighting = World.getInstance().getLighting();
@@ -213,13 +209,13 @@ public class LightingPanel extends JPanel {
 		defaultSphereButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
+				Lighting lighting = World.getInstance().getLighting();
 				BoundingVolume bv = World.getInstance().getContents().getWorldBound();
 				shadowRadiusText.setValue((float) bv.getRadius());
-//				coord.set(bv.getCenter());
 				coord.set(Landscape.getInstance().getCenter());
-//				Landscape.getInstance().localToWorldCoordinate(coord);
 				shadowCenterText.setLocalValue(coord);
-				lighting.setRefLoc(Landscape.getInstance().getCenterLonLat());
+				World.getInstance().getLighting().setRefLoc(Landscape.getInstance().getCenterLonLat());
+				lighting.getShadowMap().setCenter(coord);
 			}
 		});
 		panel.add(defaultSphereButton);
