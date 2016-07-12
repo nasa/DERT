@@ -23,8 +23,6 @@ import com.ardor3d.util.geom.BufferUtils;
 
 public class HiddenLine
 	extends Node {
-
-	protected static float AMBIENT_FACTOR = 0.75f;
 	
 	private Line line;
 	private Line dashedLine;
@@ -147,33 +145,25 @@ public class HiddenLine
 	public void setColor(ReadOnlyColorRGBA colorRGBA) {
 
 		MaterialState lineMS = new MaterialState();
-		lineMS.setDiffuse(new ColorRGBA(0, 0, 0, 1));
-		lineMS.setAmbient(new ColorRGBA(0, 0, 0, 1));
+		lineMS.setDiffuse(ColorRGBA.BLACK);
+		lineMS.setAmbient(ColorRGBA.BLACK);
 		lineMS.setEmissive(MaterialState.MaterialFace.FrontAndBack, colorRGBA);
 		line.setRenderState(lineMS);
-//		lineMS = new MaterialState();
-//		lineMS.setDiffuse(new ColorRGBA(0, 0, 0, 1));
-//		lineMS.setAmbient(new ColorRGBA(0, 0, 0, 1));
-//		ColorRGBA dashColor = new ColorRGBA(colorRGBA.getRed(), colorRGBA.getGreen(), colorRGBA.getBlue(), colorRGBA.getAlpha()*0.5f);
-//		lineMS.setEmissive(MaterialState.MaterialFace.FrontAndBack, dashColor);
 		dashedLine.setRenderState(lineMS);
 	}
 
 	public void highlight(boolean enable, ColorRGBA colorRGBA) {
 		MaterialState materialState = (MaterialState) line.getLocalRenderState(RenderState.StateType.Material);
 		if (enable) {
-			materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * AMBIENT_FACTOR,
-				colorRGBA.getGreen() * AMBIENT_FACTOR, colorRGBA.getBlue() * AMBIENT_FACTOR, colorRGBA.getAlpha()));
+			materialState.setAmbient(MaterialFace.FrontAndBack, colorRGBA);
 			materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
-			materialState.setEmissive(MaterialFace.FrontAndBack, colorRGBA);
-			line.setRenderState(materialState);
-			dashedLine.setRenderState(materialState);
-		} else {
-			materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * AMBIENT_FACTOR,
-				colorRGBA.getGreen() * AMBIENT_FACTOR, colorRGBA.getBlue() * AMBIENT_FACTOR, colorRGBA.getAlpha()));
-			materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
-			materialState.setEmissive(MaterialFace.FrontAndBack, ColorRGBA.BLACK);
 		}
+		else {
+			materialState.setDiffuse(ColorRGBA.BLACK);
+			materialState.setAmbient(ColorRGBA.BLACK);
+		}
+		line.setRenderState(materialState);
+		dashedLine.setRenderState(materialState);
 	}
 
 }

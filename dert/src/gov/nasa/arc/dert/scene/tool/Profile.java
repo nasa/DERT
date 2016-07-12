@@ -336,7 +336,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * @param pALoc
 	 */
 	public void setEndpointA(ReadOnlyVector3 pALoc) {
-		endpointA.setTranslation(pALoc);
+		endpointA.setLocation(pALoc, true);
 		this.pALoc.set(pALoc);
 		updateGraph();
 		updateGeometricState(0);
@@ -357,7 +357,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * @param pBLoc
 	 */
 	public void setEndpointB(ReadOnlyVector3 pBLoc) {
-		endpointB.setTranslation(pBLoc);
+		endpointB.setLocation(pBLoc, true);
 		this.pBLoc.set(pBLoc);
 		updateGraph();
 		updateGeometricState(0);

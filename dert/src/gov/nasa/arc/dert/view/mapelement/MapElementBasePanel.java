@@ -6,6 +6,7 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
+import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.GroupPanel;
 import gov.nasa.arc.dert.view.world.MoveEdit;
@@ -104,9 +105,14 @@ public abstract class MapElementBasePanel extends JPanel {
 				public void doChange(ReadOnlyVector3 coord) {
 					ReadOnlyVector3 trans = new Vector3(((Spatial) mapElement).getTranslation());
 					if (!coord.equals(trans)) {
-						((Spatial) mapElement).setTranslation(coord);
-						Dert.getMainWindow().getUndoHandler()
-							.addEdit(new MoveEdit((Spatial) mapElement, new Vector3(trans)));
+						if (mapElement instanceof Movable) {
+							Movable movable = (Movable)mapElement;
+							movable.setLocation(coord, true);
+						}
+						else {
+							((Spatial) mapElement).setTranslation(coord);
+							Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit((Spatial) mapElement, new Vector3(trans)));
+						}
 					}					
 				}
 			};

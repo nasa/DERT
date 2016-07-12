@@ -1,8 +1,12 @@
 package gov.nasa.arc.dert.scenegraph;
 
+import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.view.world.MoveEdit;
+
 import java.util.ArrayList;
 
 import com.ardor3d.bounding.BoundingVolume;
+import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Node;
 
@@ -113,5 +117,20 @@ public abstract class Movable extends Node {
 		}
 		ReadOnlyVector3 s = getWorldScale();
 		return (wb.getRadius() / s.getX());
+	}
+
+	/**
+	 * Set the location
+	 * 
+	 * @param i
+	 * @param p
+	 */
+	public void setLocation(ReadOnlyVector3 p, boolean doEdit) {
+		if (doEdit)
+			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(this, new Vector3(getTranslation())));
+		setTranslation(p);
+		setInMotion(true, p);
+		notifyListeners();
+		setInMotion(false, p);
 	}
 }

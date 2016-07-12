@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.scene.tool;
 
+import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
@@ -13,6 +14,7 @@ import gov.nasa.arc.dert.state.PlaneState;
 import gov.nasa.arc.dert.util.ImageUtil;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.StringUtil;
+import gov.nasa.arc.dert.view.world.MoveEdit;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
@@ -34,6 +36,7 @@ import com.ardor3d.renderer.state.MaterialState;
 import com.ardor3d.scenegraph.Line;
 import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.Node;
+import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.CullHint;
 import com.ardor3d.scenegraph.hint.PickingHint;
@@ -431,7 +434,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	 * @param p
 	 */
 	public void setPoint(int i, ReadOnlyVector3 p) {
-		point[i].setTranslation(p);
+		point[i].setLocation(p, true);
 	}
 
 	/**

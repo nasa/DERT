@@ -1,5 +1,7 @@
 package gov.nasa.arc.dert.view.world;
 
+import gov.nasa.arc.dert.scenegraph.Movable;
+
 import javax.swing.undo.AbstractUndoableEdit;
 
 import com.ardor3d.math.Vector3;
@@ -35,13 +37,19 @@ public class MoveEdit extends AbstractUndoableEdit {
 	public void undo() {
 		super.undo();
 		position = new Vector3(spatial.getTranslation());
-		spatial.setTranslation(oldPosition);
+		if (spatial instanceof Movable)
+			((Movable)spatial).setLocation(oldPosition, false);
+		else
+			spatial.setTranslation(oldPosition);
 	}
 
 	@Override
 	public void redo() {
 		super.redo();
-		spatial.setTranslation(position);
+		if (spatial instanceof Movable)
+			((Movable)spatial).setLocation(position, false);
+		else
+			spatial.setTranslation(position);
 	}
 
 }
