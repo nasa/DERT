@@ -185,6 +185,7 @@ public class PathPanel extends MapElementBasePanel {
 			statistics.setEnabled(true);
 			showWaypoints.setEnabled(true);
 			lineWidthText.setEnabled(true);
+			path.setCurrentWaypoint(null);
 		}
 		// map element is a Waypoint
 		else {

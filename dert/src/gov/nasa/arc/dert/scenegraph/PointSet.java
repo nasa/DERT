@@ -54,10 +54,11 @@ public class PointSet extends Node {
 	 * @return the index where the point was added
 	 */
 	public int addPoint(BillboardMarker p, int index) {
-		if (index >= getNumberOfChildren() || (index < 0)) {
+		if ((index == getNumberOfChildren()) || (index < 0)) {
 			attachChild(p);
-			index = getChildIndex(p);
-		} else {
+			index = getChildIndex(p);			
+		}
+		else {
 			attachChildAt(p, index);
 			index = getChildIndex(p);
 		}

@@ -103,7 +103,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	private TextDialog statisticsDialog;
 
 	// Indicates if this path is currently being created
-	private boolean newPath;
+	private int newPoints;
 
 	// The map element state object
 	protected PathState state;
@@ -137,11 +137,10 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		this.color = state.color;
 		this.lineWidth = state.lineWidth;
 
-		newPath = true;
-
 		// Create scene graph elements
 		pointSet = new PointSet("_points");
 		attachChild(pointSet);
+		
 		line = new HiddenLine("_line", IndexMode.LineStrip);
 		line.setLineWidth((float)lineWidth);
 		attachChild(line);
@@ -152,9 +151,18 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 
 		for (int i = 0; i < state.pointList.size(); ++i) {
 			WaypointState wps = state.pointList.get(i);
-			addWaypoint(wps);
+			Waypoint currentWaypoint = new Waypoint(wps);
+			pointSet.addPoint(currentWaypoint, (int)wps.id);
+			currentWaypoint.addMotionListener(this);
+			updateLabels(currentWaypoint);
 		}
+
+		enableLine(lineIsEnabled);
+		enablePolygon(polyIsEnabled);
+
+		updateGeometricState(0);
 		
+		currentIndex = -1;
 		setVisible(state.visible);
 	}
 	
@@ -356,6 +364,8 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		enablePolygon(polyIsEnabled);
 
 		updateGeometricState(0);
+		
+		newPoints ++;
 		return (currentWaypoint);
 	}
 
@@ -604,7 +614,8 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	}
 	
 	public void complete() {
-		newPath = false;
+		Console.getInstance().println("Added "+newPoints+" point"+((newPoints > 1) ? "s" : "")+" to "+getName()+".");
+		newPoints = 0;
 	}
 
 	/**
@@ -614,7 +625,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	 *            the location of the new way point
 	 */
 	public void click(ReadOnlyVector3 loc) {
-		if (newPath) {
+		if (currentIndex < 0) {
 			addWaypoint(loc, -1);
 		} else {
 			addWaypoint(loc, currentIndex + 1);
@@ -871,6 +882,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	private void renumberWaypoints(int from) {
 		for (int i = from; i < pointSet.getNumberOfChildren(); ++i) {
 			pointSet.getChild(i).setName(createWaypointLabel(i));
+			((Waypoint)pointSet.getChild(i)).getState().id = i;
 		}
 	}
 

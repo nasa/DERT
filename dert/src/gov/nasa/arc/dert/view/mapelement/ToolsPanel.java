@@ -75,8 +75,7 @@ public class ToolsPanel extends JPanel {
 			public void actionPerformed(ActionEvent event) {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
 				PathState state = new PathState(position);
-				Path path = (Path) ConfigurationManager.getInstance().getCurrentConfiguration()
-					.addMapElementState(state);
+				Path path = (Path) ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state);
 				newMapElement(MapElementState.Type.Path, path);
 				Dert.getWorldView().getScenePanel().getInputHandler().setPath(path);
 			}

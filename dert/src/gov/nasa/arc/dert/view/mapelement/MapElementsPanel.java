@@ -455,7 +455,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 				if ((MapElement) pathNode.getUserObject() == path) {
 					int m = pathNode.getChildCount();
 					for (int j = 0; j < m; ++j) {
-						DefaultMutableTreeNode wpNode = (DefaultMutableTreeNode) pathNode.getChildAt(i);
+						DefaultMutableTreeNode wpNode = (DefaultMutableTreeNode) pathNode.getChildAt(j);
 						if ((MapElement) wpNode.getUserObject() == mapElement) {
 							treeNode = wpNode;
 							break;
