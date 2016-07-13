@@ -67,7 +67,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	public static boolean defaultLabelVisible = true;
 	public static boolean defaultWaypointsVisible = true;
 	public static boolean defaultPinned = false;
-//	public static boolean defaultHiddenDashed = false;
 
 	// Type of waypoint label
 	private LabelType labelType = LabelType.Name;
@@ -77,7 +76,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 
 	// Scene graph element to draw line body
 	private HiddenLine line;
-//	private Line dashedLine;
 
 	// Scene graph element to draw polygon (area) body
 	private Mesh poly;
@@ -402,7 +400,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	public void setLineWidth(float width) {
 		lineWidth = width;
 		line.setLineWidth(width);
-//		dashedLine.setLineWidth(width);
 		markDirty(DirtyType.RenderState);
 	}
 
@@ -739,7 +736,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		}
 		if (lineIsEnabled) {
 			pointSet.updateLine(line);
-//			pointSet.updateLine(dashedLine);
 		}
 		if (polyIsEnabled) {
 			pointSet.updatePolygon(poly);
