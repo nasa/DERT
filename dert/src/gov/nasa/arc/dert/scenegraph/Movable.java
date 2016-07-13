@@ -68,7 +68,6 @@ public abstract class Movable extends Node {
 	public void setInMotion(boolean inMotion, ReadOnlyVector3 pickPosition) {
 		this.inMotion = inMotion;
 		enableHighlight(inMotion);
-		return;
 	}
 
 	protected abstract void enableHighlight(boolean enable);

@@ -106,14 +106,12 @@ public class CartesianGrid extends Grid {
 		lattice.updateModelBound();
 		lattice.setLineWidth(lineWidth);
 
-		text.detachAllChildren();
-		buildText(rows, columns);
+		buildText();
 
 		updateGeometricState(0, true);
 		updateWorldTransform(true);
 		updateWorldBound(true);
 	}
-
 
 	private FloatBuffer buildLatticeVertices(int rows, int columns) {
 
@@ -144,7 +142,9 @@ public class CartesianGrid extends Grid {
 		return (vertex);
 	}
 
-	private void buildText(int rows, int columns) {
+	@Override
+	protected void buildText() {
+		text.detachAllChildren();
 		int k = 0;
 
 		// add Y axis line

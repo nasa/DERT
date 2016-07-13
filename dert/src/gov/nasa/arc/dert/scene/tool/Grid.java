@@ -194,7 +194,10 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	public void setActualCoordinates(boolean enable) {
 		actualCoords = enable;
 		origin = new Vector3(getWorldTranslation());
-		buildGrid();
+		buildText();
+		updateGeometricState(0, true);
+		updateWorldTransform(true);
+		updateWorldBound(true);
 	}
 
 	/**
@@ -207,6 +210,8 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	}
 
 	protected abstract void buildGrid();
+	
+	protected abstract void buildText();
 
 	/**
 	 * Set the vertical exaggeration
@@ -345,6 +350,13 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 		if (inMotion) {
 			pickPosition.subtract(getWorldTranslation(), offset);
 		} else {
+			if (actualCoords) {
+				origin = new Vector3(getWorldTranslation());
+				buildText();
+				updateGeometricState(0, true);
+				updateWorldTransform(true);
+				updateWorldBound(true);
+			}
 			offset.set(Vector3.ZERO);
 		}
 	}

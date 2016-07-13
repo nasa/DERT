@@ -92,7 +92,6 @@ public class RadialGrid extends Grid {
 		lattice.updateModelBound();
 		lattice.setLineWidth(lineWidth);
 
-		text.detachAllChildren();
 		buildText();
 
 		updateGeometricState(0, true);
@@ -146,7 +145,9 @@ public class RadialGrid extends Grid {
 		}
 	}
 
+	@Override
 	protected void buildText() {
+		text.detachAllChildren();
 		if (compassRose) {
 			text.attachChild(createText("_N", "N", 0, radius, colorRGBA));
 			text.attachChild(createText("_S", "S", 0, -radius, colorRGBA));
