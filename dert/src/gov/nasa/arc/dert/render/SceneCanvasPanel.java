@@ -20,6 +20,9 @@ public class SceneCanvasPanel extends Panel implements Updater {
 
 	// The SceneCanvas for this panel
 	protected SceneCanvas canvas;
+	
+	// Background panel for field camera views
+	protected Panel backgroundPanel;
 
 	// The Ardor3D scene
 	protected BasicScene scene;
@@ -44,10 +47,10 @@ public class SceneCanvasPanel extends Panel implements Updater {
 	 * @param scene
 	 * @param mainCanvas
 	 */
-	public SceneCanvasPanel(int width, int height, BasicScene scene, boolean mainCanvas) {
+	public SceneCanvasPanel(int width, int height, BasicScene bscene, boolean mainCanvas) {
 
 		// create the CanvasRenderer and SceneCanvas
-		canvasRenderer = new JoglCanvasRendererDouble(scene, false);
+		canvasRenderer = new JoglCanvasRendererDouble(bscene, false);
 		canvas = SceneCanvas.createSceneCanvas(width, height, false, canvasRenderer, mainCanvas);
 		canvas.setFocusable(true);
 
@@ -56,7 +59,7 @@ public class SceneCanvasPanel extends Panel implements Updater {
 
 			@Override
 			public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
-				resizeCanvas(width, height);
+				scene.resize(width, height);
 			}
 
 			@Override
@@ -76,8 +79,10 @@ public class SceneCanvasPanel extends Panel implements Updater {
 		};
 		canvas.addGLEventListener(listener);
 		setLayout(new BorderLayout());
-		add(canvas, BorderLayout.CENTER);
-		this.scene = scene;
+		backgroundPanel = new Panel(new BorderLayout());
+		backgroundPanel.add(canvas, BorderLayout.CENTER);
+		add(backgroundPanel, BorderLayout.CENTER);
+		scene = bscene;
 		setPreferredSize(new Dimension(width, height));
 	}
 
@@ -110,10 +115,6 @@ public class SceneCanvasPanel extends Panel implements Updater {
 	@Override
 	public void update(ReadOnlyTimer timer) {
 		scene.update(timer);
-	}
-
-	public void resizeCanvas(int width, int height) {
-		scene.resize(width, height);
 	}
 
 	public BasicScene getScene() {
