@@ -437,7 +437,7 @@ public class ToolsPanel extends JPanel {
 
 		// FieldCamera Preferences
 		gPanel = new GroupPanel("Camera");
-		gPanel.setLayout(new GridLayout(3, 2));
+		gPanel.setLayout(new GridLayout(5, 2));
 
 		gPanel.add(new JLabel("Label", SwingConstants.RIGHT));
 		checkBox = new JCheckBox("visible");
@@ -458,6 +458,28 @@ public class ToolsPanel extends JPanel {
 			}
 		};
 		gPanel.add(colorList);
+
+		gPanel.add(new JLabel("FOV", SwingConstants.RIGHT));
+		checkBox = new JCheckBox("visible");
+		checkBox.setSelected(FieldCamera.defaultFovVisible);
+		checkBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				FieldCamera.defaultFovVisible = ((JCheckBox) event.getSource()).isSelected();
+			}
+		});
+		gPanel.add(checkBox);
+
+		gPanel.add(new JLabel("LookAt Line", SwingConstants.RIGHT));
+		checkBox = new JCheckBox("visible");
+		checkBox.setSelected(FieldCamera.defaultLineVisible);
+		checkBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				FieldCamera.defaultLineVisible = ((JCheckBox) event.getSource()).isSelected();
+			}
+		});
+		gPanel.add(checkBox);
 
 		gPanel.add(new JLabel("Definition", SwingConstants.RIGHT));
 		comboBox = new JComboBox(FieldCameraInfoManager.getInstance().getFieldCameraNames());
