@@ -503,16 +503,17 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 */
 	public void saveAsCsv(String filename) {
 		CsvWriter csvWriter = null;
-		String[] column = { "X", "Y", "Z", "Dist" };
+		String[] column = { "Index", "X", "Y", "Z", "Dist" };
 		try {
 			csvWriter = new CsvWriter(filename, column);
 			csvWriter.open();
 			String[] value = new String[column.length];
 			for (int i = 0; i < vertexCount; ++i) {
-				value[0] = Double.toString(vertex[i*3]);
-				value[1] = Double.toString(vertex[i*3 + 1]);
-				value[2] = Double.toString(graphVertex[i*2 + 1]);
-				value[3] = Double.toString(graphVertex[i*2]);
+				value[0] = Integer.toString(i);
+				value[1] = Double.toString(vertex[i*3]);
+				value[2] = Double.toString(vertex[i*3 + 1]);
+				value[3] = Double.toString(graphVertex[i*2 + 1]);
+				value[4] = Double.toString(graphVertex[i*2]);
 				csvWriter.writeLine(value);
 			}
 			csvWriter.close();

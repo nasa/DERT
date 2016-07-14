@@ -768,7 +768,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		CsvWriter csvWriter = null;
 		try {
 			int n = pointSet.getNumberOfChildren();
-			String[] column = { "Name", "X", "Y", "Z", "Annotation" };
+			String[] column = { "Index", "Name", "X", "Y", "Z", "Annotation" };
 			csvWriter = new CsvWriter(filename, column);
 			csvWriter.open();
 			String[] value = new String[column.length];
@@ -780,11 +780,12 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 				double elev = landscape.getElevationAtHighestLevel(coord.getX(), coord.getY());
 				landscape.localToWorldCoordinate(coord);
 				coord.setZ(elev);
-				value[0] = wp.getName();
-				value[1] = Double.toString(coord.getX());
-				value[2] = Double.toString(coord.getY());
-				value[3] = Double.toString(coord.getZ());
-				value[4] = wp.getState().getAnnotation();
+				value[0] = Integer.toString(i);
+				value[1] = wp.getName();
+				value[2] = Double.toString(coord.getX());
+				value[3] = Double.toString(coord.getY());
+				value[4] = Double.toString(coord.getZ());
+				value[5] = wp.getState().getAnnotation();
 				csvWriter.writeLine(value);
 			}
 			csvWriter.close();

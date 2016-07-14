@@ -149,18 +149,19 @@ public class Landmarks extends GroupNode {
 		DecimalFormat formatter = new DecimalFormat(Landscape.format);
 		try {
 			int n = getNumberOfChildren();
-			String[] column = { "Name", "X", "Y", "Z", "Annotation" };
+			String[] column = { "Index", "Name", "X", "Y", "Z", "Annotation" };
 			csvWriter = new CsvWriter(filename, column);
 			csvWriter.open();
 			String[] value = new String[column.length];
 			for (int i = 0; i < n; ++i) {
 				Landmark ldmk = (Landmark) getChild(i);
 				ReadOnlyVector3 loc = ((Spatial) ldmk).getTranslation();
-				value[0] = ldmk.getName();
-				value[1] = formatter.format(loc.getX());
-				value[2] = formatter.format(loc.getY());
-				value[3] = formatter.format(loc.getZ());
-				value[4] = ldmk.getState().getAnnotation();
+				value[0] = Integer.toString(i);
+				value[1] = ldmk.getName();
+				value[2] = formatter.format(loc.getX());
+				value[3] = formatter.format(loc.getY());
+				value[4] = formatter.format(loc.getZ());
+				value[5] = ldmk.getState().getAnnotation();
 				csvWriter.writeLine(value);
 			}
 			csvWriter.close();
