@@ -60,9 +60,9 @@ public class IntSpinner extends JSpinner implements ChangeListener {
 					int maximum = (Integer) super.getMaximum();
 					int minimum = (Integer) super.getMinimum();
 					if (val < minimum) {
-						val = maximum - (minimum-val)+1;
+						val = maximum - (minimum-val)+(Integer)getStepSize();
 					} else if (val > maximum) {
-						val = val-maximum-1;
+						val = val-maximum-(Integer)getStepSize();
 					}
 					super.setValue(new Integer(val));
 				}
@@ -105,6 +105,8 @@ public class IntSpinner extends JSpinner implements ChangeListener {
 		model.removeChangeListener(this);
 		model.setMaximum(new Integer(max));
 		model.addChangeListener(this);
+		if (lastValue > max)
+			model.setValue(max);
 	}
 
 	/**
@@ -116,6 +118,8 @@ public class IntSpinner extends JSpinner implements ChangeListener {
 		model.removeChangeListener(this);
 		model.setMinimum(new Integer(min));
 		model.addChangeListener(this);
+		if (lastValue < min)
+			model.setValue(min);
 	}
 
 }

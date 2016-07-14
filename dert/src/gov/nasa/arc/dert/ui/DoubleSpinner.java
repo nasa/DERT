@@ -81,9 +81,9 @@ public class DoubleSpinner extends JSpinner implements ChangeListener {
 					double maximum = (Double) super.getMaximum();
 					double minimum = (Double) super.getMinimum();
 					if (val < minimum) {
-						val = maximum + (val - maximum);
+						val = maximum - (minimum-val)+(Double)getStepSize();
 					} else if (val > maximum) {
-						val = minimum + (val - maximum);
+						val = val-maximum-(Double)getStepSize();
 					}
 					super.setValue(new Double(val));
 				}
@@ -126,6 +126,8 @@ public class DoubleSpinner extends JSpinner implements ChangeListener {
 		model.removeChangeListener(this);
 		model.setMaximum(new Double(max));
 		model.addChangeListener(this);
+		if (lastValue > max)
+			model.setValue(max);
 	}
 
 	/**
@@ -137,6 +139,8 @@ public class DoubleSpinner extends JSpinner implements ChangeListener {
 		model.removeChangeListener(this);
 		model.setMinimum(new Double(min));
 		model.addChangeListener(this);
+		if (lastValue < min)
+			model.setValue(min);
 	}
 
 }
