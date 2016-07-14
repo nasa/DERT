@@ -1,9 +1,5 @@
 package gov.nasa.arc.dert.view.graph;
 
-import gov.nasa.arc.dert.io.CsvWriter;
-import gov.nasa.arc.dert.util.StringUtil;
-import gov.nasa.arc.dert.view.Console;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -215,39 +211,6 @@ public class Graph {
 			int ii = i * 2;
 			lineX[i] = (int) ((vertex[ii] - axes.xMin) * axes.xScale) + axes.leftMargin;
 			lineY[i] = height - (int) ((vertex[ii + 1] - axes.yMin) * axes.yScale + axes.bottomMargin);
-		}
-	}
-
-	/**
-	 * Save graph line to comma separated value formatted file
-	 * 
-	 * @param filename
-	 * @param column
-	 */
-	public void saveAsCsv(String filename, String[] column) {
-		CsvWriter csvWriter = null;
-		try {
-			csvWriter = new CsvWriter(filename, column);
-			csvWriter.open();
-			String[] value = new String[column.length];
-			if (vertex != null) {
-				for (int i = 0; i < vertexCount; ++i) {
-					value[0] = StringUtil.format(vertex[i * 2]);
-					value[1] = StringUtil.format(vertex[i * 2 + 1]);
-					csvWriter.writeLine(value);
-				}
-			}
-			csvWriter.close();
-			Console.getInstance().println(vertexCount + " records saved to " + filename);
-		} catch (Exception e) {
-			e.printStackTrace();
-			if (csvWriter != null) {
-				try {
-					csvWriter.close();
-				} catch (Exception e2) {
-					e.printStackTrace();
-				}
-			}
 		}
 	}
 	

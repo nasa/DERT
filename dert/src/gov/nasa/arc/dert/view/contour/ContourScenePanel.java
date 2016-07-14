@@ -106,15 +106,10 @@ public class ContourScenePanel extends SceneCanvasPanel {
 		inputHandler = new ContourInputHandler(contourScene.getCamera(), this);
 		inputManager = new InputManager(canvas, inputHandler);
 		Dimension size = canvas.getSize();
-		resizeCanvas(size.width, size.height);
-	}
-
-	@Override
-	public void resizeCanvas(int width, int height) {
 		if (inputManager != null) {
-			inputManager.resize(width, height);
+			inputManager.resize(size.width, size.height);
 		}
-		contourScene.resize(width, height);
+		scene.resize(size.width, size.height);
 	}
 
 	@Override

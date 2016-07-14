@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
+import gov.nasa.arc.dert.view.fieldcamera.FieldCameraView;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -57,7 +58,9 @@ public class FieldCameraPanel extends MapElementBasePanel {
 			public void actionPerformed(ActionEvent event) {
 				String fieldCameraDef = (String) defCombo.getSelectedItem();
 				if (fieldCamera.setFieldCameraDefinition(fieldCameraDef)) {
-					fieldCamera.resetCamera();
+					FieldCameraView view = (FieldCameraView)fieldCamera.getState().getViewData().getView();
+					if (view != null)
+						view.setRange(fieldCamera.getFieldCameraInfo());					
 				}
 			}
 		});

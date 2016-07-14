@@ -64,7 +64,12 @@ public class WorldScenePanel extends SceneCanvasPanel {
 		addInputManager();
 		controller.setViewpointNode(worldScene.getViewpointNode());
 		Dimension size = canvas.getSize();
-		resizeCanvas(size.width, size.height);
+		if (inputManager != null) {
+			inputManager.resize(size.width, size.height);
+		}
+		controller.resize(size.width, size.height);
+		worldScene.resize(size.width, size.height);
+		worldScene.spatialDirty(null, DirtyType.RenderState);
 		if (wState.currentViewpoint != null) {
 			worldScene.getViewpointNode().setViewpoint(wState.currentViewpoint, true, false);
 		} else {
@@ -78,16 +83,6 @@ public class WorldScenePanel extends SceneCanvasPanel {
 			super.update(timer);
 			controller.update();
 		}
-	}
-
-	@Override
-	public void resizeCanvas(int width, int height) {
-		if (inputManager != null) {
-			inputManager.resize(width, height);
-		}
-		controller.resize(width, height);
-		worldScene.resize(width, height);
-		worldScene.spatialDirty(null, DirtyType.RenderState);
 	}
 
 	/**

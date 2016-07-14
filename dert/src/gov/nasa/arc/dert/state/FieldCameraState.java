@@ -46,9 +46,12 @@ public class FieldCameraState extends ToolState {
 		fieldCameraDef = FieldCamera.defaultDefinition;
 		fovVisible = FieldCamera.defaultFovVisible;
 		lineVisible = FieldCamera.defaultLineVisible;
-		azimuth = FieldCamera.defaultAzimuth;
-		tilt = FieldCamera.defaultTilt;
-		height = FieldCamera.defaultHeight;
+//		azimuth = FieldCamera.defaultAzimuth;
+//		tilt = FieldCamera.defaultTilt;
+//		height = FieldCamera.defaultHeight;
+		azimuth = Double.NaN;
+		tilt = Double.NaN;
+		height = Double.NaN;
 		location = new Vector3(position);
 	}
 	
@@ -62,9 +65,12 @@ public class FieldCameraState extends ToolState {
 		fieldCameraDef = StateUtil.getString(map, "FieldCameraDefinition", FieldCamera.defaultDefinition);
 		fovVisible = StateUtil.getBoolean(map, "FovVisible", FieldCamera.defaultFovVisible);
 		lineVisible = StateUtil.getBoolean(map, "LineVisible", FieldCamera.defaultLineVisible);
-		azimuth = StateUtil.getDouble(map, "Azimuth", FieldCamera.defaultAzimuth);
-		tilt = StateUtil.getDouble(map, "Tilt", FieldCamera.defaultTilt);
-		height = StateUtil.getDouble(map, "Height", FieldCamera.defaultHeight);
+//		azimuth = StateUtil.getDouble(map, "Azimuth", FieldCamera.defaultAzimuth);
+//		tilt = StateUtil.getDouble(map, "Tilt", FieldCamera.defaultTilt);
+//		height = StateUtil.getDouble(map, "Height", FieldCamera.defaultHeight);
+		azimuth = StateUtil.getDouble(map, "Azimuth", Double.NaN);
+		tilt = StateUtil.getDouble(map, "Tilt", Double.NaN);
+		height = StateUtil.getDouble(map, "Height", Double.NaN);
 	}
 	
 	@Override

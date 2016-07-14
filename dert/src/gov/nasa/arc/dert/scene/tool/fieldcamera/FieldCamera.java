@@ -73,9 +73,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	public static boolean defaultFovVisible = false;
 	public static boolean defaultLineVisible = false;
 	public static boolean defaultPinned = false;
-	public static double defaultAzimuth = 0;
-	public static double defaultTilt = 0;
-	public static double defaultHeight = 1;
 	public static String defaultDefinition = "CameraDef1";
 
 	// Icon textures
@@ -139,6 +136,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		if (state.location != null) {
 			super.setTranslation(state.location);
 		}
+		basicCamera = new BasicCamera(1, 1);
 
 		// camera stand
 		Sphere base = new Sphere("_base", 50, 50, 0.25f);
@@ -161,8 +159,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 
 		fovLength = Landscape.getInstance().getWorldBound().getRadius();
 		fovVisible = state.fovVisible;
-
-		setFieldCameraDefinition(state.fieldCameraDef);
 
 		// create lookat line
 		lookAtLine = new HiddenLine("_line", Vector3.ZERO, new Vector3(0, 0, -1));
@@ -200,7 +196,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 				setFovLength(0.8 * farPlane);
 			}
 		};
-		basicCamera = new BasicCamera(1, 1, fovX, aspect, height);
 		cameraNode.setCamera(basicCamera);
 
 		mountingNode.attachChild(cameraNode);
@@ -210,16 +205,15 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		tilt = new Node("_tilt");
 		tilt.attachChild(mountingNode);
 		pan = new Node("_pan");
-		pan.setTranslation(0, 0, height);
 		pan.attachChild(tilt);
 		attachChild(pan);
 
 		// initialize other fields
 		setColor(state.color);
+
+		setFieldCameraDefinition(state.fieldCameraDef);
+		
 		changed.set(true);
-		setAzimuth(state.azimuth);
-		setElevation(state.tilt);
-		setHeight(state.height);
 
 		state.setMapElement(this);
 
@@ -255,38 +249,40 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 */
 	public boolean setFieldCameraDefinition(String fieldCameraDef) {
 		if ((this.fieldCameraDef != null) && this.fieldCameraDef.equals(fieldCameraDef)) {
-			return (false);
+			return(false);
 		}
 		this.fieldCameraDef = fieldCameraDef;
 		fieldCameraInfo = FieldCameraInfoManager.getInstance().getFieldCameraInfo(fieldCameraDef);
 		fovX = fieldCameraInfo.fovX;
 		aspect = fieldCameraInfo.fovX / fieldCameraInfo.fovY;
-		height = fieldCameraInfo.tripodHeight;
-		if (height == 0) {
-			height = 0.0001;
-		}
-		panValue = fieldCameraInfo.tripodPan;
-		tiltValue = fieldCameraInfo.tripodTilt;
-		p1.set(0, 0, height);
 
 		if (frustum != null) {
 			geomNode.detachChild(frustum);
 		}
 		float fovHgt = (float) Math.tan(Math.toRadians(fieldCameraInfo.fovY));
-		frustum = new FrustumPyramid("_frustum", fovHgt * aspect, fovHgt, 1f, fieldCameraInfo.color);
+		frustum = new FrustumPyramid("_frustum", fovHgt * aspect, fovHgt, 1, fieldCameraInfo.color);
 		frustum.getSceneHints().setAllPickingHints(false);
 		setFovLength(fovLength);
 		setFovVisible(fovVisible);
 		geomNode.attachChild(frustum);
 
 		mountingNode.setTranslation(fieldCameraInfo.mountingOffset);
-		return (true);
-	}
-
-	public void resetCamera() {
-		basicCamera = new BasicCamera(1, 1, fovX, aspect, height);
-		cameraNode.setCamera(basicCamera);
-		// changed.set(true);
+		
+		basicCamera.setFovX(fovX);
+		basicCamera.setAspect(aspect);
+		if (!Double.isNaN(state.azimuth)) 
+			setAzimuth(state.azimuth);
+		else
+			setAzimuth(fieldCameraInfo.tripodPan);
+		if (!Double.isNaN(state.tilt)) 
+			setElevation(state.tilt);
+		else
+			setElevation(fieldCameraInfo.tripodTilt);
+		if (!Double.isNaN(state.height)) 
+			setHeight(state.height);
+		else
+			setHeight(fieldCameraInfo.tripodHeight);
+		return(true);
 	}
 
 	/**
@@ -307,9 +303,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	}
 
 	private void setFovLength(double length) {
-		if (fovLength == length) {
-			return;
-		}
 		fovLength = length;
 		frustum.setScale(fovLength, fovLength, fovLength);
 	}
@@ -393,11 +386,9 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		if (basicCamera == null) {
 			return;
 		}
-		setViewport(width, width, height, 0);
 		basicCamera.resize(width, height);
 		centerX = width / 2;
 		centerY = height / 2;
-		// changed.set(true);
 	}
 
 	/**
@@ -557,6 +548,8 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 * @param height
 	 */
 	public void setHeight(double height) {
+		if (height == 0)
+			height = 0.00001;
 		this.height = height;
 		pan.setTranslation(0, 0, height);
 		p1.set(0, 0, height);
@@ -612,24 +605,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 			getSceneHints().setCullHint(CullHint.Always);
 		}
 		markDirty(DirtyType.RenderState);
-	}
-
-	private void setViewport(int width, int fullWidth, int fullHeight, int xOrigin) {
-		if (basicCamera == null) {
-			return;
-		}
-		int height = (int) (width / basicCamera.getAspect());
-		double x = xOrigin;
-		double y = 0;
-		if (height > fullHeight) {
-			height = fullHeight;
-			int oldWidth = width;
-			width = (int) (fullHeight * basicCamera.getAspect());
-			x = xOrigin + (oldWidth - width) / 2;
-		} else {
-			y = (fullHeight - height) / 2;
-		}
-		basicCamera.setViewPort(x / fullWidth, (x + width) / fullWidth, y / fullHeight, (y + height) / fullHeight);
 	}
 
 	/**
@@ -787,8 +762,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 */
 	public static void setDefaultsFromProperties(Properties properties) {
 		defaultColor = StringUtil.getColorValue(properties, "MapElement.FieldCamera.defaultColor", defaultColor, false);
-		defaultHeight = StringUtil.getDoubleValue(properties, "MapElement.FieldCamera.defaultHeight", true,
-			defaultHeight, false);
 		defaultDefinition = properties.getProperty("MapElement.FieldCamera.defaultDefinition", defaultDefinition);
 		defaultLabelVisible = StringUtil.getBooleanValue(properties, "MapElement.FieldCamera.defaultLabelVisible",
 			defaultLabelVisible, false);
@@ -798,10 +771,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 			defaultFovVisible, false);
 		defaultLineVisible = StringUtil.getBooleanValue(properties, "MapElement.FieldCamera.defaultLineVisible",
 			defaultLineVisible, false);
-		defaultAzimuth = StringUtil.getDoubleValue(properties, "MapElement.FieldCamera.defaultAzimuth", false,
-			defaultAzimuth, false);
-		defaultTilt = StringUtil.getDoubleValue(properties, "MapElement.FieldCamera.defaultTilt", false, defaultTilt,
-			false);
 	}
 
 	/**
@@ -811,13 +780,10 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 */
 	public static void saveDefaultsToProperties(Properties properties) {
 		properties.setProperty("MapElement.FieldCamera.defaultColor", StringUtil.colorToString(defaultColor));
-		properties.setProperty("MapElement.FieldCamera.defaultHeight", Double.toString(defaultHeight));
 		properties.setProperty("MapElement.FieldCamera.defaultDefinition", defaultDefinition);
 		properties.setProperty("MapElement.FieldCamera.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
 		properties.setProperty("MapElement.FieldCamera.defaultPinned", Boolean.toString(defaultPinned));
 		properties.setProperty("MapElement.FieldCamera.defaultFovVisible", Boolean.toString(defaultFovVisible));
 		properties.setProperty("MapElement.FieldCamera.defaultLineVisible", Boolean.toString(defaultLineVisible));
-		properties.setProperty("MapElement.FieldCamera.defaultAzimuth", Double.toString(defaultAzimuth));
-		properties.setProperty("MapElement.FieldCamera.defaultTilt", Double.toString(defaultTilt));
 	}
 }

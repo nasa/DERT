@@ -125,17 +125,6 @@ public class ProfileState extends ToolState {
 	}
 
 	/**
-	 * Save data as CSV formatted file
-	 * 
-	 * @param filename
-	 */
-	public void saveAsCSV(String filename) {
-		if (graph != null) {
-			graph.saveAsCsv(filename, new String[] { "Distance", "Elevation" });
-		}
-	}
-
-	/**
 	 * Get the graph
 	 * 
 	 * @return

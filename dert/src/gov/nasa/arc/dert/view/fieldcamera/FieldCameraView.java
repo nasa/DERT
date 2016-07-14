@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.view.fieldcamera;
 
+import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfo;
 import gov.nasa.arc.dert.state.FieldCameraState;
 import gov.nasa.arc.dert.view.PanelView;
 
@@ -40,6 +41,10 @@ public class FieldCameraView extends PanelView {
 	@Override
 	public void close() {
 		panel.dispose();
+	}
+	
+	public void setRange(FieldCameraInfo info) {
+		panel.setRange(info);
 	}
 
 }

@@ -24,7 +24,7 @@ public class ViewData {
 	public static int DEFAULT_WINDOW_HEIGHT = 600;
 
 	// Window dimensions
-	private int windowX = -1, windowY = -1, windowWidth = 900, windowHeight = 600;
+	private int windowX = -1, windowY = -1, windowWidth = DEFAULT_WINDOW_WIDTH, windowHeight = DEFAULT_WINDOW_HEIGHT;
 
 	// Indicates visibility
 	private boolean visible;

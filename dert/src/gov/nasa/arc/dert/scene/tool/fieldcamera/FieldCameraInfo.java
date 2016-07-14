@@ -17,18 +17,18 @@ public class FieldCameraInfo {
 
 	protected static float[] defaultColor = { 1, 1, 1, 1 };
 	protected static double[] defaultMountingOffset = { 0, 0, 0 };
-	protected static int[] defaultHeightRange = { 0, 10 };
-	protected static int[] defaultPanRange = { -180, 180 };
-	protected static int[] defaultTiltRange = { -90, 90 };
+	protected static double[] defaultHeightRange = { 0, 10 };
+	protected static double[] defaultPanRange = { -180, 180 };
+	protected static double[] defaultTiltRange = { -90, 90 };
 
 	public double fovX, fovY;
 	public int pixelWidth, pixelHeight;
 	public double tripodHeight, tripodPan, tripodTilt;
 	public ReadOnlyColorRGBA color;
 	public ReadOnlyVector3 mountingOffset;
-	public int[] panRange;
-	public int[] tiltRange;
-	public int[] heightRange;
+	public double[] panRange;
+	public double[] tiltRange;
+	public double[] heightRange;
 	public boolean frustumVisible, footprintVisible;
 
 	/**
@@ -47,11 +47,11 @@ public class FieldCameraInfo {
 		mountingOffset = new Vector3(darray[0], darray[1], darray[2]);
 
 		tripodHeight = StringUtil.getDoubleValue(properties, "TripodHeight", true, 1, false);
-		heightRange = StringUtil.getIntegerArray(properties, "TripodHeightRange", defaultHeightRange, false);
+		heightRange = StringUtil.getDoubleArray(properties, "TripodHeightRange", defaultHeightRange, false);
 		tripodPan = StringUtil.getDoubleValue(properties, "TripodPan", true, 0, false);
-		panRange = StringUtil.getIntegerArray(properties, "TripodPanRange", defaultPanRange, false);
+		panRange = StringUtil.getDoubleArray(properties, "TripodPanRange", defaultPanRange, false);
 		tripodTilt = StringUtil.getDoubleValue(properties, "TripodTilt", true, 0, false);
-		tiltRange = StringUtil.getIntegerArray(properties, "TripodTiltRange", defaultTiltRange, false);
+		tiltRange = StringUtil.getDoubleArray(properties, "TripodTiltRange", defaultTiltRange, false);
 	}
 
 }
