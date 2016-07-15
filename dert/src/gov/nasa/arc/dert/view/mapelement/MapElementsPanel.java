@@ -827,7 +827,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 				updateMapElement((MapElement) spatial);
 			}
 			if (spatial == currentMapElement) {
-				currentPanel.updateName((MapElement) spatial);
+				currentPanel.updateData((MapElement) spatial);
 			}
 			break;
 		case Transform:

@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.edit.CoordAction;
+import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
@@ -22,6 +23,7 @@ import java.text.NumberFormat;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -41,6 +43,10 @@ import com.ardor3d.scenegraph.event.DirtyType;
  *
  */
 public abstract class MapElementBasePanel extends JPanel {
+	
+	// Lock icon
+	private ImageIcon lockedIcon = Icons.getImageIcon("locked.png");
+	private ImageIcon unlockedIcon = Icons.getImageIcon("unlocked.png");
 
 	// Common controls
 	protected JPanel contents;
@@ -126,8 +132,10 @@ public abstract class MapElementBasePanel extends JPanel {
 
 		if (addCBs) {
 			panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-			pinnedCheckBox = new JCheckBox("Pin in Place");
-			pinnedCheckBox.setToolTipText("pin map element at current location");
+			pinnedCheckBox = new JCheckBox("Lock in Place");
+			pinnedCheckBox.setIcon(unlockedIcon);
+			pinnedCheckBox.setSelectedIcon(lockedIcon);
+			pinnedCheckBox.setToolTipText("lock map element at current location");
 			pinnedCheckBox.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
@@ -221,8 +229,9 @@ public abstract class MapElementBasePanel extends JPanel {
 	 * 
 	 * @param mapElement
 	 */
-	public void updateName(MapElement mapElement) {
+	public void updateData(MapElement mapElement) {
 		nameLabel.setText(mapElement.getName());
+		pinnedCheckBox.setSelected(mapElement.isPinned());
 	}
 
 	/**

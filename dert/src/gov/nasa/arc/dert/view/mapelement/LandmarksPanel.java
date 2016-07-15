@@ -5,6 +5,7 @@ import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
+import gov.nasa.arc.dert.scene.landmark.Landmarks;
 import gov.nasa.arc.dert.scene.landmark.Placemark;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.state.ConfigurationManager;
@@ -25,6 +26,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -40,6 +42,10 @@ import com.ardor3d.math.type.ReadOnlyVector3;
  *
  */
 public class LandmarksPanel extends JPanel {
+	
+	// Lock icon
+	private ImageIcon lockedIcon = Icons.getImageIcon("locked.png");
+	private ImageIcon unlockedIcon = Icons.getImageIcon("unlocked.png");
 
 	/**
 	 * Constructor
@@ -95,8 +101,29 @@ public class LandmarksPanel extends JPanel {
 		panel.add(newButton);
 		topPanel.add(panel);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 5));
 		panel.add(new JLabel("All Landmarks:"));
+
+		JButton lockButton = new JButton(lockedIcon);
+		lockButton.setToolTipText("lock all landmarks");
+		lockButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				setAllPinned(true);
+			}
+		});
+		panel.add(lockButton);
+
+		JButton unlockButton = new JButton(unlockedIcon);
+		unlockButton.setToolTipText("unlock all landmarks");
+		unlockButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				setAllPinned(false);
+			}
+		});
+		panel.add(unlockButton);
+		
 		JButton hideAllButton = new JButton("Hide");
 		hideAllButton.setToolTipText("hide all landmarks");
 		hideAllButton.addActionListener(new ActionListener() {
@@ -117,8 +144,8 @@ public class LandmarksPanel extends JPanel {
 		});
 		panel.add(showAllButton);
 
-		JButton saveAsCSVButton = new JButton("Save to File");
-		saveAsCSVButton.setToolTipText("save all landmark coordinates to a file");
+		JButton saveAsCSVButton = new JButton("To CSV");
+		saveAsCSVButton.setToolTipText("save all landmark coordinates to a CSV formatted file");
 		saveAsCSVButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -128,9 +155,7 @@ public class LandmarksPanel extends JPanel {
 		panel.add(saveAsCSVButton);
 		topPanel.add(panel);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Preferences"));
-		topPanel.add(panel);
+		topPanel.add(new JLabel("Landmark Preferences", SwingConstants.LEFT));
 		add(topPanel, BorderLayout.NORTH);
 
 		JPanel bottomPanel = new JPanel();
@@ -138,9 +163,9 @@ public class LandmarksPanel extends JPanel {
 		bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
 		// Placemark Preferences
 		GroupPanel gPanel = new GroupPanel("Placemark");
-		gPanel.setLayout(new GridLayout(4, 2));
+		gPanel.setLayout(new GridLayout(2, 4));
 
-		gPanel.add(new JLabel("Label", SwingConstants.RIGHT));
+		gPanel.add(new JLabel("Label:", SwingConstants.RIGHT));
 		JCheckBox checkBox = new JCheckBox("visible");
 		checkBox.setSelected(Placemark.defaultLabelVisible);
 		checkBox.addActionListener(new ActionListener() {
@@ -151,7 +176,7 @@ public class LandmarksPanel extends JPanel {
 		});
 		gPanel.add(checkBox);
 
-		gPanel.add(new JLabel("Icon", SwingConstants.RIGHT));
+		gPanel.add(new JLabel("Icon:", SwingConstants.RIGHT));
 		JComboBox comboBox = new JComboBox(Placemark.ICON_LABEL);
 		comboBox.setSelectedIndex(Placemark.defaultTextureIndex);
 		comboBox.addActionListener(new ActionListener() {
@@ -162,7 +187,7 @@ public class LandmarksPanel extends JPanel {
 		});
 		gPanel.add(comboBox);
 
-		gPanel.add(new JLabel("Color", SwingConstants.RIGHT));
+		gPanel.add(new JLabel("Color:", SwingConstants.RIGHT));
 		ColorSelectionPanel colorList = new ColorSelectionPanel(Placemark.defaultColor) {
 			@Override
 			public void doColor(Color color) {
@@ -171,7 +196,7 @@ public class LandmarksPanel extends JPanel {
 		};
 		gPanel.add(colorList);
 
-		gPanel.add(new JLabel("Size", SwingConstants.RIGHT));
+		gPanel.add(new JLabel("Size:", SwingConstants.RIGHT));
 		DoubleTextField sizeText = new DoubleTextField(8, Placemark.defaultSize, true, "0.00") {
 			@Override
 			protected void handleChange(double value) {
@@ -187,9 +212,9 @@ public class LandmarksPanel extends JPanel {
 
 		// Figure Preferences
 		gPanel = new GroupPanel("3D Figure");
-		gPanel.setLayout(new GridLayout(6, 2));
+		gPanel.setLayout(new GridLayout(3, 4));
 
-		gPanel.add(new JLabel("Label", SwingConstants.RIGHT));
+		gPanel.add(new JLabel("Label:", SwingConstants.RIGHT));
 		checkBox = new JCheckBox("visible");
 		checkBox.setSelected(Figure.defaultLabelVisible);
 		checkBox.addActionListener(new ActionListener() {
@@ -200,7 +225,7 @@ public class LandmarksPanel extends JPanel {
 		});
 		gPanel.add(checkBox);
 
-		gPanel.add(new JLabel("Normal", SwingConstants.RIGHT));
+		gPanel.add(new JLabel("Normal:", SwingConstants.RIGHT));
 		checkBox = new JCheckBox("visible");
 		checkBox.setSelected(Figure.defaultSurfaceNormalVisible);
 		checkBox.addActionListener(new ActionListener() {
@@ -211,7 +236,7 @@ public class LandmarksPanel extends JPanel {
 		});
 		gPanel.add(checkBox);
 
-		gPanel.add(new JLabel("Shape", SwingConstants.RIGHT));
+		gPanel.add(new JLabel("Shape:", SwingConstants.RIGHT));
 		comboBox = new JComboBox(ShapeType.values());
 		comboBox.setSelectedItem(Figure.defaultShapeType);
 		comboBox.addActionListener(new ActionListener() {
@@ -222,7 +247,7 @@ public class LandmarksPanel extends JPanel {
 		});
 		gPanel.add(comboBox);
 
-		gPanel.add(new JLabel("Color", SwingConstants.RIGHT));
+		gPanel.add(new JLabel("Color:", SwingConstants.RIGHT));
 		colorList = new ColorSelectionPanel(Figure.defaultColor) {
 			@Override
 			public void doColor(Color color) {
@@ -231,7 +256,7 @@ public class LandmarksPanel extends JPanel {
 		};
 		gPanel.add(colorList);
 
-		gPanel.add(new JLabel("Size", SwingConstants.RIGHT));
+		gPanel.add(new JLabel("Size:", SwingConstants.RIGHT));
 		sizeText = new DoubleTextField(8, Figure.defaultSize, true, "0.00") {
 			@Override
 			protected void handleChange(double value) {
@@ -243,13 +268,13 @@ public class LandmarksPanel extends JPanel {
 		};
 		gPanel.add(sizeText);
 
-		gPanel.add(new JLabel("    ", SwingConstants.RIGHT));
-		checkBox = new JCheckBox("fixed size");
-		checkBox.setSelected(Figure.defaultFixedSize);
+		gPanel.add(new JLabel("Scale:", SwingConstants.RIGHT));
+		checkBox = new JCheckBox("automatic");
+		checkBox.setSelected(Figure.defaultAutoScale);
 		checkBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				Figure.defaultFixedSize = ((JCheckBox) event.getSource()).isSelected();
+				Figure.defaultAutoScale = ((JCheckBox) event.getSource()).isSelected();
 			}
 		});
 		gPanel.add(checkBox);
@@ -258,9 +283,9 @@ public class LandmarksPanel extends JPanel {
 
 		// Image Billboard Preferences
 		gPanel = new GroupPanel("Billboard");
-		gPanel.setLayout(new GridLayout(2, 2));
+		gPanel.setLayout(new GridLayout(1, 2));
 
-		gPanel.add(new JLabel("Label", SwingConstants.RIGHT));
+		gPanel.add(new JLabel("Label:", SwingConstants.RIGHT));
 		checkBox = new JCheckBox("visible");
 		checkBox.setSelected(ImageBoard.defaultLabelVisible);
 		checkBox.addActionListener(new ActionListener() {
@@ -271,7 +296,7 @@ public class LandmarksPanel extends JPanel {
 		});
 		gPanel.add(checkBox);
 
-		gPanel.add(new JLabel("Size", SwingConstants.RIGHT));
+		gPanel.add(new JLabel("Size:", SwingConstants.RIGHT));
 		sizeText = new DoubleTextField(8, ImageBoard.defaultSize, true, "0.00") {
 			@Override
 			protected void handleChange(double value) {
@@ -305,5 +330,15 @@ public class LandmarksPanel extends JPanel {
 	 */
 	public void setAllVisible(boolean visible) {
 		// nothing here
+	}
+
+	/**
+	 * Set all Landmarks visibility. Overridden by implementing class.
+	 * 
+	 * @param visible
+	 */
+	public void setAllPinned(boolean pin) {
+		Landmarks landmarks = World.getInstance().getLandmarks();
+		landmarks.setAllPinned(pin);
 	}
 }

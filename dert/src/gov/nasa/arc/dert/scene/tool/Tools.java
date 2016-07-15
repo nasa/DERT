@@ -160,6 +160,17 @@ public class Tools extends GroupNode {
 	}
 
 	/**
+	 * Pin all the tools
+	 * 
+	 * @param pin
+	 */
+	public void setAllPinned(boolean pin) {
+		for (int i = 0; i < getNumberOfChildren(); ++i) {
+			((Tool) getChild(i)).setPinned(pin);
+		}
+	}
+
+	/**
 	 * Get a list of tools that are Paths
 	 * 
 	 * @return

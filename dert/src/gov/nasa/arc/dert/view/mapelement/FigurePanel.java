@@ -35,7 +35,7 @@ public class FigurePanel extends MapElementBasePanel {
 	private Figure figure;
 
 	// surface normal
-	private JCheckBox surfaceButton, fixedSizeButton;
+	private JCheckBox surfaceButton, autoScaleButton;
 
 	// select shape
 	private JComboBox shapeCombo;
@@ -94,15 +94,15 @@ public class FigurePanel extends MapElementBasePanel {
 			}
 		};
 		panel.add(sizeText);
-		fixedSizeButton = new JCheckBox("Fixed");
-		fixedSizeButton.setToolTipText("lock size at current value");
-		fixedSizeButton.addActionListener(new ActionListener() {
+		autoScaleButton = new JCheckBox("Autoscale");
+		autoScaleButton.setToolTipText("maintain size with change in viewpoint");
+		autoScaleButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				figure.setFixedSize(fixedSizeButton.isSelected());
+				figure.setAutoScale(autoScaleButton.isSelected());
 			}
 		});
-		panel.add(fixedSizeButton);
+		panel.add(autoScaleButton);
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -156,7 +156,7 @@ public class FigurePanel extends MapElementBasePanel {
 		colorList.setColor(figure.getColor());
 		sizeText.setValue(figure.getSize());
 		shapeCombo.setSelectedItem(figure.getShapeType());
-		fixedSizeButton.setSelected(figure.isFixedSize());
+		autoScaleButton.setSelected(figure.isAutoScale());
 		surfaceButton.setSelected(figure.isSurfaceNormalVisible());
 		azSpinner.setValue(figure.getAzimuth());
 		tiltSpinner.setValue(figure.getTilt());

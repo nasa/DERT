@@ -16,6 +16,7 @@ import gov.nasa.arc.dert.action.mapelement.EditAction;
 import gov.nasa.arc.dert.action.mapelement.HideMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.OpenAnnotationAction;
 import gov.nasa.arc.dert.action.mapelement.OpenBillboardAction;
+import gov.nasa.arc.dert.action.mapelement.PinMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.PlaceHereAction;
 import gov.nasa.arc.dert.action.mapelement.RenameAction;
 import gov.nasa.arc.dert.render.SceneCanvasPanel;
@@ -336,12 +337,14 @@ public class WorldInputHandler implements InputHandler {
 							menu.add(new DeleteMapElementAction(((Waypoint) mapElement).getPath()));
 							menu.add(new RenameAction(((Waypoint) mapElement).getPath()));
 							menu.add(new EditAction(((Waypoint) mapElement).getPath()));
+							menu.add(new PinMapElementAction(((Waypoint) mapElement).getPath()));
 							menu.add(new OpenAnnotationAction(mapElement));
 						} else if (!(mapElement instanceof LineSet)) {
 							menu.add(new HideMapElementAction(mapElement));
 							menu.add(new DeleteMapElementAction(mapElement));
 							menu.add(new RenameAction(mapElement));
 							menu.add(new EditAction(mapElement));
+							menu.add(new PinMapElementAction(mapElement));
 							menu.add(new OpenAnnotationAction(mapElement));
 							if (mapElement instanceof ImageBoard) {
 								menu.add(new OpenBillboardAction((ImageBoard) mapElement));
@@ -354,6 +357,7 @@ public class WorldInputHandler implements InputHandler {
 							menu.add(new DeleteMapElementAction((MapElement) parent));
 							menu.add(new RenameAction((MapElement) parent));
 							menu.add(new EditAction((MapElement) parent));
+							menu.add(new PinMapElementAction((MapElement) parent));
 							menu.add(new OpenAnnotationAction((MapElement) parent));
 						}
 					}

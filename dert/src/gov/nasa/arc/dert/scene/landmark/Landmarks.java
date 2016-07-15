@@ -137,6 +137,17 @@ public class Landmarks extends GroupNode {
 	}
 
 	/**
+	 * Pin all the landmarks
+	 * 
+	 * @param pin
+	 */
+	public void setAllPinned(boolean pin) {
+		for (int i = 0; i < getNumberOfChildren(); ++i) {
+			((Landmark) getChild(i)).setPinned(pin);
+		}
+	}
+
+	/**
 	 * Save landmark data to a file
 	 */
 	public void saveToFile() {

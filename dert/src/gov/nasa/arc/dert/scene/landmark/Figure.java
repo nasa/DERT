@@ -30,7 +30,7 @@ public class Figure extends FigureMarker implements Landmark {
 	public static double defaultSize = 1.0f;
 	public static ShapeType defaultShapeType = ShapeType.box;
 	public static boolean defaultLabelVisible = true;
-	public static boolean defaultFixedSize = false;
+	public static boolean defaultAutoScale = true;
 	public static boolean defaultSurfaceNormalVisible = false;
 	public static boolean defaultPinned = false;
 	public static double defaultAzimuth = 0;
@@ -45,7 +45,7 @@ public class Figure extends FigureMarker implements Landmark {
 	 * @param state
 	 */
 	public Figure(FigureState state) {
-		super(state.name, state.position, state.size, state.color, state.labelVisible, state.fixedSize, state.pinned);
+		super(state.name, state.position, state.size, state.color, state.labelVisible, state.autoScale, state.pinned);
 		setShape(state.shape);
 		setAzimuth(state.azimuth);
 		setTilt(state.tilt);
@@ -121,8 +121,7 @@ public class Figure extends FigureMarker implements Landmark {
 		defaultLabelVisible = StringUtil.getBooleanValue(properties, "MapElement.Figure.defaultLabelVisible",
 			defaultLabelVisible, false);
 		defaultPinned = StringUtil.getBooleanValue(properties, "MapElement.Figure.defaultPinned", defaultPinned, false);
-		defaultFixedSize = StringUtil.getBooleanValue(properties, "MapElement.Figure.defaultFixedSize",
-			defaultFixedSize, false);
+		defaultAutoScale = StringUtil.getBooleanValue(properties, "MapElement.Figure.defaultAutoScale", defaultAutoScale, false);
 		defaultSurfaceNormalVisible = StringUtil.getBooleanValue(properties,
 			"MapElement.Figure.defaultSurfaceNormalVisible", defaultSurfaceNormalVisible, false);
 		defaultAzimuth = StringUtil.getDoubleValue(properties, "MapElement.Figure.defaultAzimuth", false,
@@ -141,9 +140,8 @@ public class Figure extends FigureMarker implements Landmark {
 		properties.setProperty("MapElement.Figure.defaultShapeType", defaultShapeType.toString());
 		properties.setProperty("MapElement.Figure.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
 		properties.setProperty("MapElement.Figure.defaultPinned", Boolean.toString(defaultPinned));
-		properties.setProperty("MapElement.Figure.defaultFixedSize", Boolean.toString(defaultFixedSize));
-		properties.setProperty("MapElement.Figure.defaultSurfaceNormalVisible",
-			Boolean.toString(defaultSurfaceNormalVisible));
+		properties.setProperty("MapElement.Figure.defaultAutoScale", Boolean.toString(defaultAutoScale));
+		properties.setProperty("MapElement.Figure.defaultSurfaceNormalVisible", Boolean.toString(defaultSurfaceNormalVisible));
 		properties.setProperty("MapElement.Figure.defaultAzimuth", Double.toString(defaultAzimuth));
 		properties.setProperty("MapElement.Figure.defaultTilt", Double.toString(defaultTilt));
 	}

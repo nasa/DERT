@@ -25,7 +25,7 @@ public class FigureState extends LandmarkState {
 	public ShapeType shape;
 
 	// Options
-	public boolean showNormal, fixedSize;
+	public boolean showNormal, autoScale;
 
 	/**
 	 * Constructor
@@ -42,7 +42,7 @@ public class FigureState extends LandmarkState {
 		tilt = Figure.defaultTilt;
 		shape = Figure.defaultShapeType;
 		showNormal = Figure.defaultSurfaceNormalVisible;
-		fixedSize = Figure.defaultFixedSize;
+		autoScale = Figure.defaultAutoScale;
 	}
 	
 	/**
@@ -61,7 +61,7 @@ public class FigureState extends LandmarkState {
 			shape = Figure.defaultShapeType;
 		}
 		showNormal = StateUtil.getBoolean(map, "ShowNormal", Figure.defaultSurfaceNormalVisible);
-		fixedSize = StateUtil.getBoolean(map, "FixedSize", Figure.defaultFixedSize);
+		autoScale = StateUtil.getBoolean(map, "AutoScale", Figure.defaultAutoScale);
 	}
 	
 	@Override
@@ -81,7 +81,7 @@ public class FigureState extends LandmarkState {
 			return(false);
 		if (this.showNormal != that.showNormal) 
 			return(false);
-		if (this.fixedSize != that.fixedSize) 
+		if (this.autoScale != that.autoScale) 
 			return(false);
 		return(true);
 	}
@@ -96,21 +96,21 @@ public class FigureState extends LandmarkState {
 			tilt = figure.getTilt();
 			shape = figure.getShapeType();
 			showNormal = figure.isSurfaceNormalVisible();
-			fixedSize = figure.isFixedSize();
+			autoScale = figure.isAutoScale();
 		}
 		StateUtil.putVector3(map, "Normal", normal);
 		map.put("Azimuth", new Double(azimuth));
 		map.put("Tilt", new Double(tilt));
 		map.put("Shape", shape.toString());
 		map.put("ShowNormal", new Boolean(showNormal));
-		map.put("FixedSize", new Boolean(fixedSize));
+		map.put("AutoScale", new Boolean(autoScale));
 		return(map);
 	}
 	
 	@Override
 	public String toString() {
 		String str = super.toString();
-		str = "["+azimuth+","+tilt+","+normal+","+shape+","+showNormal+","+fixedSize+"] "+str;
+		str = "["+azimuth+","+tilt+","+normal+","+shape+","+showNormal+","+autoScale+"] "+str;
 		return(str);
 	}
 }

@@ -9,6 +9,7 @@ import com.ardor3d.bounding.BoundingVolume;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Node;
+import com.ardor3d.scenegraph.event.DirtyType;
 
 /**
  * Abstract base class for objects that can be moved along the terrain.
@@ -48,6 +49,7 @@ public abstract class Movable extends Node {
 		if (pinned) {
 			inMotion = false;
 		}
+		markDirty(DirtyType.RenderState);
 	}
 
 	/**

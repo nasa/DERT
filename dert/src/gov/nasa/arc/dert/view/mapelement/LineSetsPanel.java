@@ -4,7 +4,6 @@ import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.LineSet;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
-import gov.nasa.arc.dert.ui.GroupPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -33,7 +32,7 @@ public class LineSetsPanel extends JPanel {
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		setLayout(new BorderLayout());
 
-		JPanel topPanel = new JPanel(new GridLayout(2, 1));
+		JPanel topPanel = new JPanel(new GridLayout(3, 1));
 
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Add:"));
@@ -71,21 +70,22 @@ public class LineSetsPanel extends JPanel {
 		});
 		panel.add(showAllButton);
 		topPanel.add(panel);
+		topPanel.add(new JLabel("LineSet Preferences", SwingConstants.LEFT));
 		add(topPanel, BorderLayout.NORTH);
 
 		// LineSet Preferences
-		GroupPanel gPanel = new GroupPanel("Preferences");
-		gPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		panel = new JPanel();
+		panel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-		gPanel.add(new JLabel("Color", SwingConstants.RIGHT));
+		panel.add(new JLabel("Color:", SwingConstants.RIGHT));
 		ColorSelectionPanel colorList = new ColorSelectionPanel(LineSet.defaultColor) {
 			@Override
 			public void doColor(Color color) {
 				LineSet.defaultColor = color;
 			}
 		};
-		gPanel.add(colorList);
-		add(gPanel, BorderLayout.CENTER);
+		panel.add(colorList);
+		add(panel, BorderLayout.CENTER);
 	}
 
 	/**

@@ -33,17 +33,17 @@ public class FigureMarker extends Marker {
 	protected DirectionArrow surfaceNormalArrow;
 	protected Vector3 surfaceNormal = new Vector3();
 
-	// flag to maintain the original size as viewpoint changes. If false, resize
+	// flag to maintain the original size as viewpoint changes. If true, resize
 	// as viewpoint changes.
-	protected boolean fixedSize;
+	protected boolean autoScale;
 
 	/**
 	 * Constructor
 	 */
 	public FigureMarker(String name, ReadOnlyVector3 point, double size, Color color, boolean labelVisible,
-		boolean fixedSize, boolean pinned) {
+		boolean autoScale, boolean pinned) {
 		super(name, point, (float) size, color, labelVisible, pinned);
-		this.fixedSize = fixedSize;
+		this.autoScale = autoScale;
 		surfaceNormalArrow = new DirectionArrow("Surface Normal", 2, ColorRGBA.RED);
 		surfaceNormalArrow.getSceneHints().setCullHint(CullHint.Always);
 		contents.attachChild(surfaceNormalArrow);
@@ -97,8 +97,8 @@ public class FigureMarker extends Marker {
 	 * 
 	 * @return
 	 */
-	public boolean isFixedSize() {
-		return (fixedSize);
+	public boolean isAutoScale() {
+		return (autoScale);
 	}
 
 	/**
@@ -186,12 +186,12 @@ public class FigureMarker extends Marker {
 	 * 
 	 * @param fixed
 	 */
-	public void setFixedSize(boolean fixed) {
-		if (fixedSize == fixed) {
+	public void setAutoScale(boolean auto) {
+		if (autoScale == auto) {
 			return;
 		}
-		fixedSize = fixed;
-		if (fixedSize) {
+		autoScale = auto;
+		if (!autoScale) {
 			oldScale = scale;
 			scale = 1;
 		} else {
@@ -209,7 +209,7 @@ public class FigureMarker extends Marker {
 		scale = camera.getPixelSizeAt(getWorldTranslation(), true) * PIXEL_SIZE;
 		if (Math.abs(scale - oldScale) > 0.0000001) {
 			oldScale = scale;
-			if (!fixedSize) {
+			if (autoScale) {
 				scaleShape(scale);
 			}
 		}

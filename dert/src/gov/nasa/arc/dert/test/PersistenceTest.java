@@ -107,7 +107,7 @@ public class PersistenceTest {
 		f.tilt = 0.33;
 		f.shape = ShapeType.cylinder;
 		f.showNormal = true;
-		f.fixedSize = true;
+		f.autoScale = false;
 		f.visible = false;
 		f.pinned = true;
 		f.labelVisible = false;
