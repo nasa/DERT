@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.scene.tool;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
@@ -113,6 +114,7 @@ public class Tools extends GroupNode {
 			break;
 		case FieldCamera:
 			tool = new FieldCamera((FieldCameraState) state);
+			Landscape.getInstance().getLayerManager().addFieldCamera((FieldCamera)tool);
 			break;
 		case CartesianGrid:
 			tool = new CartesianGrid((GridState) state);

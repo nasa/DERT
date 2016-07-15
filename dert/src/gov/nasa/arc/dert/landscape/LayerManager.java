@@ -405,7 +405,7 @@ public class LayerManager {
 		ColorBarPanel.resetColorBars();
 	}
 
-	private Layer createLayer(LayerInfo layerInfo, TileSource source, int textureUnit) {
+	private Layer createLayer(LayerInfo layerInfo, TileSource source, int index) {
 		try {
 			if (layerInfo.type == LayerType.none) {
 				return (null);
@@ -420,7 +420,7 @@ public class LayerManager {
 					return (null);
 				}
 			} else if ((layerInfo.type == LayerType.footprint) || (layerInfo.type == LayerType.viewshed)) {
-				return (new FieldCameraLayer(layerInfo, textureUnit));
+				return (new FieldCameraLayer(layerInfo, index-1));
 			} else {
 				return (new RasterLayer(layerInfo, source));
 			}

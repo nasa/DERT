@@ -147,17 +147,26 @@ public class LayerConfigurationDialog extends AbstractDialog {
 		add.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
+				// get the index of the slot in the visible layers
 				int selectedIndex = selectedLayerList.getSelectedIndex();
+				// get the index of the layer selected from the available layers
 				int index = layerList.getSelectedIndex();
+				// remove the selected layer from the available layers
 				LayerInfo li = layers.remove(index);
+				// get the layer from the slot selected in the visible layers
 				LayerInfo sli = selectedLayers.get(selectedIndex);
+				// put the newly selected layer into the slot
 				selectedLayers.set(selectedIndex, li);
+				// set the layer number (0=surface, 1=first layer, 2=second layer ...)
 				li.layerNumber = selectedIndex + 1;
+				// put the updated visible list in the list display
 				selectedLayerList.setListData(selectedLayers);
+				// put the old layer back in the available layers list
 				if (sli.type != LayerType.none) {
 					sli.layerNumber = -1;
 					layers.add(sli);
 				}
+				// update the available list in the list display
 				layerList.setListData(layers);
 				selectedLayerList.setSelectedIndex(selectedIndex);
 			}
