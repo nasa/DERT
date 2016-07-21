@@ -51,7 +51,6 @@ public class Profile extends Node implements ViewDependent, Tool {
 	public static float defaultSize = 1;
 	public static Color defaultColor = Color.blue;
 	public static boolean defaultLabelVisible = true;
-	public static boolean defaultPinned = false;
 	public static float defaultLineWidth = 2.0f;
 
 	// Endpoint icon texture
@@ -479,8 +478,6 @@ public class Profile extends Node implements ViewDependent, Tool {
 				defaultLineWidth, false);
 		defaultLabelVisible = StringUtil.getBooleanValue(properties, "MapElement.Profile.defaultLabelVisible",
 			defaultLabelVisible, false);
-		defaultPinned = StringUtil
-			.getBooleanValue(properties, "MapElement.Profile.defaultPinned", defaultPinned, false);
 	}
 
 	/**
@@ -493,7 +490,6 @@ public class Profile extends Node implements ViewDependent, Tool {
 		properties.setProperty("MapElement.Profile.defaultSize", Float.toString(defaultSize));
 		properties.setProperty("MapElement.Profile.defaultLineWidth", Float.toString(defaultLineWidth));
 		properties.setProperty("MapElement.Profile.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
-		properties.setProperty("MapElement.Profile.defaultPinned", Boolean.toString(defaultPinned));
 	}
 
 	/**

@@ -110,6 +110,7 @@ public class Landmarks extends GroupNode {
 		case RadialGrid:
 		case Waypoint:
 		case Marble:
+		case Scale:
 			break;
 		}
 		if (landmark != null) {

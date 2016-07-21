@@ -39,7 +39,7 @@ public class GridState extends ToolState {
 	 */
 	public static GridState createCartesianGridState(ReadOnlyVector3 position) {
 		GridState state = new GridState(MapElementState.Type.CartesianGrid, "CartesianGrid", Grid.defaultCellSize,
-			CartesianGrid.defaultColor, CartesianGrid.defaultLabelVisible, CartesianGrid.defaultPinned, position,
+			CartesianGrid.defaultColor, CartesianGrid.defaultLabelVisible, position,
 			CartesianGrid.defaultLineWidth);
 		state.columns = CartesianGrid.defaultColumns;
 		state.rows = CartesianGrid.defaultRows;
@@ -54,7 +54,7 @@ public class GridState extends ToolState {
 	 */
 	public static GridState createRadialGridState(ReadOnlyVector3 position) {
 		GridState state = new GridState(MapElementState.Type.RadialGrid, "RadialGrid", Grid.defaultCellSize,
-			RadialGrid.defaultColor, RadialGrid.defaultLabelVisible, RadialGrid.defaultPinned, position,
+			RadialGrid.defaultColor, RadialGrid.defaultLabelVisible, position,
 			RadialGrid.defaultLineWidth);
 		state.rings = RadialGrid.defaultRings;
 		state.compassRose = RadialGrid.defaultCompassRose;
@@ -95,9 +95,9 @@ public class GridState extends ToolState {
 	 * @param position
 	 */
 	protected GridState(MapElementState.Type type, String prefix, double size, Color color, boolean labelVisible,
-		boolean pinned, ReadOnlyVector3 position, float lineWidth) {
+		ReadOnlyVector3 position, float lineWidth) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration().incrementMapElementCount(type), type,
-			prefix, size, color, labelVisible, pinned);
+			prefix, size, color, labelVisible);
 		location = new Vector3(position);
 		this.lineWidth = lineWidth;
 	}

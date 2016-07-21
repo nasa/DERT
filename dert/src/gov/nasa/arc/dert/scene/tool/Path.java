@@ -66,7 +66,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	public static Color defaultColor = Color.magenta;
 	public static boolean defaultLabelVisible = true;
 	public static boolean defaultWaypointsVisible = true;
-	public static boolean defaultPinned = false;
 
 	// Type of waypoint label
 	private LabelType labelType = LabelType.Name;
@@ -1038,7 +1037,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			defaultLabelVisible, false);
 		defaultWaypointsVisible = StringUtil.getBooleanValue(properties, "MapElement.Path.defaultWaypointsVisible",
 			defaultWaypointsVisible, false);
-		defaultPinned = StringUtil.getBooleanValue(properties, "MapElement.Path.defaultPinned", defaultPinned, false);
 	}
 
 	/**
@@ -1054,7 +1052,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		properties.setProperty("MapElement.Path.defaultLabelType", defaultLabelType.toString());
 		properties.setProperty("MapElement.Path.defaultWaypointsVisible", Boolean.toString(defaultWaypointsVisible));
 		properties.setProperty("MapElement.Path.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
-		properties.setProperty("MapElement.Path.defaultPinned", Boolean.toString(defaultPinned));
 	}
 	
 	public static BodyType stringToBodyType(String str) {

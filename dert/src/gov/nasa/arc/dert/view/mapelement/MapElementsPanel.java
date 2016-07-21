@@ -81,6 +81,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	private RadialGridPanel radialGridPanel;
 	private FieldCameraPanel fieldCameraPanel;
 	private ProfilePanel profilePanel;
+	private ScalePanel scalePanel;
 
 	// MapElement category panels
 	private LandmarksPanel landmarksPanel;
@@ -790,6 +791,12 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			}
 			currentPanel = profilePanel;
 			break;
+		case Scale:
+			if (scalePanel == null) {
+				scalePanel = new ScalePanel(this);
+			}
+			currentPanel = scalePanel;
+			break;
 		case Waypoint:
 			if (pathPanel == null) {
 				pathPanel = new PathPanel(this);
@@ -880,6 +887,9 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		}
 		if (profilePanel != null) {
 			profilePanel.dispose();
+		}
+		if (scalePanel != null) {
+			scalePanel.dispose();
 		}
 		
 	}

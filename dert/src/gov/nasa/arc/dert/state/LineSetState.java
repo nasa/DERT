@@ -23,9 +23,10 @@ public class LineSetState extends MapElementState {
 	 * @param color
 	 */
 	public LineSetState(String name, String filePath, Color color) {
-		super(0, MapElementState.Type.LineSet, "", 1.0, color, false, true);
+		super(0, MapElementState.Type.LineSet, "", 1.0, color, false);
 		this.name = name;
 		this.filePath = filePath;
+		pinned = true;
 	}
 
 	/**
@@ -39,10 +40,11 @@ public class LineSetState extends MapElementState {
 	public LineSetState(String name, String filePath, Color color, String notes) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.LineSet), MapElementState.Type.LineSet, "", 1.0, color,
-			false, true);
+			false);
 		this.name = name;
 		this.filePath = filePath;
 		this.annotation = notes;
+		pinned = true;
 	}
 	
 	/**

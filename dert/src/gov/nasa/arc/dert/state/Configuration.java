@@ -128,6 +128,9 @@ public class Configuration {
 						case Marble:
 							mapElementStateList.add(new MarbleState(meMap));
 							break;
+						case Scale:
+							mapElementStateList.add(new ScaleState(meMap));
+							break;
 						}
 				}
 				catch (Exception e) {

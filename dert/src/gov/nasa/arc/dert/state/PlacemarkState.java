@@ -23,8 +23,7 @@ public class PlacemarkState extends LandmarkState {
 	 */
 	public PlacemarkState(ReadOnlyVector3 position) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration().incrementMapElementCount(MapElementState.Type.Placemark),
-			MapElementState.Type.Placemark, "Placemark", Placemark.defaultSize, Placemark.defaultColor, Placemark.defaultLabelVisible,
-			Placemark.defaultPinned, position);
+			MapElementState.Type.Placemark, "Placemark", Placemark.defaultSize, Placemark.defaultColor, Placemark.defaultLabelVisible, position);
 		textureIndex = Placemark.defaultTextureIndex;
 	}
 	

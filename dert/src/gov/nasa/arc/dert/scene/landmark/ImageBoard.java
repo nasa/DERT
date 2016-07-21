@@ -26,7 +26,6 @@ public class ImageBoard extends BillboardMarker implements Landmark {
 	// Defaults
 	public static double defaultSize = 1.0;
 	public static boolean defaultLabelVisible = true;
-	public static boolean defaultPinned = false;
 	public static String defaultImagePath;
 	protected static Texture defaultTexture;
 
@@ -130,8 +129,6 @@ public class ImageBoard extends BillboardMarker implements Landmark {
 			defaultSize, false);
 		defaultLabelVisible = StringUtil.getBooleanValue(properties, "MapElement.ImageBoard.defaultLabelVisible",
 			defaultLabelVisible, false);
-		defaultPinned = StringUtil.getBooleanValue(properties, "MapElement.ImageBoard.defaultPinned", defaultPinned,
-			false);
 	}
 
 	/**
@@ -142,7 +139,6 @@ public class ImageBoard extends BillboardMarker implements Landmark {
 	public static void saveDefaultsToProperties(Properties properties) {
 		properties.setProperty("MapElement.ImageBoard.defaultSize", Double.toString(defaultSize));
 		properties.setProperty("MapElement.ImageBoard.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
-		properties.setProperty("MapElement.ImageBoard.defaultPinned", Boolean.toString(defaultPinned));
 	}
 
 }

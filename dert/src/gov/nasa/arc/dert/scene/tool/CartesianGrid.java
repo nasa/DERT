@@ -25,7 +25,6 @@ public class CartesianGrid extends Grid {
 	public static int defaultRows = 10;
 	public static int defaultColumns = 10;
 	public static boolean defaultLabelVisible = false;
-	public static boolean defaultPinned = false;
 	public static boolean defaultActualCoordinates = false;
 	public static float defaultLineWidth = 2;
 
@@ -203,8 +202,6 @@ public class CartesianGrid extends Grid {
 				defaultLineWidth, false);
 		defaultLabelVisible = StringUtil.getBooleanValue(properties, "MapElement.CartesianGrid.defaultLabelVisible",
 			defaultLabelVisible, false);
-		defaultPinned = StringUtil.getBooleanValue(properties, "MapElement.CartesianGrid.defaultPinned", defaultPinned,
-			false);
 		defaultActualCoordinates = StringUtil.getBooleanValue(properties,
 			"MapElement.CartesianGrid.defaultActualCoordinates", defaultActualCoordinates, false);
 	}
@@ -220,7 +217,6 @@ public class CartesianGrid extends Grid {
 		properties.setProperty("MapElement.CartesianGrid.defaultColumns", Integer.toString(defaultColumns));
 		properties.setProperty("MapElement.CartesianGrid.defaultLineWidth", Double.toString(defaultLineWidth));
 		properties.setProperty("MapElement.CartesianGrid.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
-		properties.setProperty("MapElement.CartesianGrid.defaultPinned", Boolean.toString(defaultPinned));
 		properties.setProperty("MapElement.CartesianGrid.defaultActualCoordinates",
 			Boolean.toString(defaultActualCoordinates));
 	}

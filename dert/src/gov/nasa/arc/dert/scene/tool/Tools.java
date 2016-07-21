@@ -10,6 +10,7 @@ import gov.nasa.arc.dert.state.GridState;
 import gov.nasa.arc.dert.state.PathState;
 import gov.nasa.arc.dert.state.PlaneState;
 import gov.nasa.arc.dert.state.ProfileState;
+import gov.nasa.arc.dert.state.ScaleState;
 import gov.nasa.arc.dert.state.ToolState;
 
 import java.util.ArrayList;
@@ -121,6 +122,9 @@ public class Tools extends GroupNode {
 			break;
 		case RadialGrid:
 			tool = new RadialGrid((GridState) state);
+			break;
+		case Scale:
+			tool = new Scale((ScaleState)state);
 			break;
 		case Waypoint:
 		case Marble:

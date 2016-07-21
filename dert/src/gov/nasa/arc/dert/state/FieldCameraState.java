@@ -40,15 +40,12 @@ public class FieldCameraState extends ToolState {
 	public FieldCameraState(ReadOnlyVector3 position) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.FieldCamera), MapElementState.Type.FieldCamera, "Camera", 1,
-			FieldCamera.defaultColor, FieldCamera.defaultLabelVisible, FieldCamera.defaultPinned);
+			FieldCamera.defaultColor, FieldCamera.defaultLabelVisible);
 		viewData = new ViewData(-1, -1, 600, 500, false);
 		viewData.setVisible(true);
 		fieldCameraDef = FieldCamera.defaultDefinition;
 		fovVisible = FieldCamera.defaultFovVisible;
 		lineVisible = FieldCamera.defaultLineVisible;
-//		azimuth = FieldCamera.defaultAzimuth;
-//		tilt = FieldCamera.defaultTilt;
-//		height = FieldCamera.defaultHeight;
 		azimuth = Double.NaN;
 		tilt = Double.NaN;
 		height = Double.NaN;
@@ -65,9 +62,6 @@ public class FieldCameraState extends ToolState {
 		fieldCameraDef = StateUtil.getString(map, "FieldCameraDefinition", FieldCamera.defaultDefinition);
 		fovVisible = StateUtil.getBoolean(map, "FovVisible", FieldCamera.defaultFovVisible);
 		lineVisible = StateUtil.getBoolean(map, "LineVisible", FieldCamera.defaultLineVisible);
-//		azimuth = StateUtil.getDouble(map, "Azimuth", FieldCamera.defaultAzimuth);
-//		tilt = StateUtil.getDouble(map, "Tilt", FieldCamera.defaultTilt);
-//		height = StateUtil.getDouble(map, "Height", FieldCamera.defaultHeight);
 		azimuth = StateUtil.getDouble(map, "Azimuth", Double.NaN);
 		tilt = StateUtil.getDouble(map, "Tilt", Double.NaN);
 		height = StateUtil.getDouble(map, "Height", Double.NaN);

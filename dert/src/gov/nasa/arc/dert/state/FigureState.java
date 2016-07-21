@@ -36,7 +36,7 @@ public class FigureState extends LandmarkState {
 	public FigureState(ReadOnlyVector3 position, ReadOnlyVector3 normal) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.Figure), MapElementState.Type.Figure, "Figure",
-			Figure.defaultSize, Figure.defaultColor, Figure.defaultLabelVisible, Figure.defaultPinned, position);
+			Figure.defaultSize, Figure.defaultColor, Figure.defaultLabelVisible, position);
 		this.normal = new Vector3(normal);
 		azimuth = Figure.defaultAzimuth;
 		tilt = Figure.defaultTilt;

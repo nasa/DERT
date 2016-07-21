@@ -72,7 +72,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	public static boolean defaultLabelVisible = true;
 	public static boolean defaultFovVisible = false;
 	public static boolean defaultLineVisible = false;
-	public static boolean defaultPinned = false;
 	public static String defaultDefinition = "CameraDef1";
 
 	// Icon textures
@@ -765,8 +764,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		defaultDefinition = properties.getProperty("MapElement.FieldCamera.defaultDefinition", defaultDefinition);
 		defaultLabelVisible = StringUtil.getBooleanValue(properties, "MapElement.FieldCamera.defaultLabelVisible",
 			defaultLabelVisible, false);
-		defaultPinned = StringUtil.getBooleanValue(properties, "MapElement.FieldCamera.defaultPinned", defaultPinned,
-			false);
 		defaultFovVisible = StringUtil.getBooleanValue(properties, "MapElement.FieldCamera.defaultFovVisible",
 			defaultFovVisible, false);
 		defaultLineVisible = StringUtil.getBooleanValue(properties, "MapElement.FieldCamera.defaultLineVisible",
@@ -782,7 +779,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		properties.setProperty("MapElement.FieldCamera.defaultColor", StringUtil.colorToString(defaultColor));
 		properties.setProperty("MapElement.FieldCamera.defaultDefinition", defaultDefinition);
 		properties.setProperty("MapElement.FieldCamera.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
-		properties.setProperty("MapElement.FieldCamera.defaultPinned", Boolean.toString(defaultPinned));
 		properties.setProperty("MapElement.FieldCamera.defaultFovVisible", Boolean.toString(defaultFovVisible));
 		properties.setProperty("MapElement.FieldCamera.defaultLineVisible", Boolean.toString(defaultLineVisible));
 	}

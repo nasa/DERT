@@ -8,7 +8,6 @@ import gov.nasa.arc.dert.scenegraph.RasterText;
 import gov.nasa.arc.dert.scenegraph.Text.AlignType;
 import gov.nasa.arc.dert.state.GridState;
 import gov.nasa.arc.dert.state.MapElementState;
-import gov.nasa.arc.dert.state.State.StateType;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
@@ -46,9 +45,6 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	protected boolean labelVisible;
 	protected boolean actualCoords;
 
-	// Immovable
-	protected boolean pinned;
-
 	// Dimensions and location
 	protected Vector3 origin;
 	protected double cellSize;
@@ -63,7 +59,6 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	protected double scale = 1, oldScale = 1;
 
 	// Map Element state
-	protected StateType type;
 	protected GridState state;
 
 	/**
@@ -295,14 +290,6 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	}
 
 	/**
-	 * Find out if the grid is immobile
-	 */
-	@Override
-	public boolean isPinned() {
-		return (pinned);
-	}
-
-	/**
 	 * Find out if this grid is visible
 	 */
 	@Override
@@ -324,24 +311,11 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	}
 
 	/**
-	 * Set mobility
-	 */
-	@Override
-	public void setPinned(boolean pinned) {
-		this.pinned = pinned;
-		lattice.getSceneHints().setPickingHint(PickingHint.Pickable, !pinned);
-	}
-
-	/**
 	 * Update view dependent size
 	 */
 	@Override
 	public void update(BasicCamera camera) {
 		// nothing here
-	}
-
-	protected void scaleShape(double scale) {
-		text.setScale(scale);
 	}
 
 	@Override

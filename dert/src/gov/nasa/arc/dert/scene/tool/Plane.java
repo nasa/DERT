@@ -55,7 +55,6 @@ public class Plane extends Node implements Tool, ViewDependent {
 	public static Color defaultColor = Color.cyan;
 	public static boolean defaultLabelVisible = true;
 	public static boolean defaultTriangleVisible = true;
-	public static boolean defaultPinned = false;
 	public static String defaultColorMap = "default0";
 	public static boolean strikeAsCompassBearing = true;
 
@@ -809,7 +808,6 @@ public class Plane extends Node implements Tool, ViewDependent {
 			defaultTriangleVisible, false);
 		strikeAsCompassBearing = StringUtil.getBooleanValue(properties, "MapElement.Plane.strikeAsCompassBearing",
 			strikeAsCompassBearing, false);
-		defaultPinned = StringUtil.getBooleanValue(properties, "MapElement.Plane.defaultPinned", defaultPinned, false);
 		defaultColorMap = StringUtil.getStringValue(properties, "MapElement.Plane.defaultColorMap", defaultColorMap,
 			false);
 	}
@@ -825,7 +823,6 @@ public class Plane extends Node implements Tool, ViewDependent {
 		properties.setProperty("MapElement.Plane.defaultTriangleVisible", Boolean.toString(defaultTriangleVisible));
 		properties.setProperty("MapElement.Plane.strikeAsCompassBearing", Boolean.toString(strikeAsCompassBearing));
 		properties.setProperty("MapElement.Plane.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
-		properties.setProperty("MapElement.Plane.defaultPinned", Boolean.toString(defaultPinned));
 		properties.setProperty("MapElement.Plane.defaultColorMap", defaultColorMap);
 	}
 }

@@ -32,8 +32,8 @@ public abstract class LandmarkState extends MapElementState {
 	 * @param position
 	 */
 	public LandmarkState(long id, MapElementState.Type mapElementType, String prefix, double size, Color color,
-		boolean labelVisible, boolean pinned, ReadOnlyVector3 position) {
-		super(id, mapElementType, prefix, size, color, labelVisible, pinned);
+		boolean labelVisible, ReadOnlyVector3 position) {
+		super(id, mapElementType, prefix, size, color, labelVisible);
 		this.position = new Vector3(position);
 	}
 	

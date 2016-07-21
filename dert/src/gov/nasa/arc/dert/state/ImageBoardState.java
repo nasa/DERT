@@ -25,7 +25,7 @@ public class ImageBoardState extends LandmarkState {
 	public ImageBoardState(ReadOnlyVector3 position) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.Billboard), MapElementState.Type.Billboard, "Billboard",
-			ImageBoard.defaultSize, Color.white, ImageBoard.defaultLabelVisible, ImageBoard.defaultPinned, position);
+			ImageBoard.defaultSize, Color.white, ImageBoard.defaultLabelVisible, position);
 		imagePath = ImageBoard.defaultImagePath;
 	}
 	

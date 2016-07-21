@@ -25,7 +25,6 @@ public class RadialGrid extends Grid {
 	public static Color defaultColor = Color.white;
 	public static int defaultRings = 10;
 	public static boolean defaultLabelVisible = false;
-	public static boolean defaultPinned = false;
 	public static double defaultRadius = 10;
 	public static boolean defaultActualCoordinates = false;
 	public static boolean defaultCompassRose = false;
@@ -227,8 +226,6 @@ public class RadialGrid extends Grid {
 				defaultLineWidth, false);
 		defaultLabelVisible = StringUtil.getBooleanValue(properties, "MapElement.RadialGrid.defaultLabelVisible",
 			defaultLabelVisible, false);
-		defaultPinned = StringUtil.getBooleanValue(properties, "MapElement.RadialGrid.defaultPinned", defaultPinned,
-			false);
 		defaultActualCoordinates = StringUtil.getBooleanValue(properties,
 			"MapElement.RadialGrid.defaultActualCoordinates", defaultActualCoordinates, false);
 		defaultCompassRose = StringUtil.getBooleanValue(properties, "MapElement.RadialGrid.defaultCompassRose",
@@ -245,7 +242,6 @@ public class RadialGrid extends Grid {
 		properties.setProperty("MapElement.RadialGrid.defaultRings", Integer.toString(defaultRings));
 		properties.setProperty("MapElement.RadialGrid.defaultLineWidth", Double.toString(defaultLineWidth));
 		properties.setProperty("MapElement.RadialGrid.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
-		properties.setProperty("MapElement.RadialGrid.defaultPinned", Boolean.toString(defaultPinned));
 		properties.setProperty("MapElement.RadialGrid.defaultActualCoordinates",
 			Boolean.toString(defaultActualCoordinates));
 		properties.setProperty("MapElement.RadialGrid.defaultCompassRose", Boolean.toString(defaultCompassRose));

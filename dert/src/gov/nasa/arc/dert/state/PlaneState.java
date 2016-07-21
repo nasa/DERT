@@ -47,7 +47,7 @@ public class PlaneState extends ToolState {
 	public PlaneState(ReadOnlyVector3 position) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.Plane), MapElementState.Type.Plane, "Plane",
-			Plane.defaultSize, Plane.defaultColor, Plane.defaultLabelVisible, Plane.defaultPinned);
+			Plane.defaultSize, Plane.defaultColor, Plane.defaultLabelVisible);
 		p0 = new Vector3(position);
 		p1 = new Vector3(Landscape.getInstance().getCenter());
 		p1.subtractLocal(p0);

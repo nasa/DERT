@@ -45,7 +45,7 @@ public class PathState extends ToolState {
 	public PathState(ReadOnlyVector3 position) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.Path), MapElementState.Type.Path, "Path", Path.defaultSize,
-			Path.defaultColor, Path.defaultLabelVisible, Path.defaultPinned);
+			Path.defaultColor, Path.defaultLabelVisible);
 		bodyType = Path.defaultBodyType;
 		labelType = Path.defaultLabelType;
 		lineWidth = Path.defaultLineWidth;

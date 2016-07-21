@@ -29,7 +29,6 @@ public class Placemark extends BillboardMarker implements Landmark {
 	public static double defaultSize = 1.0f;
 	public static int defaultTextureIndex = 0;
 	public static boolean defaultLabelVisible = true;
-	public static boolean defaultPinned = false;
 
 	// Icon selections
 	public static final String[] ICON_NAME = { "pushpin", "flag" };
@@ -126,8 +125,6 @@ public class Placemark extends BillboardMarker implements Landmark {
 			defaultTextureIndex, false);
 		defaultLabelVisible = StringUtil.getBooleanValue(properties, "MapElement.Placemark.defaultLabelVisible",
 			defaultLabelVisible, false);
-		defaultPinned = StringUtil.getBooleanValue(properties, "MapElement.Placemark.defaultPinned", defaultPinned,
-			false);
 	}
 
 	/**
@@ -140,6 +137,5 @@ public class Placemark extends BillboardMarker implements Landmark {
 		properties.setProperty("MapElement.Placemark.defaultSize", Double.toString(defaultSize));
 		properties.setProperty("MapElement.Placemark.defaultTextureIndex", Integer.toString(defaultTextureIndex));
 		properties.setProperty("MapElement.Placemark.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
-		properties.setProperty("MapElement.Placemark.defaultPinned", Boolean.toString(defaultPinned));
 	}
 }

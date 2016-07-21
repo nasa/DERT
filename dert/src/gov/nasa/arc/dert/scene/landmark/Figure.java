@@ -32,7 +32,6 @@ public class Figure extends FigureMarker implements Landmark {
 	public static boolean defaultLabelVisible = true;
 	public static boolean defaultAutoScale = true;
 	public static boolean defaultSurfaceNormalVisible = false;
-	public static boolean defaultPinned = false;
 	public static double defaultAzimuth = 0;
 	public static double defaultTilt = 0;
 
@@ -120,7 +119,6 @@ public class Figure extends FigureMarker implements Landmark {
 		defaultShapeType = ShapeType.valueOf(str);
 		defaultLabelVisible = StringUtil.getBooleanValue(properties, "MapElement.Figure.defaultLabelVisible",
 			defaultLabelVisible, false);
-		defaultPinned = StringUtil.getBooleanValue(properties, "MapElement.Figure.defaultPinned", defaultPinned, false);
 		defaultAutoScale = StringUtil.getBooleanValue(properties, "MapElement.Figure.defaultAutoScale", defaultAutoScale, false);
 		defaultSurfaceNormalVisible = StringUtil.getBooleanValue(properties,
 			"MapElement.Figure.defaultSurfaceNormalVisible", defaultSurfaceNormalVisible, false);
@@ -139,7 +137,6 @@ public class Figure extends FigureMarker implements Landmark {
 		properties.setProperty("MapElement.Figure.defaultSize", Double.toString(defaultSize));
 		properties.setProperty("MapElement.Figure.defaultShapeType", defaultShapeType.toString());
 		properties.setProperty("MapElement.Figure.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
-		properties.setProperty("MapElement.Figure.defaultPinned", Boolean.toString(defaultPinned));
 		properties.setProperty("MapElement.Figure.defaultAutoScale", Boolean.toString(defaultAutoScale));
 		properties.setProperty("MapElement.Figure.defaultSurfaceNormalVisible", Boolean.toString(defaultSurfaceNormalVisible));
 		properties.setProperty("MapElement.Figure.defaultAzimuth", Double.toString(defaultAzimuth));

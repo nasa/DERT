@@ -12,6 +12,7 @@ import gov.nasa.arc.dert.scene.tool.Path.BodyType;
 import gov.nasa.arc.dert.scene.tool.Plane;
 import gov.nasa.arc.dert.scene.tool.Profile;
 import gov.nasa.arc.dert.scene.tool.RadialGrid;
+import gov.nasa.arc.dert.scene.tool.Scale;
 import gov.nasa.arc.dert.scene.tool.Tools;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
@@ -22,6 +23,7 @@ import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.PathState;
 import gov.nasa.arc.dert.state.PlaneState;
 import gov.nasa.arc.dert.state.ProfileState;
+import gov.nasa.arc.dert.state.ScaleState;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.ui.GroupPanel;
@@ -155,6 +157,20 @@ public class ToolsPanel extends JPanel {
 				Profile profile = (Profile) ConfigurationManager.getInstance().getCurrentConfiguration()
 					.addMapElementState(state);
 				newMapElement(MapElementState.Type.Profile, profile);
+			}
+		});
+		panel.add(newButton);
+
+		newButton = new JButton(Icons.getImageIcon("scale.png"));
+		newButton.setToolTipText("Scale");
+		newButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
+				ScaleState state = new ScaleState(position);
+				Scale scale = (Scale) ConfigurationManager.getInstance().getCurrentConfiguration()
+					.addMapElementState(state);
+				newMapElement(MapElementState.Type.Scale, scale);
 			}
 		});
 		panel.add(newButton);
@@ -560,6 +576,53 @@ public class ToolsPanel extends JPanel {
 		
 		gPanel.add(new JLabel("   "));
 		gPanel.add(new JLabel("   "));
+		bottomPanel.add(gPanel);
+
+		// Scale Preferences
+		gPanel = new GroupPanel("Scale");
+		gPanel.setLayout(new GridLayout(2, 4));
+
+		gPanel.add(new JLabel("Label:", SwingConstants.RIGHT));
+		checkBox = new JCheckBox("visible");
+		checkBox.setSelected(Scale.defaultLabelVisible);
+		checkBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				Scale.defaultLabelVisible = ((JCheckBox) event.getSource()).isSelected();
+			}
+		});
+		gPanel.add(checkBox);
+
+		checkBox = new JCheckBox("autolabel");
+		checkBox.setSelected(Scale.defaultAutoLabel);
+		checkBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				Scale.defaultAutoLabel = ((JCheckBox) event.getSource()).isSelected();
+			}
+		});
+		gPanel.add(checkBox);
+		gPanel.add(new JLabel(" ", SwingConstants.RIGHT));
+
+		gPanel.add(new JLabel("Color:", SwingConstants.RIGHT));
+		colorList = new ColorSelectionPanel(CartesianGrid.defaultColor) {
+			@Override
+			public void doColor(Color color) {
+				CartesianGrid.defaultColor = color;
+			}
+		};
+		gPanel.add(colorList);
+
+		gPanel.add(new JLabel("Cell count:", SwingConstants.RIGHT));
+		spinner = new JSpinner(new SpinnerNumberModel(Scale.defaultCellCount, 1, 1000000, 1));
+		gPanel.add(spinner);
+		spinner.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent event) {
+				Scale.defaultCellCount = (Integer) ((JSpinner) event.getSource()).getValue();
+			}
+		});
+
 		bottomPanel.add(gPanel);
 
 		add(new JScrollPane(bottomPanel), BorderLayout.CENTER);

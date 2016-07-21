@@ -11,6 +11,7 @@ import gov.nasa.arc.dert.action.mapelement.AddPlacemarkAction;
 import gov.nasa.arc.dert.action.mapelement.AddPlaneAction;
 import gov.nasa.arc.dert.action.mapelement.AddProfileAction;
 import gov.nasa.arc.dert.action.mapelement.AddRadialGridAction;
+import gov.nasa.arc.dert.action.mapelement.AddScaleAction;
 import gov.nasa.arc.dert.action.mapelement.DeleteMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.EditAction;
 import gov.nasa.arc.dert.action.mapelement.HideMapElementAction;
@@ -320,6 +321,7 @@ public class WorldInputHandler implements InputHandler {
 						submenu.add(new AddPlacemarkAction(pickPosition));
 						submenu.add(new AddFigureAction(pickPosition, pickNormal));
 						submenu.add(new AddBillboardAction(pickPosition));
+						submenu.add(new AddScaleAction(pickPosition));
 						submenu.add(new AddRadialGridAction(pickPosition));
 						submenu.add(new AddCartesianGridAction(pickPosition));
 						submenu.add(new AddPathAction(pickPosition));

@@ -24,7 +24,7 @@ public abstract class MapElementState extends State {
 
 	// Types of map elements
 	public static enum Type {
-		Placemark, Figure, Billboard, LineSet, Path, Plane, CartesianGrid, RadialGrid, Profile, FieldCamera, Waypoint, Marble
+		Placemark, Figure, Billboard, LineSet, Path, Plane, CartesianGrid, RadialGrid, Profile, FieldCamera, Waypoint, Scale, Marble
 	}
 	
 	protected static final int X_OFFSET = 20, Y_OFFSET = 20;
@@ -57,7 +57,7 @@ public abstract class MapElementState extends State {
 	 * @param prefix
 	 */
 	public MapElementState(long id, Type mapElementType, String prefix) {
-		this(id, mapElementType, prefix, 1, Color.white, true, false);
+		this(id, mapElementType, prefix, 1, Color.white, true);
 	}
 
 	/**
@@ -71,14 +71,12 @@ public abstract class MapElementState extends State {
 	 * @param labelVisible
 	 * @param pinned
 	 */
-	public MapElementState(long id, Type mapElementType, String prefix, double size, Color color, boolean labelVisible,
-		boolean pinned) {
+	public MapElementState(long id, Type mapElementType, String prefix, double size, Color color, boolean labelVisible) {
 		super(prefix + id, StateType.MapElement, null);
 		this.id = id;
 		this.size = size;
 		this.color = color;
 		this.labelVisible = labelVisible;
-		this.pinned = pinned;
 		visible = true;
 		this.mapElementType = mapElementType;
 		annotation = "";
