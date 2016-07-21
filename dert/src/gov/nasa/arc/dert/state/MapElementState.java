@@ -34,7 +34,7 @@ public abstract class MapElementState extends State {
 
 	// Options
 	public boolean visible;
-	public boolean pinned, labelVisible;
+	public boolean pinned, labelVisible, strictZ;
 	public double size;
 	public Color color;
 
@@ -96,6 +96,7 @@ public abstract class MapElementState extends State {
 		String str = StateUtil.getString(map, "MapElementType", null);
 		mapElementType = Type.valueOf(str);
 		id = StateUtil.getLong(map, "MapElementId", 0);
+		strictZ = StateUtil.getBoolean(map, "StrictZ", false);
 	}
 	
 	@Override
@@ -110,6 +111,8 @@ public abstract class MapElementState extends State {
 		if (this.pinned != that.pinned)
 			return(false);
 		if (this.labelVisible != that.labelVisible) 
+			return(false);
+		if (this.strictZ != that.strictZ) 
 			return(false);
 		if (this.size != that.size) 
 			return(false);
@@ -168,6 +171,8 @@ public abstract class MapElementState extends State {
 			pinned = mapElement.isPinned();
 			visible = mapElement.isVisible();
 			labelVisible = mapElement.isLabelVisible();
+			if (mapElement instanceof Movable)
+				strictZ = ((Movable)mapElement).isStrictZ();
 		}
 		map.put("Name", name);
 		map.put("Size", new Double(size));
@@ -178,6 +183,7 @@ public abstract class MapElementState extends State {
 		map.put("LabelVisible", new Boolean(labelVisible));
 		map.put("MapElementType", mapElementType.toString());
 		map.put("MapElementId", new Long(id));
+		map.put("StrictZ", new Boolean(strictZ));
 		return(map);
 	}
 

@@ -5,6 +5,7 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.scenegraph.BillboardMarker;
 import gov.nasa.arc.dert.scenegraph.HiddenLine;
+import gov.nasa.arc.dert.scenegraph.Marker;
 import gov.nasa.arc.dert.scenegraph.MotionListener;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.state.MapElementState;
@@ -401,6 +402,10 @@ public class Plane extends Node implements Tool, ViewDependent {
 	public MapElementState getState() {
 		return (state);
 	}
+	
+	public Marker getMarker(int index) {
+		return(point[index]);
+	}
 
 	/**
 	 * Set the Path name.
@@ -430,7 +435,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	 * @param p
 	 */
 	public void setPoint(int i, ReadOnlyVector3 p) {
-		point[i].setLocation(p, true);
+		point[i].setLocation(p.getX(), p.getY(), p.getZ(), true);
 	}
 
 	/**

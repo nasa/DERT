@@ -6,7 +6,6 @@ import javax.swing.undo.AbstractUndoableEdit;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.scenegraph.Spatial;
 
 /**
  * Provides an undo edit for moving a map element.
@@ -14,8 +13,9 @@ import com.ardor3d.scenegraph.Spatial;
  */
 public class MoveEdit extends AbstractUndoableEdit {
 
-	private Spatial spatial;
+	private Movable movable;
 	private ReadOnlyVector3 oldPosition, position;
+	private boolean oldStrictZ, strictZ;
 
 	/**
 	 * Constructor
@@ -23,33 +23,31 @@ public class MoveEdit extends AbstractUndoableEdit {
 	 * @param spatial
 	 * @param oldPosition
 	 */
-	public MoveEdit(Spatial spatial, ReadOnlyVector3 oldPosition) {
-		this.spatial = spatial;
+	public MoveEdit(Movable movable, ReadOnlyVector3 oldPosition, boolean oldStrictZ) {
+		this.movable = movable;
 		this.oldPosition = oldPosition;
+		this.oldStrictZ = oldStrictZ;
 	}
 
 	@Override
 	public String getPresentationName() {
-		return ("Move " + spatial.getName());
+		return ("Move " + movable.getName());
 	}
 
 	@Override
 	public void undo() {
 		super.undo();
-		position = new Vector3(spatial.getTranslation());
-		if (spatial instanceof Movable)
-			((Movable)spatial).setLocation(oldPosition, false);
-		else
-			spatial.setTranslation(oldPosition);
+		position = new Vector3(movable.getTranslation());
+		oldStrictZ = movable.isStrictZ();
+		movable.setLocation(oldPosition.getX(), oldPosition.getY(), oldPosition.getZ(), false);
+		movable.setStrictZ(oldStrictZ);
 	}
 
 	@Override
 	public void redo() {
 		super.redo();
-		if (spatial instanceof Movable)
-			((Movable)spatial).setLocation(position, false);
-		else
-			spatial.setTranslation(position);
+		movable.setLocation(position.getX(), position.getY(), position.getZ(), false);
+		movable.setStrictZ(strictZ);
 	}
 
 }

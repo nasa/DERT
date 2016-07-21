@@ -39,6 +39,7 @@ public class Waypoint extends BillboardMarker implements MapElement {
 		if (texture == null) {
 			texture = ImageUtil.createTexture(Icons.getIconURL(defaultIconName), true);
 		}
+		setStrictZ(state.strictZ);
 		setTexture(texture, texture);
 		setVisible(state.visible);
 		this.state = state;

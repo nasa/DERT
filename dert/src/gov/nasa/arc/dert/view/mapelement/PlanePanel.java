@@ -62,7 +62,7 @@ public class PlanePanel extends MapElementBasePanel {
 
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Point 0"));
-		p0Location = new CoordTextField(18, "location of first point of triangle", Landscape.format, false) {
+		p0Location = new CoordTextField(18, "location of first point of triangle", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 coord) {
 				if (!coord.equals(plane.getPoint(0))) {
@@ -79,7 +79,7 @@ public class PlanePanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Point 1"));
-		p1Location = new CoordTextField(18, "location of second point of triangle", Landscape.format, false) {
+		p1Location = new CoordTextField(18, "location of second point of triangle", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 coord) {
 				if (!coord.equals(plane.getPoint(1))) {
@@ -96,7 +96,7 @@ public class PlanePanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Point 2"));
-		p2Location = new CoordTextField(18, "location of third point of triangle", Landscape.format, false) {
+		p2Location = new CoordTextField(18, "location of third point of triangle", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 coord) {
 				if (!coord.equals(plane.getPoint(2))) {

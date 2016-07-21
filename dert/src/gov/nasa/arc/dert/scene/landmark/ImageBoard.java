@@ -44,6 +44,7 @@ public class ImageBoard extends BillboardMarker implements Landmark {
 		super(state.name, state.position, state.size, state.color, state.labelVisible, state.pinned);
 		this.state = state;
 		imagePath = state.imagePath;
+		setStrictZ(state.strictZ);
 
 		// load image into the texture
 		Texture texture = null;

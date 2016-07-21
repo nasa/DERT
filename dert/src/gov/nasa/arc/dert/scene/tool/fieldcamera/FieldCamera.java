@@ -131,6 +131,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 
 	public FieldCamera(FieldCameraState state) {
 		super(state.name);
+		setStrictZ(state.strictZ);
 		this.state = state;
 		if (state.location != null) {
 			super.setTranslation(state.location);
@@ -627,6 +628,8 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 */
 	@Override
 	public boolean updateElevation(QuadTree quadTree) {
+		if (strictZ)
+			return(false);
 		if (isPinned()) {
 			return (false);
 		}

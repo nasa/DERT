@@ -98,6 +98,7 @@ public class Scale extends Movable implements Tool {
 	public Scale(ScaleState state) {
 		super(state.name);
 
+		setStrictZ(state.strictZ);
 		this.state = state;
 		cellCount = state.cellCount;
 		cellSize = state.size;
@@ -410,6 +411,8 @@ public class Scale extends Movable implements Tool {
 	 * @return
 	 */
 	public boolean updateElevation(QuadTree quadTree) {
+		if (strictZ)
+			return(false);
 		ReadOnlyVector3 t = getWorldTranslation();
 		if (quadTree.contains(t.getX(), t.getY())) {
 			double z = Landscape.getInstance().getZ(t.getX(), t.getY(), quadTree);

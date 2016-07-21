@@ -50,6 +50,7 @@ public class Figure extends FigureMarker implements Landmark {
 		setTilt(state.tilt);
 		setSurfaceNormalVisible(state.showNormal);
 		setVisible(state.visible);
+		setStrictZ(state.strictZ);
 		this.state = state;
 		state.setMapElement(this);
 	}

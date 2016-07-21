@@ -20,6 +20,7 @@ import gov.nasa.arc.dert.action.mapelement.OpenBillboardAction;
 import gov.nasa.arc.dert.action.mapelement.PinMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.PlaceHereAction;
 import gov.nasa.arc.dert.action.mapelement.RenameAction;
+import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.render.SceneCanvasPanel;
 import gov.nasa.arc.dert.scene.LineSet;
 import gov.nasa.arc.dert.scene.MapElement;
@@ -58,6 +59,9 @@ public class WorldInputHandler implements InputHandler {
 
 	// Spatial being dragged
 	private Movable movable;
+	
+	// Spatial supporting movable
+	private Spatial supportSpatial;
 
 	// Mouse position
 	private int mouseX, mouseY, mouseButton;
@@ -66,8 +70,9 @@ public class WorldInputHandler implements InputHandler {
 	private Spatial lastSelection;
 
 	// Helpers
-	private Vector3 lastPosition, tmpVec = new Vector3();
+	private Vector3 lastPosition;
 	private Vector3 pickPosition = new Vector3(), pickNormal = new Vector3();
+	private boolean lastStrictZ;
 
 	// Viewpoint
 	private ViewpointController controller;
@@ -151,7 +156,9 @@ public class WorldInputHandler implements InputHandler {
 		if (movable instanceof ViewDependent) {
 			((ViewDependent) movable).update(controller.getViewpointNode().getCamera());
 		}
-		movable.setTranslation(pos.getX(), pos.getY(), pos.getZ());
+		if ((supportSpatial != null) && !(supportSpatial instanceof QuadTree))
+			movable.setStrictZ(true);
+		movable.setTranslation(pos);
 	}
 
 	/**
@@ -216,6 +223,7 @@ public class WorldInputHandler implements InputHandler {
 				if ((tape == null) && (path == null)) {
 					if (grab(spatial, pickPosition)) {
 						lastPosition = new Vector3(movable.getTranslation());
+						lastStrictZ = movable.isStrictZ();
 						((Spatial) movable).getSceneHints().setAllPickingHints(false);
 						movable.setInMotion(true, pickPosition);
 						Dert.getWorldView().getScenePanel().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));	
@@ -239,7 +247,7 @@ public class WorldInputHandler implements InputHandler {
 				if (hasMouse()) {
 					((Spatial) movable).getSceneHints().setAllPickingHints(true);
 					movable.setInMotion(false, null);
-					Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(movable, lastPosition));
+					Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(movable, lastPosition, lastStrictZ));
 					movable = null;
 					Dert.getWorldView().getScenePanel().getCanvas().setCursor(null);
 				}
@@ -269,12 +277,13 @@ public class WorldInputHandler implements InputHandler {
 			if (shiftDown) {
 //				controller.getViewpointNode().coordInScreenPlane(dx, dy, tmpVec, pickPosition);
 				double s = controller.getViewpointNode().getCamera().getPixelSizeAt(pickPosition, false);
-				tmpVec.set(0, 0, dy * s);
-				pickPosition.addLocal(tmpVec);
+				pickPosition.setZ(pickPosition.getZ()+dy*s);
+				movable.setTranslation(pickPosition);
+				movable.setStrictZ(true);
 			} else {
-				controller.doPick(mouseX, mouseY, pickPosition, pickNormal, shiftDown);
+				supportSpatial = controller.doPick(mouseX, mouseY, pickPosition, pickNormal, shiftDown);
+				move(pickPosition, pickNormal);
 			}
-			move(pickPosition, pickNormal);
 		}
 	}
 

@@ -5,6 +5,7 @@ import gov.nasa.arc.dert.io.CsvWriter;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.scenegraph.BillboardMarker;
+import gov.nasa.arc.dert.scenegraph.Marker;
 import gov.nasa.arc.dert.scenegraph.MotionListener;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.state.MapElementState;
@@ -334,9 +335,9 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * 
 	 * @param pALoc
 	 */
-	public void setEndpointA(ReadOnlyVector3 pALoc) {
-		endpointA.setLocation(pALoc, true);
-		this.pALoc.set(pALoc);
+	public void setEndpointA(double x, double y, double z) {
+		endpointA.setLocation(x, y, z, true);
+		this.pALoc.set(x, y, z);
 		updateGraph();
 		updateGeometricState(0);
 	}
@@ -355,11 +356,19 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * 
 	 * @param pBLoc
 	 */
-	public void setEndpointB(ReadOnlyVector3 pBLoc) {
-		endpointB.setLocation(pBLoc, true);
-		this.pBLoc.set(pBLoc);
+	public void setEndpointB(double x, double y, double z) {
+		endpointB.setLocation(x, y, z, true);
+		this.pBLoc.set(x, y, z);
 		updateGraph();
 		updateGeometricState(0);
+	}
+	
+	public Marker getMarkerA() {
+		return(endpointA);
+	}
+	
+	public Marker getMarkerB() {
+		return(endpointB);
 	}
 
 	/**

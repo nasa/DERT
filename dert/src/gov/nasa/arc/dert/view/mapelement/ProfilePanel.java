@@ -55,12 +55,10 @@ public class ProfilePanel extends MapElementBasePanel {
 
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Location A"));
-		pALocation = new CoordTextField(20, "location of end point A", Landscape.format, false) {
+		pALocation = new CoordTextField(20, "location of end point A", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 coord) {
-				if (!coord.equals(profile.getEndpointA())) {
-					profile.setEndpointA(coord);
-				}				
+				profile.setEndpointA(coord.getX(), coord.getY(), coord.getZ());				
 			}
 		};
 		CoordAction.listenerList.add(pALocation);
@@ -75,12 +73,10 @@ public class ProfilePanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Location B"));
-		pBLocation = new CoordTextField(20, "location of end point B", Landscape.format, false) {
+		pBLocation = new CoordTextField(20, "location of end point B", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 coord) {
-				if (!coord.equals(profile.getEndpointB())) {
-					profile.setEndpointB(coord);
-				}				
+				profile.setEndpointB(coord.getX(), coord.getY(), coord.getZ());				
 			}
 		};
 		CoordAction.listenerList.add(pBLocation);

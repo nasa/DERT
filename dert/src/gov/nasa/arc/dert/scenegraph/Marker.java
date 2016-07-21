@@ -270,6 +270,8 @@ public abstract class Marker extends Movable implements ViewDependent {
 	 * @return
 	 */
 	public boolean updateElevation(QuadTree quadTree) {
+		if (strictZ)
+			return(false);
 		ReadOnlyVector3 t = getWorldTranslation();
 		if (quadTree.contains(t.getX(), t.getY())) {
 			double z = Landscape.getInstance().getZ(t.getX(), t.getY(), quadTree);

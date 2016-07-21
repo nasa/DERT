@@ -26,6 +26,8 @@ public class PlaneState extends ToolState {
 
 	// Three points of the triangle
 	public Vector3 p0, p1, p2;
+	
+	public boolean strictZ2, strictZ3;
 
 	// Dimensional scales
 	public double lengthScale, widthScale;
@@ -80,6 +82,8 @@ public class PlaneState extends ToolState {
 		colorMapName = StateUtil.getString(map, "ColorMapName", Plane.defaultColorMap);
 		minimum = StateUtil.getDouble(map, "ColorMapMinimum", minimum);
 		maximum = StateUtil.getDouble(map, "ColorMapMaximum", maximum);
+		strictZ2 = StateUtil.getBoolean(map, "StrictZ2", false);
+		strictZ3 = StateUtil.getBoolean(map, "StrictZ3", false);
 	}
 	
 	@Override
@@ -98,6 +102,10 @@ public class PlaneState extends ToolState {
 		if (this.minimum != that.minimum)
 			return(false);
 		if (this.maximum != that.maximum)
+			return(false);
+		if (this.strictZ2 != that.strictZ2)
+			return(false);
+		if (this.strictZ3 != that.strictZ3)
 			return(false);
 		if (!this.p0.equals(that.p0)) 
 			return(false);
@@ -121,6 +129,9 @@ public class PlaneState extends ToolState {
 			triangleVisible = plane.isTriangleVisible();
 			lengthScale = plane.getLengthScale();
 			widthScale = plane.getWidthScale();
+			strictZ = plane.getMarker(0).isStrictZ();
+			strictZ2 = plane.getMarker(1).isStrictZ();
+			strictZ3 = plane.getMarker(2).isStrictZ();
 		}
 		if (panel != null) {
 			ColorMap colorMap = panel.getColorMap();
@@ -139,6 +150,9 @@ public class PlaneState extends ToolState {
 		map.put("ColorMapName", colorMapName);
 		map.put("ColorMapMinimum", new Double(minimum));
 		map.put("ColorMapMaximum", new Double(maximum));
+		map.put("StrictZ", new Boolean(strictZ));
+		map.put("StrictZ2", new Boolean(strictZ2));
+		map.put("StrictZ3", new Boolean(strictZ3));
 		
 		return(map);
 	}

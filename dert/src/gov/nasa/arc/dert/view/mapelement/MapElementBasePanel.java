@@ -1,6 +1,5 @@
 package gov.nasa.arc.dert.view.mapelement;
 
-import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
@@ -10,11 +9,11 @@ import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.GroupPanel;
-import gov.nasa.arc.dert.view.world.MoveEdit;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -100,7 +99,7 @@ public abstract class MapElementBasePanel extends JPanel {
 		if (addLoc) {
 			panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 			panel.add(new JLabel("Location"));
-			locationText = new CoordTextField(18, "location of map element", Landscape.format, false) {
+			locationText = new CoordTextField(22, "location of map element", Landscape.format, true) {
 				@Override
 				public void handleChange(Vector3 store) {
 					if (mapElement instanceof Path)
@@ -109,17 +108,20 @@ public abstract class MapElementBasePanel extends JPanel {
 				}
 				@Override
 				public void doChange(ReadOnlyVector3 coord) {
-					ReadOnlyVector3 trans = new Vector3(((Spatial) mapElement).getTranslation());
-					if (!coord.equals(trans)) {
-						if (mapElement instanceof Movable) {
-							Movable movable = (Movable)mapElement;
-							movable.setLocation(coord, true);
+					Movable movable = (Movable)mapElement;
+					if (Double.isNaN(coord.getZ())) {
+						double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
+						if (Double.isNaN(z)) {
+							Toolkit.getDefaultToolkit().beep();
+							return;
 						}
-						else {
-							((Spatial) mapElement).setTranslation(coord);
-							Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit((Spatial) mapElement, new Vector3(trans)));
-						}
-					}					
+						movable.setLocation(coord.getX(), coord.getY(), z, true);
+						movable.setStrictZ(true);
+					}
+					else {
+						movable.setLocation(coord.getX(), coord.getY(), coord.getZ(), true);
+						movable.setStrictZ(false);
+					}
 				}
 			};
 			CoordAction.listenerList.add(locationText);

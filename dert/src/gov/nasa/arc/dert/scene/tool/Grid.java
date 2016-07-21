@@ -68,6 +68,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	 */
 	public Grid(GridState state) {
 		super(state.name);
+		setStrictZ(state.strictZ);
 		this.state = state;
 		this.cellSize = state.size;
 		this.color = state.color;
@@ -342,7 +343,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 
 	@Override
 	public void setTranslation(ReadOnlyVector3 loc) {
-		super.setTranslation(loc.subtract(offset, null));
+		super.setTranslation(loc.getX()-offset.getX(), loc.getY()-offset.getY(), loc.getZ()-offset.getZ());
 	}
 
 	@Override

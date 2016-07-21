@@ -22,7 +22,7 @@ public class AddScaleAction extends MenuItemAction {
 	 * @param normal
 	 */
 	public AddScaleAction(ReadOnlyVector3 position) {
-		super("3D Scale");
+		super("Scale Bar");
 		this.position = new Vector3(position);
 	}
 

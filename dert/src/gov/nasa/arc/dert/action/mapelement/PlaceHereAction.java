@@ -6,6 +6,7 @@ import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Profile;
+import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.view.world.MoveEdit;
 
 import java.util.ArrayList;
@@ -73,14 +74,15 @@ public class PlaceHereAction extends MenuItemAction {
 		list.toArray(spatials);
 
 		// ask user to select one
-		Spatial spatial = (Spatial) JOptionPane.showInputDialog(Dert.getMainWindow(), "Select a Map Element",
+		Movable movable = (Movable) JOptionPane.showInputDialog(Dert.getMainWindow(), "Select a Map Element",
 			"Place Here", JOptionPane.PLAIN_MESSAGE, Icons.getImageIcon("dert_24.png"), spatials, spatials[0]);
 
 		// move the map element and hand it to the undo handler
-		if (spatial != null) {
-			Vector3 trans = new Vector3(spatial.getTranslation());
-			spatial.setTranslation(position);
-			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(spatial, trans));
+		if (movable != null) {
+			Vector3 trans = new Vector3(movable.getTranslation());
+			movable.setTranslation(position);
+			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(movable, trans, movable.isStrictZ()));
+			movable.setStrictZ(false);
 		}
 	}
 

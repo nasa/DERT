@@ -18,6 +18,7 @@ import com.ardor3d.scenegraph.event.DirtyType;
 public abstract class Movable extends Node {
 
 	private boolean pinned, inMotion;
+	protected boolean strictZ;
 	private ArrayList<MotionListener> listeners;
 
 	/**
@@ -71,6 +72,14 @@ public abstract class Movable extends Node {
 		this.inMotion = inMotion;
 		enableHighlight(inMotion);
 	}
+	
+	public boolean isStrictZ() {
+		return(strictZ);
+	}
+	
+	public void setStrictZ(boolean strictZ) {
+		this.strictZ = strictZ;
+	}
 
 	protected abstract void enableHighlight(boolean enable);
 
@@ -97,10 +106,17 @@ public abstract class Movable extends Node {
 	 */
 	public void notifyListeners() {
 		if (inMotion) {
-			ReadOnlyVector3 position = getTranslation();
-			for (int i = 0; i < listeners.size(); ++i) {
-				listeners.get(i).move(this, position);
-			}
+			updateListeners();
+		}
+	}
+
+	/**
+	 * Notify listeners
+	 */
+	public void updateListeners() {
+		ReadOnlyVector3 position = getTranslation();
+		for (int i = 0; i < listeners.size(); ++i) {
+			listeners.get(i).move(this, position);
 		}
 	}
 
@@ -126,12 +142,10 @@ public abstract class Movable extends Node {
 	 * @param i
 	 * @param p
 	 */
-	public void setLocation(ReadOnlyVector3 p, boolean doEdit) {
+	public void setLocation(double x, double y, double z, boolean doEdit) {
 		if (doEdit)
-			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(this, new Vector3(getTranslation())));
-		setTranslation(p);
-		setInMotion(true, p);
-		notifyListeners();
-		setInMotion(false, p);
+			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(this, new Vector3(getTranslation()), strictZ));
+		setTranslation(x, y, z);
+		updateListeners();
 	}
 }
