@@ -150,7 +150,7 @@ public class FigurePanel extends MapElementBasePanel {
 	public void setMapElement(MapElement mapElement) {
 		this.mapElement = mapElement;
 		figure = (Figure) mapElement;
-		setLocation(locationText, elevLabel, figure.getTranslation());
+		setLocation(locationText, figure.getTranslation());
 		pinnedCheckBox.setSelected(figure.isPinned());
 		nameLabel.setText(figure.getLabel());
 		colorList.setColor(figure.getColor());

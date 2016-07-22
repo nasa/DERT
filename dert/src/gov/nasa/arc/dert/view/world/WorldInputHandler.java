@@ -156,9 +156,9 @@ public class WorldInputHandler implements InputHandler {
 		if (movable instanceof ViewDependent) {
 			((ViewDependent) movable).update(controller.getViewpointNode().getCamera());
 		}
+		movable.setLocation(pos.getX(), pos.getY(), pos.getZ(), false);
 		if ((supportSpatial != null) && !(supportSpatial instanceof QuadTree))
 			movable.setStrictZ(true);
-		movable.setTranslation(pos);
 	}
 
 	/**
@@ -277,8 +277,7 @@ public class WorldInputHandler implements InputHandler {
 			if (shiftDown) {
 //				controller.getViewpointNode().coordInScreenPlane(dx, dy, tmpVec, pickPosition);
 				double s = controller.getViewpointNode().getCamera().getPixelSizeAt(pickPosition, false);
-				pickPosition.setZ(pickPosition.getZ()+dy*s);
-				movable.setTranslation(pickPosition);
+				movable.setLocation(pickPosition.getX(), pickPosition.getY(), pickPosition.getZ()+dy*s, false);
 				movable.setStrictZ(true);
 			} else {
 				supportSpatial = controller.doPick(mouseX, mouseY, pickPosition, pickNormal, shiftDown);

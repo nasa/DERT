@@ -11,6 +11,7 @@ import gov.nasa.arc.dert.util.FileHelper;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -30,7 +31,6 @@ public class ProfilePanel extends MapElementBasePanel {
 	// Controls
 	private ColorSelectionPanel colorList;
 	private CoordTextField pALocation, pBLocation;
-	private JLabel aElevLabel, bElevLabel;
 	private JButton saveAsCSV, openButton;
 	private DoubleTextField lineWidthText;
 
@@ -55,10 +55,22 @@ public class ProfilePanel extends MapElementBasePanel {
 
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Location A"));
-		pALocation = new CoordTextField(20, "location of end point A", Landscape.format, true) {
+		pALocation = new CoordTextField(22, "location of end point A", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 coord) {
-				profile.setEndpointA(coord.getX(), coord.getY(), coord.getZ());				
+				if (Double.isNaN(coord.getZ())) {
+					double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
+					if (Double.isNaN(z)) {
+						Toolkit.getDefaultToolkit().beep();
+						return;
+					}
+					profile.setEndpointA(coord.getX(), coord.getY(), coord.getZ());
+					profile.getMarkerA().setStrictZ(true);
+				}
+				else {
+					profile.setEndpointA(coord.getX(), coord.getY(), coord.getZ());
+					profile.getMarkerA().setStrictZ(false);
+				}
 			}
 		};
 		CoordAction.listenerList.add(pALocation);
@@ -66,27 +78,27 @@ public class ProfilePanel extends MapElementBasePanel {
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Elevation A"));
-		aElevLabel = new JLabel("            ");
-		panel.add(aElevLabel);
-		contents.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Location B"));
-		pBLocation = new CoordTextField(20, "location of end point B", Landscape.format, true) {
+		pBLocation = new CoordTextField(22, "location of end point B", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 coord) {
-				profile.setEndpointB(coord.getX(), coord.getY(), coord.getZ());				
+				if (Double.isNaN(coord.getZ())) {
+					double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
+					if (Double.isNaN(z)) {
+						Toolkit.getDefaultToolkit().beep();
+						return;
+					}
+					profile.setEndpointB(coord.getX(), coord.getY(), coord.getZ());
+					profile.getMarkerB().setStrictZ(true);
+				}
+				else {
+					profile.setEndpointB(coord.getX(), coord.getY(), coord.getZ());
+					profile.getMarkerB().setStrictZ(false);
+				}
 			}
 		};
 		CoordAction.listenerList.add(pBLocation);
 		panel.add(pBLocation);
-		contents.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Elevation B"));
-		bElevLabel = new JLabel("            ");
-		panel.add(bElevLabel);
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -146,8 +158,8 @@ public class ProfilePanel extends MapElementBasePanel {
 	public void setMapElement(MapElement mapElement) {
 		this.mapElement = mapElement;
 		profile = (Profile) mapElement;
-		setLocation(pALocation, aElevLabel, profile.getEndpointA());
-		setLocation(pBLocation, bElevLabel, profile.getEndpointB());
+		setLocation(pALocation, profile.getEndpointA());
+		setLocation(pBLocation, profile.getEndpointB());
 		pinnedCheckBox.setSelected(profile.isPinned());
 		lineWidthText.setValue(profile.getLineWidth());
 		nameLabel.setText(profile.getName());
@@ -160,8 +172,8 @@ public class ProfilePanel extends MapElementBasePanel {
 
 	@Override
 	public void updateLocation(MapElement mapElement) {
-		setLocation(pALocation, aElevLabel, profile.getEndpointA());
-		setLocation(pBLocation, bElevLabel, profile.getEndpointB());
+		setLocation(pALocation, profile.getEndpointA());
+		setLocation(pBLocation, profile.getEndpointB());
 	}
 	
 	@Override

@@ -162,7 +162,7 @@ public class ScalePanel extends MapElementBasePanel {
 	public void setMapElement(MapElement mapElement) {
 		this.mapElement = mapElement;
 		scale = (Scale) mapElement;
-		setLocation(locationText, elevLabel, scale.getTranslation());
+		setLocation(locationText, scale.getTranslation());
 		pinnedCheckBox.setSelected(scale.isPinned());
 		nameLabel.setText(scale.getLabel());
 		colorList.setColor(scale.getColor());

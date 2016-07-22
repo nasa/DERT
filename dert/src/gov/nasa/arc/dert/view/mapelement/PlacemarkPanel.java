@@ -101,7 +101,7 @@ public class PlacemarkPanel extends MapElementBasePanel {
 	public void setMapElement(MapElement mapElement) {
 		this.mapElement = mapElement;
 		placemark = (Placemark) mapElement;
-		setLocation(locationText, elevLabel, placemark.getTranslation());
+		setLocation(locationText, placemark.getTranslation());
 		pinnedCheckBox.setSelected(placemark.isPinned());
 		nameLabel.setText(placemark.getName());
 		colorList.setColor(placemark.getColor());

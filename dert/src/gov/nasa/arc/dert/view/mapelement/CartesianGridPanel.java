@@ -147,7 +147,7 @@ public class CartesianGridPanel extends MapElementBasePanel {
 		sizeText.setValue(grid.getSize());
 		lineWidthText.setValue(grid.getLineWidth());
 		labelCheckBox.setSelected(grid.isLabelVisible());
-		setLocation(locationText, elevLabel, grid.getTranslation());
+		setLocation(locationText, grid.getTranslation());
 		columnsSpinner.setValue(grid.getColumns());
 		rowsSpinner.setValue(grid.getRows());
 		colorList.setColor(grid.getColor());

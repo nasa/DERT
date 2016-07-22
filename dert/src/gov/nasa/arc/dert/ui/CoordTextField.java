@@ -39,16 +39,16 @@ public abstract class CoordTextField
 		else
 			landscape.worldToLocalCoordinate(store);
 		// get the actual elevation at the point
-		double z = landscape.getZ(store.getX(), store.getY());
+		if (Double.isNaN(store.getZ()))
+			store.setZ(landscape.getZ(store.getX(), store.getY()));
 		// coordinate is out of bounds or in error, beep the user
-		if (Double.isNaN(z)) {
+		if (Double.isNaN(store.getZ())) {
 			Toolkit.getDefaultToolkit().beep();
 			setError();
-			Console.getInstance().println("Coordinate [" + coord.getXf()+", "+coord.getYf()+", "+coord.getZf() + "] is outside of landscape.");
+			Console.getInstance().println("Coordinate [" + coord.getXf()+", "+coord.getYf() + "] is outside of landscape.");
 		}
 		// Add the elevation to the field
 		else {
-			store.setZ(z);
 			doChange(store);
 			landscape.localToWorldCoordinate(store);
 			if (World.getInstance().getUseLonLat())

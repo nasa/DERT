@@ -52,7 +52,7 @@ public abstract class MapElementBasePanel extends JPanel {
 	protected JTextArea noteText;
 	protected JButton saveButton;
 	protected JCheckBox pinnedCheckBox, labelCheckBox;
-	protected JLabel typeLabel, nameLabel, elevLabel;
+	protected JLabel typeLabel, nameLabel;
 	protected CoordTextField locationText;
 	protected JPanel container;
 
@@ -126,9 +126,6 @@ public abstract class MapElementBasePanel extends JPanel {
 			};
 			CoordAction.listenerList.add(locationText);
 			panel.add(locationText);
-			panel.add(new JLabel("Elev:"));
-			elevLabel = new JLabel("            ");
-			panel.add(elevLabel);
 			container.add(panel);
 		}
 
@@ -204,12 +201,11 @@ public abstract class MapElementBasePanel extends JPanel {
 		add(container, BorderLayout.CENTER);
 	}
 
-	protected void setLocation(CoordTextField locationText, JLabel elevLabel, ReadOnlyVector3 position) {
+	protected void setLocation(CoordTextField locationText, ReadOnlyVector3 position) {
 		if (position == null) {
 			position = World.getInstance().getMarble().getTranslation();
 		}
-		float elev = locationText.setLocalValue(position);
-		elevLabel.setText(formatter.format(elev));
+		locationText.setLocalValue(position);
 	}
 
 	/**
@@ -222,7 +218,7 @@ public abstract class MapElementBasePanel extends JPanel {
 			return;
 		}
 		if (locationText != null) {
-			setLocation(locationText, elevLabel, ((Spatial) mapElement).getTranslation());
+			setLocation(locationText, ((Spatial) mapElement).getTranslation());
 		}
 	}
 

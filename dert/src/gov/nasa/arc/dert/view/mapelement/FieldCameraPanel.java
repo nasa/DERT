@@ -121,7 +121,7 @@ public class FieldCameraPanel extends MapElementBasePanel {
 	public void setMapElement(MapElement mapElement) {
 		this.mapElement = mapElement;
 		fieldCamera = (FieldCamera) mapElement;
-		setLocation(locationText, elevLabel, fieldCamera.getTranslation());
+		setLocation(locationText, fieldCamera.getTranslation());
 		defCombo.setSelectedItem(fieldCamera.getFieldCameraDefinition());
 		pinnedCheckBox.setSelected(fieldCamera.isPinned());
 		nameLabel.setText(fieldCamera.getName());

@@ -13,6 +13,7 @@ import gov.nasa.arc.dert.util.StringUtil;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -35,7 +36,6 @@ public class PlanePanel extends MapElementBasePanel {
 	// Controls
 	private ColorSelectionPanel colorList;
 	private CoordTextField p0Location, p1Location, p2Location;
-	private JLabel elevLabel0, elevLabel1, elevLabel2;
 	private JButton openButton;
 	private DoubleSpinner lengthSpinner, widthSpinner;
 	private JCheckBox triangleCheckBox;
@@ -62,53 +62,74 @@ public class PlanePanel extends MapElementBasePanel {
 
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Point 0"));
-		p0Location = new CoordTextField(18, "location of first point of triangle", Landscape.format, true) {
+		p0Location = new CoordTextField(22, "location of first point of triangle", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 coord) {
-				if (!coord.equals(plane.getPoint(0))) {
+				if (Double.isNaN(coord.getZ())) {
+					double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
+					if (Double.isNaN(z)) {
+						Toolkit.getDefaultToolkit().beep();
+						return;
+					}
 					plane.setPoint(0, coord);
+					plane.getMarker(0).setStrictZ(true);
+				}
+				else {
+					plane.setPoint(0, coord);
+					plane.getMarker(0).setStrictZ(false);
 				}
 			}			
 		};
 		CoordAction.listenerList.add(p0Location);
 		panel.add(p0Location);
-		panel.add(new JLabel("Elev:"));
-		elevLabel0 = new JLabel("            ");
-		panel.add(elevLabel0);
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Point 1"));
-		p1Location = new CoordTextField(18, "location of second point of triangle", Landscape.format, true) {
+		p1Location = new CoordTextField(22, "location of second point of triangle", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 coord) {
-				if (!coord.equals(plane.getPoint(1))) {
+				if (Double.isNaN(coord.getZ())) {
+					double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
+					if (Double.isNaN(z)) {
+						Toolkit.getDefaultToolkit().beep();
+						return;
+					}
 					plane.setPoint(1, coord);
+					plane.getMarker(1).setStrictZ(true);
+				}
+				else {
+					plane.setPoint(1, coord);
+					plane.getMarker(1).setStrictZ(false);
 				}
 			}			
 		};
 		CoordAction.listenerList.add(p1Location);
 		panel.add(p1Location);
-		panel.add(new JLabel("Elev:"));
-		elevLabel1 = new JLabel("            ");
-		panel.add(elevLabel1);
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Point 2"));
-		p2Location = new CoordTextField(18, "location of third point of triangle", Landscape.format, true) {
+		p2Location = new CoordTextField(22, "location of third point of triangle", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 coord) {
-				if (!coord.equals(plane.getPoint(2))) {
+				if (Double.isNaN(coord.getZ())) {
+					double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
+					if (Double.isNaN(z)) {
+						Toolkit.getDefaultToolkit().beep();
+						return;
+					}
 					plane.setPoint(2, coord);
+					plane.getMarker(2).setStrictZ(true);
+				}
+				else {
+					plane.setPoint(2, coord);
+					plane.getMarker(2).setStrictZ(false);
 				}
 			}			
 		};
 		CoordAction.listenerList.add(p2Location);
 		panel.add(p2Location);
-		panel.add(new JLabel("Elev:"));
-		elevLabel2 = new JLabel("            ");
-		panel.add(elevLabel2);
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -189,9 +210,9 @@ public class PlanePanel extends MapElementBasePanel {
 
 	@Override
 	public void updateLocation(MapElement mapElement) {
-		setLocation(p0Location, elevLabel0, plane.getPoint(0));
-		setLocation(p1Location, elevLabel1, plane.getPoint(1));
-		setLocation(p2Location, elevLabel2, plane.getPoint(2));
+		setLocation(p0Location, plane.getPoint(0));
+		setLocation(p1Location, plane.getPoint(1));
+		setLocation(p2Location, plane.getPoint(2));
 		String str = "Strike: ";
 		if (Plane.strikeAsCompassBearing) {
 			str += StringUtil.azimuthToCompassBearing(plane.getStrike());

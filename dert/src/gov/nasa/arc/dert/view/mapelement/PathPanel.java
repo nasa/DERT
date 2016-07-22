@@ -193,7 +193,7 @@ public class PathPanel extends MapElementBasePanel {
 			waypoint = (Waypoint) mapElement;
 			path = waypoint.getPath();
 			nameLabel.setText(waypoint.getName());
-			setLocation(locationText, elevLabel, waypoint.getTranslation());
+			setLocation(locationText, waypoint.getTranslation());
 			labelCombo.setSelectedItem(path.getLabelType());
 			pinnedCheckBox.setSelected(path.isPinned());
 			colorList.setColor(path.getColor());

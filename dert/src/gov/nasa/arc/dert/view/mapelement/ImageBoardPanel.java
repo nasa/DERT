@@ -110,7 +110,7 @@ public class ImageBoardPanel extends MapElementBasePanel {
 	public void setMapElement(MapElement mapElement) {
 		this.mapElement = mapElement;
 		imageBoard = (ImageBoard) mapElement;
-		setLocation(locationText, elevLabel, imageBoard.getTranslation());
+		setLocation(locationText, imageBoard.getTranslation());
 		pinnedCheckBox.setSelected(imageBoard.isPinned());
 		nameLabel.setText(imageBoard.getName());
 		sizeText.setValue(imageBoard.getSize());

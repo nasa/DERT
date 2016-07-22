@@ -146,7 +146,7 @@ public class RadialGridPanel extends MapElementBasePanel {
 		sizeText.setValue(grid.getSize());
 		lineWidthText.setValue(grid.getLineWidth());
 
-		setLocation(locationText, elevLabel, grid.getTranslation());
+		setLocation(locationText, grid.getTranslation());
 		ringsSpinner.setValue(grid.getRings());
 		colorList.setColor(grid.getColor());
 		labelCheckBox.setSelected(grid.isLabelVisible());
