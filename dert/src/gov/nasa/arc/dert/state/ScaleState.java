@@ -9,7 +9,7 @@ import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 
 /**
- * Provides a state object for a CartesianGrid or RadialGrid.
+ * Provides a state object for a scale bar.
  *
  */
 public class ScaleState extends ToolState {
@@ -22,6 +22,9 @@ public class ScaleState extends ToolState {
 	
 	// Use the default label (X:xsize, Y:ysize, Z:zsize)
 	public boolean autoLabel;
+
+	// Orientation
+	public double azimuth, tilt;
 	
 	public double radius;
 
@@ -43,6 +46,8 @@ public class ScaleState extends ToolState {
 		this.radius = Scale.defaultRadius;
 		this.cellCount = Scale.defaultCellCount;
 		this.autoLabel = Scale.defaultAutoLabel;
+		azimuth = Scale.defaultAzimuth;
+		tilt = Scale.defaultTilt;
 	}
 	
 	/**
@@ -54,6 +59,8 @@ public class ScaleState extends ToolState {
 		radius = StateUtil.getDouble(map, "Radius", 1);
 		location = StateUtil.getVector3(map, "Location", Vector3.ZERO);
 		autoLabel = StateUtil.getBoolean(map, "AutoLabel", true);
+		azimuth = StateUtil.getDouble(map, "Azimuth", Scale.defaultAzimuth);
+		tilt = StateUtil.getDouble(map, "Tilt", Scale.defaultTilt);
 	}
 	
 	@Override
@@ -69,6 +76,10 @@ public class ScaleState extends ToolState {
 			return(false);
 		if (this.autoLabel != that.autoLabel) 
 			return(false);
+		if (this.azimuth != that.azimuth) 
+			return(false);
+		if (this.tilt != that.tilt)
+			return(false);
 		if (!this.location.equals(that.location)) 
 			return(false);
 		return(true);
@@ -83,10 +94,14 @@ public class ScaleState extends ToolState {
 			autoLabel = scale.isAutoLabel();
 			radius = scale.getCellRadius();
 			location = new Vector3(((Scale)mapElement).getTranslation());
+			azimuth = scale.getAzimuth();
+			tilt = scale.getTilt();
 		}
 		map.put("CellCount", new Integer(cellCount));
 		map.put("Radius", new Double(radius));
 		map.put("AutoLabel", new Boolean(autoLabel));
+		map.put("Azimuth", new Double(azimuth));
+		map.put("Tilt", new Double(tilt));
 		StateUtil.putVector3(map, "Location", location);
 		return(map);
 	}

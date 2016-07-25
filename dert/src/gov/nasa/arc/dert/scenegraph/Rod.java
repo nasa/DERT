@@ -144,16 +144,16 @@ public class Rod
         int i = 0;
         for (int axisCount = 0; axisCount < (_axisSamples+1); axisCount++) {
             double axisFraction = axisCount * inverseAxis;
-            double x = -halfLength + _length * axisFraction;
+            double y = -halfLength + _length * axisFraction;
 
             // compute center of slice
-            final Vector3 sliceCenter = new Vector3(x, 0, 0);
+            final Vector3 sliceCenter = new Vector3(0, y, 0);
 
             // compute slice vertices with duplication at end point
             final int save = i;
             for (int radialCount = 0; radialCount < _radialSamples; radialCount++) {
                 final double radialFraction = radialCount * inverseRadial; // in [0,1)
-                tempNormal.set(0, cos[radialCount], sin[radialCount]);
+                tempNormal.set(cos[radialCount], 0, sin[radialCount]);
                 _meshData.getNormalBuffer().put(tempNormal.getXf()).put(tempNormal.getYf()).put(tempNormal.getZf());
 
                 tempNormal.multiplyLocal(_radius).addLocal(sliceCenter);
@@ -171,11 +171,11 @@ public class Rod
             i++;
         }
 
-        _meshData.getVertexBuffer().put((float) -halfLength).put(0).put(0); // bottom center
-        _meshData.getNormalBuffer().put(-1).put(0).put(0);
+        _meshData.getVertexBuffer().put(0).put((float) -halfLength).put(0); // bottom center
+        _meshData.getNormalBuffer().put(0).put(-1).put(0);
         _meshData.getTextureCoords(0).getBuffer().put(-(float)inverseAxis).put(0.5f);
-        _meshData.getVertexBuffer().put((float) halfLength).put(0).put(0); // top center
-        _meshData.getNormalBuffer().put(1).put(0).put(0);
+        _meshData.getVertexBuffer().put(0).put((float) halfLength).put(0); // top center
+        _meshData.getNormalBuffer().put(0).put(1).put(0);
         _meshData.getTextureCoords(0).getBuffer().put(1+(float)inverseAxis).put(0.5f);
         
         _meshData.getVertexBuffer().rewind();

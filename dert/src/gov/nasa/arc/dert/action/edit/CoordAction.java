@@ -26,8 +26,8 @@ public class CoordAction
 	
 	@Override
 	public void run() {
-		selected = !selected;
-		if (selected) {
+		checked = !checked;
+		if (checked) {
 			setIcon(Icons.getImageIcon("graticule_checked.png"));
 			World.getInstance().setUseLonLat(true);
 		}

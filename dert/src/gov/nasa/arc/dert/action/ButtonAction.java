@@ -14,7 +14,7 @@ import javax.swing.JButton;
  */
 public abstract class ButtonAction extends JButton {
 	
-	protected boolean selected;
+	protected boolean checked;
 
 	public ButtonAction(String toolTipText, String label, String iconFileName) {
 		this(toolTipText, label, iconFileName, false);
@@ -39,8 +39,12 @@ public abstract class ButtonAction extends JButton {
 		});
 	}
 	
-	public void setSelected(boolean selected) {
-		this.selected = selected;
+	public void setChecked(boolean checked) {
+		this.checked = checked;
+	}
+	
+	public boolean isChecked() {
+		return(checked);
 	}
 
 	protected abstract void run();

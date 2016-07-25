@@ -19,6 +19,7 @@ import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Matrix3;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
+import com.ardor3d.renderer.Camera.ProjectionMode;
 import com.ardor3d.renderer.queue.RenderBucketType;
 import com.ardor3d.scenegraph.Node;
 
@@ -68,6 +69,9 @@ public class ViewpointNode
 	private Node text;
 	private RasterText corText, dstText, magText, altText;
 	private double textSize = 20;
+	
+	private boolean mapMode;
+	private ViewpointStore oldVP;
 
 	/**
 	 * Constructor
@@ -467,6 +471,8 @@ public class ViewpointNode
 	 * @param zRotAngle
 	 */
 	public void rotate(float xRotAngle, float zRotAngle) {
+		if (mapMode)
+			return;
 		setAzAndEl(azimuth + (zRotAngle * 0.5 * Math.PI / 360), elevation + (xRotAngle * 0.5 * Math.PI / 360));
 		rotateTurntable(camera.getDistanceToCoR());
 		updateStatus();
@@ -680,5 +686,37 @@ public class ViewpointNode
 		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
+	}
+	
+	public void setMapMode(boolean mapMode) {
+		this.mapMode = mapMode;
+		if (mapMode) {
+			oldVP = getViewpoint(oldVP);
+			camera.setProjectionMode(ProjectionMode.Parallel);
+			rotate.setIdentity();
+			azimuth = 0;
+			elevation = 0;
+			double distance = sceneBounds.getRadius();
+			location.set(0.0, 0.0, distance);
+			location.addLocal(sceneBounds.getCenter());
+			camera.setLookAt(sceneBounds.getCenter());
+			camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
+			camera.setFrame(location, rotate);
+			camera.setFrustum(sceneBounds);
+			updateFromCamera();
+			updateCrosshair();
+			updateGeometricState(0);
+			Dert.getMainWindow().updateCompass(azimuth);
+			updateOverlay();
+		}
+		else {
+			camera.setProjectionMode(ProjectionMode.Perspective);
+			setViewpoint(oldVP, true, false);
+		}
+		changed.set(true);
+	}
+	
+	public boolean isMapMode() {
+		return(mapMode);
 	}
 }

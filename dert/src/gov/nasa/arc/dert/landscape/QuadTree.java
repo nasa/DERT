@@ -551,7 +551,7 @@ public class QuadTree extends Node {
 		}
 
 		// get the pixel size at the closest point
-		double pixSize = camera.getPixelSizeAt(closest, false);
+		double pixSize = camera.getPixelSizeAt(closest, Landscape.getInstance().isMapMode());
 		if (pixSize <= 0) {
 			return;
 		}

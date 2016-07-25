@@ -145,6 +145,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 		setRenderState(textureState);
 
 		setVisible(state.visible);
+		setEndpointsVisible(state.endpointsVisible);
 		state.setMapElement(this);
 	}
 	
@@ -336,7 +337,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * @param pALoc
 	 */
 	public void setEndpointA(double x, double y, double z) {
-		endpointA.setLocation(x, y, z, true);
+		endpointA.setLocation(x, y, z, true, false);
 		this.pALoc.set(x, y, z);
 		updateGraph();
 		updateGeometricState(0);
@@ -357,7 +358,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * @param pBLoc
 	 */
 	public void setEndpointB(double x, double y, double z) {
-		endpointB.setLocation(x, y, z, true);
+		endpointB.setLocation(x, y, z, true, false);
 		this.pBLoc.set(x, y, z);
 		updateGraph();
 		updateGeometricState(0);
@@ -369,6 +370,15 @@ public class Profile extends Node implements ViewDependent, Tool {
 	
 	public Marker getMarkerB() {
 		return(endpointB);
+	}
+	
+	public void setEndpointsVisible(boolean endpointsVisible) {
+		endpointA.getSceneHints().setCullHint(endpointsVisible ? CullHint.Inherit : CullHint.Always);
+		endpointB.getSceneHints().setCullHint(endpointsVisible ? CullHint.Inherit : CullHint.Always);
+	}
+	
+	public boolean isEndpointsVisible() {
+		return(endpointA.getSceneHints().getCullHint() != CullHint.Always);
 	}
 
 	/**

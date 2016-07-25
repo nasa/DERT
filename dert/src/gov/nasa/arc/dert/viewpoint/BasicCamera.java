@@ -340,7 +340,7 @@ public class BasicCamera extends Camera {
 
 		// We use the traditional OpenGL default (negative Z axis) for
 		// compatibility with other software. -LK
-		if (getProjectionMode() == ProjectionMode.Perspective) {
+//		if (getProjectionMode() == ProjectionMode.Perspective) {
 			_direction.set(0, 0, -1);
 			axes.applyPost(_direction, _direction);
 			_direction.normalizeLocal();
@@ -350,7 +350,7 @@ public class BasicCamera extends Camera {
 			_left.set(-1, 0, 0);
 			axes.applyPost(_left, _left);
 			_left.normalizeLocal();
-		}
+//		}
 		onFrameChange();
 	}
 

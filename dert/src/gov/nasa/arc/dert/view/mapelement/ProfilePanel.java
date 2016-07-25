@@ -16,11 +16,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
+import com.ardor3d.scenegraph.event.DirtyType;
 
 /**
  * Provides controls for setting options for profile tools.
@@ -33,6 +35,7 @@ public class ProfilePanel extends MapElementBasePanel {
 	private CoordTextField pALocation, pBLocation;
 	private JButton saveAsCSV, openButton;
 	private DoubleTextField lineWidthText;
+	private JCheckBox endpointsCheckBox;
 
 	// The profile
 	private Profile profile;
@@ -122,6 +125,16 @@ public class ProfilePanel extends MapElementBasePanel {
 			}
 		};
 		panel.add(lineWidthText);
+		
+		endpointsCheckBox = new JCheckBox("Show Endpoints");
+		endpointsCheckBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				profile.setEndpointsVisible(endpointsCheckBox.isSelected());
+				profile.markDirty(DirtyType.RenderState);
+			}
+		});
+		panel.add(endpointsCheckBox);
 
 		contents.add(panel);
 
@@ -161,6 +174,7 @@ public class ProfilePanel extends MapElementBasePanel {
 		setLocation(pALocation, profile.getEndpointA());
 		setLocation(pBLocation, profile.getEndpointB());
 		pinnedCheckBox.setSelected(profile.isPinned());
+		endpointsCheckBox.setSelected(profile.isEndpointsVisible());
 		lineWidthText.setValue(profile.getLineWidth());
 		nameLabel.setText(profile.getName());
 		colorList.setColor(profile.getColor());

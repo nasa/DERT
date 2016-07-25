@@ -7,6 +7,7 @@ import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.state.PanelState.PanelType;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.util.StringUtil;
+import gov.nasa.arc.dert.view.mapelement.MapElementsView;
 import gov.nasa.arc.dert.view.surfaceandlayers.SurfaceAndLayersView;
 
 import java.util.ArrayList;
@@ -488,5 +489,14 @@ public class Configuration {
 	 */
 	public SurfaceAndLayersView getSurfaceAndLayersView() {
 		return ((SurfaceAndLayersView) surfAndLayerState.viewData.view);
+	}
+
+	/**
+	 * Get the map elements view
+	 * 
+	 * @return
+	 */
+	public MapElementsView getMapElementsView() {
+		return ((MapElementsView) mapElementsState.viewData.view);
 	}
 }

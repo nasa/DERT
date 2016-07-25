@@ -435,7 +435,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	 * @param p
 	 */
 	public void setPoint(int i, ReadOnlyVector3 p) {
-		point[i].setLocation(p.getX(), p.getY(), p.getZ(), true);
+		point[i].setLocation(p.getX(), p.getY(), p.getZ(), true, false);
 	}
 
 	/**

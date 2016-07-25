@@ -11,7 +11,6 @@ import gov.nasa.arc.dert.icon.Icons;
 public class ActivateZoomAction extends ButtonAction {
 
 	protected ViewpointController controller;
-	protected boolean enabled;
 
 	/**
 	 * Constructor
@@ -22,14 +21,17 @@ public class ActivateZoomAction extends ButtonAction {
 
 	@Override
 	protected void run() {
-		enabled = !enabled;
-		Dert.getWorldView().getScenePanel().getViewpointController().enableZoom(enabled);
-		if (enabled) {
+		checked = !checked;
+		enableZoom(checked);
+	}
+	
+	public void enableZoom(boolean enable) {
+		Dert.getWorldView().getScenePanel().getViewpointController().enableZoom(enable);
+		if (enable) {
 			setIcon(Icons.getImageIcon("magnifycheck.png"));
 		} else {
 			setIcon(Icons.getImageIcon("magnify.png"));
-		}
-
+		}		
 	}
 
 }

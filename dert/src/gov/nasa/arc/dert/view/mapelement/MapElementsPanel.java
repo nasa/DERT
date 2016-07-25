@@ -375,6 +375,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	 */
 	public void selectMapElement(MapElement mapElement) {
 		if (mapElement == null) {
+			tree.setSelectionPath(null);
 			return;
 		}
 		DefaultMutableTreeNode treeNode = null;

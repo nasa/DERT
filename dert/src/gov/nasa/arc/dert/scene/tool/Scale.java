@@ -1,21 +1,24 @@
 package gov.nasa.arc.dert.scene.tool;
 
+import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.landscape.QuadTree;
-import gov.nasa.arc.dert.scenegraph.Movable;
-import gov.nasa.arc.dert.scenegraph.RasterText;
-import gov.nasa.arc.dert.scenegraph.Rod;
-import gov.nasa.arc.dert.scenegraph.Text.AlignType;
+import gov.nasa.arc.dert.scenegraph.FigureMarker;
+import gov.nasa.arc.dert.scenegraph.Shape;
+import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.state.ScaleState;
 import gov.nasa.arc.dert.util.MathUtil;
+import gov.nasa.arc.dert.util.SpatialUtil;
+import gov.nasa.arc.dert.util.StringUtil;
+import gov.nasa.arc.dert.view.world.MoveEdit;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.awt.Color;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import javax.swing.Icon;
 
@@ -26,32 +29,18 @@ import com.ardor3d.image.PixelDataType;
 import com.ardor3d.image.Texture;
 import com.ardor3d.image.Texture2D;
 import com.ardor3d.image.TextureStoreFormat;
-import com.ardor3d.math.ColorRGBA;
-import com.ardor3d.math.MathUtils;
-import com.ardor3d.math.Matrix3;
-import com.ardor3d.math.Quaternion;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.renderer.state.MaterialState;
-import com.ardor3d.renderer.state.MaterialState.ColorMaterial;
-import com.ardor3d.renderer.state.MaterialState.MaterialFace;
 import com.ardor3d.renderer.state.TextureState;
-import com.ardor3d.scenegraph.Mesh;
-import com.ardor3d.scenegraph.event.DirtyType;
-import com.ardor3d.scenegraph.hint.CullHint;
-import com.ardor3d.scenegraph.hint.LightCombineMode;
-import com.ardor3d.scenegraph.hint.PickingHint;
 import com.ardor3d.util.TextureKey;
 import com.ardor3d.util.geom.BufferUtils;
 
 /**
  * Provides a class for a 3D map scale.
  */
-public class Scale extends Movable implements Tool {
+public class Scale extends FigureMarker implements Tool {
 
 	public static final Icon icon = Icons.getImageIcon("scale.png");
-
-	protected static float AMBIENT_FACTOR = 0.75f;
 
 	// Defaults
 	public static Color defaultColor = Color.white;
@@ -60,35 +49,20 @@ public class Scale extends Movable implements Tool {
 	public static boolean defaultAutoLabel = true;
 	public static double defaultCellSize = 1;
 	public static double defaultRadius = 1;
-
-	// Scale parts
-	protected Mesh rod;
-	protected RasterText label;
+	public static double defaultAzimuth = 0;
+	public static double defaultTilt = 0;
 
 	// Label
-	protected boolean autoLabel;
+	private boolean autoLabel;
 
 	// Map Element state
-	protected ScaleState state;
+	private ScaleState state;
 
 	// Dimensions
 	private int cellCount;
-	private double radius, cellSize;
-
-	// Rotation
-	protected double azimuth, tilt;
-	protected Matrix3 rotMat;
+	private double radius;
 	
-	// material state
-	protected MaterialState materialState;
-	protected Color color;
-	protected boolean labelVisible;
-	// Ardor3D version of color
-	protected ColorRGBA colorRGBA;
-	
-	protected Vector3 offset, location;
-
-    protected static final Quaternion rotator = new Quaternion().applyRotationX(MathUtils.HALF_PI);
+	private Vector3 offset;
 
 	/**
 	 * Constructor
@@ -96,34 +70,21 @@ public class Scale extends Movable implements Tool {
 	 * @param state
 	 */
 	public Scale(ScaleState state) {
-		super(state.name);
-
-		setStrictZ(state.strictZ);
+		super(state.name, state.location, state.size, state.color, state.labelVisible, false, state.pinned);
 		this.state = state;
 		cellCount = state.cellCount;
-		cellSize = state.size;
 		radius = state.radius;
 		autoLabel = state.autoLabel;
-		labelVisible = state.labelVisible;
+		setAzimuth(state.azimuth);
+		setTilt(state.tilt);
+		setVisible(state.visible);
+		setStrictZ(state.strictZ);
+		this.state = state;
 		
 		offset = new Vector3();
-		location = new Vector3();
-		setTranslation(state.location);
-		setColor(state.color);
-		setPinned(state.pinned);		
-
-		label = new RasterText("_label", state.name, AlignType.Center);
-		label.setScaleFactor((float) (0.75 * cellSize));
-		label.setColor(ColorRGBA.WHITE);
-		label.setVisible(labelVisible);
-		label.getSceneHints().setLightCombineMode(LightCombineMode.Off);
-		label.getSceneHints().setPickingHint(PickingHint.Pickable, false);
-		MaterialState ms = new MaterialState();
-		ms.setColorMaterial(ColorMaterial.Emissive);
-		ms.setColorMaterialFace(MaterialState.MaterialFace.FrontAndBack);
-		ms.setEnabled(true);
-		label.setRenderState(ms);
-		attachChild(label);
+		contents.detachChild(surfaceNormalArrow);
+		surfaceNormalArrow = null;
+		contents.setScale(1);
 
 		buildRod();
 		
@@ -134,21 +95,28 @@ public class Scale extends Movable implements Tool {
 		return(label.getText());
 	}
 	
-	protected void buildRod() {
-		if (rod != null)
-			detachChild(rod);
-		rod = new Rod("_rod", cellCount, 16, radius, cellSize*cellCount);
-        rod.getSceneHints().setCastsShadows(false);
-        attachChild(rod);
-        rod.updateModelBound();
-		label.setTranslation(new Vector3(0, 0, 1.2*radius));
+
+	@Override
+	protected void scaleShape(double scale) {
+		// do nothing;
+	}
+
+	
+	private void buildRod() {
+		if (shape != null)
+			contents.detachChild(shape);
+		shape = Shape.createShape("_geometry", ShapeType.rod, cellCount, (float)radius, (float)size*cellCount);
+		SpatialUtil.setPickHost(shape, this);
+		shape.getSceneHints().setCastsShadows(false);
+		contents.attachChild(shape);
+		label.setTranslation(new Vector3(0, 0, 2.5*radius));
 		if (autoLabel)
-			label.setText(getName()+" = "+String.format(Landscape.stringFormat, (cellSize*cellCount)).trim());
+			label.setText(getName()+" = "+String.format(Landscape.stringFormat, (size*cellCount)).trim());
 		
 		TextureState tState = new TextureState();
 		tState.setTexture(getTexture());
 		tState.setEnabled(true);
-		rod.setRenderState(tState);
+		shape.getGeometry().setRenderState(tState);
 
 		updateGeometricState(0, true);
 		updateWorldTransform(true);
@@ -160,6 +128,7 @@ public class Scale extends Movable implements Tool {
 		super.setInMotion(inMotion, pickPosition);
 		if (inMotion) {
 			pickPosition.subtract(getWorldTranslation(), offset);
+			offset.setZ(0);
 		} else {
 			offset.set(Vector3.ZERO);
 		}
@@ -174,11 +143,23 @@ public class Scale extends Movable implements Tool {
 	public void setTranslation(ReadOnlyVector3 loc) {
 		super.setTranslation(loc.subtract(offset, null));
 	}
-    
-    @Override
-    public double getSize() {
-    	return(cellSize);
-    }
+
+	/**
+	 * Set the location
+	 * 
+	 * @param i
+	 * @param p
+	 */
+	@Override
+	public void setLocation(double x, double y, double z, boolean doEdit, boolean zOnly) {
+		if (doEdit)
+			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(this, new Vector3(getTranslation()), strictZ));
+		if (zOnly)
+			super.setTranslation(x, y, z);
+		else
+			setTranslation(x, y, z);
+		updateListeners();
+	}
 	
 	public int getCellCount() {
 		return(cellCount);
@@ -200,114 +181,8 @@ public class Scale extends Movable implements Tool {
 	}
 
 	/**
-	 * Show the label
-	 */
-	@Override
-	public void setLabelVisible(boolean visible) {
-		labelVisible = visible;
-		label.setVisible(visible);
-		label.markDirty(DirtyType.RenderState);
-	}
-
-	/**
-	 * Find out if the label is visible
-	 */
-	@Override
-	public boolean isLabelVisible() {
-		return (labelVisible);
-	}
-
-	/**
-	 * Set the color
-	 * 
-	 * @param newColor
-	 */
-	public void setColor(Color newColor) {
-		if ((color != null) && color.equals(newColor)) {
-			return;
-		}
-		color = newColor;
-		colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
-			color.getAlpha() / 255f);
-		if (materialState == null) {
-			// add a material state
-			materialState = new MaterialState();
-			materialState.setColorMaterial(ColorMaterial.None);
-			materialState.setEnabled(true);
-			setRenderState(materialState);
-		}
-		setMaterialState();
-		markDirty(DirtyType.RenderState);
-	}
-
-	protected void setMaterialState() {
-		materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * AMBIENT_FACTOR,
-			colorRGBA.getGreen() * AMBIENT_FACTOR, colorRGBA.getBlue() * AMBIENT_FACTOR, colorRGBA.getAlpha()));
-		materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
-		materialState.setEmissive(MaterialFace.FrontAndBack, ColorRGBA.BLACK);
-	}
-
-	protected void enableHighlight(boolean enable) {
-		if (enable) {
-			materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * AMBIENT_FACTOR,
-				colorRGBA.getGreen() * AMBIENT_FACTOR, colorRGBA.getBlue() * AMBIENT_FACTOR, colorRGBA.getAlpha()));
-			materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
-			materialState.setEmissive(MaterialFace.FrontAndBack, colorRGBA);
-		} else {
-			setMaterialState();
-		}
-	}
-
-	/**
-	 * Set the azimuth
-	 * 
-	 * @param azimuth
-	 */
-	public void setAzimuth(double azimuth) {
-		if (this.azimuth == azimuth) {
-			return;
-		}
-		this.azimuth = azimuth;
-		rotMat = new Matrix3();
-		rod.setRotation(rotMat.fromAngles(-Math.toRadians(tilt), 0.0, -Math.toRadians(azimuth)));
-	}
-
-	/**
-	 * Get the azimuth
-	 * 
-	 * @return
-	 */
-	public double getAzimuth() {
-		return (azimuth);
-	}
-
-	/**
-	 * Set the tilt
-	 * 
-	 * @param tilt
-	 */
-	public void setTilt(double tilt) {
-		if (this.tilt == tilt) {
-			return;
-		}
-		this.tilt = tilt;
-		rotMat = new Matrix3();
-		rod.setRotation(rotMat.fromAngles(-Math.toRadians(tilt), 0.0, -Math.toRadians(azimuth)));
-	}
-
-	/**
-	 * Get the tilt
-	 * 
-	 * @return
-	 */
-	public double getTilt() {
-		return (tilt);
-	}
-
-	/**
 	 * Get the MapElement state
 	 */
-	@Override
 	public MapElementState getState() {
 		return (state);
 	}
@@ -315,7 +190,6 @@ public class Scale extends Movable implements Tool {
 	/**
 	 * Get the map element type
 	 */
-	@Override
 	public Type getType() {
 		return (Type.Scale);
 	}
@@ -323,19 +197,6 @@ public class Scale extends Movable implements Tool {
 	@Override
 	public Icon getIcon() {
 		return (icon);
-	}
-
-	/**
-	 * Set the grid cell size
-	 * 
-	 * @param cellSize
-	 */
-	public void setSize(double size) {
-		if (cellSize == size)
-			return;
-		cellSize = size;
-		
-		buildRod();
 	}
 	
 	public double getCellRadius() {
@@ -354,7 +215,7 @@ public class Scale extends Movable implements Tool {
 	 * 
 	 * @return
 	 */
-	public Texture2D getTexture() {
+	private Texture2D getTexture() {
 		Texture2D texture = null;
 		texture = new Texture2D();
 		texture.setWrap(Texture.WrapMode.Clamp);
@@ -388,7 +249,6 @@ public class Scale extends Movable implements Tool {
 	/**
 	 * Get the point and distance to seek to
 	 */
-	@Override
 	public double getSeekPointAndDistance(Vector3 point) {
 		BoundingVolume bv = getWorldBound();
 		point.set(bv.getCenter());
@@ -405,60 +265,6 @@ public class Scale extends Movable implements Tool {
 	}
 
 	/**
-	 * Update the Z coordinate when elevation changes
-	 * 
-	 * @param quadTree
-	 * @return
-	 */
-	public boolean updateElevation(QuadTree quadTree) {
-		if (strictZ)
-			return(false);
-		ReadOnlyVector3 t = getWorldTranslation();
-		if (quadTree.contains(t.getX(), t.getY())) {
-			double z = Landscape.getInstance().getZ(t.getX(), t.getY(), quadTree);
-			if (!Double.isNaN(z)) {
-				setTranslation(t.getX(), t.getY(), z);
-				return (true);
-			}
-		}
-		return (false);
-	}
-
-	/**
-	 * Get the location in planetary coordinates
-	 * 
-	 * @return
-	 */
-	public ReadOnlyVector3 getLocation() {
-		location.set(getWorldTranslation());
-		Landscape.getInstance().localToWorldCoordinate(location);
-		return (location);
-	}
-
-	/**
-	 * Get the color
-	 * 
-	 * @return
-	 */
-	public Color getColor() {
-		return (color);
-	}
-
-	/**
-	 * Set the vertical exaggeration
-	 * 
-	 * @param vertExag
-	 * @param oldVertExag
-	 * @param minZ
-	 */
-	public void setVerticalExaggeration(double vertExag, double oldVertExag, double minZ) {
-		ReadOnlyVector3 wTrans = getWorldTranslation();
-		Vector3 tmp = new Vector3(wTrans.getX(), wTrans.getY(), wTrans.getZ() * vertExag / oldVertExag);
-		getParent().worldToLocal(tmp, tmp);
-		setTranslation(tmp);
-	}
-
-	/**
 	 * Update size depending on camera location.
 	 */
 	@Override
@@ -467,26 +273,33 @@ public class Scale extends Movable implements Tool {
 	}
 
 	/**
-	 * Determine visibility
+	 * Set the defaults
 	 * 
-	 * @return
+	 * @param properties
 	 */
-	public boolean isVisible() {
-		return (getSceneHints().getCullHint() != CullHint.Always);
+	public static void setDefaultsFromProperties(Properties properties) {
+		defaultColor = StringUtil.getColorValue(properties, "MapElement.Scale.defaultColor", defaultColor, false);
+		defaultLabelVisible = StringUtil.getBooleanValue(properties, "MapElement.Scale.defaultLabelVisible",
+			defaultLabelVisible, false);
+		defaultAutoLabel = StringUtil.getBooleanValue(properties, "MapElement.Scale.defaultAutoLabel", defaultAutoLabel, false);
+		defaultCellCount = StringUtil.getIntegerValue(properties, "MapElement.Scale.defaultCellCount", true, defaultCellCount, false);
+		defaultAzimuth = StringUtil.getDoubleValue(properties, "MapElement.Scale.defaultAzimuth", false,
+			defaultAzimuth, false);
+		defaultTilt = StringUtil.getDoubleValue(properties, "MapElement.Scale.defaultTilt", false, defaultTilt, false);
 	}
 
 	/**
-	 * Set visibility
+	 * Save the defaults
 	 * 
-	 * @param visible
+	 * @param properties
 	 */
-	public void setVisible(boolean visible) {
-		if (visible) {
-			getSceneHints().setCullHint(CullHint.Inherit);
-		} else {
-			getSceneHints().setCullHint(CullHint.Always);
-		}
-		markDirty(DirtyType.RenderState);
+	public static void saveDefaultsToProperties(Properties properties) {
+		properties.setProperty("MapElement.Scale.defaultColor", StringUtil.colorToString(defaultColor));
+		properties.setProperty("MapElement.Scale.defaultLabelVisible", Boolean.toString(defaultLabelVisible));
+		properties.setProperty("MapElement.Scale.defaultAutoLabel", Boolean.toString(defaultAutoLabel));
+		properties.setProperty("MapElement.Scale.defaultCellCount", Integer.toString(defaultCellCount));
+		properties.setProperty("MapElement.Scale.defaultAzimuth", Double.toString(defaultAzimuth));
+		properties.setProperty("MapElement.Scale.defaultTilt", Double.toString(defaultTilt));
 	}
 	
 }

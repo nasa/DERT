@@ -39,14 +39,14 @@ public class MoveEdit extends AbstractUndoableEdit {
 		super.undo();
 		position = new Vector3(movable.getTranslation());
 		oldStrictZ = movable.isStrictZ();
-		movable.setLocation(oldPosition.getX(), oldPosition.getY(), oldPosition.getZ(), false);
+		movable.setLocation(oldPosition.getX(), oldPosition.getY(), oldPosition.getZ(), false, false);
 		movable.setStrictZ(oldStrictZ);
 	}
 
 	@Override
 	public void redo() {
 		super.redo();
-		movable.setLocation(position.getX(), position.getY(), position.getZ(), false);
+		movable.setLocation(position.getX(), position.getY(), position.getZ(), false, false);
 		movable.setStrictZ(strictZ);
 	}
 

@@ -62,7 +62,7 @@ public class FigureMarker extends Marker {
 			contents.detachChild(shape);
 		}
 		shapeType = type;
-		shape = new Shape("_geometry", shapeType);
+		shape = Shape.createShape("_geometry", shapeType, (float)size);
 		shape.updateWorldBound(true);
 		SpatialUtil.setPickHost(shape, this);
 		contents.attachChild(shape);
@@ -90,6 +90,14 @@ public class FigureMarker extends Marker {
 		} else {
 			setMaterialState();
 		}
+	}
+
+	@Override
+	protected void scaleShape(double scale) {
+		if (autoScale)
+			contents.setScale(size * scale);
+		else
+			contents.setScale(size);
 	}
 
 	/**
@@ -138,7 +146,7 @@ public class FigureMarker extends Marker {
 		this.tilt = tilt;
 		if (shape != null) {
 			rotMat = new Matrix3();
-			shape.setRotation(rotMat.fromAngles(-Math.toRadians(tilt), 0.0, -Math.toRadians(azimuth)));
+			shape.setRotation(rotMat.fromAngles(Math.toRadians(tilt), 0.0, -Math.toRadians(azimuth)));
 		}
 	}
 

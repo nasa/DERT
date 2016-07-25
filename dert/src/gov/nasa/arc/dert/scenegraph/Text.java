@@ -11,6 +11,7 @@ import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.CullHint;
 import com.ardor3d.scenegraph.hint.LightCombineMode;
+import com.ardor3d.scenegraph.hint.PickingHint;
 
 /**
  * A base class for drawing text strings.
@@ -77,6 +78,7 @@ public abstract class Text extends Mesh {
 		getSceneHints().setCastsShadows(false);
 		getSceneHints().setCullHint(cullHint);
 		getSceneHints().setLightCombineMode(LightCombineMode.Off);
+		getSceneHints().setPickingHint(PickingHint.Pickable, false);
 
 		GLSLShaderObjectsState glsl = new GLSLShaderObjectsState();
 		glsl.setEnabled(false);

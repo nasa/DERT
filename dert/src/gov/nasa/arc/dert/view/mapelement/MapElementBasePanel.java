@@ -115,11 +115,11 @@ public abstract class MapElementBasePanel extends JPanel {
 							Toolkit.getDefaultToolkit().beep();
 							return;
 						}
-						movable.setLocation(coord.getX(), coord.getY(), z, true);
+						movable.setLocation(coord.getX(), coord.getY(), z, true, false);
 						movable.setStrictZ(true);
 					}
 					else {
-						movable.setLocation(coord.getX(), coord.getY(), coord.getZ(), true);
+						movable.setLocation(coord.getX(), coord.getY(), coord.getZ(), true, false);
 						movable.setStrictZ(false);
 					}
 				}

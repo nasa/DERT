@@ -142,7 +142,7 @@ public abstract class Movable extends Node {
 	 * @param i
 	 * @param p
 	 */
-	public void setLocation(double x, double y, double z, boolean doEdit) {
+	public void setLocation(double x, double y, double z, boolean doEdit, boolean zOnly) {
 		if (doEdit)
 			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(this, new Vector3(getTranslation()), strictZ));
 		setTranslation(x, y, z);

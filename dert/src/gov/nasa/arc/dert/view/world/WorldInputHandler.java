@@ -34,9 +34,11 @@ import gov.nasa.arc.dert.scene.tool.Tool;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.scenegraph.BillboardMarker;
 import gov.nasa.arc.dert.scenegraph.Movable;
+import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.view.InputHandler;
+import gov.nasa.arc.dert.view.mapelement.MapElementsView;
 import gov.nasa.arc.dert.viewpoint.CoRAction;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
@@ -156,7 +158,7 @@ public class WorldInputHandler implements InputHandler {
 		if (movable instanceof ViewDependent) {
 			((ViewDependent) movable).update(controller.getViewpointNode().getCamera());
 		}
-		movable.setLocation(pos.getX(), pos.getY(), pos.getZ(), false);
+		movable.setLocation(pos.getX(), pos.getY(), pos.getZ(), false, false);
 		if ((supportSpatial != null) && !(supportSpatial instanceof QuadTree))
 			movable.setStrictZ(true);
 	}
@@ -173,6 +175,14 @@ public class WorldInputHandler implements InputHandler {
 			return (false);
 		}
 		movable = findMovable(spat);
+		
+		spat = movable;
+		while (!(spat instanceof MapElement) && (spat != null)) {
+			spat = spat.getParent();
+		}
+		MapElementsView view = ConfigurationManager.getInstance().getCurrentConfiguration().getMapElementsView();
+		if (view != null)
+			view.selectMapElement((MapElement)spat);
 		return (hasMouse());
 	}
 
@@ -277,7 +287,8 @@ public class WorldInputHandler implements InputHandler {
 			if (shiftDown) {
 //				controller.getViewpointNode().coordInScreenPlane(dx, dy, tmpVec, pickPosition);
 				double s = controller.getViewpointNode().getCamera().getPixelSizeAt(pickPosition, false);
-				movable.setLocation(pickPosition.getX(), pickPosition.getY(), pickPosition.getZ()+dy*s, false);
+				ReadOnlyVector3 trans = movable.getTranslation();
+				movable.setLocation(trans.getX(), trans.getY(), trans.getZ()+dy*s, false, true);
 				movable.setStrictZ(true);
 			} else {
 				supportSpatial = controller.doPick(mouseX, mouseY, pickPosition, pickNormal, shiftDown);

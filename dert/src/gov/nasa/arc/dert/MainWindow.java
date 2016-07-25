@@ -104,6 +104,8 @@ public class MainWindow extends JFrame {
 
 	// Indicate that we have a configuration to save
 	private boolean haveConfig;
+	
+	private boolean oldZoom, oldOnTop;
 
 	/**
 	 * Constructor
@@ -404,6 +406,30 @@ public class MainWindow extends JFrame {
 			}
 		};
 		menu.add(stereoAction);
+
+		JCheckBoxMenuItem mapViewItem = new JCheckBoxMenuItem("Map View");
+		mapViewItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				boolean doMap = ((JCheckBoxMenuItem) event.getSource()).getState();
+				if (doMap) {
+					oldOnTop = World.getInstance().isMapElementsOnTop();
+					oldZoom = zoomAction.isChecked();
+					World.getInstance().setMapElementsOnTop(doMap);
+					zoomAction.enableZoom(doMap);
+					zoomAction.setEnabled(false);
+				}
+				else {
+					World.getInstance().setMapElementsOnTop(oldOnTop);
+					zoomAction.enableZoom(oldZoom);
+					zoomAction.setEnabled(true);
+				}
+				Landscape.getInstance().setMapMode(doMap);
+				worldView.getViewpointNode().setMapMode(doMap);
+			}
+		});
+		mapViewItem.setState(worldView.getViewpointNode().isMapMode());
+		menu.add(mapViewItem);
 
 		JCheckBoxMenuItem corXhair = new JCheckBoxMenuItem("Show Crosshair at Center of Rotation");
 		corXhair.addActionListener(new ActionListener() {

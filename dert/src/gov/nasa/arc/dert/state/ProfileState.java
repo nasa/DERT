@@ -26,6 +26,7 @@ public class ProfileState extends ToolState {
 	public boolean axesEqualScale;
 	public float lineWidth;
 	public boolean strictZ2;
+	public boolean endpointsVisible;
 
 	// Graph
 	protected Graph graph;
@@ -49,6 +50,7 @@ public class ProfileState extends ToolState {
 		p1.addLocal(p0);
 		p1.setZ(Landscape.getInstance().getZ(p1.getX(), p1.getY()));
 		axesEqualScale = true;
+		endpointsVisible = true;
 		lineWidth = Profile.defaultLineWidth;
 	}
 	
@@ -60,6 +62,7 @@ public class ProfileState extends ToolState {
 		p0 = StateUtil.getVector3(map, "P0", Vector3.ZERO);
 		p1 = StateUtil.getVector3(map, "P1", Vector3.ZERO);
 		axesEqualScale = StateUtil.getBoolean(map, "AxesEqualScale", true);
+		endpointsVisible = StateUtil.getBoolean(map, "EndpointsVisible", true);
 		lineWidth = (float)StateUtil.getDouble(map, "LineWidth", Profile.defaultLineWidth);
 		strictZ2 = StateUtil.getBoolean(map, "StrictZ2", false);
 	}
@@ -77,6 +80,8 @@ public class ProfileState extends ToolState {
 			return(false);
 		if (this.strictZ2 != that.strictZ2)
 			return(false);
+		if (this.endpointsVisible != that.endpointsVisible)
+			return(false);
 		if (!this.p0.equals(that.p0)) 
 			return(false);
 		if (!this.p1.equals(that.p1)) 
@@ -93,6 +98,7 @@ public class ProfileState extends ToolState {
 			p1 = new Vector3(profile.getEndpointB());
 			strictZ = profile.getMarkerA().isStrictZ();
 			strictZ2 = profile.getMarkerB().isStrictZ();
+			endpointsVisible = profile.isEndpointsVisible();
 		}
 		if (graph != null)
 			axesEqualScale = graph.isAxesEqualScale();
@@ -102,6 +108,7 @@ public class ProfileState extends ToolState {
 		map.put("StrictZ", new Boolean(strictZ));
 		map.put("StrictZ2", new Boolean(strictZ2));
 		map.put("LineWidth", new Double(lineWidth));
+		map.put("EndpointsVisible", new Double(lineWidth));
 		return(map);
 	}
 

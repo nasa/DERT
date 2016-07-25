@@ -97,6 +97,9 @@ public class Landscape extends Node implements ViewDependent {
 
 	// scale factor for millimeter scale landscapes
 	private float pixelScale = 1;
+	
+	// flag for map view mode
+	private boolean mapMode;
 
 	// blocks sunlight from underneath landscape while shadows are enabled
 //	private Mesh sunBlock;
@@ -172,8 +175,8 @@ public class Landscape extends Node implements ViewDependent {
 		if (layerManager.getGridCellSize() == 0) {
 			layerManager.setGridCellSize(Grid.defaultCellSize);
 		}
-		Scale.defaultCellSize = Grid.defaultCellSize;
-		Scale.defaultRadius = Grid.defaultCellSize*0.1;
+		Scale.defaultCellSize = Grid.defaultCellSize/10;
+		Scale.defaultRadius = Scale.defaultCellSize*0.1;
 		Console.getInstance().println(
 			"Landscape size: East/West range = " + String.format(stringFormat, worldWidth) + ", North/South range = " + String.format(stringFormat, worldLength) + " "
 				+ ", Elevation range = " + String.format(stringFormat, (baseLayer.getMaximumValue()[0] - minZ)) + "\n");
@@ -603,6 +606,14 @@ public class Landscape extends Node implements ViewDependent {
 			return (false);
 		}
 		return (qt.getNormal(x, y, store));
+	}
+	
+	public void setMapMode(boolean mapMode) {
+		this.mapMode = mapMode;
+	}
+	
+	public boolean isMapMode() {
+		return(mapMode);
 	}
 
 	/**
