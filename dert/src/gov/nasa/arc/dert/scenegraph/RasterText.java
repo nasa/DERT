@@ -161,10 +161,11 @@ public class RasterText extends Text {
 		}
 
 		double hZ; // height of the screen in world coordinates at Z
+		double ft = camera.getFrustumTop()/camera.getMagnification();
 		if (camera.getProjectionMode() == ProjectionMode.Parallel) {
-			hZ = camera.getFrustumTop()/camera.getMagnification();
+			hZ = ft;
 		} else {
-			hZ = z * camera.getFrustumTop() / camera.getFrustumNear();
+			hZ = z * ft / camera.getFrustumNear();
 		}
 
 		double screenScale = 2 * hZ / camera.getHeight(); // maintain uniform

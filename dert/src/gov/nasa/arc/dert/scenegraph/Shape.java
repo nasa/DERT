@@ -33,10 +33,10 @@ public class Shape extends Node {
 		none, arrow, ball, box, cone, cylinder, dart, disk, dome, flag, pyramid, quad, rod, sphere, teapot, torus
 	}
 
-	public static Vector3[] SHAPE_TEXT_OFFSET = { new Vector3(0, 0, 0), new Vector3(0, 0, 0.3), new Vector3(0, 0, 1.2),
-		new Vector3(0, 0, 1.2), new Vector3(0, 0, 1.2), new Vector3(0, 0, 1.2), new Vector3(0, 0, 1.2),
-		new Vector3(0, 0, 0.3), new Vector3(0, 0, 0.6), new Vector3(0, 0, 2.1), new Vector3(0, 0, 1.2),
-		new Vector3(0, 0, 0.5), new Vector3(0, 0, 0.5), new Vector3(0, 0, 0.6), new Vector3(0, 0, 1), new Vector3(0, 0, 0.5) };
+	public static Vector3[] SHAPE_TEXT_OFFSET = { new Vector3(0, 0, 0), new Vector3(0, 0.3, 0), new Vector3(0, 1.2, 0),
+		new Vector3(0, 1.2, 0), new Vector3(0, 1.2, 0), new Vector3(0, 1.2, 0), new Vector3(0, 1.2, 0),
+		new Vector3(0, 0.3, 0), new Vector3(0, 0.6, 0), new Vector3(0, 2.1, 0), new Vector3(0, 1.2, 0),
+		new Vector3(0, 0.5, 0), new Vector3(0, 0.5, 0), new Vector3(0, 0.6, 0), new Vector3(0, 1, 0), new Vector3(0, 0.5, 0) };
 
 	protected Spatial geometry;
 	

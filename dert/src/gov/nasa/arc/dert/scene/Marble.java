@@ -40,6 +40,8 @@ public class Marble extends FigureMarker implements MapElement {
 		getSceneHints().setAllPickingHints(false);
 		solarDirectionArrow = new DirectionArrow("Direction to Sol", 2, ColorRGBA.YELLOW);
 		contents.attachChild(solarDirectionArrow);
+		contents.detachChild(billboard);
+		billboard = null;
 		setVisible(state.visible);
 		this.state = state;
 		state.setMapElement(this);

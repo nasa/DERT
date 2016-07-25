@@ -109,7 +109,7 @@ public class Scale extends FigureMarker implements Tool {
 		SpatialUtil.setPickHost(shape, this);
 		shape.getSceneHints().setCastsShadows(false);
 		contents.attachChild(shape);
-		label.setTranslation(new Vector3(0, 0, 2.5*radius));
+		label.setTranslation(new Vector3(0, 2.5*radius, 0));
 		if (autoLabel)
 			label.setText(getName()+" = "+String.format(Landscape.stringFormat, (size*cellCount)).trim());
 		

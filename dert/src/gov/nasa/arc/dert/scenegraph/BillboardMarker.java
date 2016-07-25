@@ -15,7 +15,6 @@ import com.ardor3d.renderer.state.MaterialState.MaterialFace;
  */
 public class BillboardMarker extends Marker {
 
-	protected Billboard billboard;
 	protected Texture nominalTexture, highlightTexture;
 	protected ColorRGBA highlightColorRGBA;
 
@@ -25,9 +24,6 @@ public class BillboardMarker extends Marker {
 	public BillboardMarker(String name, ReadOnlyVector3 point, double size, Color color, boolean labelVisible,
 		boolean pinned) {
 		super(name, point, size, color, labelVisible, pinned);
-		billboard = new Billboard("_billboard");
-		billboard.attachChild(label);
-		contents.attachChild(billboard);
 		setSize(size);
 		getSceneHints().setCastsShadows(false);
 	}
@@ -77,7 +73,7 @@ public class BillboardMarker extends Marker {
 		label = new RasterText("_label", labelStr, AlignType.Center);
 		label.setScaleFactor((float) (0.75 * size));
 		label.setColor(labelColorRGBA);
-		label.setTranslation(0, 2, 0);
+		label.setTranslation(0, 1.5, 0);
 		label.setVisible(labelVisible);
 	}
 

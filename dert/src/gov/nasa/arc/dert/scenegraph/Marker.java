@@ -45,6 +45,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 	protected RasterText label;
 	// label contents
 	protected String labelStr = "";
+	protected Billboard billboard;
 
 	protected Vector3 location;
 
@@ -56,6 +57,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 	 */
 	public Marker(String name, ReadOnlyVector3 point, double size, Color color, boolean labelVisible, boolean pinned) {
 		super(name);
+		billboard = new Billboard("_billboard");
 		this.labelStr = name;
 		this.size = size;
 		setPinned(pinned);
@@ -84,6 +86,8 @@ public abstract class Marker extends Movable implements ViewDependent {
 
 		// create the label object
 		createLabel(labelVisible);
+		billboard.attachChild(label);
+		contents.attachChild(billboard);
 
 		getSceneHints().setRenderBucketType(RenderBucketType.Transparent);
 	}
@@ -184,9 +188,8 @@ public abstract class Marker extends Movable implements ViewDependent {
 		label = new RasterText("_label", labelStr, AlignType.Center);
 		label.setScaleFactor((float) (0.75 * size));
 		label.setColor(labelColorRGBA);
-		label.setTranslation(0, 0, 1.5);
+		label.setTranslation(0, 2, 0);
 		label.setVisible(labelVisible);
-		contents.attachChild(label);
 	}
 
 	/**
