@@ -14,7 +14,7 @@
 	<classpathentry kind="lib" path="lib/gluegen-rt-natives-macosx-universal.jar"/>
 	<classpathentry kind="lib" path="lib/gluegen-rt.jar" sourcepath="libjogl/gluegen-java-src.zip"/>
 	<classpathentry kind="lib" path="lib/jogl-all-natives-macosx-universal.jar"/>
-	<classpathentry kind="lib" path="lib/jogl-all.jar" sourcepath="libjogl/jogl-java-src.zip"/>
+	<classpathentry kind="lib" path="lib/jogl-all.jar" sourcepath="/Users/lkeelyme/DERT/DertWorkspace/dert/libjogl/jogl-java-src.zip"/>
 	<classpathentry kind="lib" path="lib/spice.jar" sourcepath="libspice/spice_src.jar"/>
 	<classpathentry kind="lib" path="lib/natives_macosx.jar"/>
 	<classpathentry kind="lib" path="lib/guava-18.0.jar"/>
