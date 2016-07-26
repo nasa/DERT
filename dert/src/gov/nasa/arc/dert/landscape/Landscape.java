@@ -5,7 +5,7 @@ import gov.nasa.arc.dert.raster.ProjectionInfo;
 import gov.nasa.arc.dert.raster.SpatialReferenceSystem;
 import gov.nasa.arc.dert.render.LayerEffects;
 import gov.nasa.arc.dert.scene.tool.Grid;
-import gov.nasa.arc.dert.scene.tool.Scale;
+import gov.nasa.arc.dert.scene.tool.ScaleBar;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.view.Console;
@@ -175,8 +175,8 @@ public class Landscape extends Node implements ViewDependent {
 		if (layerManager.getGridCellSize() == 0) {
 			layerManager.setGridCellSize(Grid.defaultCellSize);
 		}
-		Scale.defaultCellSize = Grid.defaultCellSize/10;
-		Scale.defaultRadius = Scale.defaultCellSize*0.1;
+		ScaleBar.defaultCellSize = Grid.defaultCellSize/10;
+		ScaleBar.defaultRadius = ScaleBar.defaultCellSize*0.1;
 		Console.getInstance().println(
 			"Landscape size: East/West range = " + String.format(stringFormat, worldWidth) + ", North/South range = " + String.format(stringFormat, worldLength) + " "
 				+ ", Elevation range = " + String.format(stringFormat, (baseLayer.getMaximumValue()[0] - minZ)) + "\n");

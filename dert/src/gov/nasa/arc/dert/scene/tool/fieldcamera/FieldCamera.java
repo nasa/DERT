@@ -172,12 +172,12 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		billboard = new Billboard("_billboard", getIconTexture());
 		SpatialUtil.setPickHost(billboard, this);
 		viewDependentNode.attachChild(billboard);
-		label = new RasterText("_label", state.name, AlignType.Center);
+		label = new RasterText("_label", state.name, AlignType.Center, true);
 		label.setScaleFactor(0.75f);
 		label.setColor(ColorRGBA.WHITE);
-		label.setTranslation(0, 1.5, 0);
+		label.setTranslation(0, 1.25, 0);
 		label.setVisible(state.labelVisible);
-		viewDependentNode.attachChild(label);
+		billboard.attachChild(label);
 		viewDependentNode.setTranslation(0.0, 0.25, 0.0);
 		geomNode.attachChild(viewDependentNode);
 

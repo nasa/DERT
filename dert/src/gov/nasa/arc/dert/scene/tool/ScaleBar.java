@@ -8,7 +8,7 @@ import gov.nasa.arc.dert.scenegraph.Shape;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
-import gov.nasa.arc.dert.state.ScaleState;
+import gov.nasa.arc.dert.state.ScaleBarState;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
@@ -38,7 +38,7 @@ import com.ardor3d.util.geom.BufferUtils;
 /**
  * Provides a class for a 3D map scale.
  */
-public class Scale extends FigureMarker implements Tool {
+public class ScaleBar extends FigureMarker implements Tool {
 
 	public static final Icon icon = Icons.getImageIcon("scale.png");
 
@@ -56,7 +56,7 @@ public class Scale extends FigureMarker implements Tool {
 	private boolean autoLabel;
 
 	// Map Element state
-	private ScaleState state;
+	private ScaleBarState state;
 
 	// Dimensions
 	private int cellCount;
@@ -69,7 +69,7 @@ public class Scale extends FigureMarker implements Tool {
 	 * 
 	 * @param state
 	 */
-	public Scale(ScaleState state) {
+	public ScaleBar(ScaleBarState state) {
 		super(state.name, state.location, state.size, state.color, state.labelVisible, false, state.pinned);
 		this.state = state;
 		cellCount = state.cellCount;

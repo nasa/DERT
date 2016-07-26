@@ -461,6 +461,16 @@ public class MainWindow extends JFrame {
 		textOverlay.setState(worldView.getScenePanel().isShowTextOverlay());
 		menu.add(textOverlay);
 
+		JCheckBoxMenuItem scaleOverlay = new JCheckBoxMenuItem("Show Center Scale Overlay");
+		scaleOverlay.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				worldView.getScenePanel().setShowCenterScale(((JCheckBoxMenuItem) event.getSource()).getState());
+			}
+		});
+		scaleOverlay.setState(worldView.getScenePanel().isShowCenterScale());
+		menu.add(scaleOverlay);
+
 		JCheckBoxMenuItem mapElementsOnTopAction = new JCheckBoxMenuItem("Map Elements On Top");
 		mapElementsOnTopAction.addActionListener(new ActionListener() {
 			@Override

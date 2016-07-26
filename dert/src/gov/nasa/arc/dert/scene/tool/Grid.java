@@ -236,7 +236,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 
 	protected RasterText createText(String name, double val, double x, double y, ReadOnlyColorRGBA color) {
 		String textVal = String.format("%10.2f", val).trim();
-		RasterText vdt = new RasterText(name, textVal, AlignType.Center);
+		RasterText vdt = new RasterText(name, textVal, AlignType.Center, true);
 		vdt.setScaleFactor(1);
 		vdt.getSceneHints().setCullHint(CullHint.Inherit);
 		vdt.setColor(color);
@@ -245,7 +245,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	}
 
 	protected RasterText createText(String name, String textVal, double x, double y, ReadOnlyColorRGBA color) {
-		RasterText vdt = new RasterText(name, textVal, AlignType.Center);
+		RasterText vdt = new RasterText(name, textVal, AlignType.Center, true);
 		vdt.setScaleFactor(1);
 		vdt.getSceneHints().setCullHint(CullHint.Inherit);
 		vdt.setColor(color);

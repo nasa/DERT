@@ -1,6 +1,6 @@
 package gov.nasa.arc.dert.state;
 
-import gov.nasa.arc.dert.scene.tool.Scale;
+import gov.nasa.arc.dert.scene.tool.ScaleBar;
 import gov.nasa.arc.dert.util.StateUtil;
 
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import com.ardor3d.math.type.ReadOnlyVector3;
  * Provides a state object for a scale bar.
  *
  */
-public class ScaleState extends ToolState {
+public class ScaleBarState extends ToolState {
 
 	// Number of cells in each dimension
 	public int cellCount;
@@ -39,35 +39,35 @@ public class ScaleState extends ToolState {
 	 * @param pinned
 	 * @param position
 	 */
-	public ScaleState(ReadOnlyVector3 position) {
+	public ScaleBarState(ReadOnlyVector3 position) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration().incrementMapElementCount(MapElementState.Type.Scale), MapElementState.Type.Scale, "Scale",
-			Scale.defaultCellSize, Scale.defaultColor, Scale.defaultLabelVisible);
+			ScaleBar.defaultCellSize, ScaleBar.defaultColor, ScaleBar.defaultLabelVisible);
 		location = new Vector3(position);
-		this.radius = Scale.defaultRadius;
-		this.cellCount = Scale.defaultCellCount;
-		this.autoLabel = Scale.defaultAutoLabel;
-		azimuth = Scale.defaultAzimuth;
-		tilt = Scale.defaultTilt;
+		this.radius = ScaleBar.defaultRadius;
+		this.cellCount = ScaleBar.defaultCellCount;
+		this.autoLabel = ScaleBar.defaultAutoLabel;
+		azimuth = ScaleBar.defaultAzimuth;
+		tilt = ScaleBar.defaultTilt;
 	}
 	
 	/**
 	 * Constructor for hash map.
 	 */
-	public ScaleState(HashMap<String,Object> map) {
+	public ScaleBarState(HashMap<String,Object> map) {
 		super(map);
 		cellCount = StateUtil.getInteger(map, "CellCount", 0);
 		radius = StateUtil.getDouble(map, "Radius", 1);
 		location = StateUtil.getVector3(map, "Location", Vector3.ZERO);
 		autoLabel = StateUtil.getBoolean(map, "AutoLabel", true);
-		azimuth = StateUtil.getDouble(map, "Azimuth", Scale.defaultAzimuth);
-		tilt = StateUtil.getDouble(map, "Tilt", Scale.defaultTilt);
+		azimuth = StateUtil.getDouble(map, "Azimuth", ScaleBar.defaultAzimuth);
+		tilt = StateUtil.getDouble(map, "Tilt", ScaleBar.defaultTilt);
 	}
 	
 	@Override
 	public boolean isEqualTo(State state) {
-		if ((state == null) || !(state instanceof ScaleState))
+		if ((state == null) || !(state instanceof ScaleBarState))
 			return(false);
-		ScaleState that = (ScaleState)state;
+		ScaleBarState that = (ScaleBarState)state;
 		if (!super.isEqualTo(that))
 			return(false);
 		if (this.cellCount != that.cellCount) 
@@ -89,11 +89,11 @@ public class ScaleState extends ToolState {
 	public HashMap<String,Object> save() {
 		HashMap<String,Object> map = super.save();
 		if (mapElement != null) {
-			Scale scale = (Scale)mapElement;
+			ScaleBar scale = (ScaleBar)mapElement;
 			cellCount = scale.getCellCount();
 			autoLabel = scale.isAutoLabel();
 			radius = scale.getCellRadius();
-			location = new Vector3(((Scale)mapElement).getTranslation());
+			location = new Vector3(((ScaleBar)mapElement).getTranslation());
 			azimuth = scale.getAzimuth();
 			tilt = scale.getTilt();
 		}

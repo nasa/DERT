@@ -12,7 +12,7 @@ import gov.nasa.arc.dert.scene.tool.Path.BodyType;
 import gov.nasa.arc.dert.scene.tool.Plane;
 import gov.nasa.arc.dert.scene.tool.Profile;
 import gov.nasa.arc.dert.scene.tool.RadialGrid;
-import gov.nasa.arc.dert.scene.tool.Scale;
+import gov.nasa.arc.dert.scene.tool.ScaleBar;
 import gov.nasa.arc.dert.scene.tool.Tools;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
@@ -23,7 +23,7 @@ import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.PathState;
 import gov.nasa.arc.dert.state.PlaneState;
 import gov.nasa.arc.dert.state.ProfileState;
-import gov.nasa.arc.dert.state.ScaleState;
+import gov.nasa.arc.dert.state.ScaleBarState;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.ui.GroupPanel;
@@ -167,8 +167,8 @@ public class ToolsPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
-				ScaleState state = new ScaleState(position);
-				Scale scale = (Scale) ConfigurationManager.getInstance().getCurrentConfiguration()
+				ScaleBarState state = new ScaleBarState(position);
+				ScaleBar scale = (ScaleBar) ConfigurationManager.getInstance().getCurrentConfiguration()
 					.addMapElementState(state);
 				newMapElement(MapElementState.Type.Scale, scale);
 			}
@@ -584,21 +584,21 @@ public class ToolsPanel extends JPanel {
 
 		gPanel.add(new JLabel("Label:", SwingConstants.RIGHT));
 		checkBox = new JCheckBox("visible");
-		checkBox.setSelected(Scale.defaultLabelVisible);
+		checkBox.setSelected(ScaleBar.defaultLabelVisible);
 		checkBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				Scale.defaultLabelVisible = ((JCheckBox) event.getSource()).isSelected();
+				ScaleBar.defaultLabelVisible = ((JCheckBox) event.getSource()).isSelected();
 			}
 		});
 		gPanel.add(checkBox);
 
 		checkBox = new JCheckBox("autolabel");
-		checkBox.setSelected(Scale.defaultAutoLabel);
+		checkBox.setSelected(ScaleBar.defaultAutoLabel);
 		checkBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				Scale.defaultAutoLabel = ((JCheckBox) event.getSource()).isSelected();
+				ScaleBar.defaultAutoLabel = ((JCheckBox) event.getSource()).isSelected();
 			}
 		});
 		gPanel.add(checkBox);
@@ -614,12 +614,12 @@ public class ToolsPanel extends JPanel {
 		gPanel.add(colorList);
 
 		gPanel.add(new JLabel("Cell count:", SwingConstants.RIGHT));
-		spinner = new JSpinner(new SpinnerNumberModel(Scale.defaultCellCount, 1, 1000000, 1));
+		spinner = new JSpinner(new SpinnerNumberModel(ScaleBar.defaultCellCount, 1, 1000000, 1));
 		gPanel.add(spinner);
 		spinner.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent event) {
-				Scale.defaultCellCount = (Integer) ((JSpinner) event.getSource()).getValue();
+				ScaleBar.defaultCellCount = (Integer) ((JSpinner) event.getSource()).getValue();
 			}
 		});
 

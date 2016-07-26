@@ -9,6 +9,7 @@ import gov.nasa.arc.dert.scenegraph.RasterText;
 import gov.nasa.arc.dert.scenegraph.Text.AlignType;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.view.viewpoint.ViewpointPanel;
+import gov.nasa.arc.dert.view.world.CenterScale;
 import gov.nasa.arc.dert.view.world.RGBAxes;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -66,10 +67,10 @@ public class ViewpointNode
 
 	// Cross hair
 	private RGBAxes crosshair;
-	private Node text;
+	private Node overlay;
 	private RasterText corText, dstText, magText, altText;
-	private double textSize = 20;
-	
+	private double textSize = 14;
+	private CenterScale centerScale;
 	private boolean mapMode;
 	private ViewpointStore oldVP;
 
@@ -83,7 +84,7 @@ public class ViewpointNode
 		setName(name);
 		setCamera(new BasicCamera(1, 1, 45, 1, 0));
 		crosshair = new RGBAxes();
-		createText();
+		createOverlays();
 		if (store != null) {
 			setViewpoint(store, true, true);
 			updateOverlay();
@@ -171,33 +172,33 @@ public class ViewpointNode
 		crosshair.updateWorldTransform(false);
 	}
 	
-	private void createText() {
-		text = new Node("_text");
-		corText = new RasterText("_cor", "", AlignType.Left);
-		corText.setScaleFactor((float) textSize);
+	private void createOverlays() {
+		overlay = new Node("_textoverlay");
+		corText = new RasterText("_cor", "", AlignType.Left, false);
+		textSize = corText.getFont()+2;
 		corText.setColor(ColorRGBA.WHITE);
 		corText.setVisible(true);
-		text.attachChild(corText);
-		magText = new RasterText("_mag", "", AlignType.Left);
-		magText.setScaleFactor((float) textSize);
+		overlay.attachChild(corText);
+		magText = new RasterText("_mag", "", AlignType.Left, false);
 		magText.setColor(ColorRGBA.WHITE);
 		magText.setVisible(true);
 		magText.setTranslation(0, 2*textSize, 0);
-		text.attachChild(magText);
-		dstText = new RasterText("_dst", "", AlignType.Left);
-		dstText.setScaleFactor((float) textSize);
+		overlay.attachChild(magText);
+		dstText = new RasterText("_dst", "", AlignType.Left, false);
 		dstText.setColor(ColorRGBA.WHITE);
 		dstText.setVisible(true);
 		dstText.setTranslation(0, textSize, 0);
-		text.attachChild(dstText);
-		altText = new RasterText("_alt", "", AlignType.Left);
-		altText.setScaleFactor((float) textSize);
+		overlay.attachChild(dstText);
+		altText = new RasterText("_alt", "", AlignType.Left, false);
 		altText.setColor(ColorRGBA.WHITE);
 		altText.setVisible(true);
 		altText.setTranslation(0, 3*textSize, 0);
-		text.attachChild(altText);
-		text.updateGeometricState(0);
-		text.getSceneHints().setRenderBucketType(RenderBucketType.Ortho);
+		overlay.attachChild(altText);
+		overlay.updateGeometricState(0);
+		overlay.getSceneHints().setRenderBucketType(RenderBucketType.Ortho);
+		centerScale = new CenterScale(ColorRGBA.WHITE);
+		centerScale.updateGeometricState(0);
+		centerScale.getSceneHints().setRenderBucketType(RenderBucketType.Ortho);
 	}
 	
 	public void coordDisplayChanged() {
@@ -211,28 +212,35 @@ public class ViewpointNode
 		String str = null;
 		if (World.getInstance().getUseLonLat()) {
 			Landscape.getInstance().worldToSphericalCoordinate(tmpVec);
-			str = String.format("CoR Loc: %7.3f %s %7.3f %s", Math.abs(tmpVec.getXf()), (tmpVec.getXf() < 0 ? "W" : "E"), Math.abs(tmpVec.getYf()), (tmpVec.getYf() < 0 ? "S" : "N"));
+			str = String.format("CoR Loc: "+Landscape.stringFormat+" %s "+Landscape.stringFormat+" %s", Math.abs(tmpVec.getXf()), (tmpVec.getXf() < 0 ? "W" : "E"), Math.abs(tmpVec.getYf()), (tmpVec.getYf() < 0 ? "S" : "N"));
 		}
 		else
-			str = String.format("CoR Loc: %7.3f %7.3f", tmpVec.getXf(), tmpVec.getYf());
+			str = String.format("CoR Loc: "+Landscape.stringFormat+" "+Landscape.stringFormat, tmpVec.getXf(), tmpVec.getYf());
 		corText.setText(str);
 		tmpVec.set(camera.getLocation());
 		Landscape.getInstance().localToWorldCoordinate(tmpVec);
-		altText.setText(String.format("Alt: %7.3f", tmpVec.getZ()));
+		altText.setText(String.format("Alt: "+Landscape.stringFormat, tmpVec.getZ()));
 		double dist = camera.getDistanceToCoR();
-		str = String.format("CoR Dist: %7.3f", dist);
+		str = String.format("CoR Dist: "+Landscape.stringFormat, dist);
 		dstText.setText(str);
 		double mag = camera.getMagnification();
-		str = String.format("Mag: %7.3f", mag);
+		str = String.format("Mag: "+Landscape.stringFormat, mag);
 		magText.setText(str);
+		double s = camera.getPixelSizeAt(camera.getLookAt(), true);
+		str = String.format(Landscape.stringFormat, (s*100));
+		centerScale.setText(str);
 	}
 	
 	public RGBAxes getCrosshair() {
 		return(crosshair);
 	}
 	
-	public Node getOverlay() {
-		return(text);
+	public Node getTextOverlay() {
+		return(overlay);
+	}
+	
+	public Node getCenterScale() {
+		return(centerScale);
 	}
 
 	@Override
@@ -300,7 +308,8 @@ public class ViewpointNode
 		camera.setAspect(width / (double) height);
 		camera.resize(width, height);
 		updateCrosshair();
-		updateGeometricState(0);
+		centerScale.setTranslation(camera.getWidth()/2.0, camera.getHeight()/2.0, 0);
+		centerScale.updateGeometricState(0);
 		changed.set(true);
 	}
 

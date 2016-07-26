@@ -81,7 +81,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	private RadialGridPanel radialGridPanel;
 	private FieldCameraPanel fieldCameraPanel;
 	private ProfilePanel profilePanel;
-	private ScalePanel scalePanel;
+	private ScaleBarPanel scalePanel;
 
 	// MapElement category panels
 	private LandmarksPanel landmarksPanel;
@@ -794,7 +794,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			break;
 		case Scale:
 			if (scalePanel == null) {
-				scalePanel = new ScalePanel(this);
+				scalePanel = new ScaleBarPanel(this);
 			}
 			currentPanel = scalePanel;
 			break;

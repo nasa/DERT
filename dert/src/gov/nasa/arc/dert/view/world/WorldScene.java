@@ -42,12 +42,13 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	
 	// Viewpoint crosshair and text
 	private RGBAxes crosshair;
-	private Node text;
+	private Node textOverlay, centerScale;
 
 	// Flags
 	private boolean showCrosshair = true;
 	private boolean showNormals = false;
 	private boolean showTextOverlay = true;
+	private boolean showCenterScale = false;
 
 	// Countdown used after new scene is created to ensure the quadtrees for the
 	// viewpoint are loaded.
@@ -87,7 +88,8 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		world.attachChild(viewpointNode);
 		crosshair = viewpointNode.getCrosshair();
 		world.attachChild(crosshair);
-		text = viewpointNode.getOverlay();
+		textOverlay = viewpointNode.getTextOverlay();
+		centerScale = viewpointNode.getCenterScale();
 		CoordAction.listenerList.add(viewpointNode);
 		initializingCount = Landscape.getInstance().getBaseMapLevel() * 2;
 		updateBounds();
@@ -162,9 +164,16 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		}
 		if (showTextOverlay) {
 			renderer.setOrtho();
-			text.getSceneHints().setCullHint(CullHint.Never);
-			text.onDraw(renderer);
-			text.getSceneHints().setCullHint(CullHint.Always);
+			textOverlay.getSceneHints().setCullHint(CullHint.Never);
+			textOverlay.onDraw(renderer);
+			textOverlay.getSceneHints().setCullHint(CullHint.Always);
+			renderer.unsetOrtho();
+		}
+		if (showCenterScale) {
+			renderer.setOrtho();
+			centerScale.getSceneHints().setCullHint(CullHint.Never);
+			centerScale.onDraw(renderer);
+			centerScale.getSceneHints().setCullHint(CullHint.Always);
 			renderer.unsetOrtho();
 		}
 	}
@@ -287,7 +296,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	}
 
 	/**
-	 * Set cross hair visibility
+	 * Set text overlay visibility
 	 * 
 	 * @param show
 	 */
@@ -297,12 +306,31 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	}
 
 	/**
-	 * Get cross hair visibility
+	 * Get text overlay visibility
 	 * 
 	 * @return
 	 */
 	public boolean getShowTextOverlay() {
 		return (showTextOverlay);
+	}
+
+	/**
+	 * Set center scale visibility
+	 * 
+	 * @param show
+	 */
+	public void setShowCenterScale(boolean show) {
+		showCenterScale = show;
+		needsRender.set(true);
+	}
+
+	/**
+	 * Get center scale visibility
+	 * 
+	 * @return
+	 */
+	public boolean getShowCenterScale() {
+		return (showCenterScale);
 	}
 
 	/**

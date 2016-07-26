@@ -176,4 +176,22 @@ public class WorldScenePanel extends SceneCanvasPanel {
 		return (worldScene.getShowTextOverlay());
 	}
 
+	/**
+	 * Set center scale visibility
+	 * 
+	 * @param show
+	 */
+	public void setShowCenterScale(boolean show) {
+		worldScene.setShowCenterScale(show);
+	}
+
+	/**
+	 * Get center scale visibility
+	 * 
+	 * @return
+	 */
+	public boolean isShowCenterScale() {
+		return (worldScene.getShowCenterScale());
+	}
+
 }

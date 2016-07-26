@@ -27,7 +27,7 @@ public abstract class Text extends Mesh {
 	// The text string
 	protected String textString;
 
-	// A scale for size
+	// A scale for size (not used in RasterText)
 	protected double scaleFactor;
 
 	// The color
@@ -143,15 +143,21 @@ public abstract class Text extends Mesh {
 		switch (alignment) {
 		case Left:
 			position = new Vector3();
-			_modelBound = new BoundingBox(new Vector3(w, h, 0), w, h, 1);
+			((BoundingBox)_modelBound).setXExtent(w);
+			((BoundingBox)_modelBound).setYExtent(h);
+			((BoundingBox)_modelBound).setCenter(w, h, 0);
 			break;
 		case Center:
 			position = new Vector3(-w, 0, 0);
-			_modelBound = new BoundingBox(Vector3.ZERO, w, h, 1);
+			((BoundingBox)_modelBound).setXExtent(w);
+			((BoundingBox)_modelBound).setYExtent(h);
+			((BoundingBox)_modelBound).setCenter(Vector3.ZERO);
 			break;
 		case Right:
 			position = new Vector3(-w * 2, 0, 0);
-			_modelBound = new BoundingBox(new Vector3(-w, h, 0), w, h, 1);
+			((BoundingBox)_modelBound).setXExtent(w);
+			((BoundingBox)_modelBound).setYExtent(h);
+			((BoundingBox)_modelBound).setCenter(-w, h, 0);
 			break;
 		}
 		markDirty(DirtyType.Bounding);

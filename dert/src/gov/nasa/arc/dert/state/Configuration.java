@@ -130,7 +130,7 @@ public class Configuration {
 							mapElementStateList.add(new MarbleState(meMap));
 							break;
 						case Scale:
-							mapElementStateList.add(new ScaleState(meMap));
+							mapElementStateList.add(new ScaleBarState(meMap));
 							break;
 						}
 				}

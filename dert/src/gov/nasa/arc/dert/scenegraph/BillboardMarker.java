@@ -70,7 +70,7 @@ public class BillboardMarker extends Marker {
 
 	@Override
 	protected void createLabel(boolean labelVisible) {
-		label = new RasterText("_label", labelStr, AlignType.Center);
+		label = new RasterText("_label", labelStr, AlignType.Center, true);
 		label.setScaleFactor((float) (0.75 * size));
 		label.setColor(labelColorRGBA);
 		label.setTranslation(0, 1.5, 0);

@@ -2,7 +2,7 @@ package gov.nasa.arc.dert.action.mapelement;
 
 import gov.nasa.arc.dert.action.MenuItemAction;
 import gov.nasa.arc.dert.state.ConfigurationManager;
-import gov.nasa.arc.dert.state.ScaleState;
+import gov.nasa.arc.dert.state.ScaleBarState;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -28,7 +28,7 @@ public class AddScaleAction extends MenuItemAction {
 
 	@Override
 	protected void run() {
-		ScaleState state = new ScaleState(position);
+		ScaleBarState state = new ScaleBarState(position);
 		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state);
 	}
 

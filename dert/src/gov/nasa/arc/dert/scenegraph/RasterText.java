@@ -32,6 +32,8 @@ public class RasterText extends Text {
 	private Vector3 location = new Vector3();
 	private double oldScale;
 	
+	private boolean scalable = true;
+	
 	static {
 		glut = new GLUT();		
 	}
@@ -43,7 +45,7 @@ public class RasterText extends Text {
 	 * @param textString
 	 */
 	public RasterText(String name, String textString) {
-		this(name, textString, AlignType.Left);
+		this(name, textString, AlignType.Left, true);
 	}
 
 	/**
@@ -53,8 +55,9 @@ public class RasterText extends Text {
 	 * @param textString
 	 * @param alignment
 	 */
-	public RasterText(String name, String textString, AlignType alignment) {
+	public RasterText(String name, String textString, AlignType alignment, boolean scalable) {
 		super(name, textString, alignment);
+		this.scalable = scalable;
 	}
 
 	/**
@@ -93,6 +96,10 @@ public class RasterText extends Text {
 			fontHeight = 18;
 			break;
 		}
+	}
+	
+	public int getFont() {
+		return(fontHeight);
 	}
 
 	@Override
@@ -138,6 +145,7 @@ public class RasterText extends Text {
 //		if (doHide)
 //			return;
 		update((BasicCamera)ContextManager.getCurrentContext().getCurrentCamera());
+		if (scalable)
 		_worldTransform.setRotation(rot);
 		_worldTransform.setScale(_localTransform.getScale());
 		super.draw(r);
@@ -176,7 +184,7 @@ public class RasterText extends Text {
 //			doHide = (1 / screenScale < 0.5);
 //		}
 		double scale = screenScale * scaleFactor;
-		if (Math.abs(scale - oldScale) > 0.0001) {
+		if (scalable && (Math.abs(scale - oldScale) > 0.0001)) {
 			setScaleFactor(screenScale);
 			oldScale = scale;
 		}

@@ -3,7 +3,7 @@ package gov.nasa.arc.dert.view.mapelement;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.landmark.Figure;
-import gov.nasa.arc.dert.scene.tool.Scale;
+import gov.nasa.arc.dert.scene.tool.ScaleBar;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
 import gov.nasa.arc.dert.ui.DoubleTextField;
@@ -26,7 +26,7 @@ import javax.swing.event.ChangeListener;
  * Provides controls for setting options for scales.
  *
  */
-public class ScalePanel extends MapElementBasePanel {
+public class ScaleBarPanel extends MapElementBasePanel {
 
 	// Controls
 	private ColorSelectionPanel colorList;
@@ -36,14 +36,14 @@ public class ScalePanel extends MapElementBasePanel {
 	private JCheckBox autoLabelButton;
 	private JLabel dimensions;
 
-	private Scale scale;
+	private ScaleBar scale;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param parent
 	 */
-	public ScalePanel(MapElementsPanel parent) {
+	public ScaleBarPanel(MapElementsPanel parent) {
 		super(parent);
 		icon = Figure.icon;
 		type = "Figure";
@@ -73,7 +73,7 @@ public class ScalePanel extends MapElementBasePanel {
 		});
 
 		panel.add(new JLabel("    Cell Size", SwingConstants.RIGHT));
-		sizeText = new DoubleTextField(8, Scale.defaultCellSize, true, Landscape.format) {
+		sizeText = new DoubleTextField(8, ScaleBar.defaultCellSize, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
 				if (Double.isNaN(value)) {
@@ -87,7 +87,7 @@ public class ScalePanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Radius", SwingConstants.RIGHT));
-		radiusText = new DoubleTextField(8, Scale.defaultRadius, true, Landscape.format) {
+		radiusText = new DoubleTextField(8, ScaleBar.defaultRadius, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
 				if (Double.isNaN(value)) {
@@ -101,7 +101,7 @@ public class ScalePanel extends MapElementBasePanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Color"));
-		colorList = new ColorSelectionPanel(Scale.defaultColor) {
+		colorList = new ColorSelectionPanel(ScaleBar.defaultColor) {
 			@Override
 			public void doColor(Color color) {
 				scale.setColor(color);
@@ -161,7 +161,7 @@ public class ScalePanel extends MapElementBasePanel {
 	@Override
 	public void setMapElement(MapElement mapElement) {
 		this.mapElement = mapElement;
-		scale = (Scale) mapElement;
+		scale = (ScaleBar) mapElement;
 		setLocation(locationText, scale.getTranslation());
 		pinnedCheckBox.setSelected(scale.isPinned());
 		nameLabel.setText(scale.getLabel());
