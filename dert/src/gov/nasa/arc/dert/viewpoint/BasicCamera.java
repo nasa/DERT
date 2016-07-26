@@ -25,7 +25,7 @@ public class BasicCamera extends Camera {
 
 	public static final double DEFAULT_FOVX = 45;
 	public static final int DEFAULT_MAGNIFICATION = 9;
-	public static final double[] magFactor = new double[120];
+	public static final double[] magFactor = new double[1020];
 
 	static {
 		double z = 0.0;

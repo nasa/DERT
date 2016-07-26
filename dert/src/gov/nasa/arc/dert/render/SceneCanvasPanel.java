@@ -47,7 +47,7 @@ public class SceneCanvasPanel extends Panel implements Updater {
 	 * @param scene
 	 * @param mainCanvas
 	 */
-	public SceneCanvasPanel(int width, int height, BasicScene bscene, boolean mainCanvas) {
+	public SceneCanvasPanel(int width, int height, BasicScene bscene, boolean mainCanvas, boolean addBackgroundPanel) {
 
 		// create the CanvasRenderer and SceneCanvas
 		canvasRenderer = new JoglCanvasRendererDouble(bscene, false);
@@ -79,9 +79,13 @@ public class SceneCanvasPanel extends Panel implements Updater {
 		};
 		canvas.addGLEventListener(listener);
 		setLayout(new BorderLayout());
-		backgroundPanel = new Panel(new BorderLayout());
-		backgroundPanel.add(canvas, BorderLayout.CENTER);
-		add(backgroundPanel, BorderLayout.CENTER);
+		if (!addBackgroundPanel)
+			add(canvas, BorderLayout.CENTER);
+		else {
+			backgroundPanel = new Panel(new BorderLayout());
+			backgroundPanel.add(canvas, BorderLayout.CENTER);
+			add(backgroundPanel, BorderLayout.CENTER);
+		}
 		scene = bscene;
 		setPreferredSize(new Dimension(width, height));
 	}

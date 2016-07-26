@@ -37,7 +37,7 @@ public class WorldScenePanel extends SceneCanvasPanel {
 	 * @param height
 	 */
 	public WorldScenePanel(int width, int height) {
-		super(width, height, new WorldScene(), true);
+		super(width, height, new WorldScene(), true, false);
 		worldScene = (WorldScene) scene;
 		controller = new ViewpointController();
 		inputHandler = new WorldInputHandler(controller, this);

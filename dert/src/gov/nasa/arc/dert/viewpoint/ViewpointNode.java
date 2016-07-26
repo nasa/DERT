@@ -322,8 +322,8 @@ public class ViewpointNode
 		rotate.setIdentity();
 		azimuth = 0;
 		elevation = 0;
-		double distance = 0.75 * sceneBounds.getRadius() / camera.tanFOV();
-		location.set(0.0, 0.0, distance);
+//		location.set(0.0, 0.0, 0.75 * sceneBounds.getRadius() / camera.tanFOV());
+		location.set(0.0, 0.0, sceneBounds.getRadius());
 		location.addLocal(sceneBounds.getCenter());
 		camera.setLookAt(sceneBounds.getCenter());
 		camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
@@ -664,6 +664,7 @@ public class ViewpointNode
 	 */
 	public void magnify(int delta) {
 		camera.magnify(delta);
+		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);
 		updateStatus();
@@ -705,8 +706,7 @@ public class ViewpointNode
 			rotate.setIdentity();
 			azimuth = 0;
 			elevation = 0;
-			double distance = sceneBounds.getRadius();
-			location.set(0.0, 0.0, distance);
+			location.set(0.0, 0.0, sceneBounds.getRadius());
 			location.addLocal(sceneBounds.getCenter());
 			camera.setLookAt(sceneBounds.getCenter());
 			camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);

@@ -67,7 +67,7 @@ public class ContourScenePanel extends SceneCanvasPanel {
 	 * @param state
 	 */
 	public ContourScenePanel(PlaneState state) {
-		super(state.getViewData().getWidth(), state.getViewData().getHeight(), new ContourScene(state), false);
+		super(state.getViewData().getWidth(), state.getViewData().getHeight(), new ContourScene(state), false, false);
 		setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		plane = (Plane) state.getMapElement();
 		contourScene = (ContourScene) scene;

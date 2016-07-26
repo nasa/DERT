@@ -245,6 +245,13 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	public boolean spatialClean(Spatial spatial, DirtyType type) {
 		return (false);
 	}
+	
+	@Override
+	public void resize(int width, int height) {
+		super.resize(width, height);
+		if (viewpointNode != null)
+			viewpointNode.resize(width, height);
+	}
 
 	private void addViewDependents(Spatial spatial) {
 		if (spatial instanceof ViewDependent) {

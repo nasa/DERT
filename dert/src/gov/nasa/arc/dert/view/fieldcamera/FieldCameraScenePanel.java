@@ -65,7 +65,7 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 	 * @param state
 	 */
 	public FieldCameraScenePanel(FieldCameraState state) {
-		super(state.getViewData().getWidth(), state.getViewData().getHeight(), new FieldCameraScene(state), false);
+		super(state.getViewData().getWidth(), state.getViewData().getHeight(), new FieldCameraScene(state), false, true);
 		FieldCameraInfo instInfo = state.getInfo();
 		fieldCamera = (FieldCamera) state.getMapElement();
 		fieldCameraScene = (FieldCameraScene) scene;
