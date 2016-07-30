@@ -578,7 +578,7 @@ public class GTIF extends RasterFileImpl {
 			} else {
 				projInfo.globe = "Earth";
 			}
-			System.out.println("Could not determine globe ... setting to " + projInfo.globe);
+			System.out.println("Could not determine globe from file metadata ... setting to " + projInfo.globe);
 		}
 		projInfo.gcsCitation = geogCitation;
 		projInfo.pcsCitation = citation;

@@ -152,7 +152,7 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			// of 2
 			// Pad and center the raster
 			if (messageText != null) {
-				messageText.setText("Writing temporary padded file ... ");
+				messageText.setText("Writing temporary "+paddedWidth+" x "+paddedLength+" file ... ");
 				Thread.yield();
 			}
 			Raster raster = createPaddedRaster(path, samplesPerPixel, missing);
@@ -320,7 +320,8 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 
 		// Get the entire raster file contents
 		dataType = rasterFile.getDataType();
-		String tmpPath = System.getProperty("user.dir");
+//		String tmpPath = System.getProperty("user.dir");
+		String tmpPath = path;
 		Raster raster = loadRasterFile(tmpPath);
 		minimumSampleValue = rasterFile.getMinimumSampleValue();
 		maximumSampleValue = rasterFile.getMaximumSampleValue();
