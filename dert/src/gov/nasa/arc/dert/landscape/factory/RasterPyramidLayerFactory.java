@@ -97,24 +97,17 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 
 		layerType = lType;
 
-		// Determine the tile offset (left and top edge overlap) and extension
-		// (right and bottom edge overlap)
-		// The offset and extension are required to stitch tiles together
-		// smoothly in OpenGL
 		switch (layerType) {
 		case none:
 		case footprint:
 		case viewshed:
+		case derivative:
 			break;
 		case elevation:
 			bytesPerPixel = 4;
 			break;
-		case floatfield:
-		case intfield:
+		case field:
 			bytesPerPixel = 4;
-			break;
-		case unsignedbytefield:
-			bytesPerPixel = 1;
 			break;
 		case colorimage:
 			bytesPerPixel = 4;
@@ -334,16 +327,15 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 		case none:
 		case footprint:
 		case viewshed:
+		case derivative:
 			break;
 		case elevation:
-		case floatfield:
+		case field:
 			raster.setMissingValuesToNaN(missingValue, minimumSampleValue, maximumSampleValue);
 			padded.set(Float.NaN);
 			break;
 		case colorimage:
-		case intfield:
 		case grayimage:
-		case unsignedbytefield:
 			padded.set(0);
 			break;
 		}
@@ -384,6 +376,7 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 		case none:
 		case footprint:
 		case viewshed:
+		case derivative:
 			break;
 		case elevation:
 			rasterFile.loadHeightMap(raster);
@@ -393,10 +386,9 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			rasterFile.loadRGBA(raster);
 			this.dataType = DataType.Integer;
 			return (raster);
-		case intfield:
-		case floatfield:
-		case unsignedbytefield:
+		case field:
 			rasterFile.load(raster);
+			this.dataType = DataType.Float;
 			return (raster);
 		case grayimage:
 			rasterFile.loadGray(raster);
@@ -447,12 +439,11 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 		case none:
 		case footprint:
 		case viewshed:
+		case derivative:
 			break;
 		case elevation:
-		case floatfield:
-		case intfield:
+		case field:
 		case grayimage:
-		case unsignedbytefield:
 			raster.get(rasterTop, rasterLeft, rasterTWidth, rasterTLength, bbuf, tileTop, tileLeft, tWidth, kernelSize);
 			break;
 		case colorimage:
@@ -493,9 +484,10 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 		case none:
 		case footprint:
 		case viewshed:
+		case derivative:
 			break;
 		case elevation:
-		case floatfield:
+		case field:
 			float[][] fArray = (float[][]) raster;
 			bbArray = new byte[fArray[0].length * 4];
 			bbuf = ByteBuffer.wrap(bbArray);
@@ -508,7 +500,6 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			}
 			break;
 		case colorimage:
-		case intfield:
 			int[][] iArray = (int[][]) raster;
 			bbArray = new byte[iArray[0].length * 4];
 			bbuf = ByteBuffer.wrap(bbArray);
@@ -521,7 +512,6 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			}
 			break;
 		case grayimage:
-		case unsignedbytefield:
 			byte[][] bArray = (byte[][]) raster;
 			for (int i = 0; i < bArray.length; ++i) {
 				iStream.read(bArray[i]);
@@ -543,9 +533,10 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 		case none:
 		case footprint:
 		case viewshed:
+		case derivative:
 			break;
 		case elevation:
-		case floatfield:
+		case field:
 			FloatBuffer fbuf = bbuf.asFloatBuffer();
 			fbuf.position(row * wid);
 			for (int c = 0; c < wid; ++c) {
@@ -553,7 +544,6 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			}
 			break;
 		case colorimage:
-		case intfield:
 			IntBuffer ibuf = bbuf.asIntBuffer();
 			ibuf.position(row * wid);
 			for (int c = 0; c < wid; ++c) {
@@ -561,7 +551,6 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			}
 			break;
 		case grayimage:
-		case unsignedbytefield:
 			bbuf.position(row * wid);
 			for (int c = 0; c < wid; ++c) {
 				bbuf.put((byte) 0);
@@ -583,9 +572,10 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 		case none:
 		case footprint:
 		case viewshed:
+		case derivative:
 			break;
 		case elevation:
-		case floatfield:
+		case field:
 			FloatBuffer fbuf = bbuf.asFloatBuffer();
 			for (int r = 0; r < hgt; ++r) {
 				int c = r * wid + col;
@@ -593,7 +583,6 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			}
 			break;
 		case colorimage:
-		case intfield:
 			IntBuffer ibuf = bbuf.asIntBuffer();
 			for (int r = 0; r < hgt; ++r) {
 				int c = r * wid + col;
@@ -601,7 +590,6 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			}
 			break;
 		case grayimage:
-		case unsignedbytefield:
 			for (int r = 0; r < hgt; ++r) {
 				int c = r * wid + col;
 				bbuf.put(c, (byte) 0);

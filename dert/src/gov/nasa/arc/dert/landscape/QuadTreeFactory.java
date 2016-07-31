@@ -346,6 +346,9 @@ public class QuadTreeFactory {
 				} else if (layerList[i] instanceof DerivativeLayer) {
 					texture = ((DerivativeLayer) layerList[i]).getTexture(qt.getName(), null);
 					((DerivativeLayer) layerList[i]).createColorMapTextureCoords(mesh, i-1);
+				} else if (layerList[i] instanceof FieldLayer) {
+					texture = ((FieldLayer) layerList[i]).getTexture(qt.getName(), null);
+					((FieldLayer) layerList[i]).createColorMapTextureCoords(qt.getName(), mesh, i-1);
 				} else if (!(layerList[i] instanceof FieldCameraLayer)) {
 					// load the texture
 					texture = getTexture(qt.getName(), i-1, null);

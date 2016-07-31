@@ -127,6 +127,8 @@ public class LayerManager {
 					li.blendFactor = 0.75;
 					li.autoblend = false;
 				}
+				if (li.type == LayerType.field)
+					li.colorMapName = FieldLayer.defaultColorMapName;
 				newInfoList.add(li);
 			}
 		}
@@ -144,19 +146,19 @@ public class LayerManager {
 		// elevation min and max are single values, not arrays
 		baseLayerInfo.minimum = StringUtil.getDoubleValue(properties, "MinimumValue", false, 0, true);
 		baseLayerInfo.maximum = StringUtil.getDoubleValue(properties, "MaximumValue", false, 0, true);
-		LayerInfo lInfo = findLayerInfo("Slope Map", LayerType.floatfield);
+		LayerInfo lInfo = findLayerInfo("Slope Map", LayerType.derivative);
 		if (lInfo == null) {
-			lInfo = new LayerInfo("Slope Map", "floatfield", DerivativeLayer.defaultColorMapName, 0, 90, false);
+			lInfo = new LayerInfo("Slope Map", "derivative", DerivativeLayer.defaultColorMapName, 0, 90, false);
 		}
 		newInfoList.add(lInfo);
-		lInfo = findLayerInfo("Aspect Map", LayerType.floatfield);
+		lInfo = findLayerInfo("Aspect Map", LayerType.derivative);
 		if (lInfo == null) {
-			lInfo = new LayerInfo("Aspect Map", "floatfield", DerivativeLayer.defaultColorMapName, 0, 90, false);
+			lInfo = new LayerInfo("Aspect Map", "derivative", DerivativeLayer.defaultColorMapName, 0, 90, false);
 		}
 		newInfoList.add(lInfo);
-		lInfo = findLayerInfo("Elevation Map", LayerType.floatfield);
+		lInfo = findLayerInfo("Elevation Map", LayerType.derivative);
 		if (lInfo == null) {
-			lInfo = new LayerInfo("Elevation Map", "floatfield", DerivativeLayer.defaultColorMapName,
+			lInfo = new LayerInfo("Elevation Map", "derivative", DerivativeLayer.defaultColorMapName,
 				baseLayerInfo.minimum, baseLayerInfo.maximum, false);
 		} else {
 			lInfo.minimum = baseLayerInfo.minimum;
@@ -341,8 +343,7 @@ public class LayerManager {
 			}
 		}
 		if (found) {
-			SurfaceAndLayersView view = ConfigurationManager.getInstance().getCurrentConfiguration()
-				.getSurfaceAndLayersView();
+			SurfaceAndLayersView view = ConfigurationManager.getInstance().getCurrentConfiguration().getSurfaceAndLayersView();
 			if (view != null) {
 				view.updateSelectedLayers();
 			}
@@ -409,7 +410,7 @@ public class LayerManager {
 		try {
 			if (layerInfo.type == LayerType.none) {
 				return (null);
-			} else if (layerInfo.type == LayerType.floatfield) {
+			} else if (layerInfo.type == LayerType.derivative) {
 				if (layerInfo.name.contains("Elevation")) {
 					return (new DerivativeLayer(DerivativeType.Elevation, layerInfo, baseLayer));
 				} else if (layerInfo.name.contains("Slope")) {
@@ -421,6 +422,8 @@ public class LayerManager {
 				}
 			} else if ((layerInfo.type == LayerType.footprint) || (layerInfo.type == LayerType.viewshed)) {
 				return (new FieldCameraLayer(layerInfo, index-1));
+			} else if (layerInfo.type == LayerType.field) {
+				return (new FieldLayer(layerInfo, source));
 			} else {
 				return (new RasterLayer(layerInfo, source));
 			}
@@ -562,16 +565,19 @@ public class LayerManager {
 	}
 
 	/**
-	 * Get the color maps used by the derivative layers
+	 * Get the color maps used by the derivative and field layers
 	 * 
 	 * @return
 	 */
 	public ArrayList<ColorMap> getColorMaps() {
 		ArrayList<ColorMap> list = new ArrayList<ColorMap>();
 		for (int i = 0; i < layers.length; ++i) {
-			if ((layers[i] != null) && (layers[i] instanceof DerivativeLayer)) {
+			if (layers[i] == null)
+				continue;
+			if (layers[i] instanceof FieldLayer)
+				list.add(((FieldLayer) layers[i]).getColorMap());
+			else if (layers[i] instanceof DerivativeLayer)
 				list.add(((DerivativeLayer) layers[i]).getColorMap());
-			}
 		}
 		return (list);
 	}

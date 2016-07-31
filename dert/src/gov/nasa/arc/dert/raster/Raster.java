@@ -234,7 +234,7 @@ public class Raster {
 	}
 
 	/**
-	 * Fill a portion of the raster with a buffer
+	 * Fill a portion of the raster with a byte array
 	 * 
 	 * @param row
 	 * @param hgt

@@ -83,14 +83,11 @@ public class RasterLayer extends Layer {
 		case none:
 		case footprint:
 		case viewshed:
+		case derivative:
 			break;
 		case elevation:
-		case floatfield:
-		case intfield:
+		case field:
 			numBytes = 4;
-			break;
-		case unsignedbytefield:
-			numBytes = 1;
 			break;
 		case colorimage:
 			numBytes = 4;
@@ -201,17 +198,16 @@ public class RasterLayer extends Layer {
 			case none:
 			case footprint:
 			case viewshed:
+			case derivative:
 				break;
 			case elevation:
-			case floatfield:
+			case field:
 				dataType = DataType.Float;
 				break;
 			case colorimage:
-			case intfield:
 				dataType = DataType.UnsignedInteger;
 				break;
 			case grayimage:
-			case unsignedbytefield:
 				dataType = DataType.UnsignedByte;
 				break;
 			}

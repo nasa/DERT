@@ -460,9 +460,9 @@ public class PDS extends RasterFileImpl {
 	}
 
 	/**
-	 * Load data from raster file into a float array, converting data.
+	 * Load data from file into a raster, converting data to float.
 	 * 
-	 * @param buffer
+	 * @param raster
 	 */
 	@Override
 	public void load(Raster raster) throws IOException {
@@ -481,13 +481,13 @@ public class PDS extends RasterFileImpl {
 			computeMinMaxFromStrip(dataType, numStrips, stripSize, stripWidth, stripHeight);
 		}
 
-		loadFromStrip(numStrips, stripSize, stripWidth, stripHeight, raster);
+		loadFromStrip(dataType, numStrips, stripSize, stripWidth, stripHeight, raster, false);
 	}
 
 	/**
-	 * Load data from raster file into a height map, converting data.
+	 * Load data from height map file into a raster, converting data to float.
 	 * 
-	 * @param buffer
+	 * @param raster
 	 */
 	@Override
 	public void loadHeightMap(Raster raster) throws IOException {
@@ -514,9 +514,9 @@ public class PDS extends RasterFileImpl {
 	}
 
 	/**
-	 * Load data from raster file into a height map, converting data.
+	 * Load data from file into a raster, converting data to unsigned byte gray scale.
 	 * 
-	 * @param buffer
+	 * @param raster
 	 */
 	@Override
 	public void loadGray(Raster raster) throws IOException {
@@ -542,7 +542,7 @@ public class PDS extends RasterFileImpl {
 	}
 
 	/**
-	 * Load data from a strip into a float array, converting data.
+	 * Load data from a strip into a raster with no conversion.
 	 * 
 	 * @param dataType
 	 *            the data type of the raster.
@@ -554,8 +554,8 @@ public class PDS extends RasterFileImpl {
 	 *            width of a strip
 	 * @param height
 	 *            height of a strip
-	 * @param buffer
-	 *            the float array
+	 * @param raster
+	 *            the raster
 	 * @throws IOException
 	 */
 	protected final void loadFromStrip(int numStrips, int size, int width, int height, Raster raster)
@@ -586,7 +586,7 @@ public class PDS extends RasterFileImpl {
 	}
 
 	/**
-	 * Load data from a strip into a float array, converting data.
+	 * Load data from a strip file into a raster, converting data.
 	 * 
 	 * @param dataType
 	 *            the data type of the raster.
@@ -598,8 +598,10 @@ public class PDS extends RasterFileImpl {
 	 *            width of a strip
 	 * @param height
 	 *            height of a strip
-	 * @param buffer
-	 *            the float array
+	 * @param raster
+	 *            the raster
+	 * @param gray
+	 *            convert to gray scale unsigned byte
 	 * @throws IOException
 	 */
 	protected final void loadFromStrip(DataType dataType, int numStrips, int size, int width, int height,
@@ -635,7 +637,7 @@ public class PDS extends RasterFileImpl {
 	}
 
 	/**
-	 * Load data from a strip into a float array, converting data.
+	 * Compute minimum and maximum.
 	 * 
 	 * @param dataType
 	 *            the data type of the raster.
@@ -647,8 +649,6 @@ public class PDS extends RasterFileImpl {
 	 *            width of a strip
 	 * @param height
 	 *            height of a strip
-	 * @param buffer
-	 *            the float array
 	 * @throws IOException
 	 */
 	protected final void computeMinMaxFromStrip(DataType dataType, int numStrips, int size, int width, int height)
@@ -682,9 +682,9 @@ public class PDS extends RasterFileImpl {
 	}
 
 	/**
-	 * Load data from raster file as an RGBA image, to be used as a texture map.
+	 * Load data from a file as an RGBA image, to be used as a texture map.
 	 * 
-	 * @param buffer
+	 * @param raster
 	 */
 	@Override
 	public void loadRGBA(Raster raster) throws IOException {
@@ -796,6 +796,14 @@ public class PDS extends RasterFileImpl {
 
 	}
 
+	/**
+	 * Write a raster to a file.
+	 * @param metadata
+	 * @param imageStart
+	 * @param raster
+	 * @param dataType
+	 * @throws IOException
+	 */
 	public void write(ArrayList<KeyValue> metadata, long imageStart, Raster raster, DataType dataType)
 		throws IOException {
 		OutputStream oStream = new FileOutputStream(filePath);

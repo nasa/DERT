@@ -3,6 +3,7 @@ package gov.nasa.arc.dert;
 import gov.nasa.arc.dert.action.edit.BackgroundColorDialog;
 import gov.nasa.arc.dert.ephemeris.Ephemeris;
 import gov.nasa.arc.dert.landscape.DerivativeLayer;
+import gov.nasa.arc.dert.landscape.FieldLayer;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.landscape.QuadTreeCache;
@@ -264,6 +265,7 @@ public class Dert {
 			QuadTreeCache.MAX_CACHE_MEMORY = StringUtil.getLongValue(dertProperties, "QuadTree.MaxCacheSize", true,
 				QuadTreeCache.MAX_CACHE_MEMORY, false);
 			DerivativeLayer.defaultColorMapName = dertProperties.getProperty("ColorMap.Default", "default0");
+			FieldLayer.defaultColorMapName = DerivativeLayer.defaultColorMapName;
 			QuadTree.CELL_SIZE = StringUtil.getIntegerValue(dertProperties, "MeshCellSize", true, QuadTree.CELL_SIZE,
 				false);
 			ViewpointController.mouseScrollDirection = StringUtil.getIntegerValue(dertProperties,

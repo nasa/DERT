@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class LayerInfo implements /*Serializable,*/ Comparable<LayerInfo> {
 
 	public static enum LayerType {
-		none, elevation, colorimage, grayimage, floatfield, intfield, unsignedbytefield, footprint, viewshed
+		none, elevation, colorimage, grayimage, field, footprint, viewshed, derivative
 	}
 
 	// Name of the layer, presented in the UI
@@ -31,7 +31,7 @@ public class LayerInfo implements /*Serializable,*/ Comparable<LayerInfo> {
 	// The texture index for the layer
 	public int layerNumber = -1;
 
-	// The name of a color map used with this layer (for floatfields only)
+	// The name of a color map used with this layer (for derivatives and fields only)
 	public String colorMapName;
 
 	// Flag to use a gradient with the color map

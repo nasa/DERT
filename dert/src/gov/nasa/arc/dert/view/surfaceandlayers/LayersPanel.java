@@ -139,7 +139,7 @@ public class LayersPanel extends GroupPanel {
 		String str = current.toString();
 		if (current.type == LayerType.elevation)
 			str = "Surface";
-		else if ((current.type == LayerType.floatfield) && (current.colorMap != null)) {
+		else if (current.colorMap != null) {
 			str += ", colormap=" + current.colorMap.getName();
 		}
 		if (current.isOverlay) {

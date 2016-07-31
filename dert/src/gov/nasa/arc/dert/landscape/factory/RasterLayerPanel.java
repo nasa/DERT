@@ -99,15 +99,13 @@ public class RasterLayerPanel extends JPanel {
 
 		JLabel label = new JLabel("Input File:");
 		label.setToolTipText("enter GeoTIFF or PDS file");
-		container
-			.add(label, GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
+		container.add(label, GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		fileText = new JTextField();
 		if (filePath != null) {
 			fileText.setText(filePath);
 		}
-		container.add(fileText,
-			GBCHelper.getGBC(1, 0, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
+		container.add(fileText, GBCHelper.getGBC(1, 0, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
 
 		JButton button = new JButton("Browse");
 		button.addActionListener(new ActionListener() {
@@ -116,13 +114,11 @@ public class RasterLayerPanel extends JPanel {
 				setInputFile();
 			}
 		});
-		container.add(button,
-			GBCHelper.getGBC(4, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
+		container.add(button, GBCHelper.getGBC(4, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		label = new JLabel("Layer Type:");
 		label.setToolTipText("select the type of landscape layer to be created");
-		container
-			.add(label, GBCHelper.getGBC(0, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
+		container.add(label, GBCHelper.getGBC(0, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		typeMenu = new JComboBox(LayerFactory.LAYER_TYPE);
 		if (layerType != null) {
@@ -136,28 +132,23 @@ public class RasterLayerPanel extends JPanel {
 				updateNameText();
 			}
 		});
-		container.add(typeMenu,
-			GBCHelper.getGBC(1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
+		container.add(typeMenu, GBCHelper.getGBC(1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		label = new JLabel("Globe:", SwingConstants.RIGHT);
 		label.setToolTipText("select the planet or moon");
-		container
-			.add(label, GBCHelper.getGBC(2, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
+		container.add(label, GBCHelper.getGBC(2, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		globeMenu = new JComboBox(LayerFactory.GLOBE_NAME);
 		globeMenu.setSelectedIndex(0);
-		container.add(globeMenu,
-			GBCHelper.getGBC(3, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
+		container.add(globeMenu, GBCHelper.getGBC(3, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		label = new JLabel("Missing value:");
 		label.setToolTipText("indicate the missing value for the input file");
-		container
-			.add(label, GBCHelper.getGBC(0, 2, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
+		container.add(label, GBCHelper.getGBC(0, 2, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		JPanel missingComp = new JPanel();
 		missingComp.setLayout(new GridLayout(1, 4));
-		container.add(missingComp,
-			GBCHelper.getGBC(1, 2, 4, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
+		container.add(missingComp, GBCHelper.getGBC(1, 2, 4, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
 		ButtonGroup group = new ButtonGroup();
 
 		useMetadataButton = new JRadioButton("file metadata/NaN");
@@ -188,16 +179,14 @@ public class RasterLayerPanel extends JPanel {
 		// Pyramid directory
 
 		label = new JLabel("Landscape: ");
-		container
-			.add(label, GBCHelper.getGBC(0, 3, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
+		container.add(label, GBCHelper.getGBC(0, 3, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 		label.setToolTipText("enter the output landscape directory or create a new one");
 
 		landscapeText = new JTextField();
 		if (landscapePath != null) {
 			landscapeText.setText(landscapePath);
 		}
-		container.add(landscapeText,
-			GBCHelper.getGBC(1, 3, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
+		container.add(landscapeText, GBCHelper.getGBC(1, 3, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
 
 		button = new JButton("Browse");
 		button.addActionListener(new ActionListener() {
@@ -206,14 +195,12 @@ public class RasterLayerPanel extends JPanel {
 				setLandscapeDirectory();
 			}
 		});
-		container.add(button,
-			GBCHelper.getGBC(4, 3, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
+		container.add(button, GBCHelper.getGBC(4, 3, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		// Layer name
 
 		nameLabel = new JLabel("Layer Name: ");
-		container.add(nameLabel,
-			GBCHelper.getGBC(0, 4, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
+		container.add(nameLabel, GBCHelper.getGBC(0, 4, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 		nameLabel.setToolTipText("enter the output landscape layer name");
 
 		nameText = new JTextField();
@@ -225,38 +212,31 @@ public class RasterLayerPanel extends JPanel {
 		} else if (layerName != null) {
 			nameText.setText(layerName);
 		}
-		container.add(nameText,
-			GBCHelper.getGBC(1, 4, 2, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
+		container.add(nameText, GBCHelper.getGBC(1, 4, 2, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
 
 		label = new JLabel("Tile Size: ", SwingConstants.RIGHT);
 		label.setToolTipText("select a tile size");
-		container
-			.add(label, GBCHelper.getGBC(3, 4, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
+		container.add(label, GBCHelper.getGBC(3, 4, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		tileSizeMenu = new JComboBox(LayerFactory.TILE_SIZE);
 		tileSizeMenu.setEditable(false);
 		tileSizeMenu.setSelectedIndex(4);
-		container.add(tileSizeMenu,
-			GBCHelper.getGBC(4, 4, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
+		container.add(tileSizeMenu, GBCHelper.getGBC(4, 4, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		autoMargin = new JCheckBox("Automatically add margins");
 		autoMargin.setSelected(true);
-		autoMargin
-			.setToolTipText("automatically extend raster with missing value pixels to make each side a power of 2");
+		autoMargin.setToolTipText("automatically extend raster with missing value pixels to make each side a power of 2");
 		autoMargin.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				UIUtil.setEnabled(marginPanel, !autoMargin.isSelected());
 			}
 		});
-		container.add(autoMargin,
-			GBCHelper.getGBC(1, 5, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
+		container.add(autoMargin, GBCHelper.getGBC(1, 5, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
 
 		label = new JLabel("Margin (pixels):");
-		label
-			.setToolTipText("number of missing value pixels to use to extend the side (include extra for bilinear interpolation at edges)");
-		container
-			.add(label, GBCHelper.getGBC(0, 5, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
+		label.setToolTipText("number of missing value pixels to use to extend the side (include extra for bilinear interpolation at edges)");
+		container.add(label, GBCHelper.getGBC(0, 5, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 		marginPanel = new JPanel();
 		marginPanel.setLayout(new GridLayout(1, 8));
 		marginPanel.add(new JLabel("Left", SwingConstants.RIGHT));
@@ -276,8 +256,7 @@ public class RasterLayerPanel extends JPanel {
 		bottomEdge.setText("0");
 		marginPanel.add(bottomEdge);
 		UIUtil.setEnabled(marginPanel, false);
-		container.add(marginPanel,
-			GBCHelper.getGBC(0, 6, 5, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
+		container.add(marginPanel, GBCHelper.getGBC(0, 6, 5, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
 	}
 
 	/**

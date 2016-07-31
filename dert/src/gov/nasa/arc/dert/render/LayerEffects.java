@@ -193,7 +193,7 @@ public class LayerEffects extends GLSLShaderObjectsState {
 				imageFunction += "		color += blendFactor[" + i + "]*texture2D(photo" + i
 					+ "Unit, gl_TexCoord[0].st);\n";
 				addHasTexture = true;
-			} else if (layers[i].getLayerType() == LayerType.floatfield) {
+			} else if (layers[i].hasColorMap()) {
 				colorMapUniforms += "uniform sampler2D colorMap" + i + "Unit;\n";
 				intUniforms.add(new Object[] { "colorMap" + i + "Unit", new Integer(i-1) });
 				blendFactor[i] = (float) layers[i].getBlendFactor();

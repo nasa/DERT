@@ -125,9 +125,9 @@ public abstract class RasterFileImpl implements RasterFile {
 	}
 
 	/**
-	 * Get the number of samples per pixel.
+	 * Get the missing value.
 	 * 
-	 * @return samples
+	 * @return missing value
 	 */
 	@Override
 	public float getMissingValue() {
@@ -135,9 +135,9 @@ public abstract class RasterFileImpl implements RasterFile {
 	}
 
 	/**
-	 * Get the number of samples per pixel.
+	 * Set the missing value.
 	 * 
-	 * @return samples
+	 * @param missing
 	 */
 	@Override
 	public void setMissingValue(float missing) {
@@ -185,17 +185,15 @@ public abstract class RasterFileImpl implements RasterFile {
 	}
 
 	/**
-	 * Load entire file contents into a float array converting to float if data
-	 * type is something else.
+	 * Load entire file contents into a raster.
 	 * 
-	 * @param buffer
-	 * @param dataType
+	 * @param raster
 	 */
 	@Override
 	public abstract void load(Raster raster) throws IOException;
 
 	/**
-	 * Load entire file contents into a float array converting to float if data
+	 * Load entire file contents into a raster converting to float if data
 	 * type is something else.
 	 * 
 	 * @param buffer
@@ -205,11 +203,10 @@ public abstract class RasterFileImpl implements RasterFile {
 	public abstract void loadHeightMap(Raster raster) throws IOException;
 
 	/**
-	 * Load entire file contents into a float array converting to float if data
+	 * Load entire file contents into a raster converting to unsigned byte if data
 	 * type is something else.
 	 * 
-	 * @param buffer
-	 * @param dataType
+	 * @param raster
 	 */
 	@Override
 	public abstract void loadGray(Raster raster) throws IOException;

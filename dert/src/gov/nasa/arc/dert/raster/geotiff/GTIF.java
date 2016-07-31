@@ -430,11 +430,6 @@ public class GTIF extends RasterFileImpl {
 			.println("Minimum Sample Value = " + (minimum == null ? "Unknown" : minimum[0])
 				+ ", Maximum Sample Value = " + (maximum == null ? "Unknown" : maximum[0]) + ", Missing Value = "
 				+ missing);
-		// if ((dataType == DataType.Double) ||
-		// (dataType == DataType.Long)) {
-		// System.err.println("Data type "+dataType+" not supported.");
-		// return(false);
-		// }
 		if (dataType == DataType.Unknown) {
 			System.err.println("Unknown data type.");
 			return (false);
@@ -1277,69 +1272,12 @@ public class GTIF extends RasterFileImpl {
 	}
 
 	/**
-	 * Load entire file contents into a float array converting to float if data
-	 * type is something else.
+	 * Load entire file into a raster.
 	 * 
-	 * @param buffer
-	 * @param dataType
+	 * @param raster
 	 */
 	@Override
 	public void load(Raster raster) {
-
-		// TIFF is organized in tiles.
-		if (isTiled()) {
-			int n = getTileCount();
-			int w = getTileWidth() * samplesPerPixel; // multiply by samples per
-														// pixel to get true
-														// scanline width
-			int h = getTileLength();
-			long s = getTileSize(); // size of tile in bytes
-
-			// Java limits ByteBuffer sizes
-			if (s > Integer.MAX_VALUE) {
-				throw new IllegalArgumentException("Cannot load floating point TIFF file with tile size > "
-					+ Integer.MAX_VALUE + ".");
-			}
-
-			if ((minimum == null) || (maximum == null)) {
-				computeMinMaxFromTile(dataType, n, (int) s);
-			}
-
-			loadFromTile(n, (int) s, w, h, raster);
-		}
-
-		// TIFF is organized in strips.
-		else {
-			int n = getStripCount();
-			int w = rasterWidth * samplesPerPixel; // multiply by samples
-													// per pixel to get
-													// true scanline
-													// width
-			long s = getStripSize(); // size of strip in bytes
-
-			// Java limits ByteBuffer sizes
-			if (s > Integer.MAX_VALUE) {
-				throw new IllegalArgumentException("Cannot load floating point TIFF file with strip size > "
-					+ Integer.MAX_VALUE + ".");
-			}
-
-			if ((minimum == null) || (maximum == null)) {
-				computeMinMaxFromStrip(dataType, n, (int) s);
-			}
-
-			loadFromStrip(n, (int) s, w, raster);
-		}
-	}
-
-	/**
-	 * Load entire file contents into a float array converting to float if data
-	 * type is something else.
-	 * 
-	 * @param buffer
-	 * @param dataType
-	 */
-	@Override
-	public void loadHeightMap(Raster raster) {
 
 		// TIFF is organized in tiles.
 		if (isTiled()) {
@@ -1384,6 +1322,59 @@ public class GTIF extends RasterFileImpl {
 
 			loadFromStrip(dataType, n, (int) s, w, raster, false);
 		}
+	}
+
+	/**
+	 * Load entire height map file into a raster.
+	 * 
+	 * @param raster
+	 */
+	@Override
+	public void loadHeightMap(Raster raster) {
+		load(raster);
+//		// TIFF is organized in tiles.
+//		if (isTiled()) {
+//			int n = getTileCount();
+//			int w = getTileWidth() * samplesPerPixel; // multiply by samples per
+//														// pixel to get true
+//														// scanline width
+//			int h = getTileLength();
+//			long s = getTileSize(); // size of tile in bytes
+//
+//			// Java limits ByteBuffer sizes
+//			if (s > Integer.MAX_VALUE) {
+//				throw new IllegalArgumentException("Cannot load floating point TIFF file with tile size > "
+//					+ Integer.MAX_VALUE + ".");
+//			}
+//
+//			if ((minimum == null) || (maximum == null)) {
+//				computeMinMaxFromTile(dataType, n, (int) s);
+//			}
+//
+//			loadFromTile(dataType, n, (int) s, w, h, raster, false);
+//		}
+//
+//		// TIFF is organized in strips.
+//		else {
+//			int n = getStripCount();
+//			int w = rasterWidth * samplesPerPixel; // multiply by samples
+//													// per pixel to get
+//													// true scanline
+//													// width
+//			long s = getStripSize(); // size of strip in bytes
+//
+//			// Java limits ByteBuffer sizes
+//			if (s > Integer.MAX_VALUE) {
+//				throw new IllegalArgumentException("Cannot load floating point TIFF file with strip size > "
+//					+ Integer.MAX_VALUE + ".");
+//			}
+//
+//			if ((minimum == null) || (maximum == null)) {
+//				computeMinMaxFromStrip(dataType, n, (int) s);
+//			}
+//
+//			loadFromStrip(dataType, n, (int) s, w, raster, false);
+//		}
 	}
 
 	/**
@@ -1482,11 +1473,9 @@ public class GTIF extends RasterFileImpl {
 	}
 
 	/**
-	 * Load entire file contents into a float array converting to float if data
-	 * type is something else.
+	 * Load entire file into a raster of unsigned byte.
 	 * 
-	 * @param buffer
-	 * @param dataType
+	 * @param raster
 	 */
 	@Override
 	public void loadGray(Raster raster) {
@@ -1539,7 +1528,7 @@ public class GTIF extends RasterFileImpl {
 	}
 
 	/**
-	 * Load data from a strip into a float array.
+	 * Load bytes from a strip into a raster.
 	 * 
 	 * @param n
 	 *            the number of strips
@@ -1547,8 +1536,8 @@ public class GTIF extends RasterFileImpl {
 	 *            the strip size
 	 * @param w
 	 *            the strip width
-	 * @param buffer
-	 *            the float array
+	 * @param raster
+	 *            the raster
 	 */
 	protected final void loadFromStrip(int n, int size, int w, Raster raster) {
 
@@ -1579,7 +1568,8 @@ public class GTIF extends RasterFileImpl {
 	}
 
 	/**
-	 * Load data from a strip into a float array.
+	 * Load data from a strip into a raster. This method converts to float or unsigned
+	 * byte depending on the value of 'gray'.
 	 * 
 	 * @param dataType
 	 *            the strip data type
@@ -1589,8 +1579,10 @@ public class GTIF extends RasterFileImpl {
 	 *            the strip size
 	 * @param w
 	 *            the strip width
-	 * @param buffer
-	 *            the float array
+	 * @param raster
+	 *            the raster
+	 * @param gray
+	 * 			  these are gray scale pixels (0-255), convert to unsigned byte
 	 */
 	protected final void loadFromStrip(DataType dataType, int n, int size, int w, Raster raster, boolean gray) {
 
@@ -1598,7 +1590,7 @@ public class GTIF extends RasterFileImpl {
 		ByteBuffer bbuf = ByteBuffer.allocateDirect(size);
 		bbuf.order(byteOrder);
 
-		// Read each strip and place it in the full size raster.
+		// Read each strip and place it in the raster.
 		int row = 0; // row pixel of upper left corner of strip
 		int h = 0;
 		for (int i = 0; i < n; ++i) {
@@ -1621,7 +1613,7 @@ public class GTIF extends RasterFileImpl {
 	}
 
 	/**
-	 * Load data from a tile into a float array.
+	 * Load data from a tile into a raster.
 	 * 
 	 * @param n
 	 *            the number of tiles
@@ -1631,8 +1623,8 @@ public class GTIF extends RasterFileImpl {
 	 *            the tile width
 	 * @param h
 	 *            the tile height
-	 * @param buffer
-	 *            the float array
+	 * @param raster
+	 *            the raster
 	 */
 	protected final void loadFromTile(int n, int size, int w, int h, Raster raster) {
 
@@ -1669,7 +1661,7 @@ public class GTIF extends RasterFileImpl {
 	}
 
 	/**
-	 * Load data from a tile into a float array.
+	 * Load data from a tile into a raster.
 	 * 
 	 * @param dataType
 	 *            the tile data type
@@ -1681,8 +1673,10 @@ public class GTIF extends RasterFileImpl {
 	 *            the tile width
 	 * @param h
 	 *            the tile height
-	 * @param buffer
-	 *            the float array
+	 * @param raster
+	 *            the raster
+	 * @param gray
+	 *            convert pixels to gray scale unsigned bytes
 	 */
 	protected final void loadFromTile(DataType dataType, int n, int size, int w, int h, Raster raster, boolean gray) {
 		// System.err.println("GTIF.loadFromTile "+dataType+" "+gray+" "+byteOrder+" "+ByteOrder.nativeOrder()+" "+missing);
@@ -1720,7 +1714,7 @@ public class GTIF extends RasterFileImpl {
 	}
 
 	/**
-	 * Load data from a strip into a float array.
+	 * Compute the minimum and maximum of an entire file.
 	 * 
 	 * @param dataType
 	 *            the strip data type
@@ -1728,10 +1722,6 @@ public class GTIF extends RasterFileImpl {
 	 *            the number of strips
 	 * @param size
 	 *            the strip size
-	 * @param w
-	 *            the strip width
-	 * @param buffer
-	 *            the float array
 	 */
 	protected final void computeMinMaxFromStrip(DataType dataType, int n, int size) {
 
@@ -1758,7 +1748,7 @@ public class GTIF extends RasterFileImpl {
 	}
 
 	/**
-	 * Load data from a tile into a float array.
+	 * Compute the minimum and maximum of an entire file.
 	 * 
 	 * @param dataType
 	 *            the tile data type
@@ -1766,12 +1756,6 @@ public class GTIF extends RasterFileImpl {
 	 *            the number of tiles
 	 * @param size
 	 *            the tile size
-	 * @param w
-	 *            the tile width
-	 * @param h
-	 *            the tile height
-	 * @param buffer
-	 *            the float array
 	 */
 	protected final void computeMinMaxFromTile(DataType dataType, int n, int size) {
 

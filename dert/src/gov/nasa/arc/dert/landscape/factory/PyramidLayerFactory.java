@@ -99,9 +99,10 @@ public abstract class PyramidLayerFactory {
 		case none:
 		case footprint:
 		case viewshed:
+		case derivative:
 			break;
 		case elevation:
-		case floatfield:
+		case field:
 			FloatBuffer fbuf = bbuf.asFloatBuffer();
 			int fl = fbuf.limit();
 			for (int i = 0; i < fl; ++i) {
@@ -111,7 +112,6 @@ public abstract class PyramidLayerFactory {
 			}
 			break;
 		case colorimage:
-		case intfield:
 			IntBuffer ibuf = bbuf.asIntBuffer();
 			int il = ibuf.limit();
 			for (int i = 0; i < il; ++i) {
@@ -121,7 +121,6 @@ public abstract class PyramidLayerFactory {
 			}
 			break;
 		case grayimage:
-		case unsignedbytefield:
 			int bl = bbuf.limit();
 			for (int i = 0; i < bl; ++i) {
 				if (bbuf.get(i) != 0) {
@@ -214,9 +213,10 @@ public abstract class PyramidLayerFactory {
 			case none:
 			case footprint:
 			case viewshed:
+			case derivative:
 				break;
 			case elevation:
-			case floatfield:
+			case field:
 				// core PNG does not support 32 bit or floating point
 				// write it as a 4 byte color
 				bImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
@@ -224,13 +224,11 @@ public abstract class PyramidLayerFactory {
 				System.arraycopy(bbArray, 0, fData, 0, bbArray.length);
 				break;
 			case colorimage:
-			case intfield:
 				bImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
 				byte[] iData = ((DataBufferByte) bImage.getRaster().getDataBuffer()).getData();
 				System.arraycopy(bbArray, 0, iData, 0, bbArray.length);
 				break;
 			case grayimage:
-			case unsignedbytefield:
 				bImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
 				byte[] bData = ((DataBufferByte) bImage.getRaster().getDataBuffer()).getData();
 				System.arraycopy(bbArray, 0, bData, 0, bbArray.length);

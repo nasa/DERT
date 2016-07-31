@@ -45,7 +45,7 @@ public class LayerFactory {
 	public static final String[] TILE_SIZE = { "2048", "1024", "512", "256", "128", "64", "32", "16" };
 
 	// The layer type selection
-	public static final LayerType[] LAYER_TYPE = { LayerType.elevation, LayerType.grayimage, LayerType.colorimage };
+	public static final LayerType[] LAYER_TYPE = { LayerType.elevation, LayerType.grayimage, LayerType.colorimage, LayerType.field };
 
 	// The default globe (from dert.properties)
 	public static String defaultGlobe;

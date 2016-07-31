@@ -120,14 +120,34 @@ public abstract class Layer {
 		case none:
 		case footprint:
 		case viewshed:
+		case derivative:
 			return (false);
 		case elevation:
-		case floatfield:
-		case intfield:
+		case field:
 			return (false);
 		case colorimage:
 		case grayimage:
-		case unsignedbytefield:
+			return (true);
+		}
+		return (false);
+	}
+
+	/**
+	 * Determine if this layer consists of image pixels.
+	 * 
+	 * @return
+	 */
+	public boolean hasColorMap() {
+		switch (layerType) {
+		case none:
+		case footprint:
+		case viewshed:
+		case elevation:
+		case colorimage:
+		case grayimage:
+			return (false);
+		case derivative:
+		case field:
 			return (true);
 		}
 		return (false);
