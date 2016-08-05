@@ -194,6 +194,7 @@ public class ViewpointNode
 		altText.setVisible(true);
 		altText.setTranslation(0, 3*textSize, 0);
 		overlay.attachChild(altText);
+		overlay.setTranslation(textSize, textSize, 0);
 		overlay.updateGeometricState(0);
 		overlay.getSceneHints().setRenderBucketType(RenderBucketType.Ortho);
 		centerScale = new CenterScale(ColorRGBA.WHITE);

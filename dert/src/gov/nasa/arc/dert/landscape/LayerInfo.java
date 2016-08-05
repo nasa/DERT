@@ -9,7 +9,7 @@ import java.util.HashMap;
  * Data structure for information about a landscape layer.
  *
  */
-public class LayerInfo implements /*Serializable,*/ Comparable<LayerInfo> {
+public class LayerInfo implements Comparable<LayerInfo> {
 
 	public static enum LayerType {
 		none, elevation, colorimage, grayimage, field, footprint, viewshed, derivative
