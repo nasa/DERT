@@ -9,11 +9,9 @@ import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.Console;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Properties;
 
 import com.ardor3d.image.Image;
-import com.ardor3d.image.ImageDataFormat;
 import com.ardor3d.image.Texture;
 import com.ardor3d.image.TextureStoreFormat;
 import com.ardor3d.image.util.ImageUtils;
@@ -266,15 +264,15 @@ public class RasterLayer extends Layer {
 		if (image == null) {
 			return (null);
 		}
-		if (image.getDataFormat() == ImageDataFormat.RGBA) {
-			ByteBuffer byteBuffer = image.getData(0);
-			int n = byteBuffer.limit();
-			for (int i = 3; i < n; i += 4) {
-				if (byteBuffer.get(i) == 0) {
-					byteBuffer.put(i, (byte) 255);
-				}
-			}
-		}
+//		if (image.getDataFormat() == ImageDataFormat.RGBA) {
+//			ByteBuffer byteBuffer = image.getData(0);
+//			int n = byteBuffer.limit();
+//			for (int i = 3; i < n; i += 4) {
+//				if (byteBuffer.get(i) == 0) {
+//					byteBuffer.put(i, (byte) 255);
+//				}
+//			}
+//		}
 		Texture texture = new SharedTexture2D();
 		texture.setTextureKey(TextureKey.getKey(null, false, TextureStoreFormat.GuessNoCompressedFormat, layerName
 			+ key, Texture.MinificationFilter.BilinearNoMipMaps));
