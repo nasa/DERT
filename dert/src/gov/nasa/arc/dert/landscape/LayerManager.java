@@ -115,7 +115,7 @@ public class LayerManager {
 				baseLayerInfo = li;
 				baseLayerInfo.layerNumber = 0;
 				baseLayerInfo.autoblend = false;
-				baseLayerInfo.blendFactor = 0;
+				baseLayerInfo.blendFactor = 1;
 			} else {
 				LayerInfo lInfo = findLayerInfo(li.name, li.type);
 				if (lInfo != null) {

@@ -24,26 +24,42 @@ import com.ardor3d.scenegraph.Mesh;
  */
 public class LayerEffects extends GLSLShaderObjectsState {
 
-	protected static final String top = "varying vec4 gl_TexCoord[8];\n" + "void main() {\n"
-		+ "	vec4 color = vec4(0, 0, 0, 0);\n" + "	vec4 tcolor = vec4(0, 0, 0, 0);\n"
-		+ "	vec4 gColor = vec4(gridColor[0], gridColor[1], gridColor[2], 0);\n" + "	float shadeFactor = 1.0;\n"
-		+ "	bool hasTexture = false;\n" + "	float x = 0;\n" + "	float y = 0;\n" + "	if (layersEnabled) {\n";
+	protected static final String top =
+		  "varying vec4 gl_TexCoord[8];\n"
+		+ "void main() {\n"
+		+ "	vec4 color = vec4(gl_Color);\n"
+		+ "	vec4 tcolor = vec4(0, 0, 0, 0);\n"
+		+ "	vec4 gColor = vec4(gridColor[0], gridColor[1], gridColor[2], 0);\n"
+		+ "	float shadeFactor = 1.0;\n"
+		+ "	bool hasTexture = false;\n"
+		+ "	float x = 0;\n"
+		+ "	float y = 0;\n"
+		+ "	if (layersEnabled) {\n";
 
-	protected static final String standardUniforms = "uniform float blendFactor[7];\n"
-		+ "uniform bool layersEnabled;\n" + "uniform sampler2DShadow shadowUnit;\n" + "uniform bool shadowEnabled;\n"
+	protected static final String standardUniforms = 
+		  "uniform float blendFactor[7];\n"
+		+ "uniform bool layersEnabled;\n"
+		+ "uniform sampler2DShadow shadowUnit;\n"
+		+ "uniform bool shadowEnabled;\n"
 		+ "uniform bool allDark;\n"
-		+ "uniform float xGridOffset;\n" + "uniform float yGridOffset;\n" + "uniform float xGridCell;\n"
-		+ "uniform float yGridCell;\n" + "uniform float gridLineWidth;\n" + "uniform float gridColor[4];\n"
+		+ "uniform float xGridOffset;\n"
+		+ "uniform float yGridOffset;\n"
+		+ "uniform float xGridCell;\n"
+		+ "uniform float yGridCell;\n"
+		+ "uniform float gridLineWidth;\n"
+		+ "uniform float gridColor[4];\n"
 		+ "uniform bool gridEnabled;\n";
 
-	protected static final String bottom = "		if (color.a > 0.0)\n" + "			color.a = 1.0;\n"
+	protected static final String bottom =
+		  "		if (color.a > 0.0)\n"
+		+ "			color.a = 1.0;\n"
 		+ "	}\n"
 		+ "	if (shadowEnabled) {\n"
 		+ "   		shadeFactor = shadow2DProj(shadowUnit, gl_TexCoord[7]).x;\n"
 		+ "   		shadeFactor = ((shadeFactor < 1.0) || allDark) ? 0.5 : 1.0;\n"
 		+ "	}\n"
 		+ "	if (hasTexture)\n"
-		+ "		gl_FragColor = vec4(shadeFactor*(color.rgb+(blendFactor[0]*gl_Color.rgb)), gl_Color.a);\n"
+		+ "		gl_FragColor = vec4(shadeFactor*color.rgb, color.a);\n"
 		+ "	else if (layersEnabled)\n"
 		+ "		gl_FragColor = vec4(shadeFactor*blendFactor[0]*gl_Color.rgb, gl_Color.a);\n"
 		+ "	else\n"
@@ -52,7 +68,8 @@ public class LayerEffects extends GLSLShaderObjectsState {
 		+ "		x = gl_TexCoord[0].x-xGridOffset;\n"
 		+ "		x = abs(xGridOffset+xGridCell*floor(x/xGridCell)-gl_TexCoord[0].x);\n"
 		+ "		y = gl_TexCoord[0].y-yGridOffset;\n"
-		+ "		y = abs(yGridOffset+yGridCell*floor(y/yGridCell)-gl_TexCoord[0].y);\n" + "		if (x < gridLineWidth)\n"
+		+ "		y = abs(yGridOffset+yGridCell*floor(y/yGridCell)-gl_TexCoord[0].y);\n"
+		+ "		if (x < gridLineWidth)\n"
 		+ "			gl_FragColor = vec4(gridColor[0], gridColor[1], gridColor[2], gl_FragColor.a);\n"
 		+ "		else if (y < gridLineWidth)\n"
 		+ "			gl_FragColor = vec4(gridColor[0], gridColor[1], gridColor[2], gl_FragColor.a);\n" + "	}\n" + "}\n";
@@ -190,14 +207,16 @@ public class LayerEffects extends GLSLShaderObjectsState {
 				imageUniforms += "uniform sampler2D photo" + i + "Unit;\n";
 				intUniforms.add(new Object[] { "photo" + i + "Unit", new Integer(i-1) });
 				blendFactor[i] = (float) layers[i].getBlendFactor();
-				imageFunction += "		color += blendFactor[" + i + "]*texture2D(photo" + i
-					+ "Unit, gl_TexCoord[0].st);\n";
+//				imageFunction += "		color += blendFactor["+i+"]*texture2D(photo"+i+"Unit, gl_TexCoord[0].st);\n";
+				imageFunction += "		tcolor = texture2D(photo"+i+"Unit, gl_TexCoord[0].st);\n";
+				imageFunction += "		color.rgb = color.rgb*(1-blendFactor[" + i + "]*tcolor.a)+tcolor.rgb*tcolor.a*blendFactor[" + i + "];\n";
 				addHasTexture = true;
 			} else if (layers[i].hasColorMap()) {
 				colorMapUniforms += "uniform sampler2D colorMap" + i + "Unit;\n";
 				intUniforms.add(new Object[] { "colorMap" + i + "Unit", new Integer(i-1) });
 				blendFactor[i] = (float) layers[i].getBlendFactor();
-				colorMapFunction += "		color += blendFactor[" + i + "]*texture2D(colorMap" + i + "Unit, gl_TexCoord["+ (i-1) + "].st);\n";
+				colorMapFunction += "		tcolor = texture2D(colorMap" + i + "Unit, gl_TexCoord["+ (i-1) + "].st);\n";
+				colorMapFunction += "		color.rgb = color.rgb*(1-blendFactor[" + i + "]*tcolor.a)+tcolor.rgb*tcolor.a*blendFactor[" + i + "];\n";
 				addHasTexture = true;
 			} else if (layers[i].getLayerType() == LayerType.footprint) {
 				footprintUniforms += "uniform sampler2D footprint" + i + "Unit;\n";
@@ -268,19 +287,26 @@ public class LayerEffects extends GLSLShaderObjectsState {
 	}
 
 	private String getViewshedFunction(int i) {
-		String str = "		vec4 vscol" + i + " = vec4(viewshed" + i + "Color[0], viewshed" + i + "Color[1], viewshed" + i
-			+ "Color[2], viewshed" + i + "Color[3]);\n" + "		if (gl_TexCoord[" + (i-1) + "].q > 0.0) {\n"
-			+ "			float d = shadow2DProj(viewshed" + i + "Unit, gl_TexCoord[" + (i-1) + "]).x;\n"
-			+ "			d = d < 1.0 ? 0.0 : 1.0;\n" + "			color += blendFactor[" + i + "]*d*vscol" + i + ";\n"
-			+ "			hasTexture = true;\n" + "		}\n";
-		return (str);
+		String str =
+				  "		vec4 vscol" + i + " = vec4(viewshed" + i + "Color[0], viewshed" + i + "Color[1], viewshed"+i+"Color[2], viewshed"+i+"Color[3]);\n"
+				+ "		if (gl_TexCoord[" + (i-1) + "].q > 0.0) {\n"
+				+ "			float d = shadow2DProj(viewshed" + i + "Unit, gl_TexCoord[" + (i-1) + "]).x;\n"
+				+ "			d = d < 1.0 ? 0.0 : 1.0;\n"
+//				+ "			color += blendFactor[" + i + "]*d*vscol" + i + ";\n"
+				+ "			color.rgb = color.rgb*(1-blendFactor[" + i + "]*d*vscol"+i+".a)+d*vscol"+i+".rgb*vscol"+i+".a*blendFactor[" + i + "];\n"
+				+ "			hasTexture = true;\n" + "		}\n";
+			return (str);
 	}
 
 	private String getFootprintFunction(int i) {
-		String str = "		if (gl_TexCoord[" + (i-1) + "].q > 0.0) {\n" + "			color += blendFactor[" + i
-			+ "]*texture2DProj(footprint" + i + "Unit, gl_TexCoord[" + (i-1) + "]);\n" + "			hasTexture = true;\n"
-			+ "		}\n";
-		return (str);
+		String str = 
+				  "		if (gl_TexCoord[" + (i-1) + "].q > 0.0) {\n"
+				+ "			tcolor = texture2DProj(footprint"+i+"Unit, gl_TexCoord["+(i-1)+"]);\n"
+//				+ "			color += blendFactor["+i+"]*tcolor;\n"
+				+ "			color.rgb = color.rgb*(1-blendFactor[" + i + "]*tcolor.a)+tcolor.rgb*tcolor.a*blendFactor[" + i + "];\n"
+				+ "			hasTexture = true;\n"
+				+ "		}\n";
+			return (str);
 	}
 
 }

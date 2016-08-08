@@ -195,19 +195,20 @@ public class LayersPanel extends GroupPanel {
 		
 		// distribute throughout all unlocked spinners
 		else {
-			// count the number of unlocked spinners
-			int n = 0;
-			for (int i=0; i<current.length; ++i) {
-				if (current[i].autoblend) {
-					n ++;
-				}
-			}
-			// get the blend factor value (totals 1)
-			float bf = 1.0f/n;
+//			// count the number of unlocked spinners
+//			int n = 0;
+//			for (int i=0; i<current.length; ++i) {
+//				if (current[i].autoblend) {
+//					n ++;
+//				}
+//			}
+//			// get the blend factor value (totals 1)
+//			float bf = 1.0f/n;
 			
 			// set the unlocked spinners
 			for (int i = 0; i < current.length; ++i) {
 				if (current[i].autoblend) {
+					float bf = 1.0f/i;
 					blendFactorSpinner[i].setValueNoChange((int)(bf*100));
 					layerManager.setLayerBlendFactor(i, bf);
 				}
