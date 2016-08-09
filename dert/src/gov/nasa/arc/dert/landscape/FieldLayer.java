@@ -113,6 +113,7 @@ public class FieldLayer extends Layer implements ColorMapListener {
 	 */
 	@Override
 	public void mapChanged(ColorMap cMap) {
+		layerInfo.colorMapName = cMap.getName();
 		Landscape.getInstance().markDirty(DirtyType.RenderState);
 	}
 
