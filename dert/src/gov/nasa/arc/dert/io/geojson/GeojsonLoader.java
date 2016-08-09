@@ -242,13 +242,13 @@ public class GeojsonLoader {
 	}
 
 	private ReadOnlyVector3 toWorld(double[] coordinate, boolean getZ) {
-		coord.set(coordinate[0], coordinate[1], coordinate[2]);
 		if (coordinate.length == 3) {
+			coord.set(coordinate[0], coordinate[1], coordinate[2]);
 			srs.getProjection().worldToLocal(coord);
 			coord.setZ(coord.getZ() - landscapeMinZ);
 			return (coord);
 		} else if (coordinate.length == 2) {
-			coord.setZ(0);
+			coord.set(coordinate[0], coordinate[1], 0);
 			srs.getProjection().worldToLocal(coord);
 			if (getZ) {
 				coord.setZ(Landscape.getInstance().getZ(coord.getX(), coord.getY()));
