@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.icon.Icons;
-import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.CartesianGrid;

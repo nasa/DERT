@@ -1,8 +1,6 @@
 package gov.nasa.arc.dert.action.mapelement;
 
 import gov.nasa.arc.dert.action.MenuItemAction;
-import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.FieldCameraState;
 
