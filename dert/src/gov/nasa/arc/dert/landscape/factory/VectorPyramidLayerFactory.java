@@ -169,7 +169,7 @@ public class VectorPyramidLayerFactory extends PyramidLayerFactory {
 
 		if (doIt) {
 			writeProperties(new File(dirPath, "layer.properties").getAbsolutePath(), maxLevel + 1, tileWidth,
-				tileLength, numberOfTiles, true);
+				tileLength, numberOfTiles);
 		}
 		System.out.println("Number of levels for " + layerName + " = " + (maxLevel + 1) + " with " + numberOfTiles
 			+ " tiles per side at the highest resolution level.");

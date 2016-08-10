@@ -65,8 +65,8 @@ public abstract class PyramidLayerFactory {
 		this.sourceFilePath = sourceFilePath;
 	}
 
-	protected void writeProperties(String path, int numLevels, int tileWidth, int tileLength, int numTiles,
-		boolean overlay) throws IOException, FileNotFoundException {
+	protected void writeProperties(String path, int numLevels, int tileWidth, int tileLength, int numTiles)
+			throws IOException, FileNotFoundException {
 		Properties properties = new Properties();
 		properties.setProperty("LayerType", layerType.toString());
 		properties.setProperty("NumberOfLevels", Integer.toString(numLevels));
@@ -77,9 +77,6 @@ public abstract class PyramidLayerFactory {
 		properties.setProperty("MinimumValue", Double.toString(minimumSampleValue[0]));
 		properties.setProperty("MaximumValue", Double.toString(maximumSampleValue[0]));
 		properties.setProperty("TileFormat", "PNG");
-		if (overlay) {
-			properties.setProperty("Overlay", "true");
-		}
 		projInfo.saveToProperties(properties);
 		if (layerType == LayerType.elevation) {
 			properties.setProperty("EdgeFillValue", Float.toString(edgeFillValue));

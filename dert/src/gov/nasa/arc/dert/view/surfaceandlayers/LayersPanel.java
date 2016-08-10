@@ -135,6 +135,8 @@ public class LayersPanel extends GroupPanel {
 
 	private void fillLayerSelection(final int index, LayerInfo current) {
 		String str = current.toString();
+		if (current.type != LayerType.none)
+			str += ", "+current.type;
 		if (current.colorMapName != null)
 			str += ", colormap=" + current.colorMapName;
 		layer[index].setText(str);

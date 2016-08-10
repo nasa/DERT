@@ -1,9 +1,9 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf400
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf470
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \margl1440\margr1440\vieww17200\viewh15840\viewkind0
 \deftab720
-\pard\pardeftab720
+\pard\pardeftab720\partightenfactor0
 
 \f0\fs24 \cf0 This release runs on Mac OS 10.8 or greater and on Linux Red Hat 6 both with 64-bit Java 7, or 8.  Due to memory requirements, a 32-bit version is not feasible.\
 \
@@ -11,10 +11,10 @@ WARNING: If you used earlier versions of DERT you may have a .dert or dertstash 
 \
 Always include the dert.log file from the dertstash directory in your home directory with problem reports.\
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 \cf0 \
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 
 \b \cf0 DERT version 1.0b7 Release Notes
 \b0 \
@@ -28,6 +28,7 @@ August 2016\
 - The help is not complete.\
 - User guide is not complete.\
 - Cursor changes do not behave well on the Mac under Java 1.8.  Moving the cursor out of the world view and  back in seems to fix the problem.\
+- Rendering can skip frames on older Macs. This could be due to a shader program that has too much to do.\
 \
 
 \b New In This Release:
@@ -35,12 +36,13 @@ August 2016\
 \
 - Added "field" layer type. The values of this layer are used as texture coordinates for a color map texture.\
 - LayerFactory once again puts its temporary files in the landscape.\
-\pard\pardeftab720
+- Changed layers to use opacity instead of saturation. Can no longer change surface color saturation except by changing surface color or changing image layer opacity.\
+\pard\pardeftab720\partightenfactor0
 \cf0 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 \cf0 \
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 
 \b \cf0 DERT version 1.0b6 Release Notes
 \b0 \
@@ -61,14 +63,14 @@ July 2016\
 \
 - Added Edit menu option to create an overhead view of the landscape.\
 - Added Edit menu option to display a center horizontal scale overlay that indicates the size of objects at the CoR.\
-\pard\pardeftab720
+\pard\pardeftab720\partightenfactor0
 \cf0 - Zoom now changes terrain tile resolution.\
 - Added a ScaleBar map element.\
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 \cf0 \
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 
 \b \cf0 DERT version 1.0b5 Release Notes
 \b0 \
@@ -89,12 +91,12 @@ June 2016\
 \
 - Added Edit menu option to bring all map elements to the front. This basically turns off the Z-buffer for the map elements.\
 - Added Edit menu option to display hidden lines in the tool map elements.  This applies to Path, Plane, and the grids.\
-\pard\pardeftab720
+\pard\pardeftab720\partightenfactor0
 \cf0 - Removed feature of using cntl key to refine movement during navigation. This doesn't seem to be necessary.\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 \cf0 \
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 
 \b \cf0 DERT version 1.0b4 Release Notes
 \b0 \
@@ -115,12 +117,12 @@ June 2016\
 - Java 6 is no longer supported.\
 - Added option to save a fly-through to an image sequence.  Each frame is a separate file.\
 - Added Edit menu option to set the world view canvas dimensions.\
-\pard\pardeftab720
+\pard\pardeftab720\partightenfactor0
 \cf0 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 \cf0 \
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 
 \b \cf0 DERT version 1.0b3 Release Notes
 \b0 \
@@ -143,12 +145,12 @@ May 2016\
 - Added Edit menu option to hide the marble.\
 - Double-clicking on a landscape when selected it now opens a new configuration.\
 \
-\pard\pardeftab720
+\pard\pardeftab720\partightenfactor0
 \cf0 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 \cf0 \
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 
 \b \cf0 DERT version 1.0b2 Release Notes
 \b0 \
@@ -169,12 +171,12 @@ April 2016\
 - Created a set of unit tests for the Landscape. Found and resolved some projection issues with the new tests.\
 - Added a text overlay to the world view showing current magnification, center of rotation, and distance to center of rotation.\
 - Added option to view some fields int lon/lat coordinates.\
-\pard\pardeftab720
+\pard\pardeftab720\partightenfactor0
 \cf0 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 \cf0 \
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 
 \b \cf0 DERT version 1.0b1 Release Notes
 \b0 \
