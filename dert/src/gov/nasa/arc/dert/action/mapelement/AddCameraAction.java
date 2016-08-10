@@ -31,7 +31,6 @@ public class AddCameraAction extends MenuItemAction {
 	protected void run() {
 		FieldCameraState state = new FieldCameraState(position);
 		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state);
-		Landscape.getInstance().getLayerManager().addFieldCamera((FieldCamera) state.getMapElement());
 	}
 
 }

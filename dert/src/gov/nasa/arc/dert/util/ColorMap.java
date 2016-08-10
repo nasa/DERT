@@ -201,6 +201,7 @@ public class ColorMap {
 	public static String[] getColorMapNames() {
 		String[] names = new String[mapMap.size()];
 		mapMap.keySet().toArray(names);
+		Arrays.sort(names);
 		return (names);
 	}
 

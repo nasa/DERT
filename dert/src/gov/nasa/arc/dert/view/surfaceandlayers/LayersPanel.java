@@ -82,9 +82,8 @@ public class LayersPanel extends GroupPanel {
 				if (current != null) {
 					Landscape.getInstance().getLayerManager().setLayerSelection(current);
 					adjustBlendFactors(1, -1);
-					for (int i = 0; i < current.length; ++i) {
+					for (int i = 0; i < current.length; ++i)
 						fillLayerSelection(i, current[i]);
-					}
 					Landscape.getInstance().resetLayers();
 				}
 			}
@@ -129,22 +128,15 @@ public class LayersPanel extends GroupPanel {
 	 */
 	public void updateSelectedLayers() {
 		LayerInfo[] currentSelection = Landscape.getInstance().getLayerManager().getLayerSelection();
-		for (int i = 0; i < LayerManager.NUM_LAYERS; ++i) {
+		for (int i = 0; i < currentSelection.length; ++i)
 			fillLayerSelection(i, currentSelection[i]);
-		}
 		adjustBlendFactors(1, -1);
 	}
 
 	private void fillLayerSelection(final int index, LayerInfo current) {
 		String str = current.toString();
-		if (current.type == LayerType.elevation)
-			str = "Surface";
-		else if (current.colorMap != null) {
-			str += ", colormap=" + current.colorMap.getName();
-		}
-		if (current.isOverlay) {
-			str += ", overlay";
-		}
+		if (current.colorMapName != null)
+			str += ", colormap=" + current.colorMapName;
 		layer[index].setText(str);
 		lockBox[index].setSelected(!current.autoblend);
 		blendFactorSpinner[index].setValueNoChange((int)(current.blendFactor*100));
@@ -170,7 +162,7 @@ public class LayersPanel extends GroupPanel {
 			
 			// get number of auto blended layers
 			int n = 0;
-			for (int i=0; i<current.length; ++i)
+			for (int i=1; i<current.length; ++i)
 				if (current[i].autoblend && (i != index))
 					n ++;
 			
@@ -182,7 +174,7 @@ public class LayersPanel extends GroupPanel {
 			float d = -0.01f*v/(float)n;
 			
 			// set the spinners and update the layer manager
-			for (int i=0; i<current.length; ++i)
+			for (int i=1; i<current.length; ++i)
 				if (current[i].autoblend && (i != index)) {
 					float bf = (float)current[i].blendFactor;
 					bf += d;
@@ -195,23 +187,20 @@ public class LayersPanel extends GroupPanel {
 		
 		// distribute throughout all unlocked spinners
 		else {
-//			// count the number of unlocked spinners
-//			int n = 0;
-//			for (int i=0; i<current.length; ++i) {
-//				if (current[i].autoblend) {
-//					n ++;
-//				}
-//			}
-//			// get the blend factor value (totals 1)
-//			float bf = 1.0f/n;
+			// set the first layer (never unlocked)
+			blendFactorSpinner[0].setValueNoChange((int)(current[0].blendFactor*100));
+			layerManager.setLayerBlendFactor(0, (float)current[0].blendFactor);
 			
-			// set the unlocked spinners
-			for (int i = 0; i < current.length; ++i) {
+			int n = 1;
+			for (int i = 1; i < current.length; ++i) {
+				// set the unlocked spinners
 				if (current[i].autoblend) {
-					float bf = 1.0f/i;
+					n ++;
+					float bf = 1.0f/n;
 					blendFactorSpinner[i].setValueNoChange((int)(bf*100));
 					layerManager.setLayerBlendFactor(i, bf);
 				}
+				// set the locked spinners
 				else {
 					blendFactorSpinner[i].setValueNoChange((int)(current[i].blendFactor*100));
 					layerManager.setLayerBlendFactor(i, (float)current[i].blendFactor);
@@ -224,16 +213,21 @@ public class LayersPanel extends GroupPanel {
 		lockBox[index] = new JCheckBox(unlockedIcon);
 		lockBox[index].setToolTipText("unlock for automatic color contribution adjustment for this layer");
 		lockBox[index].setSelectedIcon(lockedIcon);
-		lockBox[index].addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				LayerManager layerManager = Landscape.getInstance().getLayerManager();
-				LayerInfo[] current = layerManager.getLayerSelection();
-				current[index].autoblend = !lockBox[index].isSelected();
-			}
-		});
+		if (index == 0) {
+			lockBox[index].setSelected(true);
+			lockBox[index].setEnabled(false);			
+		}
+		else {
+			lockBox[index].addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					LayerManager layerManager = Landscape.getInstance().getLayerManager();
+					LayerInfo[] current = layerManager.getLayerSelection();
+					current[index].autoblend = !lockBox[index].isSelected();
+				}
+			});
+		}		
 		panel.add(lockBox[index]);
-		
 	}
 
 	private void addBlendFactorSpinner(JPanel panel, final int index) {

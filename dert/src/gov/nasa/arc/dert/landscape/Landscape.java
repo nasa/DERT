@@ -131,7 +131,7 @@ public class Landscape extends Node implements ViewDependent {
 		this.layerManager = layerManager;
 		this.surfaceColor = surfaceColor;
 		layerList = layerManager.getLayers();
-		baseLayer = (RasterLayer)layerList[0];
+		baseLayer = layerManager.getBaseLayer();
 		projInfo = baseLayer.getProjectionInfo();
 		srs = new SpatialReferenceSystem(projInfo);
 		pixelWidth = projInfo.scale[0];
@@ -251,7 +251,7 @@ public class Landscape extends Node implements ViewDependent {
 	 * Initialize the landscape. Create the factory, quad tree, and layers.
 	 */
 	public void initialize() {
-		factory = new QuadTreeFactory(source, layerList, pixelScale);
+		factory = new QuadTreeFactory(source, baseLayer, layerList, pixelScale);
 		factory.setSurfaceColor(surfaceColor);
 //		factory.enableLayers(layerManager.layersEnabled);
 

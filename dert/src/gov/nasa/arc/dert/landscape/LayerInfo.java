@@ -23,10 +23,7 @@ public class LayerInfo implements Comparable<LayerInfo> {
 
 	// The percent that the layer contributes to the overall color of the
 	// landscape
-	public double blendFactor;
-
-	// Flag to treat this layer as an overlay
-	public boolean isOverlay;
+	public double blendFactor = 1;
 
 	// The texture index for the layer
 	public int layerNumber = -1;
@@ -60,7 +57,7 @@ public class LayerInfo implements Comparable<LayerInfo> {
 	 * @param gradient
 	 */
 	public LayerInfo(String name, String type, String colorMapName, double minimum, double maximum, boolean gradient) {
-		this(name, type, 0, -1);
+		this(name, type, -1);
 		this.colorMapName = colorMapName;
 		this.minimum = minimum;
 		this.maximum = maximum;
@@ -76,15 +73,11 @@ public class LayerInfo implements Comparable<LayerInfo> {
 	 * @param isOverlay
 	 * @param layerNumber
 	 */
-	public LayerInfo(String name, String type, float blendFactor, int layerNumber) {
+	public LayerInfo(String name, String type, int layerNumber) {
 		this.name = name;
 		this.type = LayerType.valueOf(type);
-		this.blendFactor = blendFactor;
 		this.layerNumber = layerNumber;
-		if (this.type == LayerType.none)
-			autoblend = false;
-		else
-			autoblend = !isOverlay;
+		autoblend = !(this.type == LayerType.none);
 	}
 	
 	/**
@@ -97,7 +90,6 @@ public class LayerInfo implements Comparable<LayerInfo> {
 		String str = StateUtil.getString(map, "Type", "none");
 		type = LayerType.valueOf(str);
 		blendFactor = StateUtil.getDouble(map, "BlendFactor", blendFactor);
-		isOverlay = StateUtil.getBoolean(map, "IsOverlay", false);
 		layerNumber = StateUtil.getInteger(map, "LayerNumber", layerNumber);
 		autoblend = StateUtil.getBoolean(map, "Autoblend", autoblend);
 		str = StateUtil.getString(map, "ColorMap.name", null);
@@ -118,7 +110,6 @@ public class LayerInfo implements Comparable<LayerInfo> {
 		this.name = that.name;
 		this.type = that.type;
 		this.blendFactor = that.blendFactor;
-		this.isOverlay = that.isOverlay;
 		this.layerNumber = that.layerNumber;
 		this.gradient = that.gradient;
 		this.colorMapName = that.colorMapName;
@@ -153,14 +144,9 @@ public class LayerInfo implements Comparable<LayerInfo> {
 		map.put("Name", name);
 		map.put("Type", type.toString());
 		map.put("BlendFactor", new Double(blendFactor));
-		map.put("IsOverlay", new Boolean(isOverlay));
 		map.put("LayerNumber", new Integer(layerNumber));
 		map.put("Autoblend", new Boolean(autoblend));
 		if (colorMap != null) {
-//			colorMapName = colorMap.getName();
-//			gradient = colorMap.isGradient();
-//			minimum = colorMap.getMinimum();
-//			maximum = colorMap.getMaximum();
 			map.put("ColorMap.name", colorMap.getName());
 			map.put("ColorMap.gradient", new Boolean(colorMap.isGradient()));
 			map.put("ColorMap.minimum", new Double(colorMap.getMinimum()));

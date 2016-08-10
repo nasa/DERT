@@ -29,7 +29,7 @@ import com.ardor3d.renderer.Renderer;
  */
 public class LayerManager {
 
-	public static int NUM_LAYERS = 8;
+	public static int NUM_LAYERS = 7;
 	public static final ReadOnlyColorRGBA DEFAULT_GRID_COLOR = ColorRGBA.WHITE;
 
 	// Flags accessed by Landscape
@@ -109,23 +109,14 @@ public class LayerManager {
 		String[][] sourceLayerInfo = source.getLayerInfo();
 		ArrayList<LayerInfo> newInfoList = new ArrayList<LayerInfo>();
 		for (int i = 0; i < sourceLayerInfo.length; ++i) {
-			LayerInfo li = new LayerInfo(sourceLayerInfo[i][0], sourceLayerInfo[i][1], 0, -1);
+			LayerInfo li = new LayerInfo(sourceLayerInfo[i][0], sourceLayerInfo[i][1], -1);
 			// elevation is always the base layer
-			if (li.type == LayerType.elevation) {
+			if (li.type == LayerType.elevation)
 				baseLayerInfo = li;
-				baseLayerInfo.layerNumber = 0;
-				baseLayerInfo.autoblend = false;
-				baseLayerInfo.blendFactor = 1;
-			} else {
+			else {
 				LayerInfo lInfo = findLayerInfo(li.name, li.type);
 				if (lInfo != null) {
 					li = lInfo;
-				}
-				Properties properties = source.getProperties(li.name);
-				li.isOverlay = StringUtil.getBooleanValue(properties, "Overlay", false, false);
-				if (li.isOverlay) {
-					li.blendFactor = 0.75;
-					li.autoblend = false;
 				}
 				if (li.type == LayerType.field)
 					li.colorMapName = FieldLayer.defaultColorMapName;
@@ -180,22 +171,19 @@ public class LayerManager {
 		// set up the displayed layers
 		if (selectedLayerInfo == null) {
 			selectedLayerInfo = new LayerInfo[NUM_LAYERS];
-			selectedLayerInfo[0] = baseLayerInfo;
 			for (int i = 0; i < imageLayerInfoList.size(); ++i) {
 				LayerInfo li = imageLayerInfoList.get(i);
-				if (li.layerNumber > 0) {
+				if (li.layerNumber >= 0)
 					selectedLayerInfo[li.layerNumber] = li;
-				}
 			}
-			if (firstTime && (selectedLayerInfo[1] == null)) {
-				// first time choose the first image layer found as the default
-				// image layer
+			if (firstTime && (selectedLayerInfo[0] == null)) {
+				// first time - choose the first image layer found as the default
 				for (int i = 0; i < imageLayerInfoList.size(); ++i) {
 					if ((imageLayerInfoList.get(i).type == LayerType.colorimage)
 						|| (imageLayerInfoList.get(i).type == LayerType.grayimage)) {
-						selectedLayerInfo[1] = imageLayerInfoList.get(i);
-						selectedLayerInfo[1].blendFactor = 1;
-						selectedLayerInfo[1].layerNumber = 1;
+						selectedLayerInfo[0] = imageLayerInfoList.get(i);
+						selectedLayerInfo[0].layerNumber = 0;
+						selectedLayerInfo[0].autoblend = false;
 						break;
 					}
 				}
@@ -204,28 +192,17 @@ public class LayerManager {
 			// set all non-assigned layers to "none"
 			for (int i = 0; i < selectedLayerInfo.length; ++i) {
 				if (selectedLayerInfo[i] == null) {
-					selectedLayerInfo[i] = new LayerInfo("None", "none", 0, i);
+					selectedLayerInfo[i] = new LayerInfo("None", "none", i);
 				}
 			}
 		}
 		else {
-			baseLayerInfo.autoblend = selectedLayerInfo[0].autoblend;
-			baseLayerInfo.blendFactor = selectedLayerInfo[0].blendFactor;
-			selectedLayerInfo[0] = baseLayerInfo;
-			for (int i=1; i<selectedLayerInfo.length; ++i) {
+			for (int i=0; i<selectedLayerInfo.length; ++i) {
 				LayerInfo li = findLayerInfo(selectedLayerInfo[i].name, selectedLayerInfo[i].type);
 				if (li == null)
-					selectedLayerInfo[i] = new LayerInfo("None", "none", 0, i);
+					selectedLayerInfo[i] = new LayerInfo("None", "none", i);
 			}
 		}
-		
-		int n = 0;
-		for (int i=0; i<selectedLayerInfo.length; ++i) {
-			if (selectedLayerInfo[i].type != LayerType.none)
-				n ++;
-		}
-		if (n == 1)
-			baseLayerInfo.blendFactor = 1;
 
 		// create the layers
 		if (layers == null) {
@@ -251,10 +228,8 @@ public class LayerManager {
 
 	private boolean createBaseLayer(LayerInfo baseLayerInfo) {
 		// already been here
-		if (baseLayer != null) {
-			baseLayer.blendFactor = baseLayerInfo.blendFactor;
+		if (baseLayer != null)
 			return (true);
-		}
 
 		// create the base layer
 		baseLayer = (RasterLayer) createLayer(baseLayerInfo, source, -1);
@@ -262,7 +237,6 @@ public class LayerManager {
 			Console.getInstance().println("Unable to create base layer");
 			return (false);
 		}
-		layers[0] = baseLayer;
 		return (true);
 	}
 
@@ -328,7 +302,7 @@ public class LayerManager {
 				if (iName.equals(layer.getLayerName())) {
 					layer.dispose();
 					layers[i] = null;
-					selectedLayerInfo[i] = new LayerInfo("None", "none", 0, i + 1);
+					selectedLayerInfo[i] = new LayerInfo("None", "none", i);
 					layerEffects = new LayerEffects(layers, layerEffects);
 					layerEffects.setEnabled(true);
 					found = true;
@@ -357,15 +331,13 @@ public class LayerManager {
 	 * @param fieldCamera
 	 */
 	public void addFieldCamera(FieldCamera fieldCamera) {
-		imageLayerInfoList.add(new LayerInfo(fieldCamera.getName(), "footprint", 0, -1));
-		imageLayerInfoList.add(new LayerInfo(fieldCamera.getName(), "viewshed", 0, -1));
+		imageLayerInfoList.add(new LayerInfo(fieldCamera.getName(), "footprint", -1));
+		imageLayerInfoList.add(new LayerInfo(fieldCamera.getName(), "viewshed", -1));
 	}
 
 	private void createLayers() {
 		Layer[] newList = new Layer[NUM_LAYERS];
-		newList[0] = layers[0];
-		layers[0] = null;
-		for (int i = 1; i < selectedLayerInfo.length; ++i) {
+		for (int i = 0; i < selectedLayerInfo.length; ++i) {
 			if (selectedLayerInfo[i].type == LayerType.none) {
 				newList[i] = null;
 			} else {
@@ -421,7 +393,7 @@ public class LayerManager {
 					return (null);
 				}
 			} else if ((layerInfo.type == LayerType.footprint) || (layerInfo.type == LayerType.viewshed)) {
-				return (new FieldCameraLayer(layerInfo, index-1));
+				return (new FieldCameraLayer(layerInfo, index));
 			} else if (layerInfo.type == LayerType.field) {
 				return (new FieldLayer(layerInfo, source));
 			} else {

@@ -39,9 +39,6 @@ public abstract class Layer {
 	// how much this layer contributes to the landscape color
 	protected double blendFactor;
 
-	// flag to indicate how this layer should be blended with the landscape
-	protected boolean overlay;
-
 	/**
 	 * Constructor
 	 * 
@@ -50,7 +47,6 @@ public abstract class Layer {
 	public Layer(LayerInfo layerInfo) {
 		layerName = layerInfo.name;
 		layerType = layerInfo.type;
-		overlay = layerInfo.isOverlay;
 		blendFactor = layerInfo.blendFactor;
 	}
 
@@ -183,15 +179,6 @@ public abstract class Layer {
 	 */
 	public int getNumberOfLevels() {
 		return (numLevels);
-	}
-
-	/**
-	 * Determine if this layer is an overlay and doesn't blend
-	 * 
-	 * @return
-	 */
-	public boolean isOverlay() {
-		return (overlay);
 	}
 
 	/**

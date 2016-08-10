@@ -86,10 +86,10 @@ public class QuadTreeFactory {
 	 * @param layerList
 	 * @param pixelScale
 	 */
-	public QuadTreeFactory(TileSource source, Layer[] layerList, double pixelScale) {
+	public QuadTreeFactory(TileSource source, RasterLayer baseLayer, Layer[] layerList, double pixelScale) {
 		this.source = source;
 		this.layerList = layerList;
-		baseLayer = (RasterLayer)layerList[0];
+		this.baseLayer = baseLayer;
 		this.pixelScale = pixelScale;
 		this.tileWidth = baseLayer.getTileWidth();
 		this.tileLength = baseLayer.getTileLength();
@@ -99,7 +99,7 @@ public class QuadTreeFactory {
 		missingFillValue = baseLayer.getFillValue();
 
 		int bytesPerTile = baseLayer.getBytesPerTile() * 6;
-		for (int i = 1; i < layerList.length; ++i) {
+		for (int i = 0; i < layerList.length; ++i) {
 			if (layerList[i] != null) {
 				bytesPerTile += layerList[i].getBytesPerTile();
 			}
@@ -337,7 +337,7 @@ public class QuadTreeFactory {
 
 		// load the image layers as textures
 		TextureState textureState = new TextureState();
-		for (int i = 1; i < layerList.length; ++i) {
+		for (int i = 0; i < layerList.length; ++i) {
 			if (layerList[i] != null) {
 				Texture texture = null;
 				if (empty) {
@@ -345,19 +345,19 @@ public class QuadTreeFactory {
 					texture = getEmptyTexture();
 				} else if (layerList[i] instanceof DerivativeLayer) {
 					texture = ((DerivativeLayer) layerList[i]).getTexture(qt.getName(), null);
-					((DerivativeLayer) layerList[i]).createColorMapTextureCoords(mesh, i-1);
+					((DerivativeLayer) layerList[i]).createColorMapTextureCoords(mesh, i);
 				} else if (layerList[i] instanceof FieldLayer) {
 					texture = ((FieldLayer) layerList[i]).getTexture(qt.getName(), null);
-					((FieldLayer) layerList[i]).createColorMapTextureCoords(qt.getName(), mesh, i-1);
+					((FieldLayer) layerList[i]).createColorMapTextureCoords(qt.getName(), mesh, i);
 				} else if (!(layerList[i] instanceof FieldCameraLayer)) {
 					// load the texture
-					texture = getTexture(qt.getName(), i-1, null);
+					texture = getTexture(qt.getName(), i, null);
 					if (texture == null) {
 						texture = getEmptyTexture();
 					}
 				}
 				if (texture != null) {
-					textureState.setTexture(texture, i-1);
+					textureState.setTexture(texture, i);
 				}
 			}
 		}
@@ -394,10 +394,10 @@ public class QuadTreeFactory {
 	}
 
 	private Texture getTexture(String key, int tUnit, Texture texture) {
-		if (layerList[tUnit+1] == null) {
+		if (layerList[tUnit] == null) {
 			return (null);
 		}
-		texture = layerList[tUnit+1].getTexture(key, texture);
+		texture = layerList[tUnit].getTexture(key, texture);
 		if (texture == null) {
 			return (null);
 		}

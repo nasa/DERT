@@ -61,7 +61,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 		layers = new Vector<LayerInfo>();
 		for (int i = 0; i < layerInfo.length; ++i) {
 			boolean found = false;
-			for (int j = 1; j < currentSelection.length; ++j) {
+			for (int j = 0; j < currentSelection.length; ++j) {
 				if (currentSelection[j] == null) {
 					continue;
 				}
@@ -76,7 +76,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 			}
 		}
 		selectedLayers = new Vector<LayerInfo>();
-		for (int i = 1; i < currentSelection.length; ++i) {
+		for (int i = 0; i < currentSelection.length; ++i) {
 			selectedLayers.add(currentSelection[i]);
 		}
 
@@ -92,8 +92,8 @@ public class LayerConfigurationDialog extends AbstractDialog {
 				if (currentSelected == null) {
 					return;
 				}
-				boolean doUp = currentSelected.layerNumber > 1;
-				if ((currentSelected.layerNumber == 2)
+				boolean doUp = currentSelected.layerNumber > 0;
+				if ((currentSelected.layerNumber == 1)
 					&& !((currentSelected.type == LayerType.colorimage) || (currentSelected.type == LayerType.grayimage))) {
 					doUp = false;
 				}
@@ -103,7 +103,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 				boolean doAdd = true;
 				if (currentLayer == null) {
 					doAdd = false;
-				} else if ((currentSelected.layerNumber == 1)
+				} else if ((currentSelected.layerNumber == 0)
 					&& !((currentLayer.type == LayerType.colorimage) || (currentLayer.type == LayerType.grayimage))) {
 					doAdd = false;
 				}
@@ -132,7 +132,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 				li.layerNumber = selectedIndex;
 				li = selectedLayers.get(selectedIndex);
 				if (li != null) {
-					li.layerNumber = selectedIndex + 1;
+					li.layerNumber = selectedIndex;
 				}
 				selectedLayerList.setListData(selectedLayers);
 				selectedLayerList.setSelectedIndex(selectedIndex - 1);
@@ -157,8 +157,8 @@ public class LayerConfigurationDialog extends AbstractDialog {
 				LayerInfo sli = selectedLayers.get(selectedIndex);
 				// put the newly selected layer into the slot
 				selectedLayers.set(selectedIndex, li);
-				// set the layer number (0=surface, 1=first layer, 2=second layer ...)
-				li.layerNumber = selectedIndex + 1;
+				// set the layer number (0=first layer, 1=second layer ...)
+				li.layerNumber = selectedIndex;
 				// put the updated visible list in the list display
 				selectedLayerList.setListData(selectedLayers);
 				// put the old layer back in the available layers list
@@ -185,7 +185,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 				LayerInfo li = selectedLayers.get(selectedIndex);
 				if (li.type != LayerType.none) {
 					li = selectedLayers.remove(selectedIndex);
-					selectedLayers.add(selectedIndex, new LayerInfo("None", "none", 0, selectedIndex + 1));
+					selectedLayers.add(selectedIndex, new LayerInfo("None", "none", selectedIndex));
 					li.layerNumber = -1;
 					layers.add(li);
 				}
@@ -205,11 +205,11 @@ public class LayerConfigurationDialog extends AbstractDialog {
 			public void actionPerformed(ActionEvent event) {
 				int selectedIndex = selectedLayerList.getSelectedIndex();
 				LayerInfo li = selectedLayers.remove(selectedIndex);
-				li.layerNumber = selectedIndex + 2;
-				selectedLayers.add(selectedIndex + 1, li);
+				li.layerNumber = selectedIndex + 1;
+				selectedLayers.add(selectedIndex, li);
 				li = selectedLayers.get(selectedIndex);
 				if (li != null) {
-					li.layerNumber = selectedIndex + 1;
+					li.layerNumber = selectedIndex;
 				}
 				selectedLayerList.setListData(selectedLayers);
 				selectedLayerList.setSelectedIndex(selectedIndex + 1);
@@ -237,7 +237,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 				boolean doAdd = true;
 				if (currentSelected == null) {
 					doAdd = false;
-				} else if ((currentSelected.layerNumber == 1)
+				} else if ((currentSelected.layerNumber == 0)
 					&& !((currentLayer.type == LayerType.colorimage) || (currentLayer.type == LayerType.grayimage))) {
 					doAdd = false;
 				}
@@ -247,26 +247,12 @@ public class LayerConfigurationDialog extends AbstractDialog {
 		contentArea.add(listPanel, GBCHelper.getGBC(6, 0, 4, 4, GridBagConstraints.EAST, GridBagConstraints.BOTH, 1, 1));
 	}
 
-	private LayerInfo[] getCurrentSelection() {
-		LayerManager layerManager = Landscape.getInstance().getLayerManager();
-		LayerInfo[] currentSelection = layerManager.getLayerSelection();
-		LayerInfo[] newSelection = new LayerInfo[LayerManager.NUM_LAYERS];
-		newSelection[0] = currentSelection[0];
-		int n = 0;
-		for (int i=0; i<selectedLayers.size(); ++i) {
-			newSelection[i+1] = selectedLayers.get(i);
-			if (newSelection[i+1].type != LayerType.none)
-				n ++;
-		}
-		if (n == 0)
-			newSelection[0].blendFactor = 1;
-		return (newSelection);
-	}
-
 	@Override
 	public boolean okPressed() {
-		LayerInfo[] current = getCurrentSelection();
-		result = current;
+		LayerInfo[] newSelection = new LayerInfo[LayerManager.NUM_LAYERS];
+		for (int i=0; i<selectedLayers.size(); ++i)
+			newSelection[i] = selectedLayers.get(i);
+		result = newSelection;
 		setVisible(false);
 		return (true);
 	}

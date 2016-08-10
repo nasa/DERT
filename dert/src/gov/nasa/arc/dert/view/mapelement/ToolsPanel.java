@@ -142,7 +142,6 @@ public class ToolsPanel extends JPanel {
 				FieldCamera fieldCamera = (FieldCamera) ConfigurationManager.getInstance().getCurrentConfiguration()
 					.addMapElementState(state);
 				newMapElement(MapElementState.Type.FieldCamera, fieldCamera);
-				Landscape.getInstance().getLayerManager().addFieldCamera(fieldCamera);
 			}
 		});
 		panel.add(newButton);
