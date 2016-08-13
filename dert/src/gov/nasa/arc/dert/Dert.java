@@ -258,6 +258,7 @@ public class Dert {
 				dertProperties.load(new FileInputStream(file));
 			}
 
+			SceneFramework.millisBetweenFrames = StringUtil.getIntegerValue(dertProperties, "MillisBetweenFrames", true, 33, false);
 			World.defaultStereoEyeSeparation = StringUtil.getDoubleValue(dertProperties, "Stereo.eyeSeparation", false, World.defaultStereoEyeSeparation, false);
 			World.defaultStereoFocalDistance = StringUtil.getDoubleValue(dertProperties, "Stereo.focalDistance", false, World.defaultStereoFocalDistance, false);
 			RasterText.setFont(StringUtil.getIntegerValue(dertProperties, "RasterText.Font", true, 18, false));

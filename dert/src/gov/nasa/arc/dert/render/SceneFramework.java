@@ -13,6 +13,8 @@ import com.ardor3d.util.Timer;
  *
  */
 public class SceneFramework {
+	
+	public static int millisBetweenFrames = 33;
 
 	private static SceneFramework instance;
 
@@ -58,7 +60,7 @@ public class SceneFramework {
 		// initialize
 		TextureRendererFactory.INSTANCE.setProvider(new JoglTextureRendererProvider());
 		AWTImageLoader.registerLoader();
-		startFrameHandlerUpdate(30);
+		startFrameHandlerUpdate(millisBetweenFrames);
 	}
 
 	/**
@@ -70,7 +72,7 @@ public class SceneFramework {
 	public void startFrameHandlerUpdate(int sleepTime) {
 		doit = true;
 		if (sleepTime <= 0) {
-			sleepTime = 10;
+			sleepTime = millisBetweenFrames;
 		}
 		final int sleepyTime = sleepTime;
 		Thread t = new Thread(new Runnable() {
