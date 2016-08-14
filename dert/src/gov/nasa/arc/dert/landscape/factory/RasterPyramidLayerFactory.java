@@ -145,9 +145,11 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			// of 2
 			// Pad and center the raster
 			if (messageText != null) {
-				messageText.setText("Writing temporary "+paddedWidth+" x "+paddedLength+" file ... ");
+				messageText.setText("Writing temporary "+paddedWidth+" x "+paddedLength+" file ");
 				Thread.yield();
 			}
+			else
+				System.out.println("Writing temporary "+paddedWidth+" x "+paddedLength+" file ");
 			Raster raster = createPaddedRaster(path, samplesPerPixel, missing);
 			rasterFile.close();
 			System.gc();
@@ -164,12 +166,18 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 				if (!doIt) {
 					break;
 				}
-				if (messageText != null) {
-					messageText.setText("Reading and scaling for level " + (maxLevel - level + 1) + " . . . ");
-					Thread.yield();
-				}
 				int kernelSize = (int) Math.pow(2, (maxLevel - level));
+				int rcnt = 0;
+				if (messageText == null)
+					System.out.println("Writing "+numTiles+" rows for level "+(level+1)+" of "+(maxLevel+1));
 				for (int r = 0; r < numTiles; ++r) {
+					if (messageText == null) {
+						if (rcnt%10 == 0)
+							System.out.print(rcnt);
+						else 
+							System.out.print(".");
+						rcnt ++;
+					}
 					for (int c = 0; c < numTiles; ++c) {
 						if (!doIt) {
 							break;
@@ -183,6 +191,8 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 						writeTile(raster, c * columnStep, r * rowStep, kernelSize, filePath, layerType);
 					}
 				}
+				if (messageText == null)
+					System.out.println();
 				numTiles /= 2;
 				columnStep *= 2;
 				rowStep *= 2;
@@ -191,7 +201,7 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			System.gc();
 
 			System.out.println();
-			System.out.println("Writing pyramid for " + layerName);
+			System.out.println("Writing projection info for " + layerName);
 			projInfo.rasterWidth = tileWidth * numberOfTiles;
 			projInfo.rasterLength = tileLength * numberOfTiles;
 			projInfo.tiePoint[0] -= (leftMargin - leftInset) * projInfo.scale[0];
@@ -209,10 +219,8 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 				+ " tiles per side at the highest resolution level.");
 			int nt = 0;
 			int n = 1;
-			int bytes = 0;
 			for (int i = 0; i <= maxLevel; ++i) {
 				nt += n;
-				bytes += n * tileWidth * tileLength * bytesPerPixel;
 				n *= 4;
 			}
 
@@ -227,7 +235,7 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 
 			// report
 			System.out.println("Total number of tiles for " + layerName + " = " + nt + " using "
-				+ (float) (bytes / Math.pow(2, 30)) + " GB.");
+				+ ((double)nt*tileWidth*tileLength*bytesPerPixel / 1073741824.0) + " GB.");
 			System.out.println("Total time for building " + layerName + " = "
 				+ (float) ((System.currentTimeMillis() - t) / 60000.0) + " minutes.");
 		} catch (Exception e) {

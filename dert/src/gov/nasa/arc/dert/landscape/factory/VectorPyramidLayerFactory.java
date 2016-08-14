@@ -136,13 +136,19 @@ public class VectorPyramidLayerFactory extends PyramidLayerFactory {
 			if (!doIt) {
 				break;
 			}
-			if (messageText != null) {
-				messageText.setText("Rendering for level " + (maxLevel - level + 1) + " . . . ");
-				Thread.yield();
-			}
 			double columnStep = tileWidth * xScale;
 			double rowStep = tileLength * yScale;
+			int rcnt = 0;
+			if (messageText == null)
+				System.out.println("Writing "+numTiles+" rows for level "+(level+1)+" of "+(maxLevel+1));
 			for (int r = 0; r < numTiles; ++r) {
+				if (messageText == null) {
+					if (rcnt%10 == 0)
+						System.out.print(rcnt);
+					else 
+						System.out.print(".");
+					rcnt ++;
+				}
 				for (int c = 0; c < numTiles; ++c) {
 					if (!doIt) {
 						break;
@@ -159,6 +165,8 @@ public class VectorPyramidLayerFactory extends PyramidLayerFactory {
 					writeTile(raster, offscreenRenderer.getWidth(), offscreenRenderer.getHeight(), tilePath);
 				}
 			}
+			if (messageText == null)
+				System.out.println();
 			numTiles /= 2;
 			xScale *= 2;
 			yScale *= 2;
@@ -175,10 +183,8 @@ public class VectorPyramidLayerFactory extends PyramidLayerFactory {
 			+ " tiles per side at the highest resolution level.");
 		int nt = 0;
 		int n = 1;
-		int bytes = 0;
 		for (int i = 0; i <= maxLevel; ++i) {
 			nt += n;
-			bytes += n * tileWidth1 * tileLength1 * bytesPerPixel;
 			n *= 4;
 		}
 
@@ -186,7 +192,7 @@ public class VectorPyramidLayerFactory extends PyramidLayerFactory {
 
 		// report
 		System.out.println("Total number of tiles for " + layerName + " = " + nt + " using "
-			+ (float) (bytes / Math.pow(2, 30)) + " GB.");
+			+ (((double)nt*tileWidth1*tileLength1*bytesPerPixel) / 1073741824.0) + " GB.");
 		System.out.println("Total time for building " + layerName + " = "
 			+ (float) ((System.currentTimeMillis() - t) / 60000.0) + " minutes.");
 	}
