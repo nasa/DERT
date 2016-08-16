@@ -107,6 +107,8 @@ public class ProjectionInfo {
 	public double azimuth, straightVertPoleLon;
 	public String pcsCitation; // documentation
 	public String projLinearUnits;
+	
+	public int poleLat;
 
 	/**
 	 * Create a default projection
@@ -163,6 +165,7 @@ public class ProjectionInfo {
 		scaleAtCenter = Double.NaN;
 		azimuth = Double.NaN;
 		straightVertPoleLon = Double.NaN;
+		poleLat = 90;
 	}
 
 	/**
@@ -214,6 +217,7 @@ public class ProjectionInfo {
 		this.straightVertPoleLon = that.straightVertPoleLon;
 		this.pcsCitation = that.pcsCitation;
 		this.projLinearUnits = that.projLinearUnits;
+		this.poleLat = that.poleLat;
 	}
 
 	/**
@@ -244,6 +248,7 @@ public class ProjectionInfo {
 		coordTransformCode = StringUtil
 			.getIntegerValue(properties, "ProjectionInfo.CoordTransformCode", true, 0, false);
 		stdParallel1 = StringUtil.getDoubleValue(properties, "ProjectionInfo.StdParallel1", false, Double.NaN, false);
+		poleLat = (int)(Math.signum(stdParallel1)*90);
 		stdParallel2 = StringUtil.getDoubleValue(properties, "ProjectionInfo.StdParallel1", false, Double.NaN, false);
 		naturalOriginLon = StringUtil.getDoubleValue(properties, "ProjectionInfo.NaturalOriginLon", false, Double.NaN,
 			false);
@@ -578,7 +583,7 @@ public class ProjectionInfo {
 					+ " +y_0=" + falseNorthing;
 				break;
 			case Code_CT_PolarStereographic:
-				proj = "+proj=stere" + " +lat_ts=" + naturalOriginLat + " +lat_0=90" + " +lon_0=" + naturalOriginLon
+				proj = "+proj=stere" + " +lat_ts=" + naturalOriginLat + " +lat_0="+poleLat + " +lon_0=" + naturalOriginLon
 					+ " +k_0=" + scaleAtNaturalOrigin + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
 				break;
 			case Code_CT_Polyconic:
@@ -596,7 +601,7 @@ public class ProjectionInfo {
 				break;
 			}
 			if (proj != null)
-				proj += " +a=" + semiMajorAxis+" +b=" + semiMinorAxis;
+				proj += " +a=" + semiMajorAxis+" +b=" + semiMinorAxis+" +no_defs";
 		}
 		if ((proj == null) && (pcsCode > 0)) {
 			proj = "+init=epsg:" + pcsCode;

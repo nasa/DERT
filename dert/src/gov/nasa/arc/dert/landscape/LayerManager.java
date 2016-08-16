@@ -36,6 +36,7 @@ public class LayerManager {
 	protected boolean layersEnabled;
 	protected boolean shadingFromSurface;
 	protected boolean autoAdjustBlendFactor;
+	protected boolean noLayersSelected;
 
 	// Surface grid layer fields
 	private ReadOnlyColorRGBA gridColor;
@@ -190,11 +191,15 @@ public class LayerManager {
 				firstTime = false;
 			}
 			// set all non-assigned layers to "none"
+			noLayersSelected = true;
 			for (int i = 0; i < selectedLayerInfo.length; ++i) {
-				if (selectedLayerInfo[i] == null) {
+				if (selectedLayerInfo[i] == null)
 					selectedLayerInfo[i] = new LayerInfo("None", "none", i);
-				}
+				else
+					noLayersSelected = false;
 			}
+			if (noLayersSelected)
+				shadingFromSurface = true;
 		}
 		else {
 			for (int i=0; i<selectedLayerInfo.length; ++i) {
@@ -421,7 +426,7 @@ public class LayerManager {
 	 * @param enable
 	 */
 	public void enableLayers(boolean enable) {
-		layerEffects.layersEnabled = enable;
+		layerEffects.layersEnabled = enable & !noLayersSelected;
 		layersEnabled = enable;
 	}
 

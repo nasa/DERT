@@ -31,6 +31,7 @@ public class Projection {
 
 	// Proj4 fields
 	private Proj4 pjProjected, pjUnprojected;
+	private String proj4String;
 
 	// Conversion field
 	private double[] coord = new double[3];
@@ -48,6 +49,7 @@ public class Projection {
 
 			// get the bounds of the raster
 			double[] bounds = projInfo.getBounds();
+			System.err.println("Projection "+bounds[0]+" "+bounds[1]+" "+bounds[2]+" "+bounds[3]);
 			// get the center lon/lat of the raster
 			if (Double.isNaN(projInfo.centerLat)) {
 				projInfo.centerLat = (bounds[3] + bounds[1]) / 2;
@@ -64,38 +66,46 @@ public class Projection {
 			if (bounds[1] < -85) {
 				Console.getInstance().println(
 					"Found unprojected data ... projecting tie points with Polar Stereographic.");
-				projection = "+proj=stere +lat_ts=" + projInfo.naturalOriginLat + " +lat_O=-90 +lon_O="
-					+ projInfo.naturalOriginLon + " +k_O=1.0 +x_O=0.0 +y_O=0.0";
 				projInfo.coordTransformCode = 15;
+				projInfo.poleLat = -90;
+				projInfo.scaleAtNaturalOrigin = 1;
+				projInfo.falseEasting = 0;
+				projInfo.falseNorthing = 0;
+				proj4String = projInfo.getProj4String();
 			} else if (bounds[3] > 85) {
 				Console.getInstance().println(
 					"Found unprojected data ... projecting tie points with Polar Stereographic.");
-				projection = "+proj=stere +lat_ts=" + projInfo.naturalOriginLat + " +lat_O=90 +lon_O="
-					+ projInfo.naturalOriginLon + " +k_O=1.0 +x_O=0.0 +y_O=0.0";
 				projInfo.coordTransformCode = 15;
+				projInfo.poleLat = 90;
+				projInfo.scaleAtNaturalOrigin = 1;
+				projInfo.falseEasting = 0;
+				projInfo.falseNorthing = 0;
+				proj4String = projInfo.getProj4String();
 			}
 			// Equirectangular
 			else {
 				Console.getInstance().println("Found unprojected data ... projecting tie points with Equirectangular.");
-				projection = "+proj=eqc +lat_ts=" + projInfo.centerLat + " +lon_O=" + projInfo.centerLon
-					+ " +x_O=0.0 y_O=0.0";
 				projInfo.coordTransformCode = 17;
+				projInfo.falseEasting = 0;
+				projInfo.falseNorthing = 0;
+				proj4String = projInfo.getProj4String();
 			}
-			projection += " +a=" + projInfo.getSemiMajorAxis() + " +b=" + projInfo.getSemiMinorAxis() + " +no_defs";
+			if (proj4String == null)
+				throw new IllegalStateException("Unable to define projection.");
 
 			// Use the projection to create a tie point and scale
-			Proj4 projNew = Proj4.newInstance(projection);
+			Proj4 projNew = Proj4.newInstance(proj4String);
 			double[] xy = new double[3];
 			try {
-				xy[0] = bounds[0];
-				xy[1] = bounds[1];
+				xy[0] = Math.toRadians(bounds[0]);
+				xy[1] = Math.toRadians(bounds[1]);
 				projOld.transform(projNew, xy);
 				projInfo.tiePoint[0] = xy[0];
 				projInfo.tiePoint[1] = xy[1];
 				bounds[0] = xy[0];
 				bounds[1] = xy[1];
-				xy[0] = bounds[2];
-				xy[1] = bounds[3];
+				xy[0] = Math.toRadians(bounds[2]);
+				xy[1] = Math.toRadians(bounds[3]);
 				projOld.transform(projNew, xy);
 				bounds[2] = xy[0];
 				bounds[3] = xy[1];
@@ -105,6 +115,11 @@ public class Projection {
 				e.printStackTrace();
 			}
 			projInfo.projected = true;
+		}
+		else {
+			proj4String = projInfo.getProj4String();
+			if (proj4String == null)
+				throw new IllegalStateException("Unable to define projection.");
 		}
 
 		tiePoint = projInfo.tiePoint;
@@ -200,11 +215,7 @@ public class Projection {
 			pjUnprojected = Proj4.newInstance(projStr);
 		}
 		if (pjProjected == null) {
-			String projStr = projInfo.getProj4String();
-			if (projStr == null) {
-				throw new NullPointerException("Unable to define projection.");
-			}
-			pjProjected = Proj4.newInstance(projStr);
+			pjProjected = Proj4.newInstance(proj4String);
 		}
 		try {
 			vec.toArray(coord);
@@ -229,7 +240,7 @@ public class Projection {
 			pjUnprojected = Proj4.newInstance(projStr);
 		}
 		if (pjProjected == null) {
-			pjProjected = Proj4.newInstance(projInfo.getProj4String());
+			pjProjected = Proj4.newInstance(proj4String);
 		}
 		try {
 			vec.toArray(coord);

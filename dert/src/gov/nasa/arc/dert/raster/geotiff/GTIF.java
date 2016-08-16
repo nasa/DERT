@@ -398,10 +398,12 @@ public class GTIF extends RasterFileImpl {
 		sampleFormat = getTIFFFieldShort(TIFFTAG_SAMPLEFORMAT, true, (short) 0);
 		planarConfiguration = getTIFFFieldShort(TIFFTAG_PLANARCONFIG, true, (short) 0);
 
+		boolean missingUnknown = true;
 		missing = Float.NaN;
 		String str = getTIFFFieldString(GDAL_NODATA_TAG, false, null);
 		if (str != null) {
 			missing = Float.valueOf(str.trim());
+			missingUnknown = false;
 		}
 		short[] geoKeyDir = getTIFFFieldShort(GEO_KEY_DIRECTORY_TAG, true, null);
 		double[] geoKeyDouble = getTIFFFieldDouble(GEO_DOUBLE_PARAMS_TAG, false, null);
@@ -416,7 +418,7 @@ public class GTIF extends RasterFileImpl {
 		minimum = findMinimumSampleValue();
 		maximum = findMaximumSampleValue();
 
-		System.out.println("Initialized " + filePath);
+		System.out.println("Loaded tags from " + filePath);
 		System.out.println("Width = " + rasterWidth + ", Length = " + rasterLength + ", SamplesPerPixel = "
 			+ samplesPerPixel + ", Data Type = " + dataType);
 		if (isTiled) {
@@ -428,13 +430,14 @@ public class GTIF extends RasterFileImpl {
 		}
 		System.out
 			.println("Minimum Sample Value = " + (minimum == null ? "Unknown" : minimum[0])
-				+ ", Maximum Sample Value = " + (maximum == null ? "Unknown" : maximum[0]) + ", Missing Value = "
-				+ missing);
+				+ ", Maximum Sample Value = " + (maximum == null ? "Unknown" : maximum[0])
+				+ ", Missing Value = " + (missingUnknown ? "Unknown" : missing));
 		if (dataType == DataType.Unknown) {
 			System.err.println("Unknown data type.");
 			return (false);
 		}
 
+		System.out.println();
 		initialized = true;
 		return (true);
 	}
@@ -573,7 +576,6 @@ public class GTIF extends RasterFileImpl {
 			} else {
 				projInfo.globe = "Earth";
 			}
-			System.out.println("Could not determine globe from file metadata ... setting to " + projInfo.globe);
 		}
 		projInfo.gcsCitation = geogCitation;
 		projInfo.pcsCitation = citation;
