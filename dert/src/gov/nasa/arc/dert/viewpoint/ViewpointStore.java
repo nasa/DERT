@@ -22,6 +22,7 @@ public class ViewpointStore {
 	public double distance;
 	public double azimuth, elevation;
 	public int magIndex;
+	public boolean hikeMode;
 
 	public ViewpointStore() {
 		name = "";
@@ -36,6 +37,24 @@ public class ViewpointStore {
 		direction = new Vector3();
 		lookAt = new Vector3();
 		set(camera);
+	}
+	
+	public ViewpointStore(String name, ViewpointStore that) {
+		this.name = name;
+		this.location = new Vector3(that.location);
+		this.direction = new Vector3(that.direction);
+		this.lookAt = new Vector3(that.lookAt);
+		this.frustumLeft = that.frustumLeft;
+		this.frustumRight = that.frustumRight;
+		this.frustumBottom = that.frustumBottom;
+		this.frustumTop = that.frustumTop;
+		this.frustumNear = that.frustumNear;
+		this.frustumFar = that.frustumFar;
+		this.distance = that.distance;
+		this.azimuth = that.azimuth;
+		this.elevation = that.elevation;
+		this.magIndex = that.magIndex;
+		this.hikeMode = that.hikeMode;
 	}
 	
 	public static ViewpointStore fromHashMap(HashMap<String,Object> map) {
@@ -56,6 +75,7 @@ public class ViewpointStore {
 		store.azimuth = StateUtil.getDouble(map, "Azimuth", 0);
 		store.elevation = StateUtil.getDouble(map, "Elevation", 0);
 		store.magIndex = StateUtil.getInteger(map, "MagnificationIndex", 0);
+		store.hikeMode = StateUtil.getBoolean(map, "HikeMode", false);
 		return(store);
 	}
 	
@@ -63,6 +83,8 @@ public class ViewpointStore {
 		if (that == null)
 			return(false);
 		if (!this.name.equals(that.name)) 
+			return(false);
+		if (this.hikeMode != that.hikeMode) 
 			return(false);
 		if (this.frustumLeft != that.frustumLeft) 
 			return(false);
@@ -126,6 +148,7 @@ public class ViewpointStore {
 		map.put("Azimuth", new Double(azimuth));
 		map.put("Elevation", new Double(elevation));
 		map.put("MagnificationIndex", new Integer(magIndex));
+		map.put("HikeMode", new Boolean(hikeMode));
 		return(map);
 	}
 
@@ -145,6 +168,7 @@ public class ViewpointStore {
 			+ frustumTop + "\n";
 		str += "  Azimuth: " + Math.toDegrees(azimuth) + ", Elevation: " + Math.toDegrees(elevation) + "\n";
 		str += "  Scale: " + BasicCamera.magFactor[magIndex] + "\n";
+		str += "  Hiking: "+hikeMode;
 		return (str);
 	}
 

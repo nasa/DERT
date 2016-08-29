@@ -20,11 +20,14 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -60,6 +63,7 @@ public class ViewpointPanel extends JPanel {
 	private CoordTextField corField;
 	private ButtonAction prevAction;
 	private ButtonAction nextAction;
+	private JCheckBox hike;
 
 	// Fields
 	private Vector3 coord;
@@ -229,6 +233,28 @@ public class ViewpointPanel extends JPanel {
 		JPanel dataPanel = new JPanel();
 		BoxLayout boxLayout = new BoxLayout(dataPanel, BoxLayout.Y_AXIS);
 		dataPanel.setLayout(boxLayout);
+
+		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		tipText = "toggle hike mode";
+		label = new JLabel("On Foot", SwingConstants.RIGHT);
+		label.setToolTipText(tipText);
+		panel.add(label);
+		hike = new JCheckBox("");
+		hike.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				if (!controller.getViewpointNode().setHikeMode(hike.isSelected())) {
+					Toolkit.getDefaultToolkit().beep();
+					hike.setSelected(!hike.isSelected());
+				}
+				else {
+					controller.updateLookAt();
+				}
+			}
+		});
+		hike.setSelected(controller.getViewpointNode().isHikeMode());
+		panel.add(hike);
+		dataPanel.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		tipText = "location of viewpoint";

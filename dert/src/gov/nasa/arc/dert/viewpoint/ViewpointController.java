@@ -220,11 +220,15 @@ public class ViewpointController {
 			lastDy /= length;
 		} else {
 			amplitude = 0;
-			Spatial spat = doPick(centerX, centerY, pickPosition, pickNormal, false);
-			if (spat != null) {
-				viewpointNode.setLookAt(pickPosition);
-			}
+			updateLookAt();
 		}
+	}
+	
+	public void updateLookAt() {
+		Spatial spat = doPick(centerX, centerY, pickPosition, pickNormal, false);
+		if (spat != null) {
+			viewpointNode.setLookAt(pickPosition);
+		}		
 	}
 
 	/**
@@ -238,10 +242,7 @@ public class ViewpointController {
 				viewpointNode.drag(lastDx * delta, lastDy * delta);
 			} else {
 				amplitude = 0;
-				Spatial spat = doPick(centerX, centerY, pickPosition, pickNormal, false);
-				if (spat != null) {
-					viewpointNode.setLookAt(pickPosition);
-				}
+				updateLookAt();
 			}
 		}
 	}

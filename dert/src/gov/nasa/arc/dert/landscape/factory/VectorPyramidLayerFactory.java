@@ -22,7 +22,6 @@ import com.ardor3d.framework.DisplaySettings;
 import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.renderer.Camera;
-import com.ardor3d.renderer.Camera.ProjectionMode;
 import com.ardor3d.renderer.Renderer;
 
 /**
@@ -237,7 +236,7 @@ public class VectorPyramidLayerFactory extends PyramidLayerFactory {
 		try {
 			// setup the off screen renderer camera
 			Camera tCam = offscreenRenderer.getCamera();
-			tCam.setProjectionMode(ProjectionMode.Parallel);
+//			tCam.setProjectionMode(ProjectionMode.Parallel);
 			Vector3 camLocation = new Vector3(x, y, cameraZ);
 			tCam.setFrame(camLocation, Vector3.NEG_UNIT_X, Vector3.UNIT_Y, Vector3.NEG_UNIT_Z);
 			double right = (tileWidth * xScale) / 2 + xScale;

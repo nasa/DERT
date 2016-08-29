@@ -50,6 +50,7 @@ public class ViewpointNode
 	private Vector3 direction = new Vector3();
 	private Matrix3 rotate = new Matrix3();
 	private Vector3 location = new Vector3();
+	private Vector3 lookAt = new Vector3();
 	private Matrix3 workRot = new Matrix3();
 	private Vector3 workVec = new Vector3();
 	private Vector3 tmpVec = new Vector3();
@@ -71,7 +72,7 @@ public class ViewpointNode
 	private RasterText corText, dstText, magText, altText;
 	private double textSize = 14;
 	private CenterScale centerScale;
-	private boolean mapMode;
+	private boolean mapMode, hikeMode;
 	private ViewpointStore oldVP;
 
 	/**
@@ -144,9 +145,11 @@ public class ViewpointNode
 		}
 		// create rotation matrix from azimuth and elevation
 		rotate.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
-		elevation = Math.PI / 4;
-		workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
-		rotate.multiplyLocal(workRot);
+		if (!hikeMode) {
+			elevation = Math.PI / 4;
+			workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
+			rotate.multiplyLocal(workRot);
+		}
 		// start the location at (0,0,1) and rotate it
 		location.set(Vector3.UNIT_Z);
 		rotate.applyPost(location, location);
@@ -154,6 +157,13 @@ public class ViewpointNode
 		// move the location out by the distance from the map element and add the seek point
 		location.multiplyLocal(distance);
 		location.addLocal(seekPoint);
+		if (hikeMode) {
+			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
+			location.setZ(z+2);
+			elevation = Math.PI / 4;
+			workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
+			rotate.multiplyLocal(workRot);
+		}
 		// set the camera location and direction
 		camera.setFrame(location, rotate);
 		camera.setLookAt(seekPoint);
@@ -263,15 +273,22 @@ public class ViewpointNode
 	}
 
 	protected void translate(ReadOnlyVector3 trans) {
-		tmpVec.set(camera.getLookAt());
-		tmpVec.addLocal(trans);
-		if (!sceneBounds.contains(tmpVec)) {
-			return;
-		}
+		lookAt.set(camera.getLookAt());
+		lookAt.addLocal(trans);
 		location.set(camera.getLocation());
 		location.addLocal(trans);
-		camera.setLookAt(tmpVec);
+		if (hikeMode) {
+			if (!sceneBounds.contains(location))
+				return;
+			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
+			location.setZ(z+2);
+		}
+		else {
+			if (!sceneBounds.contains(lookAt))
+				return;
+		}
 		camera.setLocation(location);
+		camera.setLookAt(lookAt);
 		updateFromCamera();
 		updateCrosshair();
 		updateGeometricState(0);
@@ -326,9 +343,9 @@ public class ViewpointNode
 //		location.set(0.0, 0.0, 0.75 * sceneBounds.getRadius() / camera.tanFOV());
 		location.set(0.0, 0.0, sceneBounds.getRadius());
 		location.addLocal(sceneBounds.getCenter());
-		camera.setLookAt(sceneBounds.getCenter());
 		camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
 		camera.setFrame(location, rotate);
+		camera.setLookAt(sceneBounds.getCenter());
 		camera.setFrustum(sceneBounds);
 		updateFromCamera();
 		updateCrosshair();
@@ -345,10 +362,18 @@ public class ViewpointNode
 	 * @param dy
 	 */
 	public void drag(double dx, double dy) {
-		workVec.set(-dx, -dy, 0);
-		workRot.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
-		workRot.applyPost(workVec, workVec);
-		workVec.multiplyLocal(camera.getPixelSizeAt(camera.getLookAt(), true));
+		if (hikeMode) {
+			workVec.set(-dx, -dy, 0);
+			workRot.fromAngleNormalAxis(azimuth, Vector3.UNIT_Z);
+			workRot.applyPost(workVec, workVec);
+			workVec.multiplyLocal(camera.getPixelSizeAt(camera.getLocation(), true));
+		}
+		else {
+			workVec.set(-dx, -dy, 0);
+			workRot.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
+			workRot.applyPost(workVec, workVec);
+			workVec.multiplyLocal(camera.getPixelSizeAt(camera.getLookAt(), true));
+		}
 		translate(workVec);
 	}
 
@@ -385,6 +410,8 @@ public class ViewpointNode
 	 * @param dy
 	 */
 	public void translateInScreenPlane(double dx, double dy) {
+		if (hikeMode || mapMode)
+			return;
 		double s = camera.getPixelSizeAt(camera.getLookAt(), false) * 0.5;
 		workVec.set(dx * s, dy * s, 0);
 		rotate.applyPost(workVec, workVec);
@@ -416,6 +443,7 @@ public class ViewpointNode
 	public void setViewpoint(ViewpointStore vps, boolean strict, boolean vpSelected) {
 		viewpointSelected = vpSelected;
 		strictFrustum = strict;
+		hikeMode = vps.hikeMode;
 		azimuth = vps.azimuth;
 		elevation = vps.elevation+Math.PI/2;
 		camera.setMagnification(vps.magIndex);
@@ -430,6 +458,7 @@ public class ViewpointNode
 		updateGeometricState(0);
 		updateOverlay();
 		changed.set(true);
+		Dert.getMainWindow().setViewpointMode(hikeMode);
 	}
 	
 	/**
@@ -457,7 +486,10 @@ public class ViewpointNode
 	 * @return
 	 */
 	public ViewpointStore getViewpoint(String name) {
-		return (new ViewpointStore(name, camera));
+		if (mapMode)
+			return(new ViewpointStore(name, oldVP));
+		else
+			return (new ViewpointStore(name, camera));
 	}
 
 	/**
@@ -471,6 +503,7 @@ public class ViewpointNode
 			store = new ViewpointStore();
 		}
 		store.set(camera);
+		store.hikeMode = hikeMode;
 		return (store);
 	}
 
@@ -484,7 +517,10 @@ public class ViewpointNode
 		if (mapMode)
 			return;
 		setAzAndEl(azimuth + (zRotAngle * 0.5 * Math.PI / 360), elevation + (xRotAngle * 0.5 * Math.PI / 360));
-		rotateTurntable(camera.getDistanceToCoR());
+		if (hikeMode)
+			rotateCamera();
+		else
+			rotateTurntable(camera.getDistanceToCoR());
 		updateStatus();
 	}
 
@@ -514,6 +550,23 @@ public class ViewpointNode
 	}
 
 	/**
+	 * Rotate around the viewpoint location.
+	 */
+	private void rotateCamera() {
+		// create rotation matrix from azimuth and elevation
+		rotate.fromAngleNormalAxis(azimuth, Vector3.UNIT_Z);
+		workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
+		rotate.multiplyLocal(workRot);
+		// set the camera location and direction
+		camera.setFrame(camera.getLocation(), rotate);
+		// update this node
+		updateFromCamera();
+		updateGeometricState(0);
+		changed.set(true);
+		Dert.getMainWindow().updateCompass(azimuth);
+	}
+
+	/**
 	 * Change the location of the viewpoint while retaining the direction.
 	 * 
 	 * @param loc
@@ -522,7 +575,7 @@ public class ViewpointNode
 	public boolean changeLocation(ReadOnlyVector3 loc) {
 		if (!locInBounds(loc))
 			return(false);
-		Vector3 lookAt = new Vector3(camera.getDirection());
+		lookAt.set(camera.getDirection());
 		lookAt.scaleAddLocal(camera.getDistanceToCoR(), loc);
 		camera.setLocation(loc);
 		camera.setLookAt(lookAt);
@@ -533,7 +586,7 @@ public class ViewpointNode
 		return (true);
 	}
 	
-	private boolean locInBounds(ReadOnlyVector3 loc) {
+	public boolean locInBounds(ReadOnlyVector3 loc) {
 		if (loc.distance(sceneBounds.getCenter()) > sceneBounds.getRadius() * 4) {
 			return (false);
 		}
@@ -552,10 +605,9 @@ public class ViewpointNode
 	}
 
 	/**
-	 * Propagate changes to lookat, distance, and angles to camera.
+	 * Propagate camera direction changes to lookat, distance, and angles.
 	 * 
-	 * @param loc
-	 * @param lookAt
+	 * @param dir
 	 */
 	private void changeCamera(ReadOnlyVector3 dir) {
 		Vector3 angle = MathUtil.directionToAzEl(dir, null);
@@ -564,7 +616,7 @@ public class ViewpointNode
 		// We want the az angle to rotate around the -Z axis and
 		// the el angle to rotate around +X axis from the -Z axis.
 		setAzAndEl(-angle.getX(), angle.getY() + Math.PI / 2);
-		Vector3 lookAt = new Vector3(dir);
+		lookAt.set(dir);
 		lookAt.scaleAddLocal(camera.getDistanceToCoR(), camera.getLocation());
 		camera.setLookAt(lookAt);
 		rotateTurntable(camera.getDistanceToCoR());
@@ -582,13 +634,13 @@ public class ViewpointNode
 	 * @return
 	 */
 	public boolean changeDistance(double dist) {
-		Vector3 loc = new Vector3(camera.getDirection());
-		loc.negateLocal();
-		loc.scaleAddLocal(dist, camera.getLookAt());
-		if (!locInBounds(loc))
+		location.set(camera.getDirection());
+		location.negateLocal();
+		location.scaleAddLocal(dist, camera.getLookAt());
+		if (!locInBounds(location))
 			return(false);
 //		setTranslation(loc);
-		camera.setLocation(loc);
+		camera.setLocation(location);
 		updateFromCamera();
 		updateCrosshair();
 		updateGeometricState(0);
@@ -604,10 +656,12 @@ public class ViewpointNode
 	 */
 	public boolean changeAltitude(double alt) {
 		ReadOnlyVector3 trans = getWorldTranslation();
-		Landscape landscape = Landscape.getInstance();
-		Vector3 loc = new Vector3(trans);
-		loc.setZ(landscape.getZ(trans.getX(), trans.getY()) + alt);
-		return (changeLocation(loc));
+		double z = Landscape.getInstance().getZ(trans.getX(), trans.getY());
+		if (Double.isNaN(z))
+			return(false);
+		location.set(trans);
+		location.setZ(z + alt);
+		return (changeLocation(location));
 	}
 
 	/**
@@ -703,15 +757,16 @@ public class ViewpointNode
 		this.mapMode = mapMode;
 		if (mapMode) {
 			oldVP = getViewpoint(oldVP);
+			hikeMode = false;
 			camera.setProjectionMode(ProjectionMode.Parallel);
 			rotate.setIdentity();
 			azimuth = 0;
 			elevation = 0;
 			location.set(0.0, 0.0, sceneBounds.getRadius());
 			location.addLocal(sceneBounds.getCenter());
-			camera.setLookAt(sceneBounds.getCenter());
 			camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
 			camera.setFrame(location, rotate);
+			camera.setLookAt(sceneBounds.getCenter());
 			camera.setFrustum(sceneBounds);
 			updateFromCamera();
 			updateCrosshair();
@@ -726,7 +781,43 @@ public class ViewpointNode
 		changed.set(true);
 	}
 	
+	public boolean setHikeMode(boolean hikeMode) {
+		if (hikeMode) {
+			ReadOnlyVector3 trans = getWorldTranslation();
+			double z = Landscape.getInstance().getZ(trans.getX(), trans.getY());
+			if (Double.isNaN(z))
+				return(false);
+			this.hikeMode = hikeMode;
+			location.set(trans);
+			location.setZ(z + 2);
+			camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
+			if (mapMode) {
+				mapMode = false;
+				camera.setProjectionMode(ProjectionMode.Perspective);				
+				camera.setFrustum(sceneBounds);
+			}
+			rotate.setIdentity();
+			azimuth = 0;
+			elevation = Math.PI/2;
+			rotate(0, 0);
+			camera.setFrame(location, rotate);
+			updateFromCamera();
+			updateCrosshair();
+			updateGeometricState(0);
+			changed.set(true);			
+			updateStatus();
+		}
+		else
+			this.hikeMode = hikeMode;
+		Dert.getMainWindow().setViewpointMode(hikeMode);
+		return(true);
+	}
+	
 	public boolean isMapMode() {
 		return(mapMode);
+	}
+	
+	public boolean isHikeMode() {
+		return(hikeMode);
 	}
 }

@@ -569,6 +569,16 @@ public class MainWindow extends JFrame {
 			}
 		}
 	}
+	
+	/**
+	 * Update the viewpoint icon when changing to hike mode.
+	 */
+	public void setViewpointMode(boolean isHike) {
+		if (isHike)
+			viewpointAction.setIcon(Icons.getImageIcon("viewpointonfoot.png"));
+		else
+			viewpointAction.setIcon(Icons.getImageIcon("viewpoint.png"));
+	}
 
 	/**
 	 * Update the marble location field contents when the marble moves.

@@ -13,6 +13,7 @@ import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.renderer.Camera;
 import com.ardor3d.renderer.ContextManager;
 import com.ardor3d.renderer.Renderer;
+import com.ardor3d.renderer.Camera.ProjectionMode;
 import com.ardor3d.renderer.jogl.JoglContextCapabilities;
 import com.ardor3d.renderer.jogl.JoglRenderContext;
 import com.ardor3d.scenegraph.Spatial;
@@ -32,7 +33,7 @@ import com.jogamp.opengl.GLProfile;
 public class OffscreenRenderer {
 
 	// Orthographic camera used to render each image
-	private final Camera camera = new Camera(1, 1);
+	private Camera camera;
 
 	// Background color
 	private ColorRGBA backgroundColor = new ColorRGBA(1, 1, 1, 1);
@@ -68,7 +69,8 @@ public class OffscreenRenderer {
 		size = width * height * settings.getColorDepth() / 8;
 		System.out.println("Created " + width + "x" + height + " off screen renderer.");
 
-		camera.resize(width, height);
+		camera = new Camera(width, height);
+		camera.setProjectionMode(ProjectionMode.Parallel);
 		camera.setFrustum(1.0, 1000, -0.50, 0.50, 0.50, -0.50);
 		final Vector3 loc = new Vector3(0.0, 0.0, 0);
 		final Vector3 left = new Vector3(-1.0, 0.0, 0.0);
