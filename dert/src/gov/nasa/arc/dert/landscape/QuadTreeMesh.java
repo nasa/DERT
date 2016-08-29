@@ -1,6 +1,8 @@
 package gov.nasa.arc.dert.landscape;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.util.List;
 
 import com.ardor3d.image.Texture;
 import com.ardor3d.math.Vector3;
@@ -331,9 +333,8 @@ public class QuadTreeMesh extends Mesh {
 	 */
 	public void dispose() {
 		TextureState ts = (TextureState) getLocalRenderState(StateType.Texture);
-		if (ts == null) {
+		if (ts == null)
 			return;
-		}
 		int maxUnit = ts.getMaxTextureIndexUsed();
 		for (int i = 0; i < maxUnit; ++i) {
 			Texture texture = ts.getTexture(i);
@@ -343,9 +344,12 @@ public class QuadTreeMesh extends Mesh {
 					TextureManager.removeFromCache(tKey);
 					// System.err.println("QuadTreeFactory.removeTexture "+tKey);
 				}
+				List<ByteBuffer> data = texture.getImage().getData();
+				data.clear();
 			}
-
 		}
+		TileMeshData tmd = (TileMeshData)getMeshData();
+		tmd.dispose();
 	}
 
 	/**

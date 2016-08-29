@@ -245,7 +245,7 @@ public class RasterLayer extends Layer {
 	}
 
 	protected Image getTextureImage(String key) {
-		final QuadTreeTile t = getTile(key);
+		QuadTreeTile t = getTile(key);
 		if (t == null) {
 			return (null);
 		}

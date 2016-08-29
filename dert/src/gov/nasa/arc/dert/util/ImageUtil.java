@@ -35,6 +35,7 @@ import com.ardor3d.renderer.ContextManager;
 import com.ardor3d.renderer.Renderer;
 import com.ardor3d.renderer.state.TextureState;
 import com.ardor3d.util.TextureManager;
+import com.ardor3d.util.geom.BufferUtils;
 
 /**
  * Provides image conversion and other utility methods.
@@ -94,7 +95,8 @@ public class ImageUtil {
 		int pixelBytes = pixelSize / 8;
 		if (dataBuffer instanceof DataBufferInt) {
 			int[] buffer = ((DataBufferInt) dataBuffer).getData();
-			byteBuffer = ByteBuffer.allocateDirect(buffer.length * 4);
+			byteBuffer = BufferUtils.createByteBuffer(buffer.length * 4);
+//			byteBuffer = ByteBuffer.allocateDirect(buffer.length * 4);
 			IntBuffer intBuffer = byteBuffer.asIntBuffer();
 			intBuffer.put(buffer);
 			intBuffer.rewind();
@@ -107,7 +109,8 @@ public class ImageUtil {
 			type = PixelDataType.UnsignedByte;
 		} else if (dataBuffer instanceof DataBufferFloat) {
 			float[] buffer = ((DataBufferFloat) dataBuffer).getData();
-			byteBuffer = ByteBuffer.allocateDirect(buffer.length * 4);
+			byteBuffer = BufferUtils.createByteBuffer(buffer.length * 4);
+//			byteBuffer = ByteBuffer.allocateDirect(buffer.length * 4);
 			FloatBuffer floatBuffer = byteBuffer.asFloatBuffer();
 			floatBuffer.put(buffer);
 			if (flip) {
@@ -117,7 +120,8 @@ public class ImageUtil {
 			type = PixelDataType.Float;
 		} else if (dataBuffer instanceof DataBufferShort) {
 			short[] buffer = ((DataBufferShort) dataBuffer).getData();
-			byteBuffer = ByteBuffer.allocateDirect(buffer.length * 2);
+			byteBuffer = BufferUtils.createByteBuffer(buffer.length * 2);
+//			byteBuffer = ByteBuffer.allocateDirect(buffer.length * 2);
 			ShortBuffer shortBuffer = byteBuffer.asShortBuffer();
 			shortBuffer.put(buffer);
 			if (flip) {
@@ -127,7 +131,8 @@ public class ImageUtil {
 			type = PixelDataType.UnsignedShort;
 		} else if (dataBuffer instanceof DataBufferUShort) {
 			short[] buffer = ((DataBufferUShort) dataBuffer).getData();
-			byteBuffer = ByteBuffer.allocateDirect(buffer.length * 2);
+			byteBuffer = BufferUtils.createByteBuffer(buffer.length * 2);
+//			byteBuffer = ByteBuffer.allocateDirect(buffer.length * 2);
 			ShortBuffer shortBuffer = byteBuffer.asShortBuffer();
 			shortBuffer.put(buffer);
 			if (flip) {
@@ -139,7 +144,8 @@ public class ImageUtil {
 			byte[] buffer = ((DataBufferByte) dataBuffer).getData();
 			int bytesPerPixel = buffer.length / (width * height);
 			int scanWidth = width * bytesPerPixel;
-			byteBuffer = ByteBuffer.allocateDirect(buffer.length);
+			byteBuffer = BufferUtils.createByteBuffer(buffer.length);
+//			byteBuffer = ByteBuffer.allocateDirect(buffer.length);
 			byteBuffer.put(buffer);
 			if (flip) {
 				doFlip(byteBuffer, scanWidth, height);
@@ -256,7 +262,8 @@ public class ImageUtil {
 		case Unknown:
 			return (null);
 		}
-		byteBuffer = ByteBuffer.allocateDirect(raster.limit());
+		byteBuffer = BufferUtils.createByteBuffer(raster.limit());
+//		byteBuffer = ByteBuffer.allocateDirect(raster.limit());
 		byteBuffer.put(raster);
 		byteBuffer.rewind();
 		Image theImage = null;

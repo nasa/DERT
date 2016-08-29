@@ -689,10 +689,8 @@ public class QuadTree extends Node {
 	 * Dispose of any resources
 	 */
 	public void dispose() {
-		if (mesh == null) {
-			return;
-		}
-		mesh.dispose();
+		if (mesh != null)
+			mesh.dispose();
 	}
 
 	/**

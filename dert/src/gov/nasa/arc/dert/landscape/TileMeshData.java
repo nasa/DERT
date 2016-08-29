@@ -70,5 +70,19 @@ public class TileMeshData extends MeshData {
 			_interleaved.setNeedsRefresh(true);
 		}
 	}
+	
+	public void dispose() {
+		if (_vertexCoords != null)
+			_vertexCoords.setBuffer(null);
+		if (_normalCoords != null)
+			_normalCoords.setBuffer(null);
+		if (_colorCoords != null)
+			_colorCoords.setBuffer(null);
+		if (_indexBuffer != null)
+			_indexBuffer.setBuffer(null);
+		if (_textureCoords != null)
+			for (int i=0; i<_textureCoords.size(); ++i)
+				_textureCoords.get(i).setBuffer(null);
+	}	
 
 }
