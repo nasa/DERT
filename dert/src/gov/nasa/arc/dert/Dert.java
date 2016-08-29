@@ -130,19 +130,7 @@ public class Dert {
 		ColorMap.location = path;
 		ImageBoard.defaultImagePath = path + "html/images/defaultimage.png";
 		BasicScene.imagePath = path + SPLASH_SCREEN;
-		userPath = System.getProperty("user.home");
 		Proj4.setProjPath(path + "proj");
-
-		// Create the user's DERT_HOME directory if it doesn't exist.
-		File file = new File(userPath, DERT_HOME);
-		try {
-			if (!file.exists()) {
-				file.mkdirs();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		userPath = file.getAbsolutePath();
 
 		// Load default and session properties.
 		installDertProperties();
@@ -164,7 +152,7 @@ public class Dert {
 		}
 		if (!debug) {
 			try {
-				file = new File(file, LOG_NAME);
+				File file = new File(userPath, LOG_NAME);
 				String logFilename = file.getAbsolutePath();
 				PrintStream pStream = new PrintStream(new FileOutputStream(logFilename, true), true);
 				System.setErr(pStream);
@@ -252,8 +240,29 @@ public class Dert {
 			// Load properties from file with executable.
 			File file = new File(path, "dert.properties");
 			dertProperties.load(new FileInputStream(file));
-			// Add properties from user's dertstash directory.
-			file = new File(userPath, "properties");
+
+			// Create the user's DERT_HOME directory if it doesn't exist.
+			userPath = dertProperties.getProperty("StashPath", "$user.home");
+			if (userPath.startsWith("$"))
+				userPath = System.getProperty(userPath.substring(1));
+			if (userPath.endsWith(DERT_HOME))
+				userPath = userPath.substring(0, userPath.length()-(DERT_HOME.length()+1));
+			file = new File(userPath, DERT_HOME);
+			try {
+				if (!file.exists()) {
+					file.mkdirs();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			userPath = file.getAbsolutePath();
+			// Add preferences from user's dertstash directory.
+			file = new File(userPath, "prefs.properties");
+			if (file.exists()) {
+				dertProperties.load(new FileInputStream(file));
+			}
+			// Add recent configs from user's dertstash directory.
+			file = new File(userPath, "recents.properties");
 			if (file.exists()) {
 				dertProperties.load(new FileInputStream(file));
 			}
@@ -357,17 +366,22 @@ public class Dert {
 			}
 
 			SceneFramework.getInstance().stopFrameHandlerUpdate();
-			Properties properties = new Properties();
-			// Save session.
-			ConfigurationManager.getInstance().saveRecent(properties);
+			
 			// Save preferences.
+			Properties properties = new Properties();
 			Landmarks.saveDefaultsToProperties(properties);
 			Tools.saveDefaultsToProperties(properties);
 			LineSets.saveDefaultsToProperties(properties);
 
 			// Write file to dertstash.
-			File f = new File(userPath, "properties");
-			properties.store(new FileOutputStream(f), "Dert Properties");
+			File f = new File(userPath, "prefs.properties");
+			properties.store(new FileOutputStream(f), "DERT Preferences");
+			
+			// Save recents.
+			properties = new Properties();
+			ConfigurationManager.getInstance().saveRecent(properties);
+			f = new File(userPath, "recents.properties");
+			properties.store(new FileOutputStream(f), "DERT Recent Configurations");
 
 			// Close down UI.
 			mainWindow.dispose();

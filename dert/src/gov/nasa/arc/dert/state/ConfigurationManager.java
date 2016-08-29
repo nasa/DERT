@@ -156,7 +156,6 @@ public class ConfigurationManager {
 		file = new File(file, "config");
 		if (!file.exists())
 			file.mkdirs();
-		Console.getInstance().println("Saving configuration to "+dertConfig.label);
 		HashMap<String, Object> savedState = dertConfig.save();
 		try {
 			file = new File(file, dertConfig.label);
@@ -169,6 +168,7 @@ public class ConfigurationManager {
 			Console.getInstance().println("Error writing configuration.  See log.");
 			e.printStackTrace();
 		}
+		Console.getInstance().println("Saved configuration to "+dertConfig.label);
 	}
 
 
