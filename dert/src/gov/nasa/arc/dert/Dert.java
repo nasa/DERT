@@ -263,8 +263,7 @@ public class Dert {
 			World.defaultStereoFocalDistance = StringUtil.getDoubleValue(dertProperties, "Stereo.focalDistance", false, World.defaultStereoFocalDistance, false);
 			RasterText.setFont(StringUtil.getIntegerValue(dertProperties, "RasterText.Font", true, 18, false));
 			Lighting.loadProperties(dertProperties);
-			QuadTreeCache.MAX_CACHE_MEMORY = StringUtil.getLongValue(dertProperties, "QuadTree.MaxCacheSize", true,
-				QuadTreeCache.MAX_CACHE_MEMORY, false);
+			QuadTreeCache.MAX_CACHE_MEMORY = (long)(Runtime.getRuntime().maxMemory()*0.75);
 			DerivativeLayer.defaultColorMapName = dertProperties.getProperty("ColorMap.Default", "default0");
 			FieldLayer.defaultColorMapName = DerivativeLayer.defaultColorMapName;
 			QuadTree.CELL_SIZE = StringUtil.getIntegerValue(dertProperties, "MeshCellSize", true, QuadTree.CELL_SIZE,
