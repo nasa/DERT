@@ -69,7 +69,6 @@ public class GeoKey implements Comparable<GeoKey> {
 	public static final int Code_Angular_DMS = 9107;
 	public static final int Code_Angular_DMS_Hemisphere = 9108;
 
-	public static final int Code_ModelTypeUndefined = 0;
 	public static final int Code_ModelTypeProjected = 1;
 	public static final int Code_ModelTypeGeographic = 2;
 	public static final int Code_ModelTypeGeocentric = 3;
@@ -77,7 +76,6 @@ public class GeoKey implements Comparable<GeoKey> {
 	public static final int Code_RasterPixelIsArea = 1;
 	public static final int Code_RasterPixelIsPoint = 2;
 
-	public static final int Code_Linear_Undefined = 0;
 	public static final int Code_Linear_Meter = 9001;
 	public static final int Code_Linear_Foot = 9002;
 	public static final int Code_Linear_Foot_US_Survey = 9003;
@@ -127,6 +125,7 @@ public class GeoKey implements Comparable<GeoKey> {
 	public static final int Code_GCS_NAD_83 = 4269;
 	public static final int Code_Datum_WGS84 = 6326;
 	public static final int Code_UserDefined = 32767;
+	public static final int Code_Undefined = 0;
 
 	public static final int[] idCode = {
 		
@@ -180,18 +179,18 @@ public class GeoKey implements Comparable<GeoKey> {
 	public static final int angularUnitsCode[] = { Code_Angular_Radian, Code_Angular_Degree, Code_Angular_Arc_Minute,
 		Code_Angular_Arc_Second, Code_Angular_Grad, Code_Angular_Gon, Code_Angular_DMS, Code_Angular_DMS_Hemisphere };
 
-	public static final int modelTypeCode[] = { Code_ModelTypeUndefined, Code_ModelTypeProjected,
-		Code_ModelTypeGeographic, Code_ModelTypeGeocentric };
+	public static final int modelTypeCode[] = { Code_Undefined, Code_ModelTypeProjected,
+		Code_ModelTypeGeographic, Code_ModelTypeGeocentric, Code_UserDefined };
 
-	public static final int rasterTypeCode[] = { Code_RasterPixelIsArea, Code_RasterPixelIsPoint };
+	public static final int rasterTypeCode[] = { Code_Undefined, Code_RasterPixelIsArea, Code_RasterPixelIsPoint, Code_UserDefined };
 
-	public static final int linearUnitsCode[] = { Code_Linear_Undefined, Code_Linear_Meter, Code_Linear_Foot,
+	public static final int linearUnitsCode[] = { Code_Undefined, Code_Linear_Meter, Code_Linear_Foot,
 		Code_Linear_Foot_US_Survey, Code_Linear_Foot_Modified_American, Code_Linear_Foot_Clarke,
 		Code_Linear_Foot_Indian, Code_Linear_Link, Code_Linear_Link_Benoit, Code_Linear_Link_Sears,
 		Code_Linear_Chain_Benoit, Code_Linear_Chain_Sears, Code_Linear_Yard_Sears, Code_Linear_Yard_Indian,
-		Code_Linear_Fathom, Code_Linear_Mile_International_Nautical };
+		Code_Linear_Fathom, Code_Linear_Mile_International_Nautical, Code_UserDefined };
 
-	public static final int coordinateTransformCode[] = { Code_CT_TransverseMercator,
+	public static final int coordinateTransformCode[] = { Code_Undefined, Code_CT_TransverseMercator,
 		Code_CT_TransvMercator_Modified_Alaska, Code_CT_ObliqueMercator, Code_CT_ObliqueMercator_Laborde,
 		Code_CT_ObliqueMercator_Rosenmund, Code_CT_ObliqueMercator_Spherical, Code_CT_Mercator,
 		Code_CT_LambertConfConic_2SP, Code_CT_LambertConfConic_Helmert, Code_CT_LambertAzimEqualArea,
@@ -199,9 +198,9 @@ public class GeoKey implements Comparable<GeoKey> {
 		Code_CT_PolarStereographic, Code_CT_ObliqueStereographic, Code_CT_Equirectangular, Code_CT_CassiniSoldner,
 		Code_CT_Gnomonic, Code_CT_MillerCylindrical, Code_CT_Orthographic, Code_CT_Polyconic, Code_CT_Robinson,
 		Code_CT_Sinusoidal, Code_CT_VanDerGrinten, Code_CT_NewZealandMapGrid, Code_CT_TransvMercator_SouthOriented,
-		Code_CT_CylindricalEqualArea };
+		Code_CT_CylindricalEqualArea, Code_UserDefined };
 
-	public static final int geographicTypeCode[] = { Code_GCS_WGS_84, Code_GCS_NAD_83, Code_UserDefined };
+	public static final int geographicTypeCode[] = { Code_Undefined, Code_GCS_WGS_84, Code_GCS_NAD_83, Code_UserDefined };
 
 	public int keyCode;
 	public int count;
@@ -320,6 +319,9 @@ public class GeoKey implements Comparable<GeoKey> {
 		} else if (key == KeyID.ProjCoordTrans) {
 			for (int i = 0; i < coordinateTransformCode.length; ++i) {
 				if (valueCode == coordinateTransformCode[i]) {
+					if (valueCode == Code_UserDefined) {
+						
+					}
 					return (new Integer(valueCode));
 				}
 			}
@@ -369,6 +371,18 @@ public class GeoKey implements Comparable<GeoKey> {
 		short[] keys = geoKeyDirectory;
 		double[] doubleParams = geoKeyDouble;
 		String asciiParams = geoKeyAscii;
+		
+//		System.err.println();
+//		System.err.println("GeoKey.mapKeys geoKeyDirectory");
+//		for (int i=0; i<geoKeyDirectory.length; ++i)
+//			System.err.println(i+" "+(int)(geoKeyDirectory[i] & 0xffff));
+//		System.err.println("GeoKey.mapKeys geoKeyDouble");
+//		for (int i=0; i<geoKeyDouble.length; ++i)
+//			System.err.println(i+" "+geoKeyDouble[i]);
+//		System.err.println("GeoKey.mapKeys geoKeyAscii");
+//		System.err.println(geoKeyAscii);
+//		System.err.println();
+		
 		HashMap<KeyID, Object> map = new HashMap<KeyID, Object>();
 		if (keys == null) {
 			return (map);

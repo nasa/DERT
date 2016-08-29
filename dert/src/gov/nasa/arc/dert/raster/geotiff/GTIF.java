@@ -43,6 +43,7 @@ public class GTIF extends RasterFileImpl {
 
 	public static final int PHOTOMETRIC_RGB = 2;
 
+	public static final int GDAL_METADATA_TAG = 42112;
 	public static final int GDAL_NODATA_TAG = 42113;
 	public static final int GEO_KEY_DIRECTORY_TAG = 34735;
 	public static final int GEO_DOUBLE_PARAMS_TAG = 34736;
@@ -405,6 +406,10 @@ public class GTIF extends RasterFileImpl {
 			missing = Float.valueOf(str.trim());
 			missingUnknown = false;
 		}
+		str = getTIFFFieldString(GDAL_METADATA_TAG, false, null);
+		if (str != null)
+			System.out.println(str);
+		
 		short[] geoKeyDir = getTIFFFieldShort(GEO_KEY_DIRECTORY_TAG, true, null);
 		double[] geoKeyDouble = getTIFFFieldDouble(GEO_DOUBLE_PARAMS_TAG, false, null);
 		String geoKeyString = getTIFFFieldString(GEO_ASCII_PARAMS_TAG, false, null);
@@ -482,6 +487,8 @@ public class GTIF extends RasterFileImpl {
 
 		// Coordinate Transform
 		Integer mt = (Integer)geoKeyMap.get(KeyID.ModelType);
+		if (mt == null)
+			throw new IllegalArgumentException("Model type not supported.");
 		if (mt == GeoKey.Code_ModelTypeGeocentric) {
 			throw new UnsupportedOperationException("ModelType Geocentric is not supported.");
 		}
@@ -562,6 +569,12 @@ public class GTIF extends RasterFileImpl {
 		} else if (citation.toLowerCase().contains("wgs84") || geogCitation.toLowerCase().contains("wgs84")) {
 			projInfo.globe = "Earth";
 		} else if (citation.toLowerCase().contains("wgs 84") || geogCitation.toLowerCase().contains("wgs 84")) {
+			projInfo.globe = "Earth";
+		} else if (citation.toLowerCase().contains("wgs 1984") || geogCitation.toLowerCase().contains("wgs 1984")) {
+			projInfo.globe = "Earth";
+		} else if (citation.toLowerCase().contains("wgs_84") || geogCitation.toLowerCase().contains("wgs_84")) {
+			projInfo.globe = "Earth";
+		} else if (citation.toLowerCase().contains("wgs_1984") || geogCitation.toLowerCase().contains("wgs_1984")) {
 			projInfo.globe = "Earth";
 		} else if (citation.toLowerCase().contains("nad83") || geogCitation.toLowerCase().contains("nad83")) {
 			projInfo.globe = "Earth";
