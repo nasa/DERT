@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.raster;
 
 import gov.nasa.arc.dert.landscape.factory.LayerFactory;
+import gov.nasa.arc.dert.raster.geotiff.GeoKey;
 import gov.nasa.arc.dert.util.StringUtil;
 
 import java.util.Properties;
@@ -22,43 +23,13 @@ public class ProjectionInfo {
 	public static final double SEMI_MINOR_AXIS[] = { 6356800, 3376200, 1735970, 2439700, 6051800, 66854000, 54364000,
 		24973000, 24341000, 1186000, 603000, 106500, 2576000, 252100, 2634100, 1560800, 1821600, 11266.7, 6200 };
 
-	// Projection codes
-	public static final int Code_CT_TransverseMercator = 1;
-	public static final int Code_CT_TransvMercator_Modified_Alaska = 2;
-	public static final int Code_CT_ObliqueMercator = 3;
-	public static final int Code_CT_ObliqueMercator_Laborde = 4;
-	public static final int Code_CT_ObliqueMercator_Rosenmund = 5;
-	public static final int Code_CT_ObliqueMercator_Spherical = 6;
-	public static final int Code_CT_Mercator = 7;
-	public static final int Code_CT_LambertConfConic_2SP = 8;
-	public static final int Code_CT_LambertConfConic_Helmert = 9;
-	public static final int Code_CT_LambertAzimEqualArea = 10;
-	public static final int Code_CT_AlbersEqualArea = 11;
-	public static final int Code_CT_AzimuthalEquidistant = 12;
-	public static final int Code_CT_EquidistantConic = 13;
-	public static final int Code_CT_Stereographic = 14;
-	public static final int Code_CT_PolarStereographic = 15;
-	public static final int Code_CT_ObliqueStereographic = 16;
-	public static final int Code_CT_Equirectangular = 17;
-	public static final int Code_CT_CassiniSoldner = 18;
-	public static final int Code_CT_Gnomonic = 19;
-	public static final int Code_CT_MillerCylindrical = 20;
-	public static final int Code_CT_Orthographic = 21;
-	public static final int Code_CT_Polyconic = 22;
-	public static final int Code_CT_Robinson = 23;
-	public static final int Code_CT_Sinusoidal = 24;
-	public static final int Code_CT_VanDerGrinten = 25;
-	public static final int Code_CT_NewZealandMapGrid = 26;
-	public static final int Code_CT_TransvMercator_SouthOriented = 27;
-	public static final int Code_CT_CylindricalEqualArea = 28;
-
 	// Projection names
 	public static String[] coordTransformName = { "none", "TransverseMercator", "TransvMercatorModified_Alaska",
 		"ObliqueMercator", "ObliqueMercatorLaborde", "ObliqueMercatorRosenmund", "ObliqueMercatorSpherical",
 		"Mercator", "LambertConfConic2SP", "LambertConfConicHelmert", "LambertAzimEqualArea", "AlbersEqualArea",
 		"AzimuthalEquidistant", "EquidistantConic", "Stereographic", "PolarStereographic", "ObliqueStereographic",
 		"Equirectangular", "CassiniSoldner", "Gnomonic", "MillerCylindrical", "Orthographic", "Polyconic", "Robinson",
-		"Sinusoidal", "VanDerGrinten", "NewZealandMapGrid", "TransvMercatorSouthOriented", "CylindricalEqualArea" };
+		"Sinusoidal", "VanDerGrinten", "NewZealandMapGrid", "TransvMercatorSouthOriented", "CylindricalEqualArea"};
 
 	// This raster is projected
 	public boolean projected;
@@ -120,8 +91,8 @@ public class ProjectionInfo {
 	 */
 	public static ProjectionInfo createDefault(int rasterWidth, int rasterLength, double pixelScale) {
 		ProjectionInfo projInfo = new ProjectionInfo();
-		projInfo.projCode = Code_CT_Orthographic;
-		projInfo.coordTransformCode = Code_CT_Orthographic;
+		projInfo.projCode = GeoKey.Code_CT_Orthographic;
+		projInfo.coordTransformCode = GeoKey.Code_CT_Orthographic;
 		projInfo.tiePoint = new double[] { -pixelScale * rasterWidth / 2, pixelScale * rasterLength / 2, 0 };
 		projInfo.scale = new double[] { pixelScale, pixelScale, 1 };
 		projInfo.centerLat = 0;
@@ -276,6 +247,28 @@ public class ProjectionInfo {
 		pcsCitation = StringUtil.getStringValue(properties, "ProjectionInfo.PCSCitation", null, false);
 
 		projLinearUnits = StringUtil.getStringValue(properties, "ProjectionInfo.ProjLinearUnits", "meter", false);
+		
+		// Hack for Web Mercator confusion
+		if (coordTransformCode == GeoKey.Code_Undefined) {
+			String citation = (pcsCitation == null ? "" : pcsCitation.toLowerCase());
+			if (citation.contains("mercator") && (citation.contains("web") || citation.contains("pseudo") || citation.contains("global"))) {
+				coordTransformCode = GeoKey.Code_CT_Mercator;
+				if (Double.isNaN(naturalOriginLon))
+					naturalOriginLon = 0;
+				if (Double.isNaN(falseEasting))
+					falseEasting = 0;
+				if (Double.isNaN(falseNorthing))
+					falseNorthing = 0;
+				if (citation.contains("auxiliary") && citation.contains("sphere")) {
+					if (!Double.isNaN(semiMajorAxis))
+						semiMinorAxis = semiMajorAxis;
+					else {
+						semiMajorAxis = SEMI_MAJOR_AXIS[0];
+						semiMinorAxis = SEMI_MINOR_AXIS[0];
+					}
+				}					
+			}
+		}
 	}
 
 	/**
@@ -512,98 +505,103 @@ public class ProjectionInfo {
 		String proj = null;
 		if (coordTransformCode != 0) {
 			switch (coordTransformCode) {
-			case Code_CT_AlbersEqualArea:
+			case GeoKey.Code_CT_AlbersEqualArea:
 				proj = "+proj=aea" + " +lat_1=" + stdParallel1 + " +lat_2=" + stdParallel2 + " +lat_0="
 					+ naturalOriginLat + " +lon_0=" + naturalOriginLon + " +x_0=" + falseEasting + " +y_0="
 					+ falseNorthing;
 				break;
-			case Code_CT_AzimuthalEquidistant:
+			case GeoKey.Code_CT_AzimuthalEquidistant:
 				proj = "+proj=aeqd" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
 					+ " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_CassiniSoldner:
+			case GeoKey.Code_CT_CassiniSoldner:
 				proj = "+proj=cass" + " +lat_0=" + naturalOriginLat + " +lon_0=" + naturalOriginLon + " +x_0="
 					+ falseEasting + " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_CylindricalEqualArea:
+			case GeoKey.Code_CT_CylindricalEqualArea:
 				proj = "+proj=cea" + " +lon_0=" + naturalOriginLon + " +lat_ts=" + stdParallel1 + " +x_0="
 					+ falseEasting + " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_EquidistantConic:
+			case GeoKey.Code_CT_EquidistantConic:
 				proj = "+proj=eqdc" + " +lat_1=" + stdParallel1 + " +lat_2=" + stdParallel2 + " +lat_0="
 					+ naturalOriginLat + " +lon_0=" + naturalOriginLon + " +x_0=" + falseEasting + " +y_0="
 					+ falseNorthing;
 				break;
-			case Code_CT_Equirectangular:
+			case GeoKey.Code_CT_Equirectangular:
 				proj = "+proj=eqc" + " +lat_0=0 +lat_ts=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
 					+ " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_TransverseMercator:
+			case GeoKey.Code_CT_TransverseMercator:
 				proj = "+proj=tmerc" + " +lat_0=" + naturalOriginLat + " +lon_0=" + naturalOriginLon + " +k="
 					+ scaleAtNaturalOrigin + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_Gnomonic:
+			case GeoKey.Code_CT_Gnomonic:
 				proj = "+proj=gnom" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
 					+ " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_ObliqueMercator:
+			case GeoKey.Code_CT_ObliqueMercator:
 				proj = "+proj=omerc" + " +lat_0=" + centerLat + " +lonc=" + centerLon + " +alpha=" + azimuth + " +k_0="
 					+ scaleAtCenter + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_LambertAzimEqualArea:
+			case GeoKey.Code_CT_LambertAzimEqualArea:
 				proj = "+proj=laea" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
 					+ " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_LambertConfConic_Helmert:
+			case GeoKey.Code_CT_LambertConfConic_Helmert:
 				proj = "+proj=lcc" + " +lat_0=" + naturalOriginLat + " +lon_0=" + naturalOriginLon + " +k="
 					+ scaleAtNaturalOrigin + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_LambertConfConic_2SP:
+			case GeoKey.Code_CT_LambertConfConic_2SP:
 				proj = "+proj=lcc" + " +lat_1=" + stdParallel1 + " +lat_2=" + stdParallel2 + " +lat_0="
 					+ falseOriginLat + " +lon_0=" + falseOriginLon + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_Mercator:
-				proj = "+proj=merc" + " +lon_0=" + naturalOriginLon + " +k_0=" + scaleAtNaturalOrigin + " +x_0="
-					+ falseEasting + " +y_0=" + falseNorthing;
+			case GeoKey.Code_CT_Mercator:
+				proj = "+proj=merc" + " +lon_0=" + naturalOriginLon + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
+				if (!Double.isNaN(stdParallel1))
+					proj += " +lat_ts="+stdParallel1;
+				else if (!Double.isNaN(scaleAtNaturalOrigin))
+					proj += " +k_0=" + scaleAtNaturalOrigin;
+				else
+					proj += " +lat_ts=0.0";					
 				break;
-			case Code_CT_MillerCylindrical:
+			case GeoKey.Code_CT_MillerCylindrical:
 				proj = "+proj=mill" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
 					+ " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_NewZealandMapGrid:
+			case GeoKey.Code_CT_NewZealandMapGrid:
 				proj = "+proj=nzmg" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
 					+ " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_ObliqueStereographic:
+			case GeoKey.Code_CT_ObliqueStereographic:
 				proj = "+proj=sterea" + " +lat_0=" + naturalOriginLat + " +lon_0=" + naturalOriginLon + " +k="
 					+ scaleAtNaturalOrigin + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_Orthographic:
+			case GeoKey.Code_CT_Orthographic:
 				proj = "+proj=ortho" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
 					+ " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_PolarStereographic:
+			case GeoKey.Code_CT_PolarStereographic:
 				proj = "+proj=stere" + " +lat_ts=" + naturalOriginLat + " +lat_0="+poleLat + " +lon_0=" + naturalOriginLon
 					+ " +k_0=" + scaleAtNaturalOrigin + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_Polyconic:
+			case GeoKey.Code_CT_Polyconic:
 				proj = "+proj=stere" + " +lat_0=" + naturalOriginLat + " +lon_0=" + naturalOriginLon + " +x_0="
 					+ falseEasting + " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_Robinson:
+			case GeoKey.Code_CT_Robinson:
 				proj = "+proj=stere" + " +lon_0=" + centerLon + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_Sinusoidal:
+			case GeoKey.Code_CT_Sinusoidal:
 				proj = "+proj=sinu" + " +lon_0=" + centerLon + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
 				break;
-			case Code_CT_VanDerGrinten:
+			case GeoKey.Code_CT_VanDerGrinten:
 				proj = "+proj=vandg" + " +lon_0=" + centerLon + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
 				break;
 			}
 			if (proj != null)
-				proj += " +a=" + semiMajorAxis+" +b=" + semiMinorAxis+" +no_defs";
+				proj += " +a=" + getSemiMajorAxis()+" +b=" + getSemiMinorAxis()+" +no_defs";
 		}
-		if ((proj == null) && (pcsCode > 0)) {
+		if ((proj == null) && (pcsCode != GeoKey.Code_Undefined) && (pcsCode != GeoKey.Code_UserDefined)) {
 			proj = "+init=epsg:" + pcsCode;
 		}
 		return (proj);

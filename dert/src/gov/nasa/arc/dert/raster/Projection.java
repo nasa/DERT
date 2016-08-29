@@ -126,6 +126,7 @@ public class Projection {
 		scale = projInfo.scale;
 		physicalWidth = projInfo.rasterWidth * scale[0];
 		physicalLength = projInfo.rasterLength * scale[1];
+		Console.getInstance().println("Projection: "+proj4String);
 	}
 
 	/**
