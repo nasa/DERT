@@ -178,7 +178,7 @@ public class Landscape extends Node implements ViewDependent {
 		ScaleBar.defaultCellSize = Grid.defaultCellSize/10;
 		ScaleBar.defaultRadius = ScaleBar.defaultCellSize*0.1;
 		Console.getInstance().println(
-			"Landscape size: East/West range = " + String.format(stringFormat, worldWidth) + ", North/South range = " + String.format(stringFormat, worldLength) + " "
+			"Landscape size: East/West range = " + String.format(stringFormat, worldWidth/pixelScale) + ", North/South range = " + String.format(stringFormat, worldLength/pixelScale) + " "
 				+ ", Elevation range = " + String.format(stringFormat, (baseLayer.getMaximumValue()[0] - minZ)) + "\n");
 
 	}

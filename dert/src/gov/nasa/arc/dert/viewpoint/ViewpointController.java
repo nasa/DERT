@@ -39,9 +39,6 @@ public class ViewpointController {
 	// Index of current viewpoint in list
 	private int viewpointIndex;
 
-	// Center of the window
-	private int centerX, centerY;
-
 	// Viewpoint list
 	private Vector<ViewpointStore> viewpointList;
 
@@ -180,7 +177,7 @@ public class ViewpointController {
 			viewpointNode.magnify(-mouseScrollDirection * delta);
 		} else {
 			viewpointNode.dolly(mouseScrollDirection * 2 * delta);
-			Spatial spat = doPick(centerX, centerY, pickPosition, pickNormal, false);
+			Spatial spat = doPick(viewpointNode.getCenterX(), viewpointNode.getCenterY(), pickPosition, pickNormal, false);
 			if (spat != null) {
 				viewpointNode.setLookAt(pickPosition);
 			}
@@ -225,7 +222,7 @@ public class ViewpointController {
 	}
 	
 	public void updateLookAt() {
-		Spatial spat = doPick(centerX, centerY, pickPosition, pickNormal, false);
+		Spatial spat = doPick(viewpointNode.getCenterX(), viewpointNode.getCenterY(), pickPosition, pickNormal, false);
 		if (spat != null) {
 			viewpointNode.setLookAt(pickPosition);
 		}		
@@ -602,19 +599,5 @@ public class ViewpointController {
 		camera.setFrustum(viewpointNode.getSceneBounds());
 
 		return (new ViewpointStore(name, camera));
-	}
-
-	/**
-	 * The worldview window was resized
-	 * 
-	 * @param width
-	 * @param height
-	 */
-	public void resize(int width, int height) {
-		centerX = width / 2;
-		centerY = height / 2;
-		if (viewpointNode != null) {
-			viewpointNode.resize(width, height);
-		}
 	}
 }

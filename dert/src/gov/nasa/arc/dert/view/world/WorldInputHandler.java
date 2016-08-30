@@ -127,10 +127,10 @@ public class WorldInputHandler implements InputHandler {
 			this.path.complete();
 		this.path = path;
 		if ((path == null) && (tape == null)) {
-			Dert.getWorldView().getScenePanel().getCanvas().setCursor(null);
+			canvasPanel.getCanvas().setCursor(null);
 		} else if (path != null) {
 			Console.getInstance().println("Single-click to add a point to "+path.getName()+". Select \"Path Complete\" from context menu when finished.");
-			Dert.getWorldView().getScenePanel().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+			canvasPanel.getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		}
 	}
 
@@ -142,9 +142,9 @@ public class WorldInputHandler implements InputHandler {
 	public void setTapeMeasure(TapeMeasure tape) {
 		this.tape = tape;
 		if ((path == null) && (tape == null)) {
-			Dert.getWorldView().getScenePanel().getCanvas().setCursor(null);
+			canvasPanel.getCanvas().setCursor(null);
 		} else {
-			Dert.getWorldView().getScenePanel().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+			canvasPanel.getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		}
 	}
 
@@ -236,7 +236,7 @@ public class WorldInputHandler implements InputHandler {
 						lastStrictZ = movable.isStrictZ();
 						((Spatial) movable).getSceneHints().setAllPickingHints(false);
 						movable.setInMotion(true, pickPosition);
-						Dert.getWorldView().getScenePanel().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));	
+						canvasPanel.getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));	
 					}
 				}
 			}
@@ -259,7 +259,7 @@ public class WorldInputHandler implements InputHandler {
 					movable.setInMotion(false, null);
 					Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(movable, lastPosition, lastStrictZ));
 					movable = null;
-					Dert.getWorldView().getScenePanel().getCanvas().setCursor(null);
+					canvasPanel.getCanvas().setCursor(null);
 				}
 			}
 		}

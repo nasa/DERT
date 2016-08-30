@@ -41,12 +41,6 @@ public class WorldScenePanel extends SceneCanvasPanel {
 		worldScene = (WorldScene) scene;
 		controller = new ViewpointController();
 		inputHandler = new WorldInputHandler(controller, this);
-	}
-
-	private void addInputManager() {
-		if (inputManager != null) {
-			return;
-		}
 		inputManager = new InputManager(canvas, inputHandler);
 	}
 
@@ -61,13 +55,9 @@ public class WorldScenePanel extends SceneCanvasPanel {
 		WorldState wState = (WorldState) state;
 		worldScene.setState(wState);
 		canvasRenderer.setCamera(worldScene.getCamera());
-		addInputManager();
 		controller.setViewpointNode(worldScene.getViewpointNode());
 		Dimension size = canvas.getSize();
-		if (inputManager != null) {
-			inputManager.resize(size.width, size.height);
-		}
-		controller.resize(size.width, size.height);
+		inputManager.resize(size.width, size.height);
 		worldScene.resize(size.width, size.height);
 		worldScene.spatialDirty(null, DirtyType.RenderState);
 		if (wState.currentViewpoint != null) {

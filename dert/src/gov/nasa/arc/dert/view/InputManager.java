@@ -15,6 +15,9 @@ import java.awt.event.MouseWheelListener;
 
 import javax.swing.Timer;
 
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLEventListener;
+
 /**
  * Manages input events on the SceneCanvas and redirects them to an
  * InputHandler.
@@ -30,6 +33,30 @@ public class InputManager {
 
 	public InputManager(final SceneCanvas canvas, InputHandler hndler) {
 		handler = hndler;
+
+		// add the GLEventListener to the SceneCanvas
+		canvas.addGLEventListener(new GLEventListener() {
+
+			@Override
+			public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
+				resize(width, height);
+			}
+
+			@Override
+			public void init(GLAutoDrawable glautodrawable) {
+				// nothing here
+			}
+
+			@Override
+			public void dispose(GLAutoDrawable glautodrawable) {
+				// nothing here
+			}
+
+			@Override
+			public void display(GLAutoDrawable glautodrawable) {
+				// nothing here
+			}
+		});
 
 		canvas.addMouseListener(new MouseListener() {
 			@Override

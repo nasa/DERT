@@ -330,22 +330,29 @@ public class ViewpointNode
 		centerScale.updateGeometricState(0);
 		changed.set(true);
 	}
+	
+	public int getCenterX() {
+		return(camera.getWidth()/2);
+	}
+	
+	public int getCenterY() {
+		return(camera.getHeight()/2);
+	}
 
 	/**
 	 * Reset the viewpoint to the overhead position
 	 */
 	public void reset() {
-		World.getInstance().getRoot().updateWorldBound(true);
 		setSceneBounds();
 		rotate.setIdentity();
 		azimuth = 0;
 		elevation = 0;
-//		location.set(0.0, 0.0, 0.75 * sceneBounds.getRadius() / camera.tanFOV());
+		lookAt.set(Landscape.getInstance().getCenter());
 		location.set(0.0, 0.0, sceneBounds.getRadius());
-		location.addLocal(sceneBounds.getCenter());
+		location.addLocal(lookAt);
 		camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
 		camera.setFrame(location, rotate);
-		camera.setLookAt(sceneBounds.getCenter());
+		camera.setLookAt(lookAt);
 		camera.setFrustum(sceneBounds);
 		updateFromCamera();
 		updateCrosshair();
