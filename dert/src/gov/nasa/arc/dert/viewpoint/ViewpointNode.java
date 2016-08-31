@@ -218,7 +218,10 @@ public class ViewpointNode
 	}
 	
 	private void updateOverlay() {
-		tmpVec.set(camera.getLookAt());
+		if (hikeMode)
+			tmpVec.set(camera.getLocation());
+		else
+			tmpVec.set(camera.getLookAt());
 		Landscape.getInstance().localToWorldCoordinate(tmpVec);
 		String str = null;
 		if (World.getInstance().getUseLonLat()) {
@@ -231,7 +234,9 @@ public class ViewpointNode
 		tmpVec.set(camera.getLocation());
 		Landscape.getInstance().localToWorldCoordinate(tmpVec);
 		altText.setText(String.format("Alt: "+Landscape.stringFormat, tmpVec.getZ()));
-		double dist = camera.getDistanceToCoR();
+		double dist = 0;
+		if (!hikeMode)
+			dist = camera.getDistanceToCoR();
 		str = String.format("CoR Dist: "+Landscape.stringFormat, dist);
 		dstText.setText(str);
 		double mag = camera.getMagnification();
@@ -511,6 +516,10 @@ public class ViewpointNode
 		}
 		store.set(camera);
 		store.hikeMode = hikeMode;
+		if (hikeMode) {
+			store.distance = 0;
+			store.lookAt.set(camera.getLocation());
+		}
 		return (store);
 	}
 
@@ -816,6 +825,7 @@ public class ViewpointNode
 		}
 		else
 			this.hikeMode = hikeMode;
+		camera.setOnFoot(hikeMode);
 		Dert.getMainWindow().setViewpointMode(hikeMode);
 		return(true);
 	}

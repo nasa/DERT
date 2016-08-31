@@ -578,6 +578,8 @@ public class MainWindow extends JFrame {
 			viewpointAction.setIcon(Icons.getImageIcon("viewpointonfoot.png"));
 		else
 			viewpointAction.setIcon(Icons.getImageIcon("viewpoint.png"));
+		zoomAction.enableZoom(isHike);
+		zoomAction.setEnabled(!isHike);
 	}
 
 	/**

@@ -45,6 +45,7 @@ public class BasicCamera extends Camera {
 	private Vector3 lookAt = new Vector3(0, 0, -10);
 	private int[] viewport = new int[4];
 	private double fovX;
+	private boolean onFoot;
 	private final DoubleBuffer _matrixBuffer = BufferUtils.createDoubleBuffer(16);
 
 	/**
@@ -560,6 +561,14 @@ public class BasicCamera extends Camera {
 			nearPlane = distance - r + 0.00001;
 			farPlane = nearPlane + 3 * r;
 		}
+		if (onFoot) {
+			if (nearPlane > 1)
+				nearPlane = 1;
+		}
+	}
+	
+	public void setOnFoot(boolean onFoot) {
+		this.onFoot = onFoot;
 	}
 
 	/**
