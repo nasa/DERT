@@ -20,8 +20,8 @@ public class ColorBar extends JPanel implements ColorMapListener {
 
 	// The palette of colors
 	private Palette palette;
-
-	// A pop-up dialog to change the range of the color map
+	
+	// Dialog for editing the color map
 	private ColorMapDialog dialog;
 
 	// The color map
@@ -43,11 +43,11 @@ public class ColorBar extends JPanel implements ColorMapListener {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				if (dialog == null) {
-					double range = colorMap.getBaseMaximum() - colorMap.getBaseMinimum();
-					dialog = new ColorMapDialog(null, "Color Map Settings", colorMap.getMinimum() - 10 * range,
-						colorMap.getMaximum() + 10 * range, colorMap);
-				}
+				if ((dialog != null) && dialog.isVisible())
+					return;
+				double range = colorMap.getBaseMaximum() - colorMap.getBaseMinimum();
+				dialog = new ColorMapDialog(null, "Color Map Settings", colorMap.getMinimum() - 10 * range,
+					colorMap.getMaximum() + 10 * range, colorMap);
 				dialog.open();
 				dialog.setRange(colorMap.getMinimum(), colorMap.getMaximum());
 			}
@@ -76,7 +76,7 @@ public class ColorBar extends JPanel implements ColorMapListener {
 		palette.build(colorMap);
 		palette.repaint();
 		palette.invalidate();
-		doLayout();
+		revalidate();
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class ColorBar extends JPanel implements ColorMapListener {
 		palette.build(cMap);
 		palette.repaint();
 		palette.invalidate();
-		doLayout();
+		revalidate();
 	}
 
 	/**
@@ -98,6 +98,6 @@ public class ColorBar extends JPanel implements ColorMapListener {
 		palette.build(cMap);
 		palette.repaint();
 		palette.invalidate();
-		doLayout();
+		revalidate();
 	}
 }

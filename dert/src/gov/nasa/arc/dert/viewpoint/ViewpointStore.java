@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.viewpoint;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.StateUtil;
 
@@ -23,6 +24,7 @@ public class ViewpointStore {
 	public double azimuth, elevation;
 	public int magIndex;
 	public boolean hikeMode;
+	public double zOffset;
 
 	public ViewpointStore() {
 		name = "";
@@ -55,6 +57,7 @@ public class ViewpointStore {
 		this.elevation = that.elevation;
 		this.magIndex = that.magIndex;
 		this.hikeMode = that.hikeMode;
+		this.zOffset = that.zOffset;
 	}
 	
 	public static ViewpointStore fromHashMap(HashMap<String,Object> map) {
@@ -76,6 +79,7 @@ public class ViewpointStore {
 		store.elevation = StateUtil.getDouble(map, "Elevation", 0);
 		store.magIndex = StateUtil.getInteger(map, "MagnificationIndex", 0);
 		store.hikeMode = StateUtil.getBoolean(map, "HikeMode", false);
+		store.zOffset = StateUtil.getDouble(map, "ZOffset", 0);
 		return(store);
 	}
 	
@@ -85,6 +89,8 @@ public class ViewpointStore {
 		if (!this.name.equals(that.name)) 
 			return(false);
 		if (this.hikeMode != that.hikeMode) 
+			return(false);
+		if (this.zOffset != that.zOffset) 
 			return(false);
 		if (this.frustumLeft != that.frustumLeft) 
 			return(false);
@@ -149,6 +155,7 @@ public class ViewpointStore {
 		map.put("Elevation", new Double(elevation));
 		map.put("MagnificationIndex", new Integer(magIndex));
 		map.put("HikeMode", new Boolean(hikeMode));
+		map.put("ZOffset", new Double(zOffset));
 		return(map);
 	}
 
@@ -176,6 +183,8 @@ public class ViewpointStore {
 		ViewpointStore vps = new ViewpointStore();
 		vps.name = this.name + pct;
 		vps.location = this.location.lerp(that.location, pct, vps.location);
+		if (hikeMode)
+			vps.location.setZ(Landscape.getInstance().getZ(location.getX(), location.getY())+zOffset);
 		vps.direction = this.direction.lerp(that.direction, pct, vps.direction);
 		vps.lookAt = this.lookAt.lerp(that.lookAt, pct, vps.lookAt);
 //		System.err.println("ViewpointStore.getInbetween "+vps.location+" "+this.location+" "+that.location);

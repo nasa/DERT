@@ -74,6 +74,8 @@ public class ViewpointNode
 	private CenterScale centerScale;
 	private boolean mapMode, hikeMode;
 	private ViewpointStore oldVP;
+	private double zOffset;
+	private double pixelWidth, pixelLength;
 
 	/**
 	 * Constructor
@@ -85,6 +87,8 @@ public class ViewpointNode
 		setName(name);
 		setCamera(new BasicCamera(1, 1, 45, 1, 0));
 		crosshair = new RGBAxes();
+		pixelWidth = Landscape.getInstance().getPixelWidth();
+		pixelLength = Landscape.getInstance().getPixelLength();
 		createOverlays();
 		if (store != null) {
 			setViewpoint(store, true, true);
@@ -159,7 +163,7 @@ public class ViewpointNode
 		location.addLocal(seekPoint);
 		if (hikeMode) {
 			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
-			location.setZ(z+2);
+			location.setZ(z+zOffset);
 			elevation = Math.PI / 4;
 			workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
 			rotate.multiplyLocal(workRot);
@@ -286,7 +290,7 @@ public class ViewpointNode
 			if (!sceneBounds.contains(location))
 				return;
 			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
-			location.setZ(z+2);
+			location.setZ(z+zOffset);
 		}
 		else {
 			if (!sceneBounds.contains(lookAt))
@@ -374,6 +378,8 @@ public class ViewpointNode
 	 * @param dy
 	 */
 	public void drag(double dx, double dy) {
+		dx *= pixelWidth;
+		dy *= pixelLength;
 		if (hikeMode) {
 			workVec.set(-dx, -dy, 0);
 			workRot.fromAngleNormalAxis(azimuth, Vector3.UNIT_Z);
@@ -456,6 +462,7 @@ public class ViewpointNode
 		viewpointSelected = vpSelected;
 		strictFrustum = strict;
 		hikeMode = vps.hikeMode;
+		zOffset = vps.zOffset;
 		azimuth = vps.azimuth;
 		elevation = vps.elevation+Math.PI/2;
 		camera.setMagnification(vps.magIndex);
@@ -498,10 +505,16 @@ public class ViewpointNode
 	 * @return
 	 */
 	public ViewpointStore getViewpoint(String name) {
-		if (mapMode)
-			return(new ViewpointStore(name, oldVP));
-		else
-			return (new ViewpointStore(name, camera));
+		if (mapMode) {
+			ViewpointStore store = new ViewpointStore(name, oldVP);
+			return(store);
+		}
+		else {
+			ViewpointStore store = new ViewpointStore(name, camera);
+			store.zOffset = zOffset;
+			store.hikeMode = hikeMode;
+			return (store);
+		}
 	}
 
 	/**
@@ -516,6 +529,7 @@ public class ViewpointNode
 		}
 		store.set(camera);
 		store.hikeMode = hikeMode;
+		store.zOffset = zOffset;
 		if (hikeMode) {
 			store.distance = 0;
 			store.lookAt.set(camera.getLocation());
@@ -803,9 +817,13 @@ public class ViewpointNode
 			double z = Landscape.getInstance().getZ(trans.getX(), trans.getY());
 			if (Double.isNaN(z))
 				return(false);
+			if (Landscape.getInstance().getPixelScale() > 1)
+				zOffset = 0.02;
+			else
+				zOffset = 2;
 			this.hikeMode = hikeMode;
 			location.set(trans);
-			location.setZ(z + 2);
+			location.setZ(z + zOffset);
 			camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
 			if (mapMode) {
 				mapMode = false;

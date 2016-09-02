@@ -27,17 +27,16 @@ import com.ardor3d.util.TextureKey;
 import com.ardor3d.util.geom.BufferUtils;
 
 /**
- * Maps a range of elevations in a color map text file to colors.
+ * Maps a range of values in a color map text file to colors.
  * 
- * The color map file typically contains 4 columns per line: the elevation value
+ * The color map file typically contains 4 columns per line: the value
  * and the corresponding Red, Green, Blue component (between 0 and 255). The
- * elevation value may be any floating point value, or "nv" keyword for the
- * nodata value. The elevation may also be expressed as a percentage: 0% being
- * the minimum value found in the raster, 100% the maximum value. Elevations
- * specified as percentage will be translated as absolute values. An extra
+ * value may be any floating point value, or "nv" keyword for the
+ * nodata value. The value may also be expressed as a percentage: 0% being
+ * the minimum value found in the raster, 100% the maximum value. An extra
  * column may be optionally added for the alpha component. If it is not
  * specified, full opacity (255) is assumed. Various field separators are
- * accepted: comma, tabulation, spaces, ':'. Common colors used by GRASS may
+ * accepted: comma, tabulation, spaces, ':'. Common colors may
  * also be specified by using their name, instead of the RGB triplet. The
  * supported list is : white, black, red, green, blue, yellow, magenta, cyan,
  * aqua, grey/gray, orange, brown, purple/violet and indigo.
@@ -288,9 +287,12 @@ public class ColorMap {
 	}
 
 	public void setRange(double min, double max) {
+		double r = max-min;
+		if (r <= 0)
+			return;
 		minimum = min;
 		maximum = max;
-		range = max - min;
+		range = r;
 
 		// set the texture coordinate matrix
 		textureMatrix.setIdentity();
@@ -429,13 +431,15 @@ public class ColorMap {
 		}
 		// nearest neighbor
 		else {
-			double d1 = value[index1] - val;
-			double d0 = val - value[index0];
-			if (d1 < d0) {
-				cRGBA.set(colorRGBA[index1]);
-			} else {
-				cRGBA.set(colorRGBA[index0]);
-			}
+//			double d1 = value[index1] - val;
+//			double d0 = val - value[index0];
+//			if (d1 < d0) {
+//				cRGBA.set(colorRGBA[index1]);
+//			} else {
+//				cRGBA.set(colorRGBA[index0]);
+//			}
+//			return (cRGBA);
+			cRGBA.set(colorRGBA[index0]);
 			return (cRGBA);
 		}
 	}

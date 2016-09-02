@@ -25,7 +25,7 @@ public class Palette extends Canvas {
 	private DecimalFormat formatter;
 
 	// Color bars
-	private Rectangle colorRect, endRect;
+	private Rectangle colorRect;
 
 	// Colors
 	private Color[] color;
@@ -52,7 +52,6 @@ public class Palette extends Canvas {
 	public Palette(ColorMap colorMap, boolean vertical) {
 		super();
 		this.vertical = vertical;
-		endRect = new Rectangle();
 		build(colorMap);
 	}
 
@@ -64,6 +63,8 @@ public class Palette extends Canvas {
 	public void build(ColorMap colorMap) {
 		value = colorMap.getValues();
 		isGradient = colorMap.isGradient();
+		
+		// determine fractional digits for tick marks
 		double dMin = Double.MAX_VALUE;
 		for (int i = 1; i < value.length; ++i) {
 			dMin = Math.min(dMin, value[i] - value[i - 1]);
@@ -80,6 +81,8 @@ public class Palette extends Canvas {
 			}
 		}
 		formatter = new DecimalFormat(str);
+		
+		
 		color = colorMap.getColors();
 		tickStr = new String[value.length];
 		bigTick = "";
@@ -94,8 +97,8 @@ public class Palette extends Canvas {
 			width = 100;
 			height = color.length * colorRect.height;
 		} else {
-			colorRect = new Rectangle(0, 0, 40, 40);
-			width = color.length * colorRect.width + 80;
+			colorRect = new Rectangle(0, 0, 80, 40);
+			width = (color.length+1) * colorRect.width;
 			height = 80;
 		}
 		setPreferredSize(new Dimension(width, height));
@@ -122,18 +125,16 @@ public class Palette extends Canvas {
 		int wid = (int) Math.round(fm.stringWidth(bigTick) * 1.5);
 		int hh = fm.getAscent();
 		int hv = fm.getAscent() / 2;
+		int hgt = colorRect.height;
 
 		if (vertical) {
 			x1 = 60 + fm.stringWidth(bigTick);
+			colorRect.height ++;
 		} else {
 			x0 = wid / 2;
 			y0 = 0;
 			y1 = 30;
-			if (isGradient) {
-				colorRect = new Rectangle(x0, y0, wid, 20);
-			} else {
-				colorRect = new Rectangle(0, y0, wid, 20);
-			}
+			colorRect = new Rectangle(x0, y0, wid+1, 20);
 		}
 
 		// draw tick marks
@@ -141,7 +142,7 @@ public class Palette extends Canvas {
 		g2d.setBackground(textBackground);
 		for (int i = 0; i < tickStr.length; ++i) {
 			if (vertical) {
-				y0 = (color.length - i) * colorRect.height + colorRect.height / 2;
+				y0 = (color.length - i) * hgt;
 				int x = x1 - fm.stringWidth(tickStr[i]);
 				g2d.drawLine(x0, y0, 50, y0);
 				g2d.drawString(tickStr[i], x, y0 + hv);
@@ -156,35 +157,14 @@ public class Palette extends Canvas {
 		}
 
 		// draw color bars
-		for (int i = 0; i < color.length; ++i) {
+		for (int i = 0; i < color.length-1; ++i) {
 			if (vertical) {
-				colorRect.y = (color.length - i) * colorRect.height;
+				colorRect.y = (color.length-1 - i) * hgt;
 				if (isGradient) {
-					colorRect.y += colorRect.height / 2;
-					if (i == 0) {
-						endRect.x = colorRect.x;
-						endRect.y = colorRect.y;
-						endRect.width = colorRect.width;
-						endRect.height = colorRect.height / 2;
-						g2d.setBackground(color[i]);
-						g2d.setPaint(color[i]);
-						g2d.fill(endRect);
-					} else if (i == color.length - 1) {
-						endRect.x = colorRect.x;
-						endRect.y = colorRect.y - colorRect.height / 2;
-						endRect.width = colorRect.width;
-						endRect.height = colorRect.height / 2;
-						g2d.setBackground(color[i]);
-						g2d.setPaint(color[i]);
-						g2d.fill(endRect);
-						colorRect.height++;
-					}
-					if (i > 0) {
-						GradientPaint gp = new GradientPaint(colorRect.x, colorRect.y, color[i], colorRect.x,
-							colorRect.y + colorRect.height, color[i - 1]);
-						g2d.setPaint(gp);
-						g2d.fill(colorRect);
-					}
+					GradientPaint gp = new GradientPaint(colorRect.x, colorRect.y, color[i+1], colorRect.x,
+						colorRect.y + colorRect.height, color[i]);
+					g2d.setPaint(gp);
+					g2d.fill(colorRect);
 				} else {
 					g2d.setBackground(color[i]);
 					g2d.setPaint(color[i]);
@@ -193,31 +173,11 @@ public class Palette extends Canvas {
 				}
 			} else {
 				if (isGradient) {
-					if (i == 0) {
-						endRect.x = colorRect.x - wid / 2;
-						endRect.y = colorRect.y;
-						endRect.width = wid / 2;
-						endRect.height = colorRect.height;
-						g2d.setBackground(color[i]);
-						g2d.setPaint(color[i]);
-						g2d.fill(endRect);
-					} else if (i == color.length - 1) {
-						endRect.x = colorRect.x + colorRect.width;
-						endRect.y = colorRect.y;
-						endRect.width = wid / 2;
-						endRect.height = colorRect.height;
-						g2d.setBackground(color[i]);
-						g2d.setPaint(color[i]);
-						g2d.fill(endRect);
-						colorRect.width++;
-					}
-					if (i > 0) {
-						GradientPaint gp = new GradientPaint(colorRect.x, colorRect.y, color[i - 1], colorRect.x
-							+ colorRect.width, colorRect.y, color[i]);
-						g2d.setPaint(gp);
-						g2d.fill(colorRect);
-						colorRect.x += wid;
-					}
+					GradientPaint gp = new GradientPaint(colorRect.x, colorRect.y, color[i], colorRect.x
+						+ colorRect.width, colorRect.y, color[i+1]);
+					g2d.setPaint(gp);
+					g2d.fill(colorRect);
+					colorRect.x += wid;
 				} else {
 					g2d.setBackground(color[i]);
 					g2d.setPaint(color[i]);
@@ -228,12 +188,10 @@ public class Palette extends Canvas {
 			}
 		}
 		if (!vertical) {
-			width = colorRect.x + wid;
+			width = colorRect.x + 2*wid;
 		}
 		g2d.setPaint(textForeground);
 		g2d.setBackground(textBackground);
 		setPreferredSize(new Dimension(width, height));
-//		invalidate();
-//		getParent().doLayout();
 	}
 }

@@ -115,7 +115,7 @@ public class ColorMapDialog extends AbstractDialog {
 
 	@Override
 	protected boolean okPressed() {
-		setVisible(false);
+		close();
 		return (true);
 	}
 
