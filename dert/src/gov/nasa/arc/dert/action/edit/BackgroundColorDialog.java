@@ -92,7 +92,6 @@ public class BackgroundColorDialog extends AbstractDialog {
 	@Override
 	public boolean okPressed() {
 		World.getInstance().setBackgroundColor(bgCol);
-		setVisible(false);
 		return (true);
 	}
 

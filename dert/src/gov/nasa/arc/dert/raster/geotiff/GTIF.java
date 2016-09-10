@@ -73,6 +73,7 @@ public class GTIF extends RasterFileImpl {
 	protected int tileWidth, tileLength, tileCount, rowsPerStrip, stripCount, planarConfiguration;
 	protected long stripSize, tileSize;
 	protected short sampleFormat;
+	protected String target;
 
 	/**
 	 * Given a TIFF file path, open the file. The returned TIFF access handle
@@ -407,8 +408,15 @@ public class GTIF extends RasterFileImpl {
 			missingUnknown = false;
 		}
 		str = getTIFFFieldString(GDAL_METADATA_TAG, false, null);
-		if (str != null)
+		GdalMetadata gdmd = null;
+		if (str != null) {
 			System.out.println(str);
+			gdmd = new GdalMetadata(str);
+			String sfStr = gdmd.getValue("SCALE");
+			if (sfStr != null)
+				scalingFactor = Float.valueOf(sfStr);
+			target = gdmd.getValue("TARGET_NAME");
+		}
 		
 		short[] geoKeyDir = getTIFFFieldShort(GEO_KEY_DIRECTORY_TAG, true, null);
 		double[] geoKeyDouble = getTIFFFieldDouble(GEO_DOUBLE_PARAMS_TAG, false, null);
@@ -420,8 +428,8 @@ public class GTIF extends RasterFileImpl {
 		getProjectionInfo();
 
 		samplesPerPixel = getTIFFFieldShort(TIFFTAG_SAMPLESPERPIXEL, true, (short) 0);
-		minimum = findMinimumSampleValue();
-		maximum = findMaximumSampleValue();
+		minimum = findMinimumSampleValue(gdmd);
+		maximum = findMaximumSampleValue(gdmd);
 
 		System.out.println("Loaded tags from " + filePath);
 		System.out.println("Width = " + rasterWidth + ", Length = " + rasterLength + ", SamplesPerPixel = "
@@ -436,7 +444,8 @@ public class GTIF extends RasterFileImpl {
 		System.out
 			.println("Minimum Sample Value = " + (minimum == null ? "Unknown" : minimum[0])
 				+ ", Maximum Sample Value = " + (maximum == null ? "Unknown" : maximum[0])
-				+ ", Missing Value = " + (missingUnknown ? "Unknown" : missing));
+				+ ", Missing Value = " + (missingUnknown ? "Unknown" : missing)
+				+ ", Scaling Factor = " + scalingFactor);
 		if (dataType == DataType.Unknown) {
 			System.err.println("Unknown data type.");
 			return (false);
@@ -562,7 +571,12 @@ public class GTIF extends RasterFileImpl {
 		// Globe.
 		String citation = getGTIFKeyASCII(KeyID.Citation, "");
 		String geogCitation = getGTIFKeyASCII(KeyID.GeogCitation, "");
-		if (citation.toLowerCase().contains("mars") || geogCitation.toLowerCase().contains("mars")) {
+		if (target != null) {
+			projInfo.globe = target.substring(0, 1).toUpperCase();
+			if (target.length() > 1)
+				projInfo.globe += target.substring(1).toLowerCase();
+		}
+		else if (citation.toLowerCase().contains("mars") || geogCitation.toLowerCase().contains("mars")) {
 			projInfo.globe = "Mars";
 		} else if (citation.toLowerCase().contains("moon") || geogCitation.toLowerCase().contains("moon")) {
 			projInfo.globe = "Moon";
@@ -1064,13 +1078,20 @@ public class GTIF extends RasterFileImpl {
 	 * 
 	 * @return the minimum sample value
 	 */
-	protected double[] findMinimumSampleValue() {
+	protected double[] findMinimumSampleValue(GdalMetadata gdmd) {
 		// Although the TIFF documentation claims that smaxsamplevalue and sminsamplevalue handle samplesPerPixel
 		// values (one for each sample) and all datatypes, libtiff actually only stores and retrieves a
 		// single double. See http://maptools-org.996276.n3.nabble.com/TIFFTAG-SMINSAMPLEVALUE-and-TIFFTAG-SMAXSAMPLEVALUE-td171.html.
 		double min = getTIFFFieldDouble(TIFFTAG_SMINSAMPLEVALUE, false, Double.NaN);
-		if (Double.isNaN(min))
-			return(null);
+		if (Double.isNaN(min)) {
+			if (gdmd == null)
+				return(null);
+			String str = gdmd.getValue("STATISTICS_MINIMUM");
+			if (str != null)
+				min = Double.valueOf(str);
+			else
+				return(null);
+		}
 		double[] d = new double[samplesPerPixel];
 		for (int i=0; i<samplesPerPixel; ++i)
 			d[i] = min;
@@ -1082,13 +1103,20 @@ public class GTIF extends RasterFileImpl {
 	 * 
 	 * @return the maximum sample value
 	 */
-	protected double[] findMaximumSampleValue() {
+	protected double[] findMaximumSampleValue(GdalMetadata gdmd) {
 		// Although the TIFF documentation claims that smaxsamplevalue and sminsamplevalue handle samplesPerPixel
 		// values (one for each sample) and all datatypes, libtiff actually only stores and retrieves a
 		// single double. See http://maptools-org.996276.n3.nabble.com/TIFFTAG-SMINSAMPLEVALUE-and-TIFFTAG-SMAXSAMPLEVALUE-td171.html.
 		double max = getTIFFFieldDouble(TIFFTAG_SMAXSAMPLEVALUE, false, Double.NaN);
-		if (Double.isNaN(max))
-			return(null);
+		if (Double.isNaN(max)) {
+			if (gdmd == null)
+				return(null);
+			String str = gdmd.getValue("STATISTICS_MAXIMUM");
+			if (str != null)
+				max = Double.valueOf(str);
+			else
+				return(null);
+		}
 		double[] d = new double[samplesPerPixel];
 		for (int i=0; i<samplesPerPixel; ++i)
 			d[i] = max;
@@ -1620,7 +1648,7 @@ public class GTIF extends RasterFileImpl {
 			if (gray) {
 				raster.setAsGray(row, 0, rasterWidth, h, bbuf, dataType, minimum, maximum, missing);
 			} else {
-				raster.setAsFloat(row, 0, rasterWidth, h, bbuf, dataType, 1f, minimum, maximum, missing);
+				raster.setAsFloat(row, 0, rasterWidth, h, bbuf, dataType, scalingFactor, minimum, maximum, missing);
 			}
 			row += h;
 			Thread.yield();
@@ -1716,7 +1744,7 @@ public class GTIF extends RasterFileImpl {
 			if (gray) {
 				raster.setAsGray(row, left, wid, hgt, bbuf, dataType, minimum, maximum, missing);
 			} else {
-				raster.setAsFloat(row, left, wid, hgt, bbuf, dataType, 1f, minimum, maximum, missing);
+				raster.setAsFloat(row, left, wid, hgt, bbuf, dataType, scalingFactor, minimum, maximum, missing);
 			}
 			left += w;
 			if (left >= rasterWidth) {

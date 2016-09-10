@@ -62,7 +62,6 @@ public class ShadowSettingsDialog extends AbstractDialog {
 		Lighting lighting = World.getInstance().getLighting();
 		lighting.getShadowMap().setPolygonOffsetFactor(scale);
 		lighting.getShadowMap().setPolygonOffsetUnits(units);
-		setVisible(false);
 		return (true);
 	}
 

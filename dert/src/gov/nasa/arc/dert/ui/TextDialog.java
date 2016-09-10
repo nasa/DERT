@@ -133,7 +133,6 @@ public class TextDialog extends AbstractDialog {
 	 */
 	@Override
 	public boolean okPressed() {
-		setVisible(false);
 		return (true);
 	}
 

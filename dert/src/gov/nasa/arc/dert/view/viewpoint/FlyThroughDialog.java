@@ -141,7 +141,7 @@ public class FlyThroughDialog extends JDialog {
 		browseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				String sequencePath = FileHelper.getDirectoryPathForSave("Image Sequence Directory", false);
+				String sequencePath = FileHelper.getDirectoryPathForSave("Image Sequence Directory");
 				if (sequencePath != null)
 					fileText.setText(sequencePath);
 			}

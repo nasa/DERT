@@ -253,7 +253,6 @@ public class LayerConfigurationDialog extends AbstractDialog {
 		for (int i=0; i<selectedLayers.size(); ++i)
 			newSelection[i] = selectedLayers.get(i);
 		result = newSelection;
-		setVisible(false);
 		return (true);
 	}
 

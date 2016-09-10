@@ -348,7 +348,8 @@ public class Raster {
 					float val = bBuf.getShort();
 					if ((val == missing) || (val < min[0]) || (val > max[0])) {
 						rBuf.putFloat(Float.NaN);
-					} else {
+					}
+					else {
 						rBuf.putFloat(val * scalingFactor);
 					}
 				}

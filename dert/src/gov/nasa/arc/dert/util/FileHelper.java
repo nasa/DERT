@@ -30,7 +30,7 @@ public class FileHelper {
 	 * @return
 	 */
 	public static String getFilePathForOpen(String title, String extName, String extValue) {
-		JFileChooser chooser = new DertFileChooser(lastPath, false, false);
+		JFileChooser chooser = new DertFileChooser(lastPath, false);
 		chooser.setDialogTitle(title);
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(extName, extValue, extValue.toUpperCase());
 		chooser.setAcceptAllFileFilterUsed(false);
@@ -53,7 +53,7 @@ public class FileHelper {
 	 * @return
 	 */
 	public static String getFilePathForOpen(String title, FileNameExtensionFilter filter) {
-		JFileChooser chooser = new DertFileChooser(lastPath, false, false);
+		JFileChooser chooser = new DertFileChooser(lastPath, false);
 		chooser.setDialogTitle(title);
 		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.setFileFilter(filter);
@@ -74,7 +74,7 @@ public class FileHelper {
 	 * @return
 	 */
 	public static String getDirectoryPathForOpen(String title) {
-		JFileChooser chooser = new DertFileChooser(lastPath, true, false);
+		JFileChooser chooser = new DertFileChooser(lastPath, true);
 		chooser.setDialogTitle(title);
 		int state = chooser.showOpenDialog(null);
 		File file = chooser.getSelectedFile();
@@ -92,8 +92,9 @@ public class FileHelper {
 	 * @param title
 	 * @return
 	 */
-	public static String getDirectoryPathForSave(String title, boolean newLandscape) {
-		JFileChooser chooser = new DertFileChooser(lastPath, true, newLandscape);
+	public static String getDirectoryPathForSave(String title) {
+		final DertFileChooser chooser = new DertFileChooser(lastPath, true);
+		chooser.addNewDirectoryButton(null);
 		chooser.setDialogTitle(title);
 		int state = chooser.showOpenDialog(null);
 		File file = chooser.getSelectedFile();

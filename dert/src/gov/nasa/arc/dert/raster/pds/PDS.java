@@ -52,9 +52,6 @@ public class PDS extends RasterFileImpl {
 	// Parser for PDS label
 	protected LabelParser parser;
 
-	// PDS scale factor
-	protected float scalingFactor = 1f;
-
 	/**
 	 * Constructor
 	 * 
@@ -127,10 +124,8 @@ public class PDS extends RasterFileImpl {
 		if (ival == null) {
 			ival = (Integer) metadata.get("UNCOMPRESSED_FILE.IMAGE.BANDS");
 		}
-		if (ival == null) {
-			System.err.println("BANDS parameter missing");
-			return (false);
-		}
+		if (ival == null)
+			ival = new Integer(1);
 		samplesPerPixel = ival;
 
 		ival = (Integer) metadata.get("IMAGE.SAMPLE_BITS");
@@ -256,7 +251,7 @@ public class PDS extends RasterFileImpl {
 				return (false);
 			}
 			imageStart = 0;
-			dataFilePath = new File(filePath, imgPtr).getAbsolutePath();
+			dataFilePath = new File(new File(filePath).getParent(), imgPtr).getAbsolutePath();
 		}
 		// get the offset in the file
 		else {
@@ -270,9 +265,10 @@ public class PDS extends RasterFileImpl {
 		}
 
 		Float sF = (Float) metadata.get("IMAGE.SCALING_FACTOR");
-		if (sF != null) {
+		if (sF == null)
+			sF = (Float)metadata.get("UNCOMPRESSED_FILE.IMAGE.SCALING_FACTOR");
+		if (sF != null)
 			scalingFactor = sF;
-		}
 
 		getProjectionInfo();
 
@@ -357,16 +353,17 @@ public class PDS extends RasterFileImpl {
 		if (target.isEmpty()) {
 			String g = properties.getProperty("DefaultGlobe");
 			if (g != null) {
-				projInfo.globe = g;
+				target = g;
 			} else {
-				projInfo.globe = "Earth";
+				target = "Earth";
 			}
-			System.err.println("Could not determine globe ... setting to " + projInfo.globe);
+			System.err.println("Could not determine globe ... setting to " + target);
 		} else if (target.length() == 1) {
 			target = target.toUpperCase();
 		} else {
 			target = target.substring(0, 1).toUpperCase() + target.substring(1).toLowerCase();
 		}
+		projInfo.globe = target;
 
 		return (projInfo);
 	}
@@ -504,10 +501,6 @@ public class PDS extends RasterFileImpl {
 
 		if ((minimum == null) || (maximum == null)) {
 			computeMinMaxFromStrip(dataType, numStrips, stripSize, stripWidth, stripHeight);
-			for (int i = 0; i < samplesPerPixel; ++i) {
-				minimum[i] *= scalingFactor;
-				maximum[i] *= scalingFactor;
-			}
 		}
 
 		loadFromStrip(dataType, numStrips, stripSize, stripWidth, stripHeight, raster, false);

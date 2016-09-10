@@ -32,6 +32,7 @@ public class LabelParser {
 	static {
 		tagMap = new HashMap<String, PDSType>();
 		tagMap.put("PDS_VERSION_ID", PDSType.PDS_String);
+		tagMap.put("TARGET_NAME", PDSType.PDS_String);
 		tagMap.put("RECORD_TYPE", PDSType.PDS_String);
 		tagMap.put("RECORD_BYTES", PDSType.PDS_Long);
 		tagMap.put("FILE_RECORDS", PDSType.PDS_Integer);

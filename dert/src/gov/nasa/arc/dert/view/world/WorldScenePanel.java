@@ -40,8 +40,6 @@ public class WorldScenePanel extends SceneCanvasPanel {
 		super(width, height, new WorldScene(), true, false);
 		worldScene = (WorldScene) scene;
 		controller = new ViewpointController();
-		inputHandler = new WorldInputHandler(controller, this);
-		inputManager = new InputManager(canvas, inputHandler);
 	}
 
 	@Override
@@ -51,6 +49,11 @@ public class WorldScenePanel extends SceneCanvasPanel {
 
 	@Override
 	public void setState(State state) {
+		// Add mouse handling after selection of landscape to avoid NPEs.
+		if (inputManager == null) {
+			inputHandler = new WorldInputHandler(controller, this);
+			inputManager = new InputManager(canvas, inputHandler);
+		}
 		super.setState(state);
 		WorldState wState = (WorldState) state;
 		worldScene.setState(wState);

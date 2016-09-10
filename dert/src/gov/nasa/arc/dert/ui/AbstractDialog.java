@@ -118,7 +118,7 @@ public abstract class AbstractDialog extends JDialog {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					if (okPressed()) {
-						dispose();
+						close();
 					}
 				}
 			});
@@ -129,7 +129,7 @@ public abstract class AbstractDialog extends JDialog {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					if (cancelPressed()) {
-						dispose();
+						close();
 					}
 				}
 			});
@@ -140,7 +140,7 @@ public abstract class AbstractDialog extends JDialog {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					if (okPressed()) {
-						dispose();
+						close();
 					}
 				}
 			});
@@ -176,7 +176,7 @@ public abstract class AbstractDialog extends JDialog {
 	}
 
 	/**
-	 * Close the dialog, destroying it
+	 * Close the dialog
 	 */
 	public void close() {
 		setVisible(false);

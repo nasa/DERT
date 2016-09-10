@@ -67,7 +67,6 @@ public class StereoDialog extends AbstractDialog {
 		World.getInstance().stereoEyeSeparation = val;
 		WorldScenePanel wsp = Dert.getWorldView().getScenePanel();
 		wsp.setStereo(stereoCheck.isSelected(), World.getInstance().stereoFocalDistance, World.getInstance().stereoEyeSeparation);
-		setVisible(false);
 		return (true);
 	}
 

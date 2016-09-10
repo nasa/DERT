@@ -7,11 +7,10 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Properties;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -49,6 +48,7 @@ public class DertFileChooser extends JFileChooser {
 	}
 
 	private boolean directoryOnly;
+	protected JDialog theDialog;
 
 	/**
 	 * Constructor
@@ -57,7 +57,7 @@ public class DertFileChooser extends JFileChooser {
 	 * @param directoryOnly
 	 * @param newLandscape
 	 */
-	public DertFileChooser(String lastPath, boolean dirOnly, boolean newLandscape) {
+	public DertFileChooser(String lastPath, boolean dirOnly) {
 		super(new File(lastPath));
 		this.directoryOnly = dirOnly;
 		setMultiSelectionEnabled(false);
@@ -67,12 +67,6 @@ public class DertFileChooser extends JFileChooser {
 			setFileFilter(new ConfigFileFilter());
 			removeFileType(getComponents());
 		}
-		// button to create a new landscape
-		if (newLandscape) {
-			addNewLandscapeButton(getComponents());
-		}
-		else
-			addNewDirectoryButton(getComponents());
 	}
 
 	@Override
@@ -98,46 +92,10 @@ public class DertFileChooser extends JFileChooser {
 		}
 	}
 
-	private void addNewLandscapeButton(Component[] child) {
-		for (int i = 0; i < child.length; ++i) {
-			if (child[i] instanceof JButton) {
-				JButton button = (JButton) child[i];
-				String s = button.getText();
-				if ((s != null) && s.equals("Cancel")) {
-					JButton nl = new JButton("New Landscape");
-					nl.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent event) {
-							String str = JOptionPane.showInputDialog(null,
-								"Please enter the landscape name (no spaces).");
-							if (str == null) {
-								return;
-							}
-							File file = new File(getCurrentDirectory(), str);
-							file.mkdirs();
-							rescanCurrentDirectory();
-							setSelectedFiles(new File[] { file });
-
-							// add landscape identifier
-							Properties landscapeProperties = new Properties();
-							File propFile = new File(file, ".landscape");
-							landscapeProperties.setProperty("LastWrite", System.getProperty("user.name"));
-							try {
-								landscapeProperties.store(new FileOutputStream(propFile), null);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-					});
-					button.getParent().add(nl, 0);
-				}
-			} else if (child[i] instanceof Container) {
-				addNewLandscapeButton(((Container) child[i]).getComponents());
-			}
-		}
-	}
-
-	private void addNewDirectoryButton(Component[] child) {
+	public void addNewDirectoryButton(Component parent) {
+		Component[] child = null;
+		if (parent == null)
+			child = getComponents();
 		for (int i = 0; i < child.length; ++i) {
 			if (child[i] instanceof JButton) {
 				JButton button = (JButton) child[i];
@@ -160,8 +118,8 @@ public class DertFileChooser extends JFileChooser {
 					});
 					button.getParent().add(nd, 0);
 				}
-			} else if (child[i] instanceof Container) {
-				addNewDirectoryButton(((Container) child[i]).getComponents());
+			} else if ((child[i] != null) && (child[i] instanceof Container)) {
+				addNewDirectoryButton(child[i]);
 			}
 		}
 	}

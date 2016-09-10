@@ -5,9 +5,10 @@ import gov.nasa.arc.dert.raster.RasterFile;
 import gov.nasa.arc.dert.raster.geotiff.GTIF;
 import gov.nasa.arc.dert.raster.pds.PDS;
 import gov.nasa.arc.dert.ui.GBCHelper;
+import gov.nasa.arc.dert.ui.LandscapeChooserDialog;
 import gov.nasa.arc.dert.util.FileHelper;
-import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.util.StringUtil;
+import gov.nasa.arc.dert.util.UIUtil;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -192,7 +193,7 @@ public class RasterLayerPanel extends JPanel {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				setLandscapeDirectory();
+				setLandscapeText();
 			}
 		});
 		container.add(button, GBCHelper.getGBC(4, 3, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
@@ -324,7 +325,7 @@ public class RasterLayerPanel extends JPanel {
 			messageText.setText("Creating pyramid . . .");
 			String fPath = filetxt.toLowerCase();
 			RasterFile rf = null;
-			if (fPath.endsWith(".img")) {
+			if (fPath.endsWith(".img") || fPath.endsWith(".lbl")) {
 				rf = new PDS(filetxt, dertProperties);
 			} else if (fPath.endsWith(".tiff") || fPath.endsWith(".tif") || fPath.endsWith(".gtif")
 				|| fPath.endsWith(".gtiff")) {
@@ -369,7 +370,7 @@ public class RasterLayerPanel extends JPanel {
 	 * Get the input raster file.
 	 */
 	protected void setInputFile() {
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("img,tif,tiff,gtif,gtiff", "img", "tif", "tiff",
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("img,lbl,tif,tiff,gtif,gtiff", "img", "lbl", "tif", "tiff",
 			"gtif", "gtiff");
 		String fPath = FileHelper.getFilePathForOpen("Input File Selection", filter);
 		if (fPath != null) {
@@ -381,10 +382,12 @@ public class RasterLayerPanel extends JPanel {
 	/**
 	 * Get the destination landscape directory.
 	 */
-	protected void setLandscapeDirectory() {
-		String fPath = FileHelper.getDirectoryPathForSave("Landscape Selection", true);
-		if (fPath != null) {
-			landscapeText.setText(fPath);
+	protected void setLandscapeText() {
+		LandscapeChooserDialog chooser = new LandscapeChooserDialog();
+		chooser.open();
+		String landscapePath = chooser.getLandscape();
+		if (landscapePath != null) {
+			landscapeText.setText(landscapePath);
 		}
 	}
 

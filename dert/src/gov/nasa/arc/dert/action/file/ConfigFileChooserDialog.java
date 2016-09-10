@@ -70,7 +70,7 @@ public class ConfigFileChooserDialog extends AbstractDialog {
 		contentArea.setLayout(new BorderLayout());
 
 		// Landscape file chooser
-		fileChooser = new DertFileChooser(lastPath, true, false);
+		fileChooser = new DertFileChooser(lastPath, true);
 		fileChooser.setControlButtonsAreShown(false);
 		GroupPanel gPanel = new GroupPanel("Landscape");
 		gPanel.setLayout(new GridLayout(1, 1));
@@ -124,7 +124,7 @@ public class ConfigFileChooserDialog extends AbstractDialog {
 					if (idFile.exists()) {
 						configFilePath = new String[] { landscapePath };
 						lastPath = fileChooser.getCurrentDirectory().getAbsolutePath();
-						dispose();
+						close();
 					}
 					return;
 				}
@@ -184,7 +184,7 @@ public class ConfigFileChooserDialog extends AbstractDialog {
 				public void actionPerformed(ActionEvent event) {
 					configFilePath = new String[] { landscapePath };
 					lastPath = fileChooser.getCurrentDirectory().getAbsolutePath();
-					dispose();
+					close();
 				}
 			});
 			newButton.setEnabled(false);

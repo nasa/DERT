@@ -6,6 +6,7 @@ import gov.nasa.arc.dert.util.StringUtil;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.Properties;
 
 /**
@@ -43,6 +44,8 @@ public abstract class RasterFileImpl implements RasterFile {
 
 	// Byte order (big endian or little endian)
 	protected ByteOrder byteOrder;
+	
+	protected float scalingFactor = 1f;
 
 	/**
 	 * Constructor.
@@ -151,7 +154,10 @@ public abstract class RasterFileImpl implements RasterFile {
 	 */
 	@Override
 	public double[] getMinimumSampleValue() {
-		return (minimum);
+		double[] min = Arrays.copyOf(minimum, minimum.length);
+		for (int i=0; i<min.length; ++i)
+			min[i] *= scalingFactor;
+		return (min);
 	}
 
 	/**
@@ -161,7 +167,10 @@ public abstract class RasterFileImpl implements RasterFile {
 	 */
 	@Override
 	public double[] getMaximumSampleValue() {
-		return (maximum);
+		double[] max = Arrays.copyOf(maximum, maximum.length);
+		for (int i=0; i<max.length; ++i)
+			max[i] *= scalingFactor;
+		return (max);
 	}
 
 	/**

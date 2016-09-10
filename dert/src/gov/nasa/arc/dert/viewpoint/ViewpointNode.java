@@ -75,7 +75,6 @@ public class ViewpointNode
 	private boolean mapMode, hikeMode;
 	private ViewpointStore oldVP;
 	private double zOffset;
-	private double pixelWidth, pixelLength;
 
 	/**
 	 * Constructor
@@ -87,8 +86,6 @@ public class ViewpointNode
 		setName(name);
 		setCamera(new BasicCamera(1, 1, 45, 1, 0));
 		crosshair = new RGBAxes();
-		pixelWidth = Landscape.getInstance().getPixelWidth();
-		pixelLength = Landscape.getInstance().getPixelLength();
 		createOverlays();
 		if (store != null) {
 			setViewpoint(store, true, true);
@@ -378,13 +375,12 @@ public class ViewpointNode
 	 * @param dy
 	 */
 	public void drag(double dx, double dy) {
-		dx *= pixelWidth;
-		dy *= pixelLength;
 		if (hikeMode) {
 			workVec.set(-dx, -dy, 0);
 			workRot.fromAngleNormalAxis(azimuth, Vector3.UNIT_Z);
 			workRot.applyPost(workVec, workVec);
-			workVec.multiplyLocal(camera.getPixelSizeAt(camera.getLocation(), true));
+//			workVec.multiplyLocal(camera.getPixelSizeAt(camera.getLookAt(), true));
+			workVec.multiplyLocal(zOffset);
 		}
 		else {
 			workVec.set(-dx, -dy, 0);
@@ -813,7 +809,7 @@ public class ViewpointNode
 	
 	public boolean setHikeMode(boolean hikeMode) {
 		if (hikeMode) {
-			ReadOnlyVector3 trans = getWorldTranslation();
+			ReadOnlyVector3 trans = camera.getLookAt();
 			double z = Landscape.getInstance().getZ(trans.getX(), trans.getY());
 			if (Double.isNaN(z))
 				return(false);
