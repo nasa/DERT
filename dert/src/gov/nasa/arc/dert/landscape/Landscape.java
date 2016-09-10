@@ -31,6 +31,7 @@ import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.LightCombineMode;
+import com.ardor3d.scenegraph.hint.PickingHint;
 
 /**
  * Provides a class for handling the Landscape.
@@ -83,7 +84,7 @@ public class Landscape extends Node implements ViewDependent {
 	private Node contents;
 
 	// minimum Z value, the Z value at the edge of the landscape
-	private double minZ;
+	private double minZ, maxZ;
 
 	// surface mesh color
 	private MaterialState materialState;
@@ -144,6 +145,7 @@ public class Landscape extends Node implements ViewDependent {
 		pixelWidth *= pixelScale;
 		pixelLength *= pixelScale;
 		minZ = baseLayer.getMinimumValue()[0];
+		maxZ = baseLayer.getMaximumValue()[0];
 //		edgeZ = baseLayer.getFillValue();
 		tileWidth = baseLayer.getTileWidth();
 		tileLength = baseLayer.getTileLength();
@@ -837,38 +839,92 @@ public class Landscape extends Node implements ViewDependent {
 	 *            defined by the polygon bounds
 	 * @return the volume
 	 */
-	public double getSampledVolumeOfRegion(Vector3[] vertex, ReadOnlyVector3 lowerBound, ReadOnlyVector3 upperBound,
-		Spatial polygon) {
-		int cSampleSize = (int) ((upperBound.getX() - lowerBound.getX()) / pixelWidth);
-		int rSampleSize = (int) ((upperBound.getY() - lowerBound.getY()) / pixelLength);
-		Vector3 vert = new Vector3();
-		double volume = 0;
-		// sample the landscape for elevation
-		for (int i = 0; i < rSampleSize; ++i) {
-			for (int j = 0; j < cSampleSize; ++j) {
-				vert.set((float) (lowerBound.getX() + j * pixelWidth), (float) (lowerBound.getY() + i * pixelLength), 0);
-				if (MathUtil.isInsidePolygon(vert, vertex)) {
-					double el = getElevationAtHighestLevel(vert.getX(), vert.getY())-minZ;
-					if (!Double.isNaN(el)) {
-						vert.setZ(el);
-						if (el < lowerBound.getZ()) {
-							el = -getSample(vert, Vector3.UNIT_Z, polygon);
-						} else if (el > upperBound.getZ()) {
-							el = getSample(vert, Vector3.NEG_UNIT_Z, polygon);
-						} else {
-							el = getSample(vert, Vector3.NEG_UNIT_Z, polygon);
-							if (Double.isNaN(el)) {
-								el = -getSample(vert, Vector3.UNIT_Z, polygon);
-							}
-						}
+//	public double getSampledVolumeOfRegion(Vector3[] vertex, ReadOnlyVector3 lowerBound, ReadOnlyVector3 upperBound,
+//		Spatial polygon) {
+//		int cSampleSize = (int) ((upperBound.getX() - lowerBound.getX()) / pixelWidth);
+//		int rSampleSize = (int) ((upperBound.getY() - lowerBound.getY()) / pixelLength);
+//		Vector3 vert = new Vector3();
+//		double volume = 0;
+//		// sample the landscape for elevation
+//		for (int i = 0; i < rSampleSize; ++i) {
+//			for (int j = 0; j < cSampleSize; ++j) {
+//				vert.set((float) (lowerBound.getX() + j * pixelWidth), (float) (lowerBound.getY() + i * pixelLength), 0);
+//				if (MathUtil.isInsidePolygon(vert, vertex)) {
+//					double el = getElevationAtHighestLevel(vert.getX(), vert.getY())-minZ;
+//					if (!Double.isNaN(el)) {
+//						vert.setZ(el);
+//						if (el < lowerBound.getZ()) {
+//							el = -getSample(vert, Vector3.UNIT_Z, polygon);
+//						} else if (el > upperBound.getZ()) {
+//							el = getSample(vert, Vector3.NEG_UNIT_Z, polygon);
+//						} else {
+//							el = getSample(vert, Vector3.NEG_UNIT_Z, polygon);
+//							if (Double.isNaN(el)) {
+//								el = -getSample(vert, Vector3.UNIT_Z, polygon);
+//							}
+//						}
+//						if (!Double.isNaN(el)) {
+//							volume += el * pixelWidth * pixelLength;
+//						}
+//					}
+//				}
+//			}
+//		}
+//		return (volume);
+//	}
+	public double[] getSampledVolumeOfRegion(Vector3[] vertex, ReadOnlyVector3 lowerBound, ReadOnlyVector3 upperBound,
+			Spatial polygon) {
+			int cSampleSize = (int) ((upperBound.getX() - lowerBound.getX()) / pixelWidth);
+			int rSampleSize = (int) ((upperBound.getY() - lowerBound.getY()) / pixelLength);
+			Vector3 vert = new Vector3();
+			double volumeAbove = 0;
+			double volumeBelow = 0;
+			// sample the landscape for elevation
+			for (int i = 0; i < rSampleSize; ++i) {
+				for (int j = 0; j < cSampleSize; ++j) {
+					vert.set((float) (lowerBound.getX() + j * pixelWidth), (float) (lowerBound.getY() + i * pixelLength), 0);
+					if (MathUtil.isInsidePolygon(vert, vertex)) {
+						double el = getElevationAtHighestLevel(vert.getX(), vert.getY())-minZ;
 						if (!Double.isNaN(el)) {
-							volume += el * pixelWidth * pixelLength;
+							vert.setZ(maxZ-minZ+1);
+							double pZ = sampleSpatial(vert, Vector3.NEG_UNIT_Z, polygon);
+//							System.err.println("Landscape.getSampledVolumeOfRegion "+polygon.getWorldBound()+" "+el+" "+maxZ+" "+pZ+" "+vert);
+							if (!Double.isNaN(pZ)) {
+								if (el < pZ) {
+									volumeBelow += (pZ-el)*pixelWidth*pixelLength;
+								}
+								else {
+									volumeAbove += (el-pZ)*pixelWidth*pixelLength;
+								}
+							}
 						}
 					}
 				}
 			}
+			return (new double[] {volumeAbove, volumeBelow});
 		}
-		return (volume);
+
+	private double sampleSpatial(Vector3 p0, ReadOnlyVector3 dir, Spatial node) {
+		// Create a ray starting from the point, and going in the given
+		// direction
+		PrimitivePickResults pr = new PrimitivePickResults();
+		final Ray3 ray = new Ray3(p0, dir);
+		pr.setCheckDistance(true);
+		PickingUtil.findPick(node, ray, pr, false);
+		if (pr.getNumber() == 0) {
+			return (Double.NaN);
+		}
+		double dist = Double.MAX_VALUE;
+		for (int i = 0; i < pr.getNumber(); ++i) {
+			PickData pd = pr.getPickData(i);
+			IntersectionRecord ir = pd.getIntersectionRecord();
+			int closestIndex = ir.getClosestIntersection();
+			double d = ir.getIntersectionDistance(closestIndex);
+			if (d < dist) {
+				dist = d;
+			}
+		}
+		return (p0.getZ()-dist);
 	}
 
 	/**
@@ -918,28 +974,28 @@ public class Landscape extends Node implements ViewDependent {
 		return (new int[] { rows, columns });
 	}
 
-	private double getSample(Vector3 p0, ReadOnlyVector3 dir, Spatial node) {
-		// Create a ray starting from the point, and going in the given
-		// direction
-		PrimitivePickResults pr = new PrimitivePickResults();
-		final Ray3 ray = new Ray3(p0, dir);
-		pr.setCheckDistance(true);
-		PickingUtil.findPick(node, ray, pr, false);
-		if (pr.getNumber() == 0) {
-			return (Double.NaN);
-		}
-		double dist = Double.MAX_VALUE;
-		for (int i = 0; i < pr.getNumber(); ++i) {
-			PickData pd = pr.getPickData(i);
-			IntersectionRecord ir = pd.getIntersectionRecord();
-			int closestIndex = ir.getClosestIntersection();
-			double d = ir.getIntersectionDistance(closestIndex);
-			if (d < dist) {
-				dist = d;
-			}
-		}
-		return (dist);
-	}
+//	private double getSample(Vector3 p0, ReadOnlyVector3 dir, Spatial node) {
+//		// Create a ray starting from the point, and going in the given
+//		// direction
+//		PrimitivePickResults pr = new PrimitivePickResults();
+//		final Ray3 ray = new Ray3(p0, dir);
+//		pr.setCheckDistance(true);
+//		PickingUtil.findPick(node, ray, pr, false);
+//		if (pr.getNumber() == 0) {
+//			return (Double.NaN);
+//		}
+//		double dist = Double.MAX_VALUE;
+//		for (int i = 0; i < pr.getNumber(); ++i) {
+//			PickData pd = pr.getPickData(i);
+//			IntersectionRecord ir = pd.getIntersectionRecord();
+//			int closestIndex = ir.getClosestIntersection();
+//			double d = ir.getIntersectionDistance(closestIndex);
+//			if (d < dist) {
+//				dist = d;
+//			}
+//		}
+//		return (dist);
+//	}
 
 	/**
 	 * Given a region, return its surface area sampled from the landscape.

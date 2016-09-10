@@ -208,7 +208,7 @@ public class LandscapeTest {
 		polygon.updateModelBound();
 		polygon.updateGeometricState(0);
 		vertex = new Vector3[] {new Vector3(0,0,zVal), new Vector3(10,0,zVal), new Vector3(10,10,zVal), new Vector3(0,10,zVal), new Vector3(0,0,zVal)};
-		double sampledVolume = landscape.getSampledVolumeOfRegion(vertex, lowerBound, upperBound, polygon);
+		double[] sampledVolume = landscape.getSampledVolumeOfRegion(vertex, lowerBound, upperBound, polygon);
 		double volume = 0;
 		for (int r=0; r<10; ++r) {
 			for (int c=0; c<10; ++c) {
@@ -217,7 +217,7 @@ public class LandscapeTest {
 			}
 		}
 		System.err.println("LandscapeTest.testGetSampledVolumeOfRegion 10x10 region = "+volume+" "+sampledVolume);
-		return((int)sampledVolume == (int)volume);
+		return((int)(sampledVolume[0]+sampledVolume[1]) == (int)volume);
 	}
 	
 	private boolean testGetSampledSurfaceAreaOfRegion(Landscape landscape) {

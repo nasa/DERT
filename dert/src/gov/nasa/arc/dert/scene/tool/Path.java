@@ -970,7 +970,9 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			str += "Sampled Mean Slope: "
 				+ (float) landscape.getSampledMeanSlopeOfRegion(vertex, lowerBound, upperBound) + "\n";
 			poly.getSceneHints().setPickingHint(PickingHint.Pickable, true);
-			str += "Sampled Volume: " + landscape.getSampledVolumeOfRegion(vertex, lowerBound, upperBound, poly) + "\n";
+			double[] vol = landscape.getSampledVolumeOfRegion(vertex, lowerBound, upperBound, poly);
+			str += "Sampled Volume Above Polygon: " + vol[0] + "\n";
+			str += "Sampled Volume Below Polygon: " + vol[1] + "\n";
 			poly.getSceneHints().setPickingHint(PickingHint.Pickable, false);
 			str += "Sampled Surface Area: " + landscape.getSampledSurfaceAreaOfRegion(vertex, lowerBound, upperBound)
 				+ "\n";

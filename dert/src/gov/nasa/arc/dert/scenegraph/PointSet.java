@@ -248,6 +248,7 @@ public class PointSet extends Node {
 		MathUtil.computePolygonNormal(vertexBuffer, normalBuffer, true);
 		poly.getMeshData().setVertexBuffer(vertexBuffer);
 		poly.getMeshData().setNormalBuffer(normalBuffer);
+		poly.getMeshData().updateVertexCount();
 		poly.markDirty(DirtyType.Bounding);
 		poly.updateModelBound();
 		poly.updateGeometricState(0);
