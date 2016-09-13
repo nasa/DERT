@@ -5,13 +5,16 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.LayerManager;
 import gov.nasa.arc.dert.landscape.factory.LayerFactory;
 import gov.nasa.arc.dert.util.MathUtil;
+import gov.nasa.arc.dert.util.Tessellator;
 
 import java.awt.Color;
 import java.io.File;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 import com.ardor3d.bounding.BoundingBox;
 import com.ardor3d.math.Vector3;
+import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.util.geom.BufferUtils;
@@ -190,18 +193,19 @@ public class LandscapeTest {
 	}
 	
 	private boolean testGetSampledVolumeOfRegion(Landscape landscape) {
-//		double zVal = -landscape.getMinimumElevation();
 		System.err.println("Landscape Minimum Elevation: "+landscape.getMinimumElevation());
 		System.err.println("Landscape Maximum Elevation: "+landscape.getMaximumElevation());
-//		Vector3 lowerBound = new Vector3(0,0,zVal);
-//		Vector3 upperBound = new Vector3(10,10,zVal);
 		int numPix = 256;
 		double zVal = 0-landscape.getMinimumElevation();
 		Vector3 lowerBound = new Vector3(-numPix, -numPix, zVal);
 		Vector3 upperBound = new Vector3(numPix, numPix, zVal);
-		Vector3[] vertex = new Vector3[] {new Vector3(lowerBound), new Vector3(upperBound.getX(),lowerBound.getY(),lowerBound.getZ()), new Vector3(upperBound), new Vector3(lowerBound), new Vector3(upperBound), new Vector3(lowerBound.getX(),upperBound.getY(),lowerBound.getZ())};
+		Vector3[] vertex = new Vector3[] {new Vector3(lowerBound), new Vector3(upperBound.getX(),lowerBound.getY(),lowerBound.getZ()), new Vector3(upperBound), new Vector3(lowerBound.getX(),upperBound.getY(),lowerBound.getZ()), new Vector3(lowerBound)};
+		ArrayList<ReadOnlyVector3> pointList = new ArrayList<ReadOnlyVector3>();
+		for (int i=0; i<vertex.length; ++i)
+			pointList.add(vertex[i]);
+		Tessellator tessellator = new Tessellator();
+		FloatBuffer vertexBuffer = tessellator.tessellate(pointList, null);
 		Mesh polygon = new Mesh("_polygon");
-		FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertex);
 		vertexBuffer.rewind();
 		FloatBuffer normalBuffer = BufferUtils.createFloatBuffer(vertexBuffer.capacity());
 		normalBuffer.rewind();
@@ -213,7 +217,6 @@ public class LandscapeTest {
 		polygon.markDirty(DirtyType.Bounding);
 		polygon.updateModelBound();
 		polygon.updateGeometricState(0);
-		vertex = new Vector3[] {new Vector3(lowerBound), new Vector3(upperBound.getX(),lowerBound.getY(),lowerBound.getZ()), new Vector3(upperBound), new Vector3(lowerBound.getX(),upperBound.getY(),lowerBound.getZ()), new Vector3(lowerBound)};
 		double[] sampledVolume = landscape.getSampledVolumeOfRegion(vertex, lowerBound, upperBound, polygon);
 		double volumeAbove = 0;
 		double volumeBelow = 0;
@@ -226,7 +229,7 @@ public class LandscapeTest {
 					volumeBelow -= (z);
 			}
 		}
-		System.err.println("LandscapeTest.testGetSampledVolumeOfRegion "+numPix+"x"+numPix+" region = "+volumeAbove+" "+sampledVolume[0]+" "+volumeBelow+" "+sampledVolume[1]);
+		System.err.println("LandscapeTest.testGetSampledVolumeOfRegion "+numPix+"x"+numPix+" region = above:"+volumeAbove+"="+sampledVolume[0]+" below:"+volumeBelow+"="+sampledVolume[1]);
 		return(((int)sampledVolume[0] == (int)volumeAbove) && ((int)sampledVolume[1] == (int)volumeBelow));
 	}
 	

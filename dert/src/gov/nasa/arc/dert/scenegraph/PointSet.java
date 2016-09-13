@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.scenegraph;
 
+import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.Tessellator;
 
@@ -53,7 +54,7 @@ public class PointSet extends Node {
 	 *            the index to insert the point, -1 indicates to add at the end
 	 * @return the index where the point was added
 	 */
-	public int addPoint(BillboardMarker p, int index) {
+	public int addPoint(Waypoint p, int index) {
 		if ((index == getNumberOfChildren()) || (index < 0)) {
 			attachChild(p);
 			index = getChildIndex(p);			
@@ -64,6 +65,14 @@ public class PointSet extends Node {
 		}
 		updateGeometricState(0);
 		return (index);
+	}
+	
+	public void setWaypointsOnGround(boolean onGround) {
+		int n = getNumberOfChildren();
+		for (int i=0; i<n; ++i) {
+			Waypoint wp = (Waypoint)getChild(i);
+			wp.setOnGround(onGround);
+		}
 	}
 
 	/**

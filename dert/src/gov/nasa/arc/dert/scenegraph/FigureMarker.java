@@ -19,7 +19,7 @@ import com.ardor3d.scenegraph.hint.CullHint;
  */
 public class FigureMarker extends Marker {
 
-	protected static float AMBIENT_FACTOR = 0.75f;
+	public static float AMBIENT_FACTOR = 0.75f;
 
 	// Rotation
 	protected double azimuth, tilt;

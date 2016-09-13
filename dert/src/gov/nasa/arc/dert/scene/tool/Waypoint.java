@@ -3,15 +3,23 @@ package gov.nasa.arc.dert.scene.tool;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scenegraph.BillboardMarker;
+import gov.nasa.arc.dert.scenegraph.FigureMarker;
+import gov.nasa.arc.dert.scenegraph.RasterText;
+import gov.nasa.arc.dert.scenegraph.Shape;
+import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
+import gov.nasa.arc.dert.scenegraph.Text.AlignType;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.state.WaypointState;
 import gov.nasa.arc.dert.util.ImageUtil;
+import gov.nasa.arc.dert.util.SpatialUtil;
 
 import javax.swing.Icon;
 
 import com.ardor3d.image.Texture;
+import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
+import com.ardor3d.renderer.state.MaterialState.MaterialFace;
 import com.ardor3d.scenegraph.Node;
 
 /**
@@ -28,6 +36,10 @@ public class Waypoint extends BillboardMarker implements MapElement {
 
 	// Map element state
 	protected WaypointState state;
+	
+	// Waypoint is represented as sphere on the surface
+	protected boolean onGround;
+	protected Shape shape;
 
 	/**
 	 * Constructor
@@ -94,6 +106,87 @@ public class Waypoint extends BillboardMarker implements MapElement {
 			return (null);
 		}
 		return ((Path) parent.getParent());
+	}
+
+	/**
+	 * Set the texture
+	 * 
+	 * @param nominalTexture
+	 * @param highlightTexture
+	 */
+	public void setOnGround(boolean onGround) {
+		if (this.onGround == onGround)
+			return;
+		this.onGround = onGround;
+		if (onGround) {
+			contents.detachChild(billboard);
+			shape = Shape.createShape("_geometry", ShapeType.sphere, (float)size*0.5f);
+			shape.updateWorldBound(true);
+			SpatialUtil.setPickHost(shape, this);
+			contents.attachChild(shape);
+			updateWorldBound(true);
+			scaleShape(scale);
+		}
+		else {
+			contents.detachChild(shape);
+			shape = null;
+			contents.attachChild(billboard);
+			updateWorldBound(true);
+			scaleShape(scale);
+		}
+		setMaterialState();
+	}
+	
+	public boolean isOnGround() {
+		return(onGround);
+	}
+
+	@Override
+	protected void setMaterialState() {
+		if (onGround) {
+			materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * FigureMarker.AMBIENT_FACTOR,
+					colorRGBA.getGreen() * FigureMarker.AMBIENT_FACTOR, colorRGBA.getBlue() * FigureMarker.AMBIENT_FACTOR, colorRGBA.getAlpha()));
+			materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
+			materialState.setEmissive(MaterialFace.FrontAndBack, ColorRGBA.BLACK);
+		}
+		else
+			super.setMaterialState();
+	}
+
+	@Override
+	protected void enableHighlight(boolean enable) {
+		if (onGround) {
+			if (enable) {
+				materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * FigureMarker.AMBIENT_FACTOR,
+					colorRGBA.getGreen() * FigureMarker.AMBIENT_FACTOR, colorRGBA.getBlue() * FigureMarker.AMBIENT_FACTOR, colorRGBA.getAlpha()));
+				materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
+				materialState.setEmissive(MaterialFace.FrontAndBack, colorRGBA);
+			} else {
+				setMaterialState();
+			}
+		}
+		else {
+			if (enable) {
+				billboard.setTexture(highlightTexture);
+				materialState.setEmissive(MaterialFace.FrontAndBack, highlightColorRGBA);
+			} else {
+				billboard.setTexture(nominalTexture);
+				materialState.setEmissive(MaterialFace.FrontAndBack, colorRGBA);
+			}
+		}
+	}
+
+	@Override
+	protected void createLabel(boolean labelVisible) {
+		if (onGround)
+			super.createLabel(labelVisible);
+		else {
+			label = new RasterText("_label", labelStr, AlignType.Center, true);
+			label.setScaleFactor((float) (0.75 * size));
+			label.setColor(labelColorRGBA);
+			label.setTranslation(0, 1.5, 0);
+			label.setVisible(labelVisible);
+		}
 	}
 
 }

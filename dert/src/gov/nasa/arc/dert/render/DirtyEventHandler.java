@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.render;
 
 import gov.nasa.arc.dert.scene.Marble;
-import gov.nasa.arc.dert.scenegraph.BillboardMarker;
+import gov.nasa.arc.dert.scenegraph.Billboard;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.scenegraph.Movable;
 
@@ -45,25 +45,25 @@ public class DirtyEventHandler implements DirtyEventListener {
 		switch (type) {
 		case Attached:
 			rootNode.updateGeometricState(0, true);
-			changed.set(!(spatial instanceof BillboardMarker));
+			changed.set(!(spatial instanceof Billboard));
 			break;
 		case Detached:
 			rootNode.updateGeometricState(0, true);
-			changed.set(!(spatial instanceof BillboardMarker));
+			changed.set(!(spatial instanceof Billboard));
 			break;
 		case Bounding:
 			rootNode.updateGeometricState(0, true);
 			break;
 		case RenderState:
 			rootNode.updateGeometricState(0, true);
-			changed.set(!(spatial instanceof BillboardMarker));
+			changed.set(!(spatial instanceof Billboard));
 			break;
 		case Transform:
 			spatial.updateWorldTransform(true);
 			if (spatial instanceof Movable) {
 				((Movable) spatial).notifyListeners();
 			}
-			changed.set(!(spatial instanceof BillboardMarker) && !(spatial instanceof Marble));
+			changed.set(!(spatial instanceof Billboard) && !(spatial instanceof Marble));
 			break;
 		case Destroyed:
 			break;
