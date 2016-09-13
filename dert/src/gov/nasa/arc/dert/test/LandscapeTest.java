@@ -190,10 +190,16 @@ public class LandscapeTest {
 	}
 	
 	private boolean testGetSampledVolumeOfRegion(Landscape landscape) {
-		double zVal = -landscape.getMinimumElevation();
-		Vector3[] vertex = new Vector3[] {new Vector3(0,0,zVal), new Vector3(10,0,zVal), new Vector3(10,10,zVal), new Vector3(0,0,zVal), new Vector3(10,10,zVal), new Vector3(0,10,zVal)};
-		Vector3 lowerBound = new Vector3(0,0,zVal);
-		Vector3 upperBound = new Vector3(10,10,zVal);
+//		double zVal = -landscape.getMinimumElevation();
+		System.err.println("Landscape Minimum Elevation: "+landscape.getMinimumElevation());
+		System.err.println("Landscape Maximum Elevation: "+landscape.getMaximumElevation());
+//		Vector3 lowerBound = new Vector3(0,0,zVal);
+//		Vector3 upperBound = new Vector3(10,10,zVal);
+		int numPix = 256;
+		double zVal = 0-landscape.getMinimumElevation();
+		Vector3 lowerBound = new Vector3(-numPix, -numPix, zVal);
+		Vector3 upperBound = new Vector3(numPix, numPix, zVal);
+		Vector3[] vertex = new Vector3[] {new Vector3(lowerBound), new Vector3(upperBound.getX(),lowerBound.getY(),lowerBound.getZ()), new Vector3(upperBound), new Vector3(lowerBound), new Vector3(upperBound), new Vector3(lowerBound.getX(),upperBound.getY(),lowerBound.getZ())};
 		Mesh polygon = new Mesh("_polygon");
 		FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertex);
 		vertexBuffer.rewind();
@@ -207,17 +213,21 @@ public class LandscapeTest {
 		polygon.markDirty(DirtyType.Bounding);
 		polygon.updateModelBound();
 		polygon.updateGeometricState(0);
-		vertex = new Vector3[] {new Vector3(0,0,zVal), new Vector3(10,0,zVal), new Vector3(10,10,zVal), new Vector3(0,10,zVal), new Vector3(0,0,zVal)};
+		vertex = new Vector3[] {new Vector3(lowerBound), new Vector3(upperBound.getX(),lowerBound.getY(),lowerBound.getZ()), new Vector3(upperBound), new Vector3(lowerBound.getX(),upperBound.getY(),lowerBound.getZ()), new Vector3(lowerBound)};
 		double[] sampledVolume = landscape.getSampledVolumeOfRegion(vertex, lowerBound, upperBound, polygon);
-		double volume = 0;
-		for (int r=0; r<10; ++r) {
-			for (int c=0; c<10; ++c) {
+		double volumeAbove = 0;
+		double volumeBelow = 0;
+		for (int r=-numPix; r<numPix; ++r) {
+			for (int c=-numPix; c<numPix; ++c) {
 				double z = demFactory.getZ(c, r);
-				volume += z;
+				if (z > 0)
+					volumeAbove += (z);
+				else
+					volumeBelow -= (z);
 			}
 		}
-		System.err.println("LandscapeTest.testGetSampledVolumeOfRegion 10x10 region = "+volume+" "+sampledVolume);
-		return((int)(sampledVolume[0]+sampledVolume[1]) == (int)volume);
+		System.err.println("LandscapeTest.testGetSampledVolumeOfRegion "+numPix+"x"+numPix+" region = "+volumeAbove+" "+sampledVolume[0]+" "+volumeBelow+" "+sampledVolume[1]);
+		return(((int)sampledVolume[0] == (int)volumeAbove) && ((int)sampledVolume[1] == (int)volumeBelow));
 	}
 	
 	private boolean testGetSampledSurfaceAreaOfRegion(Landscape landscape) {

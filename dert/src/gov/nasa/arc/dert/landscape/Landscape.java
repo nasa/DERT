@@ -31,7 +31,6 @@ import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.LightCombineMode;
-import com.ardor3d.scenegraph.hint.PickingHint;
 
 /**
  * Provides a class for handling the Landscape.
@@ -452,6 +451,15 @@ public class Landscape extends Node implements ViewDependent {
 	 */
 	public double getMinimumElevation() {
 		return (minZ);
+	}
+
+	/**
+	 * Get the maximum elevation of the landscape
+	 * 
+	 * @return
+	 */
+	public double getMaximumElevation() {
+		return (maxZ);
 	}
 
 	/**
@@ -884,11 +892,11 @@ public class Landscape extends Node implements ViewDependent {
 				for (int j = 0; j < cSampleSize; ++j) {
 					vert.set((float) (lowerBound.getX() + j * pixelWidth), (float) (lowerBound.getY() + i * pixelLength), 0);
 					if (MathUtil.isInsidePolygon(vert, vertex)) {
-						double el = getElevationAtHighestLevel(vert.getX(), vert.getY())-minZ;
+						double el = getElevationAtHighestLevel(vert.getX(), vert.getY())-minZ * pixelScale;
 						if (!Double.isNaN(el)) {
-							vert.setZ(maxZ-minZ+1);
+							vert.setZ(upperBound.getZ()+1);
 							double pZ = sampleSpatial(vert, Vector3.NEG_UNIT_Z, polygon);
-//							System.err.println("Landscape.getSampledVolumeOfRegion "+polygon.getWorldBound()+" "+el+" "+maxZ+" "+pZ+" "+vert);
+//							System.err.println("Landscape.getSampledVolumeOfRegion "+el+" "+maxZ+" "+minZ+" "+pZ+" "+vert);
 							if (!Double.isNaN(pZ)) {
 								if (el < pZ) {
 									volumeBelow += (pZ-el)*pixelWidth*pixelLength;
@@ -910,6 +918,7 @@ public class Landscape extends Node implements ViewDependent {
 		PrimitivePickResults pr = new PrimitivePickResults();
 		final Ray3 ray = new Ray3(p0, dir);
 		pr.setCheckDistance(true);
+//		System.err.println("Landscape.sampleSpatial "+ray+" "+node.getWorldBound());
 		PickingUtil.findPick(node, ray, pr, false);
 		if (pr.getNumber() == 0) {
 			return (Double.NaN);

@@ -175,7 +175,7 @@ public class ViewpointStore {
 			+ frustumTop + "\n";
 		str += "  Azimuth: " + Math.toDegrees(azimuth) + ", Elevation: " + Math.toDegrees(elevation) + "\n";
 		str += "  Scale: " + BasicCamera.magFactor[magIndex] + "\n";
-		str += "  Hiking: "+hikeMode;
+		str += "  Hiking: "+hikeMode+"\n";
 		return (str);
 	}
 
