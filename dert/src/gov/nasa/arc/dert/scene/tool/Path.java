@@ -107,7 +107,10 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 
 	private Vector3 lowerBound, upperBound, tmpVec, location;
 	
+	// Stat calculation fields
 	private Thread statThread;
+	private boolean doVolume;
+	private double volElev;
 
 	/**
 	 * Constructor
@@ -922,66 +925,234 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		pointSet.setWaypointsOnGround(polyIsEnabled);
 		updateGeometricState(0, true);
 	}
+	
+	public void setVolumeFlags(boolean doVolume, double volElev) {
+		this.doVolume = doVolume;
+		this.volElev = volElev;
+	}
+//	
+//	public String getDimensions() {
+//		pointSet.updatePolygon(poly);
+//		int n = getNumberOfPoints();
+//		String str = "";
+//		str += "Number of Waypoints: " + n + "\n";
+//		if (n == 0) {
+//			str += "Lower Bounds: N/A\n";
+//			str += "Upper Bounds: N/A\n";
+//			str += "Centroid: N/A\n";
+//			str += "Total Path Distance: N/A\n";
+//		}
+//		else {
+//			pointSet.getBounds(lowerBound, upperBound);
+//			tmpVec.set(lowerBound);
+//			Landscape landscape = Landscape.getInstance();
+//			landscape.localToWorldCoordinate(tmpVec);
+//			str += "Lower Bounds: " + String.format(Landscape.format, tmpVec.getXf()) + "," + String.format(Landscape.format, tmpVec.getYf()) + "," + String.format(Landscape.format, tmpVec.getZf()) + "\n";
+//			tmpVec.set(upperBound);
+//			landscape.localToWorldCoordinate(tmpVec);
+//			str += "Upper Bounds: " + String.format(Landscape.format, tmpVec.getXf()) + "," + String.format(Landscape.format, tmpVec.getYf()) + "," + String.format(Landscape.format, tmpVec.getZf()) + "\n";
+//			Vector3 pos = pointSet.getCentroid();
+//			landscape.localToWorldCoordinate(pos);
+//			str += "Centroid: " + String.format(Landscape.format, pos.getXf()) + "," + String.format(Landscape.format, pos.getYf()) + "," + String.format(Landscape.format, pos.getZf()) + "\n";
+//			str += "Total Path Distance: " + String.format(Landscape.format, pointSet.getDistance()) + "\n";
+//		}
+//		if (n < 3) {
+//			str += "Planimetric Area: N/A\n";
+//		}
+//		else {
+//			Vector3[] vertex = new Vector3[n + 1];
+//			for (int i = 0; i < n; ++i) {
+//				vertex[i] = new Vector3(pointSet.getChild(i).getWorldTranslation());
+//			}
+//			vertex[n] = new Vector3(vertex[0]);
+//
+//			str += "Planimetric Area: " + pointSet.getArea() + "\n";
+//		}
+//		return(str);
+//	}
+//	
+//	public String getSurfaceArea() {
+//		String str = "";
+//		int n = getNumberOfPoints();
+//		if (n < 3) {
+//			str += "Surface Area: N/A\n";
+//		}
+//		else {
+//			Vector3[] vertex = new Vector3[n + 1];
+//			for (int i = 0; i < n; ++i) {
+//				vertex[i] = new Vector3(pointSet.getChild(i).getTranslation());
+//			}
+//			vertex[n] = new Vector3(vertex[0]);
+//
+//			double sampledVal = Landscape.getInstance().getSampledSurfaceAreaOfRegion(vertex, lowerBound, upperBound);
+//			if (Double.isNaN(sampledVal))
+//				return(null);
+//			str += "Surface Area: "+String.format(Landscape.format, sampledVal)+"\n";
+//		}
+//		return(str);
+//	}
+//	
+//	public String getMeanElevation() {
+//		String str = "";
+//		int n = getNumberOfPoints();
+//		if (n < 3) {
+//			float mElev = 0;
+//			for (int i = 0; i < n; ++i) {
+//				mElev += pointSet.getChild(i).getWorldTranslation().getZf();
+//			}
+//			mElev /= n;
+//			str += "Mean Elevation: " + mElev + "\n";
+//		} else {
+//			Vector3[] vertex = new Vector3[n + 1];
+//			for (int i = 0; i < n; ++i) {
+//				vertex[i] = new Vector3(pointSet.getChild(i).getTranslation());
+//			}
+//			vertex[n] = new Vector3(vertex[0]);
+//
+//			double sampledVal = Landscape.getInstance().getSampledMeanElevationOfRegion(vertex, lowerBound, upperBound);
+//			if (Double.isNaN(sampledVal))
+//				return(null);
+//			str += "Mean Elevation: "+String.format(Landscape.format, sampledVal)+"\n";
+//		}
+//		return(str);
+//	}
+//	
+//	public String getMeanSlope() {
+//		String str = "";
+//		int n = getNumberOfPoints();
+//		if (n < 3) {
+//			str += "Mean Slope: N/A\n";
+//		} else {
+//			Vector3[] vertex = new Vector3[n + 1];
+//			for (int i = 0; i < n; ++i) {
+//				vertex[i] = new Vector3(pointSet.getChild(i).getTranslation());
+//			}
+//			vertex[n] = new Vector3(vertex[0]);
+//
+//			double sampledVal = Landscape.getInstance().getSampledMeanSlopeOfRegion(vertex, lowerBound, upperBound);
+//			if (Double.isNaN(sampledVal))
+//				return(null);
+//			str += "Mean Slope: "+String.format(Landscape.format, sampledVal)+"\n";
+//		}
+//		return(str);
+//	}
+//	
+//	public String getVolume(double volElev) {
+//		String str = "";
+//		int n = getNumberOfPoints();
+//		if (n < 3) {
+//			str += "Volume: N/A\n";
+//		} else {
+//			Vector3[] vertex = new Vector3[n + 1];
+//			for (int i = 0; i < n; ++i) {
+//				vertex[i] = new Vector3(pointSet.getChild(i).getTranslation());
+//			}
+//			vertex[n] = new Vector3(vertex[0]);
+//			double[] vol = null;
+//			String limit = null;
+//			if (!Double.isNaN(volElev)) {
+//				vol = Landscape.getInstance().getSampledVolumeOfRegion(vertex, lowerBound, upperBound, volElev);
+//				limit = "Elevation "+volElev;
+//			}
+//			else {
+//				poly.getSceneHints().setPickingHint(PickingHint.Pickable, true);
+//				vol = Landscape.getInstance().getSampledVolumeOfRegion(vertex, lowerBound, upperBound, poly);
+//				poly.getSceneHints().setPickingHint(PickingHint.Pickable, false);
+//				limit = "Polygon";
+//			}
+//			if (vol == null)
+//				return(null);
+//			str += "Volume Above "+limit+": " + String.format(Landscape.format, vol[0]) + "\n";
+//			str += "Volume Below "+limit+": " + String.format(Landscape.format, vol[1]) + "\n";
+//		}
+//		return(str);
+//	}
 
 	public String getStatistics() {
 		pointSet.updatePolygon(poly);
 		int n = getNumberOfPoints();
 		String str = "";
-		str += "Number of Waypoints: " + n + "\n";
-		if (n == 0) {
-			str += "Lower Bounds: N/A\n";
-			str += "Upper Bounds: N/A\n";
-			str += "Centroid: N/A\n";
-			str += "Total Path Distance: N/A\n";
-			str += "Planimetric Area: N/A\n";
-			str += "Sampled Mean Elevation: N/A\n";
-			str += "Sampled Mean Slope: N/A\n";
-			str += "Sampled Volume: N/A\n";
-			str += "Sampled Surface Area: N/A\n";
+		try {
+			str += "Number of Waypoints: " + n + "\n";
+			if (n == 0) {
+				str += "Lower Bounds: N/A\n";
+				str += "Upper Bounds: N/A\n";
+				str += "Centroid: N/A\n";
+				str += "Total Path Distance: N/A\n";
+				str += "Planimetric Area: N/A\n";
+				str += "Mean Elevation: N/A\n";
+				str += "Mean Slope: N/A\n";
+				str += "Volume: N/A\n";
+				str += "Surface Area: N/A\n";
+			}
+			pointSet.getBounds(lowerBound, upperBound);
+			tmpVec.set(lowerBound);
+			Landscape landscape = Landscape.getInstance();
+			landscape.localToWorldCoordinate(tmpVec);
+			str += "Lower Bounds: " + String.format(Landscape.stringFormat, tmpVec.getXf()) + "," + String.format(Landscape.stringFormat, tmpVec.getYf()) + "," + String.format(Landscape.stringFormat, tmpVec.getZf()) + "\n";
+			tmpVec.set(upperBound);
+			landscape.localToWorldCoordinate(tmpVec);
+			str += "Upper Bounds: " + String.format(Landscape.stringFormat, tmpVec.getXf()) + "," + String.format(Landscape.stringFormat, tmpVec.getYf()) + "," + String.format(Landscape.stringFormat, tmpVec.getZf()) + "\n";
+			Vector3 pos = pointSet.getCentroid();
+			landscape.localToWorldCoordinate(pos);
+			str += "Centroid: " + String.format(Landscape.stringFormat, pos.getXf()) + "," + String.format(Landscape.stringFormat, pos.getYf()) + "," + String.format(Landscape.stringFormat, pos.getZf()) + "\n";
+			str += "Total Path Distance: " + String.format(Landscape.stringFormat, pointSet.getDistance()) + "\n";
+	
+			if (n < 3) {
+				str += "Planimetric Area: N/A\n";
+				float mElev = 0;
+				for (int i = 0; i < n; ++i) {
+					mElev += pointSet.getChild(i).getWorldTranslation().getZf();
+				}
+				mElev /= n;
+				str += "Mean Elevation: " + String.format(Landscape.stringFormat, mElev) + "\n";
+				str += "Mean Slope: N/A\n";
+				str += "Volume: N/A\n";
+				str += "Surface Area: N/A\n";
+			} else {
+				Vector3[] vertex = new Vector3[n + 1];
+				for (int i = 0; i < n; ++i) {
+					vertex[i] = new Vector3(pointSet.getChild(i).getWorldTranslation());
+				}
+				vertex[n] = new Vector3(vertex[0]);
+	
+				str += "Planimetric Area: " + String.format(Landscape.stringFormat, pointSet.getArea()) + "\n";
+				double sampledVal = landscape.getSampledMeanElevationOfRegion(vertex, lowerBound, upperBound);
+				if (Double.isNaN(sampledVal))
+					return(str);
+				str += "Mean Elevation: "+String.format(Landscape.stringFormat, sampledVal)+"\n";
+				sampledVal = landscape.getSampledMeanSlopeOfRegion(vertex, lowerBound, upperBound);
+				if (Double.isNaN(sampledVal))
+					return(str);
+				str += "Mean Slope: "+String.format(Landscape.stringFormat, sampledVal)+"\n";
+				sampledVal = landscape.getSampledSurfaceAreaOfRegion(vertex, lowerBound, upperBound);
+				if (Double.isNaN(sampledVal))
+					return(str);
+				str += "Surface Area: "+String.format(Landscape.stringFormat, sampledVal)+"\n";
+				
+				if (doVolume) {
+					double[] vol = null;
+					String limit = null;
+					if (!Double.isNaN(volElev)) {
+						vol = landscape.getSampledVolumeOfRegion(vertex, lowerBound, upperBound, volElev);
+						limit = "Elevation "+String.format(Landscape.stringFormat, volElev);
+					}
+					else {
+						poly.getSceneHints().setPickingHint(PickingHint.Pickable, true);
+						vol = landscape.getSampledVolumeOfRegion(vertex, lowerBound, upperBound, poly);
+						poly.getSceneHints().setPickingHint(PickingHint.Pickable, false);
+						limit = "Polygon";
+					}
+					if (vol == null)
+						return(str);
+					str += "Volume Above "+limit+": " + String.format(Landscape.stringFormat, vol[0]) + "\n";
+					str += "Volume Below "+limit+": " + String.format(Landscape.stringFormat, vol[1]) + "\n";
+				}
+			}
 		}
-		pointSet.getBounds(lowerBound, upperBound);
-		tmpVec.set(lowerBound);
-		Landscape landscape = Landscape.getInstance();
-		landscape.localToWorldCoordinate(tmpVec);
-		str += "Lower Bounds: " + tmpVec.getXf() + "," + tmpVec.getYf() + "," + tmpVec.getZf() + "\n";
-		tmpVec.set(upperBound);
-		landscape.localToWorldCoordinate(tmpVec);
-		str += "Upper Bounds: " + tmpVec.getXf() + "," + tmpVec.getYf() + "," + tmpVec.getZf() + "\n";
-		Vector3 pos = pointSet.getCentroid();
-		landscape.localToWorldCoordinate(pos);
-		str += "Centroid: " + pos.getXf() + "," + pos.getYf() + "," + pos.getZf() + "\n";
-		str += "Total Path Distance: " + (float) pointSet.getDistance() + "\n";
-
-		if (n < 3) {
-			str += "Planimetric Area: N/A\n";
-			float mElev = 0;
-			for (int i = 0; i < n; ++i) {
-				mElev += pointSet.getChild(i).getWorldTranslation().getZf();
-			}
-			mElev /= n;
-			str += "Sampled Mean Elevation: " + mElev + "\n";
-			str += "Sampled Mean Slope: N/A\n";
-			str += "Sampled Volume: N/A\n";
-			str += "Sampled Surface Area: N/A\n";
-		} else {
-			Vector3[] vertex = new Vector3[n + 1];
-			for (int i = 0; i < n; ++i) {
-				vertex[i] = new Vector3(pointSet.getChild(i).getWorldTranslation());
-			}
-			vertex[n] = new Vector3(vertex[0]);
-
-			str += "Planimetric Area: " + pointSet.getArea() + "\n";
-			str += "Sampled Mean Elevation: "
-				+ (float) landscape.getSampledMeanElevationOfRegion(vertex, lowerBound, upperBound) + "\n";
-			str += "Sampled Mean Slope: "
-				+ (float) landscape.getSampledMeanSlopeOfRegion(vertex, lowerBound, upperBound) + "\n";
-			poly.getSceneHints().setPickingHint(PickingHint.Pickable, true);
-			double[] vol = landscape.getSampledVolumeOfRegion(vertex, lowerBound, upperBound, poly);
-			str += "Sampled Volume Above Polygon: " + vol[0] + "\n";
-			str += "Sampled Volume Below Polygon: " + vol[1] + "\n";
-			poly.getSceneHints().setPickingHint(PickingHint.Pickable, false);
-			str += "Sampled Surface Area: " + landscape.getSampledSurfaceAreaOfRegion(vertex, lowerBound, upperBound)
-				+ "\n";
+		catch (Exception e) {
+			// do nothing
+			e.printStackTrace();
 		}
 		return (str);
 	}

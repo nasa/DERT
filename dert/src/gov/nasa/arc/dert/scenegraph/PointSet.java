@@ -13,7 +13,6 @@ import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.queue.RenderBucketType;
 import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.Node;
-import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.CullHint;
 import com.ardor3d.scenegraph.hint.PickingHint;
@@ -54,7 +53,7 @@ public class PointSet extends Node {
 	 *            the index to insert the point, -1 indicates to add at the end
 	 * @return the index where the point was added
 	 */
-	public int addPoint(Waypoint p, int index) {
+	public synchronized int addPoint(Waypoint p, int index) {
 		if ((index == getNumberOfChildren()) || (index < 0)) {
 			attachChild(p);
 			index = getChildIndex(p);			
@@ -80,11 +79,11 @@ public class PointSet extends Node {
 	 * 
 	 * @param point
 	 */
-	public void removePoint(BillboardMarker point) {
+	public synchronized void removePoint(Waypoint point) {
 		detachChild(point);
 	}
 
-	private ArrayList<ReadOnlyVector3> getPointList() {
+	private synchronized ArrayList<ReadOnlyVector3> getPointList() {
 		pointList.clear();
 		for (int i = 0; i < getNumberOfChildren(); ++i) {
 			pointList.add(new Vector3(getChild(i).getTranslation()));
@@ -105,8 +104,9 @@ public class PointSet extends Node {
 		double x = 0;
 		double y = 0;
 		double z = 0;
-		for (int i = 0; i < n; ++i) {
-			ReadOnlyVector3 trans = getChild(i).getWorldTranslation();
+		getPointList();
+		for (int i = 0; i < pointList.size(); ++i) {
+			ReadOnlyVector3 trans = pointList.get(i);
 			x += trans.getX();
 			y += trans.getY();
 			z += trans.getZ();
@@ -133,8 +133,9 @@ public class PointSet extends Node {
 		double yMax = -Double.MAX_VALUE;
 		double zMin = Double.MAX_VALUE;
 		double zMax = -Double.MAX_VALUE;
+		getPointList();
 		for (int i = 0; i < n; ++i) {
-			ReadOnlyVector3 vertex = getChild(i).getWorldTranslation();
+			ReadOnlyVector3 vertex = pointList.get(i);
 			xMin = Math.min(xMin, vertex.getX());
 			xMax = Math.max(xMax, vertex.getX());
 			yMin = Math.min(yMin, vertex.getY());
@@ -153,18 +154,17 @@ public class PointSet extends Node {
 	 */
 	public double getDistance() {
 		int pointCount = getNumberOfChildren();
-		if (pointCount == 0) {
+		if (pointCount < 2) {
 			return (0);
 		}
-		Spatial wp0 = getChild(0);
+		getPointList();
+		ReadOnlyVector3 p0 = pointList.get(0);
 		double distance = 0;
-		for (int i = 0; i < pointCount; ++i) {
-			Spatial wp = getChild(i);
-			ReadOnlyVector3 p0 = wp0.getTranslation();
-			ReadOnlyVector3 p1 = wp.getTranslation();
+		for (int i = 1; i < pointCount; ++i) {
+			ReadOnlyVector3 p1 = pointList.get(i);
 			double d = p0.distance(p1);
 			distance += d;
-			wp0 = wp;
+			p0 = p1;
 		}
 		return (distance);
 	}
@@ -230,9 +230,10 @@ public class PointSet extends Node {
 		}
 		vertexBuffer.clear();
 		ReadOnlyVector3 trans = null;
+		getPointList();
 		for (int i = 0; i < pointCount; ++i) {
 			int j = i * 3;
-			trans = getChild(i).getTranslation();
+			trans = pointList.get(i);
 			vertexBuffer.put(j, trans.getXf());
 			vertexBuffer.put(j + 1, trans.getYf());
 			vertexBuffer.put(j + 2, trans.getZf());
@@ -269,7 +270,7 @@ public class PointSet extends Node {
 	 * @return
 	 */
 	public Vector3[] getCurve(int steps) {
-		final ArrayList<ReadOnlyVector3> pointList = getPointList();
+		getPointList();
 		int n = pointList.size();
 		if (steps <= 1) {
 			Vector3[] vectors = new Vector3[n];
@@ -303,10 +304,10 @@ public class PointSet extends Node {
      */
     private Vector3[] toVector3SplineInterpolation(final int steps) {
 
-        final ArrayList<ReadOnlyVector3> controlPoints = getPointList();
+        getPointList();
 
         final int start = 1;
-        final int end = controlPoints.size()-2;
+        final int end = pointList.size()-2;
         final int count = (end - start) * steps;
 
         final Vector3[] vectors = new Vector3[count];
@@ -328,8 +329,8 @@ public class PointSet extends Node {
             final int p2 = index + 1;
             final int p3 = index + 2;
 
-            vectors[i] = spline.interpolate(controlPoints.get(p0), controlPoints.get(p1), controlPoints.get(p2),
-                    controlPoints.get(p3), t);
+            vectors[i] = spline.interpolate(pointList.get(p0), pointList.get(p1), pointList.get(p2),
+            		pointList.get(p3), t);
         }
 
         return vectors;

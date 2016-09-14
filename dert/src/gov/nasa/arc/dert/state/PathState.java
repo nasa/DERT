@@ -6,8 +6,8 @@ import gov.nasa.arc.dert.scene.tool.Path.BodyType;
 import gov.nasa.arc.dert.scene.tool.Path.LabelType;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.util.StateUtil;
-import gov.nasa.arc.dert.view.TextView;
 import gov.nasa.arc.dert.view.View;
+import gov.nasa.arc.dert.view.mapelement.PathView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -155,10 +155,16 @@ public class PathState extends ToolState {
 	
 	@Override
 	public void createView() {
-		View view = new TextView(this, true) {
+		View view = new PathView(this) {
 			@Override
 			public void doRefresh() {
+				super.doRefresh();
 				updateStatistics();
+			}
+			@Override
+			public void doCancel() {
+				super.doCancel();
+				cancelStatistics();
 			}
 		};
 		setView(view);
@@ -168,7 +174,7 @@ public class PathState extends ToolState {
 	@Override
 	public void setView(View view) {
 		viewData.setView(view);
-		updateStatistics();
+		((PathView)view).doRefresh();
 	}
 
 	/**
@@ -179,19 +185,26 @@ public class PathState extends ToolState {
 			return;
 		}
 
-		((TextView)viewData.view).setMessage("Calculating ...");
+		((PathView)viewData.view).setMessage("Calculating ...");
 
 		statThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				Thread.yield();
+				PathView pv = (PathView)viewData.getView();
+				((Path)mapElement).setVolumeFlags(pv.isVolume(), pv.getVolElevation());
 				String str = ((Path)mapElement).getStatistics();
-				((TextView)viewData.getView()).setText(str);
-				((TextView)viewData.getView()).setMessage("");
+				pv.setText(str);
+				pv.setMessage("");
 				statThread = null;
 			}
 		});
 		statThread.start();
+	}
+	
+	public void cancelStatistics() {
+		if (statThread != null)
+			statThread.interrupt();
 	}
 	
 	@Override

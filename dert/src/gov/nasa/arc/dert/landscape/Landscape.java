@@ -787,6 +787,8 @@ public class Landscape extends Node implements ViewDependent {
 		int count = 0;
 		for (int i = 0; i < rSampleSize; ++i) {
 			for (int j = 0; j < cSampleSize; ++j) {
+				if (Thread.currentThread().isInterrupted())
+					return(Double.NaN);
 				vert.set(xMin + j * pixelWidth, yMin + i * pixelLength, 0);
 				if (MathUtil.isInsidePolygon(vert, vertex)) {
 					double el = getElevationAtHighestLevel(vert.getX(), vert.getY());
@@ -820,6 +822,8 @@ public class Landscape extends Node implements ViewDependent {
 		int count = 0;
 		for (int i = 0; i < rSampleSize; ++i) {
 			for (int j = 0; j < cSampleSize; ++j) {
+				if (Thread.currentThread().isInterrupted())
+					return(Double.NaN);
 				vert.set((float) (xMin + j * pixelWidth), (float) (yMin + i * pixelLength), 0);
 				if (MathUtil.isInsidePolygon(vert, vertex)) {
 					boolean success = getNormalAtHighestLevel(vert.getX(), vert.getY(), store);
@@ -880,37 +884,65 @@ public class Landscape extends Node implements ViewDependent {
 //		}
 //		return (volume);
 //	}
-	public double[] getSampledVolumeOfRegion(Vector3[] vertex, ReadOnlyVector3 lowerBound, ReadOnlyVector3 upperBound,
-			Spatial polygon) {
-			int cSampleSize = (int) ((upperBound.getX() - lowerBound.getX()) / pixelWidth);
-			int rSampleSize = (int) ((upperBound.getY() - lowerBound.getY()) / pixelLength);
-			Vector3 vert = new Vector3();
-			double volumeAbove = 0;
-			double volumeBelow = 0;
-			// sample the landscape for elevation
-			for (int i = 0; i < rSampleSize; ++i) {
-				for (int j = 0; j < cSampleSize; ++j) {
-					vert.set((float) (lowerBound.getX() + j * pixelWidth), (float) (lowerBound.getY() + i * pixelLength), 0);
-					if (MathUtil.isInsidePolygon(vert, vertex)) {
-						double el = getElevationAtHighestLevel(vert.getX(), vert.getY())-minZ * pixelScale;
-						if (!Double.isNaN(el)) {
-							vert.setZ(upperBound.getZ()+1);
-							double pZ = sampleSpatial(vert, Vector3.NEG_UNIT_Z, polygon);
+
+	public double[] getSampledVolumeOfRegion(Vector3[] vertex, ReadOnlyVector3 lowerBound, ReadOnlyVector3 upperBound, Spatial polygon) {
+		int cSampleSize = (int) ((upperBound.getX() - lowerBound.getX()) / pixelWidth);
+		int rSampleSize = (int) ((upperBound.getY() - lowerBound.getY()) / pixelLength);
+		Vector3 vert = new Vector3();
+		double volumeAbove = 0;
+		double volumeBelow = 0;
+		// sample the landscape for elevation
+		for (int i = 0; i < rSampleSize; ++i) {
+			for (int j = 0; j < cSampleSize; ++j) {
+				if (Thread.currentThread().isInterrupted())
+					return(null);
+				vert.set((float) (lowerBound.getX() + j * pixelWidth), (float) (lowerBound.getY() + i * pixelLength), 0);
+				if (MathUtil.isInsidePolygon(vert, vertex)) {
+					double el = getElevationAtHighestLevel(vert.getX(), vert.getY())-minZ * pixelScale;
+					if (!Double.isNaN(el)) {
+						vert.setZ(upperBound.getZ()+1);
+						double pZ = sampleSpatial(vert, Vector3.NEG_UNIT_Z, polygon);
 //							System.err.println("Landscape.getSampledVolumeOfRegion "+el+" "+maxZ+" "+minZ+" "+pZ+" "+vert);
-							if (!Double.isNaN(pZ)) {
-								if (el < pZ) {
-									volumeBelow += (pZ-el)*pixelWidth*pixelLength;
-								}
-								else {
-									volumeAbove += (el-pZ)*pixelWidth*pixelLength;
-								}
+						if (!Double.isNaN(pZ)) {
+							if (el < pZ) {
+								volumeBelow += (pZ-el);
+							}
+							else {
+								volumeAbove += (el-pZ);
 							}
 						}
 					}
 				}
 			}
-			return (new double[] {volumeAbove, volumeBelow});
 		}
+		return (new double[] {volumeAbove*pixelWidth*pixelLength, volumeBelow*pixelWidth*pixelLength});
+	}
+
+	public double[] getSampledVolumeOfRegion(Vector3[] vertex, ReadOnlyVector3 lowerBound, ReadOnlyVector3 upperBound, double elev) {
+		int cSampleSize = (int) ((upperBound.getX() - lowerBound.getX()) / pixelWidth);
+		int rSampleSize = (int) ((upperBound.getY() - lowerBound.getY()) / pixelLength);
+		Vector3 vert = new Vector3();
+		double volumeAbove = 0;
+		double volumeBelow = 0;
+		// sample the landscape for elevation
+		for (int i = 0; i < rSampleSize; ++i) {
+			for (int j = 0; j < cSampleSize; ++j) {
+				if (Thread.currentThread().isInterrupted())
+					return(null);
+				vert.set((float) (lowerBound.getX() + j * pixelWidth), (float) (lowerBound.getY() + i * pixelLength), 0);
+				if (MathUtil.isInsidePolygon(vert, vertex)) {
+					double el = getElevationAtHighestLevel(vert.getX(), vert.getY());
+					if (!Double.isNaN(el)) {
+						if (el < elev)
+							volumeBelow += (elev-el);
+						else
+							volumeAbove += (el-elev);
+					}
+				}
+			}
+		}
+		return (new double[] {volumeAbove*pixelWidth*pixelLength, volumeBelow*pixelWidth*pixelLength});
+	}
 
 	private double sampleSpatial(Vector3 p0, ReadOnlyVector3 dir, Spatial node) {
 		// Create a ray starting from the point, and going in the given
@@ -1021,6 +1053,8 @@ public class Landscape extends Node implements ViewDependent {
 		double surfaceArea = 0;
 		for (int i = 0; i < rSampleSize; ++i) {
 			for (int j = 0; j < cSampleSize; ++j) {
+				if (Thread.currentThread().isInterrupted())
+					return(Double.NaN);
 				vert.set((float) (lowerBound.getX() + (j+0.5) * pixelWidth), (float) (lowerBound.getY() + (i+0.5) * pixelLength), 0);
 				if (MathUtil.isInsidePolygon(vert, vertex)) {
 					double sa = getSurfaceArea(vert);

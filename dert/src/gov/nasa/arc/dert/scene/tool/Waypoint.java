@@ -120,7 +120,7 @@ public class Waypoint extends BillboardMarker implements MapElement {
 		this.onGround = onGround;
 		if (onGround) {
 			contents.detachChild(billboard);
-			shape = Shape.createShape("_geometry", ShapeType.sphere, (float)size*0.5f);
+			shape = Shape.createShape("_geometry", ShapeType.sphere, (float)(size*0.5));
 			shape.updateWorldBound(true);
 			SpatialUtil.setPickHost(shape, this);
 			contents.attachChild(shape);
