@@ -38,8 +38,9 @@ public class AboutBox extends TextDialog {
 	}
 	
 	@Override
-	public void open() {
+	public boolean open() {
 		super.open();
 		refresh();
+		return(true);
 	}
 }

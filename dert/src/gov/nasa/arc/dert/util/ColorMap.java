@@ -147,15 +147,13 @@ public class ColorMap {
 				return (0);
 			}
 		};
+		listeners = new ArrayList<ColorMapListener>();
+		this.gradient = gradient;
 		baseMinimum = Math.floor(baseMin);
 		baseMaximum = Math.ceil(baseMax);
 		baseRange = baseMaximum - baseMinimum;
-		minimum = min;
-		maximum = max;
-		range = max - min;
-		this.gradient = gradient;
-		listeners = new ArrayList<ColorMapListener>();
 		loadFromFile();
+		setRange(min, max);
 	}
 
 	/**
@@ -212,6 +210,7 @@ public class ColorMap {
 	public double[] getValues() {
 		if (value == null) {
 			loadFromFile();
+			setRange(minimum, maximum);
 		}
 		double[] v = Arrays.copyOf(value, value.length);
 		return (v);
@@ -232,6 +231,8 @@ public class ColorMap {
 	 * @param listener
 	 */
 	public void removeListener(ColorMapListener listener) {
+		if (listener == null)
+			return;
 		listeners.remove(listener);
 	}
 
@@ -269,6 +270,7 @@ public class ColorMap {
 	public void setName(String name) {
 		this.name = name;
 		loadFromFile();
+		setRange(minimum, maximum);
 		if (texture != null) {
 			fillColorMapTexture();
 		}
@@ -480,6 +482,7 @@ public class ColorMap {
 			texture.setBorderColor(ColorRGBA.BLACK_NO_ALPHA);
 			if (value == null) {
 				loadFromFile();
+				setRange(minimum, maximum);
 			}
 		}
 		fillColorMapTexture();
@@ -640,7 +643,6 @@ public class ColorMap {
 			minimum = baseMinimum;
 			maximum = baseMaximum;
 		}
-		setRange(minimum, maximum);
 	}
 
 	private void getRgbFromColorName(String name, double[] data) {
@@ -686,5 +688,10 @@ public class ColorMap {
 		ColorType type = ColorType.valueOf(name.toLowerCase());
 		float[] col = COLOR_VALUE[type.ordinal()];
 		return (new ColorRGBA(col[0], col[1], col[2], col[3]));
+	}
+	
+	@Override
+	public String toString() {
+		return(name+" "+minimum+" "+maximum);
 	}
 }

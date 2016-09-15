@@ -28,20 +28,19 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 /**
- * Dialog for configuring which layers are displayed on landscape and their
+ * Dialog for configuring which layers are visible on the landscape and their
  * order.
  *
  */
 public class LayerConfigurationDialog extends AbstractDialog {
 
 	// Controls
-	private JList selectedLayerList, layerList;
+	private JList visibleLayerList, availableLayerList;
 	private JButton up, down, add, remove;
 
 	// Layers
-	private Vector<LayerInfo> selectedLayers, layers;
+	private Vector<LayerInfo> visibleLayers, availableLayers;
 	private LayerInfo currentSelected, currentLayer;
-	private LayerInfo[] layerInfo;
 
 	/**
 	 * Constructor
@@ -56,39 +55,18 @@ public class LayerConfigurationDialog extends AbstractDialog {
 	protected void build() {
 		super.build();
 		LayerManager layerManager = Landscape.getInstance().getLayerManager();
-		layerInfo = layerManager.getImageLayerInfoList();
-		LayerInfo[] currentSelection = layerManager.getLayerSelection();
-		layers = new Vector<LayerInfo>();
-		for (int i = 0; i < layerInfo.length; ++i) {
-			boolean found = false;
-			for (int j = 0; j < currentSelection.length; ++j) {
-				if (currentSelection[j] == null) {
-					continue;
-				}
-				if ((layerInfo[i].type == currentSelection[j].type)
-					&& layerInfo[i].name.equals(currentSelection[j].name)) {
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				layers.add(layerInfo[i]);
-			}
-		}
-		selectedLayers = new Vector<LayerInfo>();
-		for (int i = 0; i < currentSelection.length; ++i) {
-			selectedLayers.add(currentSelection[i]);
-		}
+		availableLayers = new Vector<LayerInfo>(layerManager.getAvailableLayers());
+		visibleLayers = new Vector<LayerInfo>(layerManager.getVisibleLayers());
 
 		contentArea.setLayout(new GridBagLayout());
 
 		// List of displayed layers
-		selectedLayerList = new JList(selectedLayers);
-		selectedLayerList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		selectedLayerList.addListSelectionListener(new ListSelectionListener() {
+		visibleLayerList = new JList(visibleLayers);
+		visibleLayerList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		visibleLayerList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent event) {
-				currentSelected = (LayerInfo) selectedLayerList.getSelectedValue();
+				currentSelected = (LayerInfo) visibleLayerList.getSelectedValue();
 				if (currentSelected == null) {
 					return;
 				}
@@ -110,7 +88,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 				add.setEnabled(doAdd);
 			}
 		});
-		JScrollPane scrollPane = new JScrollPane(selectedLayerList);
+		JScrollPane scrollPane = new JScrollPane(visibleLayerList);
 		scrollPane.setPreferredSize(new Dimension(200, 128));
 		JPanel listPanel = new JPanel(new BorderLayout());
 		listPanel.add(new JLabel("Visible Layers", SwingConstants.CENTER), BorderLayout.NORTH);
@@ -126,21 +104,21 @@ public class LayerConfigurationDialog extends AbstractDialog {
 		up.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				int selectedIndex = selectedLayerList.getSelectedIndex();
-				LayerInfo li = selectedLayers.remove(selectedIndex);
-				selectedLayers.add(selectedIndex - 1, li);
+				int selectedIndex = visibleLayerList.getSelectedIndex();
+				LayerInfo li = visibleLayers.remove(selectedIndex);
+				visibleLayers.add(selectedIndex - 1, li);
 				li.layerNumber = selectedIndex;
-				li = selectedLayers.get(selectedIndex);
+				li = visibleLayers.get(selectedIndex);
 				if (li != null) {
 					li.layerNumber = selectedIndex;
 				}
-				selectedLayerList.setListData(selectedLayers);
-				selectedLayerList.setSelectedIndex(selectedIndex - 1);
+				visibleLayerList.setListData(visibleLayers);
+				visibleLayerList.setSelectedIndex(selectedIndex - 1);
 			}
 		});
 		buttonPanel.add(up, GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, 0, 0));
 
-		// Button to move a layer from the available list to the display list
+		// Button to move a layer from the available list to the selected list
 		add = new JButton(Icons.getImageIcon("prev_16.png"));
 		add.setToolTipText("move selected available layer to the selected position in the visible list");
 		add.setEnabled(false);
@@ -148,27 +126,27 @@ public class LayerConfigurationDialog extends AbstractDialog {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				// get the index of the slot in the visible layers
-				int selectedIndex = selectedLayerList.getSelectedIndex();
+				int selectedIndex = visibleLayerList.getSelectedIndex();
 				// get the index of the layer selected from the available layers
-				int index = layerList.getSelectedIndex();
+				int index = availableLayerList.getSelectedIndex();
 				// remove the selected layer from the available layers
-				LayerInfo li = layers.remove(index);
+				LayerInfo li = availableLayers.remove(index);
 				// get the layer from the slot selected in the visible layers
-				LayerInfo sli = selectedLayers.get(selectedIndex);
+				LayerInfo sli = visibleLayers.get(selectedIndex);
 				// put the newly selected layer into the slot
-				selectedLayers.set(selectedIndex, li);
+				visibleLayers.set(selectedIndex, li);
 				// set the layer number (0=first layer, 1=second layer ...)
 				li.layerNumber = selectedIndex;
 				// put the updated visible list in the list display
-				selectedLayerList.setListData(selectedLayers);
+				visibleLayerList.setListData(visibleLayers);
 				// put the old layer back in the available layers list
 				if (sli.type != LayerType.none) {
 					sli.layerNumber = -1;
-					layers.add(sli);
+					availableLayers.add(sli);
 				}
 				// update the available list in the list display
-				layerList.setListData(layers);
-				selectedLayerList.setSelectedIndex(selectedIndex);
+				availableLayerList.setListData(availableLayers);
+				visibleLayerList.setSelectedIndex(selectedIndex);
 			}
 		});
 		buttonPanel.add(add, GBCHelper.getGBC(0, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, 0, 0));
@@ -181,17 +159,16 @@ public class LayerConfigurationDialog extends AbstractDialog {
 		remove.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				int selectedIndex = selectedLayerList.getSelectedIndex();
-				LayerInfo li = selectedLayers.get(selectedIndex);
+				int selectedIndex = visibleLayerList.getSelectedIndex();
+				LayerInfo li = visibleLayers.get(selectedIndex);
 				if (li.type != LayerType.none) {
-					li = selectedLayers.remove(selectedIndex);
-					selectedLayers.add(selectedIndex, new LayerInfo("None", "none", selectedIndex));
+					visibleLayers.set(selectedIndex, new LayerInfo("None", "none", selectedIndex));
 					li.layerNumber = -1;
-					layers.add(li);
+					availableLayers.add(li);
 				}
-				selectedLayerList.setListData(selectedLayers);
-				layerList.setListData(layers);
-				selectedLayerList.setSelectedIndex(selectedIndex);
+				visibleLayerList.setListData(visibleLayers);
+				availableLayerList.setListData(availableLayers);
+				visibleLayerList.setSelectedIndex(selectedIndex);
 			}
 		});
 		buttonPanel.add(remove, GBCHelper.getGBC(0, 2, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, 0, 0));
@@ -203,16 +180,16 @@ public class LayerConfigurationDialog extends AbstractDialog {
 		down.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				int selectedIndex = selectedLayerList.getSelectedIndex();
-				LayerInfo li = selectedLayers.remove(selectedIndex);
+				int selectedIndex = visibleLayerList.getSelectedIndex();
+				LayerInfo li = visibleLayers.remove(selectedIndex);
 				li.layerNumber = selectedIndex + 1;
-				selectedLayers.add(selectedIndex, li);
-				li = selectedLayers.get(selectedIndex);
+				visibleLayers.add(selectedIndex, li);
+				li = visibleLayers.get(selectedIndex);
 				if (li != null) {
 					li.layerNumber = selectedIndex;
 				}
-				selectedLayerList.setListData(selectedLayers);
-				selectedLayerList.setSelectedIndex(selectedIndex + 1);
+				visibleLayerList.setListData(visibleLayers);
+				visibleLayerList.setSelectedIndex(selectedIndex + 1);
 			}
 		});
 		buttonPanel.add(down, GBCHelper.getGBC(0, 3, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, 0, 0));
@@ -220,17 +197,17 @@ public class LayerConfigurationDialog extends AbstractDialog {
 			GBCHelper.getGBC(5, 0, 1, 4, GridBagConstraints.CENTER, GridBagConstraints.NONE, 0, 0));
 
 		// List of available layers
-		layerList = new JList(layers);
-		layerList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		scrollPane = new JScrollPane(layerList);
+		availableLayerList = new JList(availableLayers);
+		availableLayerList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scrollPane = new JScrollPane(availableLayerList);
 		scrollPane.setPreferredSize(new Dimension(200, 128));
 		listPanel = new JPanel(new BorderLayout());
 		listPanel.add(new JLabel("Available Layers", SwingConstants.CENTER), BorderLayout.NORTH);
 		listPanel.add(scrollPane, BorderLayout.CENTER);
-		layerList.addListSelectionListener(new ListSelectionListener() {
+		availableLayerList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent event) {
-				currentLayer = (LayerInfo) layerList.getSelectedValue();
+				currentLayer = (LayerInfo) availableLayerList.getSelectedValue();
 				if (currentLayer == null) {
 					return;
 				}
@@ -249,10 +226,9 @@ public class LayerConfigurationDialog extends AbstractDialog {
 
 	@Override
 	public boolean okPressed() {
-		LayerInfo[] newSelection = new LayerInfo[LayerManager.NUM_LAYERS];
-		for (int i=0; i<selectedLayers.size(); ++i)
-			newSelection[i] = selectedLayers.get(i);
-		result = newSelection;
+		LayerManager layerManager = Landscape.getInstance().getLayerManager();
+		layerManager.setLayerSelection(visibleLayers, availableLayers);
+		result = true;
 		return (true);
 	}
 

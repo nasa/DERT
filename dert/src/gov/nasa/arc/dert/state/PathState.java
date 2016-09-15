@@ -155,7 +155,7 @@ public class PathState extends ToolState {
 	
 	@Override
 	public void createView() {
-		View view = new PathView(this) {
+		PathView view = new PathView(this) {
 			@Override
 			public void doRefresh() {
 				super.doRefresh();
@@ -167,6 +167,7 @@ public class PathState extends ToolState {
 				cancelStatistics();
 			}
 		};
+		view.setVolElevation(((Path)mapElement).getCenterElevation());
 		setView(view);
 		viewData.createWindow(Dert.getMainWindow(), name + " Info", X_OFFSET, Y_OFFSET);
 	}

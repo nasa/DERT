@@ -47,7 +47,7 @@ public abstract class Layer {
 	public Layer(LayerInfo layerInfo) {
 		layerName = layerInfo.name;
 		layerType = layerInfo.type;
-		blendFactor = layerInfo.blendFactor;
+		blendFactor = layerInfo.opacity;
 	}
 
 	/**

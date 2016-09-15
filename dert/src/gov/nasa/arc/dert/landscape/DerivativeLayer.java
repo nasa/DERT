@@ -57,6 +57,7 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 		super(layerInfo);
 		this.type = type;
 		this.layerInfo = layerInfo;
+		colorMap = layerInfo.colorMap;
 		dataSource = source;
 		numLevels = dataSource.numLevels;
 		numTiles = dataSource.numTiles;

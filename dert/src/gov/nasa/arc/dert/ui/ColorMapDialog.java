@@ -2,7 +2,9 @@ package gov.nasa.arc.dert.ui;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.tool.Grid;
+import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.util.ColorMap;
+import gov.nasa.arc.dert.view.surfaceandlayers.SurfaceAndLayersView;
 
 import java.awt.Dialog;
 import java.awt.GridLayout;
@@ -71,6 +73,9 @@ public class ColorMapDialog extends AbstractDialog {
 				defaultMin = colorMap.getMinimum();
 				defaultMax = colorMap.getMaximum();
 				setRange(defaultMin, defaultMax);
+				SurfaceAndLayersView slv = (SurfaceAndLayersView)ConfigurationManager.getInstance().getCurrentConfiguration().surfAndLayerState.getViewData().getView();
+				if (slv.isVisible())
+					slv.updateVisibleLayers();
 			}
 		});
 		contentArea.add(colorMapName);

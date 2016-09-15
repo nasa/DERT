@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Vector;
 
 import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.type.ReadOnlyColorRGBA;
@@ -35,7 +36,7 @@ public class LayerManager {
 	// Flags accessed by Landscape
 	protected boolean layersEnabled;
 	protected boolean shadingFromSurface;
-	protected boolean autoAdjustBlendFactor;
+	protected boolean autoAdjustOpacity;
 	protected boolean noLayersSelected;
 
 	// Surface grid layer fields
@@ -43,11 +44,9 @@ public class LayerManager {
 	private double gridCellSize;
 	private boolean gridEnabled;
 
-	// Array of image layers currently displayed (element set to null if not used).
-	protected LayerInfo[] selectedLayerInfo;
-
-	// Information about available image layers
-	private transient ArrayList<LayerInfo> imageLayerInfoList;
+	// Information about available and visible image layers
+	private transient Vector<LayerInfo> availableLayers;
+	private transient Vector<LayerInfo> visibleLayers;
 
 	// Object to do special layer effects in shader
 	protected transient LayerEffects layerEffects;
@@ -66,7 +65,7 @@ public class LayerManager {
 	 */
 	public LayerManager() {
 		shadingFromSurface = false;
-		autoAdjustBlendFactor = true;
+		autoAdjustOpacity = true;
 		layersEnabled = true;
 		gridColor = DEFAULT_GRID_COLOR;
 		gridCellSize = 0;
@@ -77,16 +76,22 @@ public class LayerManager {
 	 */
 	public LayerManager(HashMap<String,Object> map) {
 		shadingFromSurface = StateUtil.getBoolean(map, "ShadingFromSurface", false);
-		autoAdjustBlendFactor = StateUtil.getBoolean(map, "AutoAdjustBlendFactor", true);
+		autoAdjustOpacity = StateUtil.getBoolean(map, "AutoAdjustOpacity", true);
 		layersEnabled = StateUtil.getBoolean(map, "LayersEnabled", true);
 		gridColor = StateUtil.getColorRGBA(map, "GridColor", DEFAULT_GRID_COLOR);
 		gridCellSize = StateUtil.getDouble(map, "GridCellSize", 0);
 		gridEnabled = StateUtil.getBoolean(map, "GridEnabled", false);
 		int n = StateUtil.getInteger(map, "LayerInfoCount", 0);
-		selectedLayerInfo = new LayerInfo[n];
-		for (int i=0; i<n; ++i) {
+		visibleLayers = new Vector<LayerInfo>(NUM_LAYERS);
+		visibleLayers.setSize(NUM_LAYERS);
+		for (int i=0; i<NUM_LAYERS; ++i) {
 			HashMap<String,Object> liMap = (HashMap<String,Object>)map.get("LayerInfo"+i);
-			selectedLayerInfo[i] = new LayerInfo(liMap);
+			visibleLayers.set(i, new LayerInfo(liMap));
+		}
+		availableLayers = new Vector<LayerInfo>();
+		for (int i=NUM_LAYERS; i<n; ++i) {
+			HashMap<String,Object> liMap = (HashMap<String,Object>)map.get("LayerInfo"+i);
+			availableLayers.add(new LayerInfo(liMap));
 		}
 	}
 
@@ -99,33 +104,22 @@ public class LayerManager {
 	public boolean initialize(TileSource source) {
 		this.source = source;
 		LayerInfo baseLayerInfo = null;
-
-		boolean firstTime = false;
-		if (imageLayerInfoList == null) {
-			imageLayerInfoList = new ArrayList<LayerInfo>();
-			firstTime = true;
-		}
-
-		// create a list of available image layers
+		
+		// Get a list of the known layers from the landscape directory
 		String[][] sourceLayerInfo = source.getLayerInfo();
-		ArrayList<LayerInfo> newInfoList = new ArrayList<LayerInfo>();
-		for (int i = 0; i < sourceLayerInfo.length; ++i) {
-			LayerInfo li = new LayerInfo(sourceLayerInfo[i][0], sourceLayerInfo[i][1], -1);
-			// elevation is always the base layer
-			if (li.type == LayerType.elevation)
-				baseLayerInfo = li;
-			else {
-				LayerInfo lInfo = findLayerInfo(li.name, li.type);
-				if (lInfo != null) {
-					li = lInfo;
-				}
-				if (li.type == LayerType.field)
-					li.colorMapName = FieldLayer.defaultColorMapName;
-				newInfoList.add(li);
-			}
+		LayerInfo[] knownLayers = new LayerInfo[sourceLayerInfo.length];
+		for (int i=0; i<knownLayers.length; ++i) {
+			knownLayers[i] = new LayerInfo(sourceLayerInfo[i][0], sourceLayerInfo[i][1], -1);
+			if (knownLayers[i].type == LayerType.field)
+				knownLayers[i].colorMapName = FieldLayer.defaultColorMapName;
 		}
-
-		// Elevation and derivatives
+		
+		// Base layer (DEM)
+		for (int i=0; i<knownLayers.length; ++i)
+			if (knownLayers[i].type == LayerType.elevation) {
+				baseLayerInfo = knownLayers[i];
+				break;
+			}
 		if (baseLayerInfo == null) {
 			Console.getInstance().println("Elevation layer not found.");
 			return (false);
@@ -138,63 +132,89 @@ public class LayerManager {
 		// elevation min and max are single values, not arrays
 		baseLayerInfo.minimum = StringUtil.getDoubleValue(properties, "MinimumValue", false, 0, true);
 		baseLayerInfo.maximum = StringUtil.getDoubleValue(properties, "MaximumValue", false, 0, true);
-		LayerInfo lInfo = findLayerInfo("Slope Map", LayerType.derivative);
-		if (lInfo == null) {
-			lInfo = new LayerInfo("Slope Map", "derivative", DerivativeLayer.defaultColorMapName, 0, 90, false);
-		}
-		newInfoList.add(lInfo);
-		lInfo = findLayerInfo("Aspect Map", LayerType.derivative);
-		if (lInfo == null) {
+
+		// first time
+		if (availableLayers == null) {
+			availableLayers = new Vector<LayerInfo>();
+			// Set the list of available layers from the known layers
+			for (int i = 0; i < knownLayers.length; ++i) {
+				// skip the base layer
+				if (knownLayers[i] != baseLayerInfo)
+					availableLayers.add(knownLayers[i]);
+			}
+			
+			// Add the derivatives to the list
+			LayerInfo lInfo = new LayerInfo("Slope Map", "derivative", DerivativeLayer.defaultColorMapName, 0, 90, false);
+			availableLayers.add(lInfo);
 			lInfo = new LayerInfo("Aspect Map", "derivative", DerivativeLayer.defaultColorMapName, 0, 90, false);
-		}
-		newInfoList.add(lInfo);
-		lInfo = findLayerInfo("Elevation Map", LayerType.derivative);
-		if (lInfo == null) {
+			availableLayers.add(lInfo);
 			lInfo = new LayerInfo("Elevation Map", "derivative", DerivativeLayer.defaultColorMapName,
-				baseLayerInfo.minimum, baseLayerInfo.maximum, false);
-		} else {
-			lInfo.minimum = baseLayerInfo.minimum;
-			lInfo.maximum = baseLayerInfo.maximum;
+					baseLayerInfo.minimum, baseLayerInfo.maximum, false);
+			availableLayers.add(lInfo);
 		}
-		newInfoList.add(lInfo);
-
-		// FieldCamera footprints and viewsheds
-		for (int i = 0; i < imageLayerInfoList.size(); ++i) {
-			lInfo = imageLayerInfoList.get(i);
-			if ((lInfo.type == LayerType.footprint) || (lInfo.type == LayerType.viewshed)) {
-				newInfoList.add(lInfo);
+		// otherwise check available layers against reality
+		else {
+			for (int i=availableLayers.size()-1; i>=0; --i) {
+				LayerInfo li = availableLayers.get(i);
+				if ((li.type == LayerType.grayimage) || (li.type == LayerType.colorimage) || (li.type == LayerType.field)) {
+					boolean foundLayer = false;
+					for (int j=0; j<knownLayers.length; ++j) {
+						if ((li.type == knownLayers[j].type) && (li.name.equals(knownLayers[j].name))) {
+							foundLayer = true;
+							break;
+						}
+					}
+					if (!foundLayer)
+						availableLayers.remove(i);
+				}
 			}
-		}
-
-		imageLayerInfoList = newInfoList;
-		Collections.sort(imageLayerInfoList);
-
-		// set up the displayed layers
-		if (selectedLayerInfo == null) {
-			selectedLayerInfo = new LayerInfo[NUM_LAYERS];
-			for (int i = 0; i < imageLayerInfoList.size(); ++i) {
-				LayerInfo li = imageLayerInfoList.get(i);
-				if (li.layerNumber >= 0)
-					selectedLayerInfo[li.layerNumber] = li;
-			}
-			if (firstTime && (selectedLayerInfo[0] == null)) {
-				// first time - choose the first image layer found as the default
-				for (int i = 0; i < imageLayerInfoList.size(); ++i) {
-					if ((imageLayerInfoList.get(i).type == LayerType.colorimage)
-						|| (imageLayerInfoList.get(i).type == LayerType.grayimage)) {
-						selectedLayerInfo[0] = imageLayerInfoList.get(i);
-						selectedLayerInfo[0].layerNumber = 0;
-						selectedLayerInfo[0].autoblend = false;
+			for (int i=0; i<knownLayers.length; ++i) {
+				if (knownLayers[i] == baseLayerInfo)
+					continue;
+				boolean foundLayer = false;
+				for (int j=0; j<availableLayers.size(); ++j) {
+					LayerInfo li = availableLayers.get(j);
+					if ((li.type == knownLayers[i].type) && (li.name.equals(knownLayers[i].name))) {
+						foundLayer = true;
 						break;
 					}
 				}
-				firstTime = false;
+				if (visibleLayers != null) {
+					for (int j=0; j<visibleLayers.size(); ++j) {
+						LayerInfo li = visibleLayers.get(j);
+						if ((li.type == knownLayers[i].type) && (li.name.equals(knownLayers[i].name))) {
+							foundLayer = true;
+							break;
+						}
+					}
+				}
+				if (!foundLayer)
+					availableLayers.add(knownLayers[i]);
+			}
+		}
+		Collections.sort(availableLayers);
+
+		// set up the visible layers
+		if (visibleLayers == null) {
+			visibleLayers = new Vector<LayerInfo>(NUM_LAYERS);
+			visibleLayers.setSize(NUM_LAYERS);
+			// first time - choose the first image layer found as the default
+			for (int i = 0; i < availableLayers.size(); ++i) {
+				if ((availableLayers.get(i).type == LayerType.colorimage)
+					|| (availableLayers.get(i).type == LayerType.grayimage)) {
+					LayerInfo li = availableLayers.get(i);
+					visibleLayers.set(0, li);
+					availableLayers.remove(i);
+					li.layerNumber = 0;
+					li.autoblend = false;
+					break;
+				}
 			}
 			// set all non-assigned layers to "none"
 			noLayersSelected = true;
-			for (int i = 0; i < selectedLayerInfo.length; ++i) {
-				if (selectedLayerInfo[i] == null)
-					selectedLayerInfo[i] = new LayerInfo("None", "none", i);
+			for (int i = 0; i < visibleLayers.size(); ++i) {
+				if (visibleLayers.get(i) == null)
+					visibleLayers.set(i, new LayerInfo("None", "none", i));
 				else
 					noLayersSelected = false;
 			}
@@ -202,10 +222,18 @@ public class LayerManager {
 				shadingFromSurface = true;
 		}
 		else {
-			for (int i=0; i<selectedLayerInfo.length; ++i) {
-				LayerInfo li = findLayerInfo(selectedLayerInfo[i].name, selectedLayerInfo[i].type);
-				if (li == null)
-					selectedLayerInfo[i] = new LayerInfo("None", "none", i);
+			for (int i=0; i<visibleLayers.size(); ++i) {
+				LayerInfo li = visibleLayers.get(i);
+				if ((li.type == LayerType.grayimage) || (li.type == LayerType.colorimage) || (li.type == LayerType.field)) {
+					boolean foundLayer = false;
+					for (int j=0; j<knownLayers.length; ++j)
+						if ((li.type == knownLayers[j].type) && (li.name.equals(knownLayers[j].name))) {
+							foundLayer = true;
+							break;
+						}
+					if (!foundLayer)
+						visibleLayers.set(i, new LayerInfo("None", "none", i));
+				}
 			}
 		}
 
@@ -219,16 +247,6 @@ public class LayerManager {
 		createLayers();
 
 		return (true);
-	}
-
-	private LayerInfo findLayerInfo(String name, LayerType type) {
-		for (int i = 0; i < imageLayerInfoList.size(); ++i) {
-			LayerInfo li = imageLayerInfoList.get(i);
-			if ((li.type == type) && li.name.equals(name)) {
-				return (li);
-			}
-		}
-		return (null);
 	}
 
 	private boolean createBaseLayer(LayerInfo baseLayerInfo) {
@@ -250,10 +268,8 @@ public class LayerManager {
 	 * 
 	 * @return
 	 */
-	public LayerInfo[] getImageLayerInfoList() {
-		LayerInfo[] layerInfo = new LayerInfo[imageLayerInfoList.size()];
-		imageLayerInfoList.toArray(layerInfo);
-		return (layerInfo);
+	public Vector<LayerInfo> getAvailableLayers() {
+		return (availableLayers);
 	}
 
 	/**
@@ -261,8 +277,8 @@ public class LayerManager {
 	 * 
 	 * @return
 	 */
-	public LayerInfo[] getLayerSelection() {
-		return (selectedLayerInfo);
+	public Vector<LayerInfo> getVisibleLayers() {
+		return (visibleLayers);
 	}
 
 	/**
@@ -270,8 +286,11 @@ public class LayerManager {
 	 * 
 	 * @param selectedLayerInfo
 	 */
-	public void setLayerSelection(LayerInfo[] selectedLayerInfo) {
-		this.selectedLayerInfo = selectedLayerInfo;
+	public void setLayerSelection(Vector<LayerInfo> visibleLayers, Vector<LayerInfo> availableLayers) {
+		this.visibleLayers.clear();
+		this.visibleLayers.addAll(visibleLayers);
+		this.availableLayers.clear();
+		this.availableLayers.addAll(availableLayers);
 	}
 
 	/**
@@ -307,24 +326,24 @@ public class LayerManager {
 				if (iName.equals(layer.getLayerName())) {
 					layer.dispose();
 					layers[i] = null;
-					selectedLayerInfo[i] = new LayerInfo("None", "none", i);
+					visibleLayers.set(i, new LayerInfo("None", "none", i));
 					layerEffects = new LayerEffects(layers, layerEffects);
 					layerEffects.setEnabled(true);
 					found = true;
 				}
 			}
 		}
-		Iterator<LayerInfo> iterator = imageLayerInfoList.iterator();
+		Iterator<LayerInfo> iterator = availableLayers.iterator();
 		while (iterator.hasNext()) {
 			LayerInfo li = iterator.next();
-			if (li.name.equals(iName)) {
+			if (li.name.equals(iName) && ((li.type == LayerType.footprint) || (li.type == LayerType.viewshed))) {
 				iterator.remove();
 			}
 		}
 		if (found) {
 			SurfaceAndLayersView view = ConfigurationManager.getInstance().getCurrentConfiguration().getSurfaceAndLayersView();
 			if (view != null) {
-				view.updateSelectedLayers();
+				view.updateVisibleLayers();
 			}
 		}
 		return (found);
@@ -336,14 +355,14 @@ public class LayerManager {
 	 * @param fieldCamera
 	 */
 	public void addFieldCamera(FieldCamera fieldCamera) {
-		imageLayerInfoList.add(new LayerInfo(fieldCamera.getName(), "footprint", -1));
-		imageLayerInfoList.add(new LayerInfo(fieldCamera.getName(), "viewshed", -1));
+		availableLayers.add(new LayerInfo(fieldCamera.getName(), "footprint", -1));
+		availableLayers.add(new LayerInfo(fieldCamera.getName(), "viewshed", -1));
 	}
 
 	private void createLayers() {
 		Layer[] newList = new Layer[NUM_LAYERS];
-		for (int i = 0; i < selectedLayerInfo.length; ++i) {
-			if (selectedLayerInfo[i].type == LayerType.none) {
+		for (int i = 0; i < visibleLayers.size(); ++i) {
+			if (visibleLayers.get(i).type == LayerType.none) {
 				newList[i] = null;
 			} else {
 				// see if we have this layer already and move it to the new slot
@@ -352,17 +371,17 @@ public class LayerManager {
 					if (layers[j] == null) {
 						continue;
 					}
-					if (selectedLayerInfo[i].name.equals(layers[j].toString()) && (selectedLayerInfo[i].type == layers[j].getLayerType())) {
-						layers[j].blendFactor = selectedLayerInfo[i].blendFactor;
+					if (visibleLayers.get(i).name.equals(layers[j].toString()) && (visibleLayers.get(i).type == layers[j].getLayerType())) {
+						layers[j].blendFactor = visibleLayers.get(i).opacity;
 						newList[i] = layers[j];
 						layers[j] = null;
 						found = true;
 						break;
 					}
 				}
-				// if not create the layer
+				// if not, create the layer
 				if (!found) {
-					newList[i] = createLayer(selectedLayerInfo[i], source, i);
+					newList[i] = createLayer(visibleLayers.get(i), source, i);
 				}
 			}
 		}
@@ -405,7 +424,7 @@ public class LayerManager {
 				return (new RasterLayer(layerInfo, source));
 			}
 		} catch (Exception e) {
-			System.out.println("Unable to create layer " + layerInfo.name + ", see log.");
+			Console.getInstance().println("Unable to create layer " + layerInfo.name + ", see log.");
 			e.printStackTrace();
 			return (null);
 		}
@@ -451,7 +470,7 @@ public class LayerManager {
 	 */
 	public void setLayerBlendFactor(int index, float value) {
 		layerEffects.blendFactor[index] = value;
-		selectedLayerInfo[index].blendFactor = value;
+		visibleLayers.get(index).opacity = value;
 	}
 
 	/**
@@ -578,14 +597,16 @@ public class LayerManager {
 	public HashMap<String,Object> saveAsHashMap() {
 		HashMap<String,Object> map = new HashMap<String,Object>();
 		map.put("ShadingFromSurface", new Boolean(shadingFromSurface));
-		map.put("AutoAdjustBlendFactor", new Boolean(autoAdjustBlendFactor));
+		map.put("AutoAdjustOpacity", new Boolean(autoAdjustOpacity));
 		map.put("LayersEnabled", new Boolean(layersEnabled));
 		StateUtil.putColorRGBA(map, "GridColor", gridColor);
 		map.put("GridCellSize", new Double(gridCellSize));
 		map.put("GridEnabled", new Boolean(gridEnabled));
-		map.put("LayerInfoCount", new Integer(selectedLayerInfo.length));
-		for (int i = 0; i < selectedLayerInfo.length; ++i)
-			map.put("LayerInfo"+i, selectedLayerInfo[i].getAsHashMap());
+		map.put("LayerInfoCount", new Integer(visibleLayers.size()+availableLayers.size()));
+		for (int i = 0; i < visibleLayers.size(); ++i)
+			map.put("LayerInfo"+i, visibleLayers.get(i).getAsHashMap());
+		for (int i=0; i<availableLayers.size(); ++i)
+			map.put("LayerInfo"+(i+NUM_LAYERS), availableLayers.get(i).getAsHashMap());
 		return(map);
 	}
 }

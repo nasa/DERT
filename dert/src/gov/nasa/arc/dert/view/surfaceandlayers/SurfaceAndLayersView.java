@@ -34,8 +34,8 @@ public class SurfaceAndLayersView extends JPanelView {
 	/**
 	 * Available layers have changed
 	 */
-	public void updateSelectedLayers() {
-		layersPanel.updateSelectedLayers();
+	public void updateVisibleLayers() {
+		layersPanel.updateVisibleLayers();
 	}
 
 }

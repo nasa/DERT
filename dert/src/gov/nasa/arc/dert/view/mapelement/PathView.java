@@ -157,4 +157,8 @@ public class PathView extends JPanelView {
 			return(Double.NaN);
 		return(volElev.getValue());
 	}
+	
+	public void setVolElevation(double value) {
+		volElev.setValue(value);
+	}
 }

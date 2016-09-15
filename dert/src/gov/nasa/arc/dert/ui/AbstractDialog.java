@@ -21,7 +21,7 @@ import javax.swing.JTextField;
 public abstract class AbstractDialog extends JDialog {
 
 	// Returned result (if any)
-	protected Object result;
+	protected boolean result;
 
 	// The area where extending classes can put widgets
 	protected JPanel contentArea;
@@ -157,15 +157,15 @@ public abstract class AbstractDialog extends JDialog {
 	protected abstract boolean okPressed();
 
 	protected boolean cancelPressed() {
-		result = null;
+		result = false;
 		return (true);
 	}
 
 	/**
 	 * Open the dialog
 	 */
-	public void open() {
-		result = null;
+	public boolean open() {
+		result = false;
 		build();
 		if ((width == 0) || (height == 0)) {
 			pack();
@@ -173,6 +173,7 @@ public abstract class AbstractDialog extends JDialog {
 			setSize(width, height);
 		}
 		setVisible(true);
+		return(result);
 	}
 
 	/**
@@ -180,14 +181,5 @@ public abstract class AbstractDialog extends JDialog {
 	 */
 	public void close() {
 		setVisible(false);
-	}
-
-	/**
-	 * Get the result object
-	 * 
-	 * @return
-	 */
-	public Object getResult() {
-		return (result);
 	}
 }

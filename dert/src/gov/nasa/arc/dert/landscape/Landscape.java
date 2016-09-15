@@ -724,7 +724,7 @@ public class Landscape extends Node implements ViewDependent {
 	 * @return
 	 */
 	public boolean isAutoAdjustBlendFactor() {
-		return (layerManager.autoAdjustBlendFactor);
+		return (layerManager.autoAdjustOpacity);
 	}
 
 	/**

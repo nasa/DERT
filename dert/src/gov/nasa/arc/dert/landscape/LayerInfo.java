@@ -23,7 +23,7 @@ public class LayerInfo implements Comparable<LayerInfo> {
 
 	// The percent that the layer contributes to the overall color of the
 	// landscape
-	public double blendFactor = 1;
+	public double opacity = 1;
 
 	// The texture index for the layer
 	public int layerNumber = -1;
@@ -89,7 +89,7 @@ public class LayerInfo implements Comparable<LayerInfo> {
 			throw new NullPointerException("Name for LayerInfo is null.");
 		String str = StateUtil.getString(map, "Type", "none");
 		type = LayerType.valueOf(str);
-		blendFactor = StateUtil.getDouble(map, "BlendFactor", blendFactor);
+		opacity = StateUtil.getDouble(map, "Opacity", opacity);
 		layerNumber = StateUtil.getInteger(map, "LayerNumber", layerNumber);
 		autoblend = StateUtil.getBoolean(map, "Autoblend", autoblend);
 		str = StateUtil.getString(map, "ColorMap.name", null);
@@ -109,7 +109,7 @@ public class LayerInfo implements Comparable<LayerInfo> {
 	public LayerInfo(LayerInfo that) {
 		this.name = that.name;
 		this.type = that.type;
-		this.blendFactor = that.blendFactor;
+		this.opacity = that.opacity;
 		this.layerNumber = that.layerNumber;
 		this.gradient = that.gradient;
 		this.colorMapName = that.colorMapName;
@@ -143,7 +143,7 @@ public class LayerInfo implements Comparable<LayerInfo> {
 		HashMap<String,Object> map = new HashMap<String,Object>();
 		map.put("Name", name);
 		map.put("Type", type.toString());
-		map.put("BlendFactor", new Double(blendFactor));
+		map.put("Opacity", new Double(opacity));
 		map.put("LayerNumber", new Integer(layerNumber));
 		map.put("Autoblend", new Boolean(autoblend));
 		if (colorMap != null) {
@@ -152,6 +152,8 @@ public class LayerInfo implements Comparable<LayerInfo> {
 			map.put("ColorMap.minimum", new Double(colorMap.getMinimum()));
 			map.put("ColorMap.maximum", new Double(colorMap.getMaximum()));
 		}
+		else if (colorMapName != null)
+			map.put("ColorMap.name", colorMapName);
 		return(map);
 	}
 

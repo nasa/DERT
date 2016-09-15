@@ -1196,6 +1196,12 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	public Vector3[] getCurve(int steps) {
 		return(pointSet.getCurve(steps));
 	}
+	
+	public double getCenterElevation() {
+		Vector3 pos = pointSet.getCentroid();
+		Landscape.getInstance().localToWorldCoordinate(pos);
+		return(pos.getZ());
+	}
 
 	/**
 	 * Set defaults
