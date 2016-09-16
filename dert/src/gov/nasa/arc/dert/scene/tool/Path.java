@@ -291,6 +291,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		// create the way point and add it
 		int index = (int) state.id;
 		Waypoint currentWaypoint = new Waypoint(state);
+		currentWaypoint.setOnGround(polyIsEnabled);
 		index = pointSet.addPoint(currentWaypoint, index);
 		state.id = index;
 		currentWaypoint.addMotionListener(this);

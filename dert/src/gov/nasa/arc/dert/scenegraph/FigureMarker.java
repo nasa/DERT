@@ -95,9 +95,9 @@ public class FigureMarker extends Marker {
 	@Override
 	protected void scaleShape(double scale) {
 		if (autoScale)
-			contents.setScale(size * scale);
+			contents.setScale(scale);
 		else
-			contents.setScale(size);
+			contents.setScale(1);
 	}
 
 	/**
