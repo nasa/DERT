@@ -35,8 +35,6 @@ public class PathState extends ToolState {
 	// Line width
 	public double lineWidth;
 
-	private transient Thread statThread;
-
 	/**
 	 * Constructor
 	 * 
@@ -155,19 +153,7 @@ public class PathState extends ToolState {
 	
 	@Override
 	public void createView() {
-		PathView view = new PathView(this) {
-			@Override
-			public void doRefresh() {
-				super.doRefresh();
-				updateStatistics();
-			}
-			@Override
-			public void doCancel() {
-				super.doCancel();
-				cancelStatistics();
-			}
-		};
-		view.setVolElevation(((Path)mapElement).getCenterElevation());
+		PathView view = new PathView(this);
 		setView(view);
 		viewData.createWindow(Dert.getMainWindow(), name + " Info", X_OFFSET, Y_OFFSET);
 	}
@@ -177,35 +163,15 @@ public class PathState extends ToolState {
 		viewData.setView(view);
 		((PathView)view).doRefresh();
 	}
-
-	/**
-	 * Show statistics for the Path in a separate window.
-	 */
-	public void updateStatistics() {
-		if (statThread != null) {
-			return;
-		}
-
-		((PathView)viewData.view).setMessage("Calculating ...");
-
-		statThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				Thread.yield();
-				PathView pv = (PathView)viewData.getView();
-				((Path)mapElement).setVolumeFlags(pv.isVolume(), pv.getVolElevation());
-				String str = ((Path)mapElement).getStatistics();
-				pv.setText(str);
-				pv.setMessage("");
-				statThread = null;
-			}
-		});
-		statThread.start();
-	}
 	
-	public void cancelStatistics() {
-		if (statThread != null)
-			statThread.interrupt();
+	/**
+	 * Notify user that the currently displayed statistics is old. We don't
+	 * automatically update the window for performance reasons.
+	 */
+	public void pathDirty() {
+		PathView pv = (PathView)viewData.view;
+		if (pv != null)
+			pv.pathDirty();
 	}
 	
 	@Override

@@ -90,6 +90,22 @@ public class PointSet extends Node {
 		}
 		return (pointList);
 	}
+	
+	public Vector3[] getPolygonVertices() {
+		getPointList();
+		int n = getNumberOfChildren();
+		if (n == 0) {
+			return(null);
+		}
+		else {
+			Vector3[] vertex = new Vector3[n + 1];
+			for (int i = 0; i < n; ++i) {
+				vertex[i] = new Vector3(pointList.get(i));
+			}
+			vertex[n] = new Vector3(vertex[0]);
+			return(vertex);
+		}
+	}
 
 	/**
 	 * Find the centroid of this point set.
