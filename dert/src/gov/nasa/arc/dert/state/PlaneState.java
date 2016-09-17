@@ -26,6 +26,7 @@ public class PlaneState extends ToolState {
 
 	// Three points of the triangle
 	public Vector3 p0, p1, p2;
+	public double zOff0, zOff1, zOff2;
 
 	// Dimensional scales
 	public double lengthScale, widthScale;
@@ -80,6 +81,9 @@ public class PlaneState extends ToolState {
 		colorMapName = StateUtil.getString(map, "ColorMapName", Plane.defaultColorMap);
 		minimum = StateUtil.getDouble(map, "ColorMapMinimum", minimum);
 		maximum = StateUtil.getDouble(map, "ColorMapMaximum", maximum);
+		zOff0 = StateUtil.getDouble(map, "ZOffset0", 0);
+		zOff1 = StateUtil.getDouble(map, "ZOffset1", 0);
+		zOff2 = StateUtil.getDouble(map, "ZOffset2", 0);
 	}
 	
 	@Override
@@ -98,6 +102,12 @@ public class PlaneState extends ToolState {
 		if (this.minimum != that.minimum)
 			return(false);
 		if (this.maximum != that.maximum)
+			return(false);
+		if (this.zOff0 != that.zOff0)
+			return(false);
+		if (this.zOff1 != that.zOff1)
+			return(false);
+		if (this.zOff2 != that.zOff2)
 			return(false);
 		if (!this.p0.equals(that.p0)) 
 			return(false);
@@ -121,6 +131,9 @@ public class PlaneState extends ToolState {
 			triangleVisible = plane.isTriangleVisible();
 			lengthScale = plane.getLengthScale();
 			widthScale = plane.getWidthScale();
+			zOff0 = plane.getMarker(0).getZOffset();
+			zOff1 = plane.getMarker(1).getZOffset();
+			zOff2 = plane.getMarker(2).getZOffset();
 		}
 		if (panel != null) {
 			ColorMap colorMap = panel.getColorMap();
@@ -139,6 +152,9 @@ public class PlaneState extends ToolState {
 		map.put("ColorMapName", colorMapName);
 		map.put("ColorMapMinimum", new Double(minimum));
 		map.put("ColorMapMaximum", new Double(maximum));
+		map.put("ZOffset0", new Double(zOff0));
+		map.put("ZOffset1", new Double(zOff1));
+		map.put("ZOffset2", new Double(zOff2));
 		
 		return(map);
 	}

@@ -24,7 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 
-import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.event.DirtyType;
 
@@ -65,20 +64,18 @@ public class PlanePanel extends MapElementBasePanel {
 		panel.add(new JLabel("Point 0"));
 		p0Location = new CoordTextField(22, "location of first point of triangle", Landscape.format, true) {
 			@Override
-			public void doChange(ReadOnlyVector3 coord) {
-				double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
+			public void doChange(ReadOnlyVector3 result) {
+				double z = Landscape.getInstance().getZ(result.getX(), result.getY());
 				if (Double.isNaN(z)) {
 					Toolkit.getDefaultToolkit().beep();
 					return;
 				}
-				if (Double.isNaN(coord.getZ())) {
-					Vector3 tmpVec = new Vector3(coord);
-					tmpVec.setZ(z);
-					plane.setPoint(0, tmpVec);
+				if (Double.isNaN(result.getZ())) {
+					plane.setPoint(0, result.getX(), result.getY(), z);
 				}
 				else {
-					plane.getMarker(0).setZOffset(z-coord.getZ(), false);
-					plane.setPoint(0, coord);
+					plane.getMarker(0).setZOffset(result.getZ()-z, false);
+					plane.setPoint(0, result.getX(), result.getY(), z);
 				}
 			}			
 		};
@@ -90,20 +87,18 @@ public class PlanePanel extends MapElementBasePanel {
 		panel.add(new JLabel("Point 1"));
 		p1Location = new CoordTextField(22, "location of second point of triangle", Landscape.format, true) {
 			@Override
-			public void doChange(ReadOnlyVector3 coord) {
-				double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
+			public void doChange(ReadOnlyVector3 result) {
+				double z = Landscape.getInstance().getZ(result.getX(), result.getY());
 				if (Double.isNaN(z)) {
 					Toolkit.getDefaultToolkit().beep();
 					return;
 				}
-				if (Double.isNaN(coord.getZ())) {
-					Vector3 tmpVec = new Vector3(coord);
-					tmpVec.setZ(z);
-					plane.setPoint(1, tmpVec);
+				if (Double.isNaN(result.getZ())) {
+					plane.setPoint(1, result.getX(), result.getY(), z);
 				}
 				else {
-					plane.getMarker(1).setZOffset(z-coord.getZ(), false);
-					plane.setPoint(1, coord);
+					plane.getMarker(1).setZOffset(result.getZ()-z, false);
+					plane.setPoint(1, result.getX(), result.getY(), z);
 				}
 			}			
 		};
@@ -115,20 +110,18 @@ public class PlanePanel extends MapElementBasePanel {
 		panel.add(new JLabel("Point 2"));
 		p2Location = new CoordTextField(22, "location of third point of triangle", Landscape.format, true) {
 			@Override
-			public void doChange(ReadOnlyVector3 coord) {
-				double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
+			public void doChange(ReadOnlyVector3 result) {
+				double z = Landscape.getInstance().getZ(result.getX(), result.getY());
 				if (Double.isNaN(z)) {
 					Toolkit.getDefaultToolkit().beep();
 					return;
 				}
-				if (Double.isNaN(coord.getZ())) {
-					Vector3 tmpVec = new Vector3(coord);
-					tmpVec.setZ(z);
-					plane.setPoint(2, tmpVec);
+				if (Double.isNaN(result.getZ())) {
+					plane.setPoint(2, result.getX(), result.getY(), z);
 				}
 				else {
-					plane.getMarker(2).setZOffset(z-coord.getZ(), false);
-					plane.setPoint(2, coord);
+					plane.getMarker(2).setZOffset(result.getZ()-z, false);
+					plane.setPoint(2, result.getX(), result.getY(), z);
 				}
 			}			
 		};

@@ -277,7 +277,7 @@ public class WorldInputHandler implements InputHandler {
 			tape.move(pickPosition);
 		}
 		if (hasMouse()) {
-			if (shiftDown && (movable instanceof MapElement)) {
+			if (shiftDown) {
 //				controller.getViewpointNode().coordInScreenPlane(dx, dy, tmpVec, pickPosition);
 				double s = controller.getViewpointNode().getCamera().getPixelSizeAt(pickPosition, false);
 				movable.setZOffset(movable.getZOffset()+dy*s, true);
@@ -372,6 +372,7 @@ public class WorldInputHandler implements InputHandler {
 							menu.add(new RenameAction((MapElement) parent));
 							menu.add(new EditAction((MapElement) parent));
 							menu.add(new PinMapElementAction((MapElement) parent));
+							menu.add(new OnGroundAction((MapElement) parent));
 							menu.add(new OpenAnnotationAction((MapElement) parent));
 						}
 					}

@@ -26,6 +26,7 @@ public class ProfileState extends ToolState {
 	public boolean axesEqualScale;
 	public float lineWidth;
 	public boolean endpointsVisible;
+	public double zOff0, zOff1;
 
 	// Graph
 	protected Graph graph;
@@ -63,6 +64,8 @@ public class ProfileState extends ToolState {
 		axesEqualScale = StateUtil.getBoolean(map, "AxesEqualScale", true);
 		endpointsVisible = StateUtil.getBoolean(map, "EndpointsVisible", true);
 		lineWidth = (float)StateUtil.getDouble(map, "LineWidth", Profile.defaultLineWidth);
+		zOff0 = StateUtil.getDouble(map, "ZOffset0", 0);
+		zOff1 = StateUtil.getDouble(map, "ZOffset1", 0);
 	}
 	
 	@Override
@@ -77,6 +80,10 @@ public class ProfileState extends ToolState {
 		if (this.lineWidth != that.lineWidth)
 			return(false);
 		if (this.endpointsVisible != that.endpointsVisible)
+			return(false);
+		if (this.zOff0 != that.zOff0)
+			return(false);
+		if (this.zOff1 != that.zOff1)
 			return(false);
 		if (!this.p0.equals(that.p0)) 
 			return(false);
@@ -93,6 +100,8 @@ public class ProfileState extends ToolState {
 			p0 = new Vector3(profile.getEndpointA());
 			p1 = new Vector3(profile.getEndpointB());
 			endpointsVisible = profile.isEndpointsVisible();
+			zOff0 = profile.getMarkerA().getZOffset();
+			zOff1 = profile.getMarkerB().getZOffset();
 		}
 		if (graph != null)
 			axesEqualScale = graph.isAxesEqualScale();
@@ -101,6 +110,8 @@ public class ProfileState extends ToolState {
 		map.put("AxesEqualScale", new Boolean(axesEqualScale));
 		map.put("LineWidth", new Double(lineWidth));
 		map.put("EndpointsVisible", new Double(lineWidth));
+		map.put("ZOffset0", new Double(zOff0));
+		map.put("ZOffset1", new Double(zOff1));
 		return(map);
 	}
 

@@ -131,7 +131,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 
 		// Create points
 		point = new BillboardMarker[3];
-		point[0] = createMarker(state.name + "_0", p0Loc, color);
+		point[0] = createMarker(state.name + "_0", p0Loc, state.zOff0, color);
 		point[0].addMotionListener(new MotionListener() {
 			@Override
 			public void move(Movable mo, ReadOnlyVector3 pos) {
@@ -144,7 +144,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		});
 		attachChild(point[0]);
 
-		point[1] = createMarker(state.name + "_1", p1Loc, color);
+		point[1] = createMarker(state.name + "_1", p1Loc, state.zOff1, color);
 		point[1].addMotionListener(new MotionListener() {
 			@Override
 			public void move(Movable mo, ReadOnlyVector3 pos) {
@@ -157,7 +157,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		});
 		attachChild(point[1]);
 
-		point[2] = createMarker(state.name + "_2", p2Loc, color);
+		point[2] = createMarker(state.name + "_2", p2Loc, state.zOff2, color);
 		point[2].addMotionListener(new MotionListener() {
 			@Override
 			public void move(Movable mo, ReadOnlyVector3 pos) {
@@ -209,11 +209,11 @@ public class Plane extends Node implements Tool, ViewDependent {
 		return (upperBound);
 	}
 
-	private BillboardMarker createMarker(String name, ReadOnlyVector3 point, Color color) {
+	private BillboardMarker createMarker(String name, ReadOnlyVector3 point, double zOff, Color color) {
 		if (texture == null) {
 			texture = ImageUtil.createTexture(Icons.getIconURL("paddle.png"), true);
 		}
-		BillboardMarker bm = new BillboardMarker(name, point, 1, 0, color, labelVisible, pinned);
+		BillboardMarker bm = new BillboardMarker(name, point, 1, zOff, color, labelVisible, pinned);
 		bm.setTexture(texture, texture);
 		return (bm);
 	}
@@ -425,7 +425,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	 * @return
 	 */
 	public ReadOnlyVector3 getPoint(int i) {
-		return (point[i].getWorldTranslation());
+		return (point[i].getLocation());
 	}
 
 	/**
@@ -434,8 +434,8 @@ public class Plane extends Node implements Tool, ViewDependent {
 	 * @param i
 	 * @param p
 	 */
-	public void setPoint(int i, ReadOnlyVector3 p) {
-		point[i].setLocation(p.getX(), p.getY(), p.getZ(), true);
+	public void setPoint(int i, double x, double y, double z) {
+		point[i].setLocation(x, y, z, true);
 	}
 
 	/**

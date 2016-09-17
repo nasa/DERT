@@ -79,7 +79,7 @@ public abstract class MapElementBasePanel extends JPanel {
 		this.parent = parent;
 		setLayout(new BorderLayout());
 		coord = new Vector3();
-		formatter = new DecimalFormat("0.000");
+		formatter = new DecimalFormat(Landscape.format);
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 	}
 
@@ -107,19 +107,19 @@ public abstract class MapElementBasePanel extends JPanel {
 					super.handleChange(store);
 				}
 				@Override
-				public void doChange(ReadOnlyVector3 coord) {
+				public void doChange(ReadOnlyVector3 result) {
 					Movable movable = (Movable)mapElement;
-					double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
+					double z = Landscape.getInstance().getZ(result.getX(), result.getY());
 					if (Double.isNaN(z)) {
 						Toolkit.getDefaultToolkit().beep();
 						return;
 					}
-					if (Double.isNaN(coord.getZ())) {
-						movable.setLocation(coord.getX(), coord.getY(), z, true);
+					if (Double.isNaN(result.getZ())) {
+						movable.setLocation(result.getX(), result.getY(), z, true);
 					}
 					else {
-						movable.setZOffset(coord.getZ()-z, false);
-						movable.setLocation(coord.getX(), coord.getY(), z, true);
+						movable.setZOffset(result.getZ()-z, false);
+						movable.setLocation(result.getX(), result.getY(), z, true);
 					}
 				}
 			};

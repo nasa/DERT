@@ -115,7 +115,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 		vertex[4] = pBLoc.getYf();
 		vertex[5] = pBLoc.getZf();
 
-		endpointA = createMarker(state.name + "_A", pALoc, color);
+		endpointA = createMarker(state.name + "_A", pALoc, state.zOff0, color);
 		endpointA.addMotionListener(new MotionListener() {
 			@Override
 			public void move(Movable mo, ReadOnlyVector3 pos) {
@@ -126,7 +126,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 		});
 		attachChild(endpointA);
 
-		endpointB = createMarker(state.name + "_B", pBLoc, color);
+		endpointB = createMarker(state.name + "_B", pBLoc, state.zOff1, color);
 		endpointB.addMotionListener(new MotionListener() {
 			@Override
 			public void move(Movable mo, ReadOnlyVector3 pos) {
@@ -171,11 +171,11 @@ public class Profile extends Node implements ViewDependent, Tool {
 		}
 	}
 
-	protected BillboardMarker createMarker(String name, ReadOnlyVector3 point, Color color) {
+	protected BillboardMarker createMarker(String name, ReadOnlyVector3 point, double zOff, Color color) {
 		if (texture == null) {
 			texture = ImageUtil.createTexture(Icons.getIconURL("paddle.png"), true);
 		}
-		BillboardMarker bm = new BillboardMarker(name, point, size, 0, color, labelVisible, pinned);
+		BillboardMarker bm = new BillboardMarker(name, point, size, zOff, color, labelVisible, pinned);
 		bm.setTexture(texture, texture);
 		return (bm);
 	}
@@ -328,7 +328,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * @return
 	 */
 	public ReadOnlyVector3 getEndpointA() {
-		return (pALoc);
+		return (endpointA.getLocation());
 	}
 
 	/**
@@ -349,7 +349,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * @return
 	 */
 	public ReadOnlyVector3 getEndpointB() {
-		return (pBLoc);
+		return (endpointB.getLocation());
 	}
 
 	/**
