@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.render;
 
+import gov.nasa.arc.dert.landscape.QuadTreeMesh;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.SpatialPickResults;
 
@@ -45,7 +46,7 @@ public class SelectionHandler {
 	 * @return
 	 */
 	public Spatial doSelection(Ray3 pickRay, Vector3 position, Vector3 normal, SpatialPickResults boundsPick,
-		boolean shiftDown) {
+		boolean terrainOnly) {
 
 		// First do a pick on the object bounds to reduce time spent on more
 		// expensive pick.
@@ -60,6 +61,10 @@ public class SelectionHandler {
 		int index = -1;
 		double dist = Double.MAX_VALUE;
 		for (int i = 0; i < mesh.length; ++i) {
+			if (terrainOnly) {
+				if (!(mesh[i] instanceof QuadTreeMesh))
+					continue;
+			}
 			// get the mesh bounds
 			PickData pd = boundsPick.getPickData(i);
 			IntersectionRecord ir = pd.getIntersectionRecord();

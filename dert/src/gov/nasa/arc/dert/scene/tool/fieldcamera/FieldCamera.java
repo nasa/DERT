@@ -131,11 +131,9 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 
 	public FieldCamera(FieldCameraState state) {
 		super(state.name);
-		setStrictZ(state.strictZ);
 		this.state = state;
-		if (state.location != null) {
-			super.setTranslation(state.location);
-		}
+		if (state.location != null)
+			setLocation(state.location, false);
 		basicCamera = new BasicCamera(1, 1);
 
 		// camera stand
@@ -313,11 +311,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		}
 		lineLength = length;
 		lookAtLine.setScale(1, 1, length);
-	}
-
-	@Override
-	public ReadOnlyVector3 getLocation() {
-		return (getWorldTranslation());
 	}
 
 	/**
@@ -624,23 +617,10 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	}
 
 	/**
-	 * The landscape changed, update Z coordinates
+	 * The landscape changed but we don't want the camera bobbing up and down
 	 */
 	@Override
 	public boolean updateElevation(QuadTree quadTree) {
-		if (strictZ)
-			return(false);
-		if (isPinned()) {
-			return (false);
-		}
-		ReadOnlyVector3 t = getWorldTranslation();
-		if (quadTree.contains(t.getX(), t.getY())) {
-			double z = Landscape.getInstance().getZ(t.getX(), t.getY(), quadTree);
-			if (!Double.isNaN(z)) {
-				setTranslation(t.getX(), t.getY(), z);
-				return (true);
-			}
-		}
 		return (false);
 	}
 

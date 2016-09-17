@@ -93,7 +93,7 @@ public class ScaleBarState extends ToolState {
 			cellCount = scale.getCellCount();
 			autoLabel = scale.isAutoLabel();
 			radius = scale.getCellRadius();
-			location = new Vector3(((ScaleBar)mapElement).getTranslation());
+			location = new Vector3(((ScaleBar)mapElement).getLocation());
 			azimuth = scale.getAzimuth();
 			tilt = scale.getTilt();
 		}

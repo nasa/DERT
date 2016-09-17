@@ -34,9 +34,10 @@ public abstract class MapElementState extends State {
 
 	// Options
 	public boolean visible;
-	public boolean pinned, labelVisible, strictZ;
+	public boolean pinned, labelVisible;
 	public double size;
 	public Color color;
+	public double zOff;
 
 	// Map element type
 	public Type mapElementType;
@@ -96,7 +97,7 @@ public abstract class MapElementState extends State {
 		String str = StateUtil.getString(map, "MapElementType", null);
 		mapElementType = Type.valueOf(str);
 		id = StateUtil.getLong(map, "MapElementId", 0);
-		strictZ = StateUtil.getBoolean(map, "StrictZ", false);
+		zOff = StateUtil.getDouble(map, "ZOffset", 0);
 	}
 	
 	@Override
@@ -112,7 +113,7 @@ public abstract class MapElementState extends State {
 			return(false);
 		if (this.labelVisible != that.labelVisible) 
 			return(false);
-		if (this.strictZ != that.strictZ) 
+		if (this.zOff != that.zOff) 
 			return(false);
 		if (this.size != that.size) 
 			return(false);
@@ -154,7 +155,7 @@ public abstract class MapElementState extends State {
 				@Override
 				public void move(Movable mo, ReadOnlyVector3 pos) {
 					if (annotationDialog != null) {
-						annotationDialog.setMessage(StringUtil.format(mapElement.getLocation()));
+						annotationDialog.setMessage(StringUtil.format(mapElement.getLocationInWorld()));
 					}
 				}
 			});
@@ -171,11 +172,11 @@ public abstract class MapElementState extends State {
 			pinned = mapElement.isPinned();
 			visible = mapElement.isVisible();
 			labelVisible = mapElement.isLabelVisible();
-			if (mapElement instanceof Movable)
-				strictZ = ((Movable)mapElement).isStrictZ();
+			zOff = mapElement.getZOffset();
 		}
 		map.put("Name", name);
 		map.put("Size", new Double(size));
+		map.put("ZOffset", new Double(zOff));
 		map.put("Color", color);
 		map.put("Pinned", new Boolean(pinned));
 		map.put("Annotation", annotation);
@@ -183,7 +184,6 @@ public abstract class MapElementState extends State {
 		map.put("LabelVisible", new Boolean(labelVisible));
 		map.put("MapElementType", mapElementType.toString());
 		map.put("MapElementId", new Long(id));
-		map.put("StrictZ", new Boolean(strictZ));
 		return(map);
 	}
 
@@ -195,7 +195,7 @@ public abstract class MapElementState extends State {
 			annotationDialog = new TextDialog(null, name, 400, 200, true, false);
 		}
 		if (mapElement != null) {
-			annotationDialog.setMessage(StringUtil.format(mapElement.getLocation()));
+			annotationDialog.setMessage(StringUtil.format(mapElement.getLocationInWorld()));
 		}
 		annotationDialog.setText(annotation);
 		annotationDialog.open();

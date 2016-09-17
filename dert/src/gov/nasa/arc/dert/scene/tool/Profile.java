@@ -175,7 +175,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 		if (texture == null) {
 			texture = ImageUtil.createTexture(Icons.getIconURL("paddle.png"), true);
 		}
-		BillboardMarker bm = new BillboardMarker(name, point, size, color, labelVisible, pinned);
+		BillboardMarker bm = new BillboardMarker(name, point, size, 0, color, labelVisible, pinned);
 		bm.setTexture(texture, texture);
 		return (bm);
 	}
@@ -337,7 +337,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * @param pALoc
 	 */
 	public void setEndpointA(double x, double y, double z) {
-		endpointA.setLocation(x, y, z, true, false);
+		endpointA.setLocation(x, y, z, true);
 		this.pALoc.set(x, y, z);
 		updateGraph();
 		updateGeometricState(0);
@@ -358,7 +358,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * @param pBLoc
 	 */
 	public void setEndpointB(double x, double y, double z) {
-		endpointB.setLocation(x, y, z, true, false);
+		endpointB.setLocation(x, y, z, true);
 		this.pBLoc.set(x, y, z);
 		updateGraph();
 		updateGeometricState(0);
@@ -483,6 +483,19 @@ public class Profile extends Node implements ViewDependent, Tool {
 		endpointB.setVerticalExaggeration(vertExag, oldVertExag, minZ);
 		line.setScale(1, 1, vertExag);
 	}
+	
+	public void ground() {
+		endpointA.ground();
+		endpointB.ground();
+	}
+	
+	public void setZOffset(double zOff, boolean doTrans) {
+		// do nothing
+	}
+	
+	public double getZOffset() {
+		return(0);
+	}
 
 	/**
 	 * Set defaults
@@ -554,7 +567,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * Get the location
 	 */
 	@Override
-	public ReadOnlyVector3 getLocation() {
-		return (endpointA.getLocation());
+	public ReadOnlyVector3 getLocationInWorld() {
+		return (endpointA.getLocationInWorld());
 	}
 }

@@ -61,18 +61,17 @@ public class ProfilePanel extends MapElementBasePanel {
 		pALocation = new CoordTextField(22, "location of end point A", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 coord) {
+				double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
+				if (Double.isNaN(z)) {
+					Toolkit.getDefaultToolkit().beep();
+					return;
+				}
 				if (Double.isNaN(coord.getZ())) {
-					double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
-					if (Double.isNaN(z)) {
-						Toolkit.getDefaultToolkit().beep();
-						return;
-					}
-					profile.setEndpointA(coord.getX(), coord.getY(), coord.getZ());
-					profile.getMarkerA().setStrictZ(true);
+					profile.setEndpointA(coord.getX(), coord.getY(), z);
 				}
 				else {
+					profile.getMarkerA().setZOffset(z-coord.getZ(), false);
 					profile.setEndpointA(coord.getX(), coord.getY(), coord.getZ());
-					profile.getMarkerA().setStrictZ(false);
 				}
 			}
 		};
@@ -85,18 +84,17 @@ public class ProfilePanel extends MapElementBasePanel {
 		pBLocation = new CoordTextField(22, "location of end point B", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 coord) {
+				double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
+				if (Double.isNaN(z)) {
+					Toolkit.getDefaultToolkit().beep();
+					return;
+				}
 				if (Double.isNaN(coord.getZ())) {
-					double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
-					if (Double.isNaN(z)) {
-						Toolkit.getDefaultToolkit().beep();
-						return;
-					}
-					profile.setEndpointB(coord.getX(), coord.getY(), coord.getZ());
-					profile.getMarkerB().setStrictZ(true);
+					profile.setEndpointB(coord.getX(), coord.getY(), z);
 				}
 				else {
+					profile.getMarkerB().setZOffset(z-coord.getZ(), false);
 					profile.setEndpointB(coord.getX(), coord.getY(), coord.getZ());
-					profile.getMarkerB().setStrictZ(false);
 				}
 			}
 		};

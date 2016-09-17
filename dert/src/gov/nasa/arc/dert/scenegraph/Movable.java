@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.scenegraph;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.view.world.MoveEdit;
 
 import java.util.ArrayList;
@@ -18,8 +19,9 @@ import com.ardor3d.scenegraph.event.DirtyType;
 public abstract class Movable extends Node {
 
 	private boolean pinned, inMotion;
-	protected boolean strictZ;
+	protected double zOff;
 	private ArrayList<MotionListener> listeners;
+	protected Vector3 location, workVec;
 
 	/**
 	 * Constructor
@@ -28,6 +30,8 @@ public abstract class Movable extends Node {
 	 */
 	public Movable(String name) {
 		super(name);
+		location = new Vector3();
+		workVec = new Vector3();
 		listeners = new ArrayList<MotionListener>();
 	}
 
@@ -71,14 +75,6 @@ public abstract class Movable extends Node {
 	public void setInMotion(boolean inMotion, ReadOnlyVector3 pickPosition) {
 		this.inMotion = inMotion;
 		enableHighlight(inMotion);
-	}
-	
-	public boolean isStrictZ() {
-		return(strictZ);
-	}
-	
-	public void setStrictZ(boolean strictZ) {
-		this.strictZ = strictZ;
 	}
 
 	protected abstract void enableHighlight(boolean enable);
@@ -142,10 +138,45 @@ public abstract class Movable extends Node {
 	 * @param i
 	 * @param p
 	 */
-	public void setLocation(double x, double y, double z, boolean doEdit, boolean zOnly) {
+	public void setLocation(double x, double y, double z, boolean doEdit) {
 		if (doEdit)
-			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(this, new Vector3(getTranslation()), strictZ));
-		setTranslation(x, y, z);
+			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(this, new Vector3(location)));
+		location.set(x, y, z);
+		setTranslation(x, y, z+zOff);
 		updateListeners();
+	}
+	
+	public void setLocation(ReadOnlyVector3 loc, boolean doEdit) {
+		setLocation(loc.getX(), loc.getY(), loc.getZ(), doEdit);
+	}
+	
+	public ReadOnlyVector3 getLocation() {
+		return(location);
+	}
+	
+	public void setZOffset(double z, boolean doTrans) {
+		zOff = z;
+		if (doTrans)
+			setTranslation(location.getX(), location.getY(), location.getZ()+zOff);
+	}
+	
+	public double getZOffset() {
+		return(zOff);
+	}
+	
+	public void ground() {
+		setZOffset(0, true);
+		updateListeners();
+	}
+
+	/**
+	 * Get the location in planetary coordinates
+	 * 
+	 * @return
+	 */
+	public ReadOnlyVector3 getLocationInWorld() {
+		workVec.set(getWorldTranslation());
+		Landscape.getInstance().localToWorldCoordinate(workVec);
+		return (workVec);
 	}
 }

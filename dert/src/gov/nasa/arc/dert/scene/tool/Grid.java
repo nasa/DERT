@@ -1,6 +1,5 @@
 package gov.nasa.arc.dert.scene.tool;
 
-import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.scenegraph.HiddenLine;
 import gov.nasa.arc.dert.scenegraph.Movable;
@@ -48,7 +47,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	// Dimensions and location
 	protected Vector3 origin;
 	protected double cellSize;
-	protected Vector3 offset, location;
+	protected Vector3 offset;
 
 	// Color
 	protected Color color = Color.white;
@@ -68,14 +67,12 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	 */
 	public Grid(GridState state) {
 		super(state.name);
-		setStrictZ(state.strictZ);
 		this.state = state;
 		this.cellSize = state.size;
 		this.color = state.color;
 		this.lineWidth = state.lineWidth;
 		offset = new Vector3();
-		location = new Vector3();
-		setTranslation(state.location);
+		setLocation(state.location, false);
 		colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
 			color.getAlpha() / 255f);
 
@@ -337,27 +334,12 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	}
 
 	@Override
-	public void setTranslation(double x, double y, double z) {
-		super.setTranslation(x - offset.getX(), y - offset.getY(), z - offset.getZ());
-	}
-
-	@Override
-	public void setTranslation(ReadOnlyVector3 loc) {
-		super.setTranslation(loc.getX()-offset.getX(), loc.getY()-offset.getY(), loc.getZ()-offset.getZ());
+	public void setLocation(double x, double y, double z, boolean doEdit) {
+		super.setLocation(x - offset.getX(), y - offset.getY(), z - offset.getZ(), doEdit);
 	}
 
 	@Override
 	public String toString() {
 		return (getName());
-	}
-
-	/**
-	 * Get the location in world coordinates
-	 */
-	@Override
-	public ReadOnlyVector3 getLocation() {
-		location.set(getWorldTranslation());
-		Landscape.getInstance().localToWorldCoordinate(location);
-		return (location);
 	}
 }

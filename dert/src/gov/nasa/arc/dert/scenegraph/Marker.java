@@ -47,7 +47,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 	protected String labelStr = "";
 	protected Billboard billboard;
 
-	protected Vector3 location;
+	protected Vector3 worldLoc;
 
 	// contains label and spatials specific to marker type
 	protected Node contents;
@@ -55,18 +55,18 @@ public abstract class Marker extends Movable implements ViewDependent {
 	/**
 	 * Constructor
 	 */
-	public Marker(String name, ReadOnlyVector3 point, double size, Color color, boolean labelVisible, boolean pinned) {
+	public Marker(String name, ReadOnlyVector3 point, double size, double zOff, Color color, boolean labelVisible, boolean pinned) {
 		super(name);
 		billboard = new Billboard("_billboard");
 		this.labelStr = name;
 		this.size = size;
+		this.zOff = zOff;
 		setPinned(pinned);
-		location = new Vector3();
+		worldLoc = new Vector3();
 		colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
 			color.getAlpha() / 255f);
-		if (point != null) {
-			super.setTranslation(point);
-		}
+		if (point != null)
+			setLocation(point, false);
 
 		// default states
 		// for transparency
@@ -273,13 +273,11 @@ public abstract class Marker extends Movable implements ViewDependent {
 	 * @return
 	 */
 	public boolean updateElevation(QuadTree quadTree) {
-		if (strictZ)
-			return(false);
-		ReadOnlyVector3 t = getWorldTranslation();
+		ReadOnlyVector3 t = getLocation();
 		if (quadTree.contains(t.getX(), t.getY())) {
 			double z = Landscape.getInstance().getZ(t.getX(), t.getY(), quadTree);
 			if (!Double.isNaN(z)) {
-				setTranslation(t.getX(), t.getY(), z);
+				setLocation(t.getX(), t.getY(), z, false);
 				return (true);
 			}
 		}
@@ -289,17 +287,6 @@ public abstract class Marker extends Movable implements ViewDependent {
 	@Override
 	public String toString() {
 		return (getName());
-	}
-
-	/**
-	 * Get the location in planetary coordinates
-	 * 
-	 * @return
-	 */
-	public ReadOnlyVector3 getLocation() {
-		location.set(getWorldTranslation());
-		Landscape.getInstance().localToWorldCoordinate(location);
-		return (location);
 	}
 
 }

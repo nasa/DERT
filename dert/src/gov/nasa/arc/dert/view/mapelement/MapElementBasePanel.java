@@ -109,18 +109,17 @@ public abstract class MapElementBasePanel extends JPanel {
 				@Override
 				public void doChange(ReadOnlyVector3 coord) {
 					Movable movable = (Movable)mapElement;
+					double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
+					if (Double.isNaN(z)) {
+						Toolkit.getDefaultToolkit().beep();
+						return;
+					}
 					if (Double.isNaN(coord.getZ())) {
-						double z = Landscape.getInstance().getZ(coord.getX(), coord.getY());
-						if (Double.isNaN(z)) {
-							Toolkit.getDefaultToolkit().beep();
-							return;
-						}
-						movable.setLocation(coord.getX(), coord.getY(), z, true, false);
-						movable.setStrictZ(true);
+						movable.setLocation(coord.getX(), coord.getY(), z, true);
 					}
 					else {
-						movable.setLocation(coord.getX(), coord.getY(), coord.getZ(), true, false);
-						movable.setStrictZ(false);
+						movable.setZOffset(coord.getZ()-z, false);
+						movable.setLocation(coord.getX(), coord.getY(), z, true);
 					}
 				}
 			};

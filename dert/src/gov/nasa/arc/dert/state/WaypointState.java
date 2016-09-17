@@ -69,7 +69,7 @@ public class WaypointState extends MapElementState {
 		HashMap<String,Object> map = super.save();
 		if (mapElement != null) {
 			Waypoint waypoint = (Waypoint) mapElement;
-			location = new Vector3(waypoint.getTranslation());
+			location = new Vector3(waypoint.getLocation());
 			parent = (PathState) waypoint.getPath().getState();
 		}
 		StateUtil.putVector3(map, "Location", location);
@@ -100,7 +100,7 @@ public class WaypointState extends MapElementState {
 				if (parent != null) {
 					annot += "P A T H :\n" + parent.getAnnotation();
 				}
-				annotationDialog.setMessage(StringUtil.format(mapElement.getLocation()));
+				annotationDialog.setMessage(StringUtil.format(mapElement.getLocationInWorld()));
 			}
 			annotationDialog.setText(annot);
 		}

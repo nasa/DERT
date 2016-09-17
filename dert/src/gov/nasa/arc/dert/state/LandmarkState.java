@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.scene.landmark.Landmark;
+import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.util.StateUtil;
 
 import java.awt.Color;
@@ -8,7 +9,6 @@ import java.util.HashMap;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.scenegraph.Node;
 
 /**
  * Base class for state objects for Landmarks.
@@ -62,9 +62,8 @@ public abstract class LandmarkState extends MapElementState {
 	public HashMap<String,Object> save() {
 		HashMap<String,Object> map = super.save();
 		if (mapElement != null) {
-			Landmark landmark = (Landmark) mapElement;
-			Node node = (Node) landmark;
-			position = new Vector3(node.getTranslation());
+			Movable mov = (Movable) mapElement;
+			position = new Vector3(mov.getLocation());
 		}
 		StateUtil.putVector3(map, "Position", position);
 		return(map);

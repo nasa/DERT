@@ -80,9 +80,8 @@ public class PlaceHereAction extends MenuItemAction {
 		// move the map element and hand it to the undo handler
 		if (movable != null) {
 			Vector3 trans = new Vector3(movable.getTranslation());
-			movable.setTranslation(position);
-			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(movable, trans, movable.isStrictZ()));
-			movable.setStrictZ(false);
+			movable.setLocation(position, false);
+			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(movable, trans));
 		}
 	}
 

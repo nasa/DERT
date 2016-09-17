@@ -15,12 +15,12 @@ import gov.nasa.arc.dert.action.mapelement.AddScaleAction;
 import gov.nasa.arc.dert.action.mapelement.DeleteMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.EditAction;
 import gov.nasa.arc.dert.action.mapelement.HideMapElementAction;
+import gov.nasa.arc.dert.action.mapelement.OnGroundAction;
 import gov.nasa.arc.dert.action.mapelement.OpenAnnotationAction;
 import gov.nasa.arc.dert.action.mapelement.OpenBillboardAction;
 import gov.nasa.arc.dert.action.mapelement.PinMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.PlaceHereAction;
 import gov.nasa.arc.dert.action.mapelement.RenameAction;
-import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.render.SceneCanvasPanel;
 import gov.nasa.arc.dert.scene.LineSet;
 import gov.nasa.arc.dert.scene.MapElement;
@@ -61,9 +61,6 @@ public class WorldInputHandler implements InputHandler {
 
 	// Spatial being dragged
 	private Movable movable;
-	
-	// Spatial supporting movable
-	private Spatial supportSpatial;
 
 	// Mouse position
 	private int mouseX, mouseY, mouseButton;
@@ -74,7 +71,7 @@ public class WorldInputHandler implements InputHandler {
 	// Helpers
 	private Vector3 lastPosition;
 	private Vector3 pickPosition = new Vector3(), pickNormal = new Vector3();
-	private boolean lastStrictZ;
+//	private boolean lastStrictZ;
 
 	// Viewpoint
 	private ViewpointController controller;
@@ -155,12 +152,9 @@ public class WorldInputHandler implements InputHandler {
 	 * @param normal
 	 */
 	public void move(Vector3 pos, Vector3 normal) {
-		if (movable instanceof ViewDependent) {
+		if (movable instanceof ViewDependent)
 			((ViewDependent) movable).update(controller.getViewpointNode().getCamera());
-		}
-		movable.setLocation(pos.getX(), pos.getY(), pos.getZ(), false, false);
-		if ((supportSpatial != null) && !(supportSpatial instanceof QuadTree))
-			movable.setStrictZ(true);
+		movable.setLocation(pos.getX(), pos.getY(), pos.getZ(), false);
 	}
 
 	/**
@@ -227,13 +221,12 @@ public class WorldInputHandler implements InputHandler {
 		mouseY = y;
 		this.mouseButton = mouseButton;
 		controller.mousePress(x, y, mouseButton);
-		Spatial spatial = controller.doPick(mouseX, mouseY, pickPosition, pickNormal, shiftDown);
+		Spatial spatial = controller.doPick(mouseX, mouseY, pickPosition, pickNormal, false);
 		if (spatial != null) {
 			if (mouseButton == 1) {
 				if ((tape == null) && (path == null)) {
 					if (grab(spatial, pickPosition)) {
 						lastPosition = new Vector3(movable.getTranslation());
-						lastStrictZ = movable.isStrictZ();
 						((Spatial) movable).getSceneHints().setAllPickingHints(false);
 						movable.setInMotion(true, pickPosition);
 						canvasPanel.getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));	
@@ -257,7 +250,7 @@ public class WorldInputHandler implements InputHandler {
 				if (hasMouse()) {
 					((Spatial) movable).getSceneHints().setAllPickingHints(true);
 					movable.setInMotion(false, null);
-					Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(movable, lastPosition, lastStrictZ));
+					Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(movable, lastPosition));
 					movable = null;
 					canvasPanel.getCanvas().setCursor(null);
 				}
@@ -280,18 +273,16 @@ public class WorldInputHandler implements InputHandler {
 			controller.mouseMove(x, y, dx, dy, mouseButton);
 		}
 		if (tape != null) {
-			controller.doPick(mouseX, mouseY, pickPosition, pickNormal, shiftDown);
+			controller.doPick(mouseX, mouseY, pickPosition, pickNormal, false);
 			tape.move(pickPosition);
 		}
 		if (hasMouse()) {
-			if (shiftDown) {
+			if (shiftDown && (movable instanceof MapElement)) {
 //				controller.getViewpointNode().coordInScreenPlane(dx, dy, tmpVec, pickPosition);
 				double s = controller.getViewpointNode().getCamera().getPixelSizeAt(pickPosition, false);
-				ReadOnlyVector3 trans = movable.getTranslation();
-				movable.setLocation(trans.getX(), trans.getY(), trans.getZ()+dy*s, false, true);
-				movable.setStrictZ(true);
+				movable.setZOffset(movable.getZOffset()+dy*s, true);
 			} else {
-				supportSpatial = controller.doPick(mouseX, mouseY, pickPosition, pickNormal, shiftDown);
+				controller.doPick(mouseX, mouseY, pickPosition, pickNormal, true);
 				move(pickPosition, pickNormal);
 			}
 		}
@@ -359,6 +350,7 @@ public class WorldInputHandler implements InputHandler {
 							menu.add(new RenameAction(((Waypoint) mapElement).getPath()));
 							menu.add(new EditAction(((Waypoint) mapElement).getPath()));
 							menu.add(new PinMapElementAction(((Waypoint) mapElement).getPath()));
+							menu.add(new OnGroundAction((Waypoint) mapElement));
 							menu.add(new OpenAnnotationAction(mapElement));
 						} else if (!(mapElement instanceof LineSet)) {
 							menu.add(new HideMapElementAction(mapElement));
@@ -366,6 +358,7 @@ public class WorldInputHandler implements InputHandler {
 							menu.add(new RenameAction(mapElement));
 							menu.add(new EditAction(mapElement));
 							menu.add(new PinMapElementAction(mapElement));
+							menu.add(new OnGroundAction(mapElement));
 							menu.add(new OpenAnnotationAction(mapElement));
 							if (mapElement instanceof ImageBoard) {
 								menu.add(new OpenBillboardAction((ImageBoard) mapElement));

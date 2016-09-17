@@ -38,7 +38,7 @@ public class Waypoint extends BillboardMarker implements MapElement {
 	protected WaypointState state;
 	
 	// Waypoint is represented as sphere on the surface
-	protected boolean onGround;
+	protected boolean useSphere;
 	protected Shape shape;
 
 	/**
@@ -47,11 +47,10 @@ public class Waypoint extends BillboardMarker implements MapElement {
 	 * @param state
 	 */
 	public Waypoint(WaypointState state) {
-		super(state.name, state.location, state.size, state.color, state.labelVisible, state.pinned);
+		super(state.name, state.location, state.size, state.zOff, state.color, state.labelVisible, state.pinned);
 		if (texture == null) {
 			texture = ImageUtil.createTexture(Icons.getIconURL(defaultIconName), true);
 		}
-		setStrictZ(state.strictZ);
 		setTexture(texture, texture);
 		setVisible(state.visible);
 		this.state = state;
@@ -108,17 +107,11 @@ public class Waypoint extends BillboardMarker implements MapElement {
 		return ((Path) parent.getParent());
 	}
 
-	/**
-	 * Set the texture
-	 * 
-	 * @param nominalTexture
-	 * @param highlightTexture
-	 */
-	public void setOnGround(boolean onGround) {
-		if (this.onGround == onGround)
+	public void showAsSphere(boolean useSphere) {
+		if (this.useSphere == useSphere)
 			return;
-		this.onGround = onGround;
-		if (onGround) {
+		this.useSphere = useSphere;
+		if (useSphere) {
 			contents.detachChild(billboard);
 			shape = Shape.createShape("_geometry", ShapeType.sphere, (float)(size*0.5));
 			shape.updateWorldBound(true);
@@ -136,14 +129,10 @@ public class Waypoint extends BillboardMarker implements MapElement {
 		}
 		setMaterialState();
 	}
-	
-	public boolean isOnGround() {
-		return(onGround);
-	}
 
 	@Override
 	protected void setMaterialState() {
-		if (onGround) {
+		if (useSphere) {
 			materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * FigureMarker.AMBIENT_FACTOR,
 					colorRGBA.getGreen() * FigureMarker.AMBIENT_FACTOR, colorRGBA.getBlue() * FigureMarker.AMBIENT_FACTOR, colorRGBA.getAlpha()));
 			materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
@@ -155,7 +144,7 @@ public class Waypoint extends BillboardMarker implements MapElement {
 
 	@Override
 	protected void enableHighlight(boolean enable) {
-		if (onGround) {
+		if (useSphere) {
 			if (enable) {
 				materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * FigureMarker.AMBIENT_FACTOR,
 					colorRGBA.getGreen() * FigureMarker.AMBIENT_FACTOR, colorRGBA.getBlue() * FigureMarker.AMBIENT_FACTOR, colorRGBA.getAlpha()));
@@ -178,7 +167,7 @@ public class Waypoint extends BillboardMarker implements MapElement {
 
 	@Override
 	protected void createLabel(boolean labelVisible) {
-		if (onGround)
+		if (useSphere)
 			super.createLabel(labelVisible);
 		else {
 			label = new RasterText("_label", labelStr, AlignType.Center, true);

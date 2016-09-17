@@ -261,10 +261,9 @@ public class LineSet extends GroupNode implements MapElement {
 	}
 
 	/**
-	 * Get the location (translation)
+	 * Get the location of the origin in planetary coordinates
 	 */
-	@Override
-	public ReadOnlyVector3 getLocation() {
+	public ReadOnlyVector3 getLocationInWorld() {
 		location.set(getWorldTranslation());
 		Landscape.getInstance().localToWorldCoordinate(location);
 		return (location);
@@ -277,6 +276,18 @@ public class LineSet extends GroupNode implements MapElement {
 	
 	public boolean isZBufferEnabled() {
 		return(zBufferState.isEnabled());
+	}
+	
+	public void ground() {
+		// do nothing
+	}
+	
+	public void setZOffset(double zOff, boolean doTrans) {
+		// do nothing
+	}
+	
+	public double getZOffset() {
+		return(0);
 	}
 
 	/**

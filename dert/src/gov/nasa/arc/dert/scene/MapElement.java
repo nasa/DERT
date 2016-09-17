@@ -47,6 +47,12 @@ public interface MapElement {
 
 	public void setLabelVisible(boolean visible);
 
-	public ReadOnlyVector3 getLocation();
+	public ReadOnlyVector3 getLocationInWorld();
+	
+	public void ground();
+	
+	public double getZOffset();
+	
+	public void setZOffset(double zOff, boolean doTrans);
 
 }

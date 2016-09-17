@@ -86,7 +86,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 
 	// For slope, aspect and viewpoint
 	private double strike, dip;
-	private Vector3 location;
+	private Vector3 workVec;
 	private double[] planeEq = new double[4];
 
 	// Helper fields
@@ -127,7 +127,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		tmp0 = new Vector3();
 		tmp1 = new Vector3();
 		rotMat = new Matrix3();
-		location = new Vector3();
+		workVec = new Vector3();
 
 		// Create points
 		point = new BillboardMarker[3];
@@ -213,7 +213,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		if (texture == null) {
 			texture = ImageUtil.createTexture(Icons.getIconURL("paddle.png"), true);
 		}
-		BillboardMarker bm = new BillboardMarker(name, point, 1, color, labelVisible, pinned);
+		BillboardMarker bm = new BillboardMarker(name, point, 1, 0, color, labelVisible, pinned);
 		bm.setTexture(texture, texture);
 		return (bm);
 	}
@@ -435,7 +435,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	 * @param p
 	 */
 	public void setPoint(int i, ReadOnlyVector3 p) {
-		point[i].setLocation(p.getX(), p.getY(), p.getZ(), true, false);
+		point[i].setLocation(p.getX(), p.getY(), p.getZ(), true);
 	}
 
 	/**
@@ -791,11 +791,23 @@ public class Plane extends Node implements Tool, ViewDependent {
 	/**
 	 * Get the location in world coordinates
 	 */
-	@Override
-	public ReadOnlyVector3 getLocation() {
-		location.set(centroid);
-		Landscape.getInstance().localToWorldCoordinate(location);
-		return (location);
+	public ReadOnlyVector3 getLocationInWorld() {
+		workVec.set(centroid);
+		Landscape.getInstance().localToWorldCoordinate(workVec);
+		return (workVec);
+	}
+	
+	public void ground() {
+		for (int i=0; i<point.length; ++i)
+			point[i].ground();
+	}
+	
+	public void setZOffset(double zOff, boolean doTrans) {
+		// do nothing
+	}
+	
+	public double getZOffset() {
+		return(0);
 	}
 
 	/**

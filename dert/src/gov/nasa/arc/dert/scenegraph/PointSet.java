@@ -66,11 +66,11 @@ public class PointSet extends Node {
 		return (index);
 	}
 	
-	public void setWaypointsOnGround(boolean onGround) {
+	public void showWaypointsAsSpheres(boolean useSpheres) {
 		int n = getNumberOfChildren();
 		for (int i=0; i<n; ++i) {
 			Waypoint wp = (Waypoint)getChild(i);
-			wp.setOnGround(onGround);
+			wp.showAsSphere(useSpheres);
 		}
 	}
 

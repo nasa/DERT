@@ -103,11 +103,11 @@ public class ViewpointController {
 	 * @param noQuadTree
 	 * @return
 	 */
-	public Spatial doPick(int x, int y, Vector3 position, Vector3 normal, boolean shiftDown) {
+	public Spatial doPick(int x, int y, Vector3 position, Vector3 normal, boolean terrainOnly) {
 		mousePos.set(x, y);
 		Ray3 pickRay = new Ray3WithLine();
 		viewpointNode.getCamera().getPickRay(mousePos, false, pickRay);
-		return (World.getInstance().select(pickRay, position, normal, null, shiftDown));
+		return (World.getInstance().select(pickRay, position, normal, null, terrainOnly));
 	}
 
 	/**

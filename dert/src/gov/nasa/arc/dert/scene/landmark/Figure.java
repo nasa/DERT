@@ -44,13 +44,12 @@ public class Figure extends FigureMarker implements Landmark {
 	 * @param state
 	 */
 	public Figure(FigureState state) {
-		super(state.name, state.position, state.size, state.color, state.labelVisible, state.autoScale, state.pinned);
+		super(state.name, state.position, state.size, state.zOff, state.color, state.labelVisible, state.autoScale, state.pinned);
 		setShape(state.shape);
 		setAzimuth(state.azimuth);
 		setTilt(state.tilt);
 		setSurfaceNormalVisible(state.showNormal);
 		setVisible(state.visible);
-		setStrictZ(state.strictZ);
 		this.state = state;
 		state.setMapElement(this);
 	}

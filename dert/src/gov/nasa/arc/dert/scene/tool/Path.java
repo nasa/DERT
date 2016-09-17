@@ -291,7 +291,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		// create the way point and add it
 		int index = (int) state.id;
 		Waypoint currentWaypoint = new Waypoint(state);
-		currentWaypoint.setOnGround(polyIsEnabled);
+		currentWaypoint.showAsSphere(polyIsEnabled);
 		index = pointSet.addPoint(currentWaypoint, index);
 		state.id = index;
 		currentWaypoint.addMotionListener(this);
@@ -333,8 +333,10 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			renumberWaypoints(index);
 		}
 		// update body
-		enableLine(lineIsEnabled);
-		enablePolygon(polyIsEnabled);
+		if (lineIsEnabled)
+			pointSet.updateLine(line);
+		if (polyIsEnabled)
+			pointSet.updatePolygon(poly);
 		updateGeometricState(0, false);
 		return (index);
 	}
@@ -864,7 +866,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			poly.getSceneHints().setPickingHint(PickingHint.Pickable, false);
 			polyIsEnabled = false;
 		}
-		pointSet.setWaypointsOnGround(polyIsEnabled);
+		pointSet.showWaypointsAsSpheres(polyIsEnabled);
 		updateGeometricState(0, true);
 	}
 	
@@ -1027,16 +1029,27 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		return (sBuf.toString());
 	}
 
-	@Override
-	public ReadOnlyVector3 getLocation() {
+	public ReadOnlyVector3 getLocationInWorld() {
 		if (pointSet.getNumberOfChildren() == 0) {
 			location.set(getWorldTranslation());
 			Landscape.getInstance().localToWorldCoordinate(location);
 			return (location);
 		} else {
 			Waypoint wp = (Waypoint) getChild(0);
-			return (wp.getLocation());
+			return (wp.getLocationInWorld());
 		}
+	}
+	
+	public void ground() {
+		// do nothing
+	}
+	
+	public void setZOffset(double zOff, boolean doTrans) {
+		// do nothing
+	}
+	
+	public double getZOffset() {
+		return(0);
 	}
 	
 	public Vector3[] getCurve(int steps) {

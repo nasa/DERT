@@ -21,9 +21,9 @@ public class BillboardMarker extends Marker {
 	/**
 	 * Constructor
 	 */
-	public BillboardMarker(String name, ReadOnlyVector3 point, double size, Color color, boolean labelVisible,
+	public BillboardMarker(String name, ReadOnlyVector3 point, double size, double zOff, Color color, boolean labelVisible,
 		boolean pinned) {
-		super(name, point, size, color, labelVisible, pinned);
+		super(name, point, size, zOff, color, labelVisible, pinned);
 		setSize(size);
 		getSceneHints().setCastsShadows(false);
 	}

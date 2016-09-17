@@ -126,7 +126,7 @@ public class GridState extends ToolState {
 				columns = ((CartesianGrid) mapElement).getColumns();
 				rows = ((CartesianGrid) mapElement).getRows();
 			}
-			location = new Vector3(((Grid)mapElement).getTranslation());
+			location = new Vector3(((Grid)mapElement).getLocation());
 		}
 		map.put("Rings", new Integer(rings));
 		map.put("Columns", new Integer(columns));

@@ -40,9 +40,9 @@ public class FigureMarker extends Marker {
 	/**
 	 * Constructor
 	 */
-	public FigureMarker(String name, ReadOnlyVector3 point, double size, Color color, boolean labelVisible,
+	public FigureMarker(String name, ReadOnlyVector3 point, double size, double zOff, Color color, boolean labelVisible,
 		boolean autoScale, boolean pinned) {
-		super(name, point, (float) size, color, labelVisible, pinned);
+		super(name, point, (float) size, zOff, color, labelVisible, pinned);
 		this.autoScale = autoScale;
 		surfaceNormalArrow = new DirectionArrow("Surface Normal", 2, ColorRGBA.RED);
 		surfaceNormalArrow.getSceneHints().setCullHint(CullHint.Always);
@@ -178,6 +178,22 @@ public class FigureMarker extends Marker {
 	 */
 	public ReadOnlyVector3 getNormal() {
 		return (surfaceNormal);
+	}
+
+	/**
+	 * Set the size
+	 * 
+	 * @param size
+	 */
+	@Override
+	public void setSize(double size) {
+		if (this.size == size) {
+			return;
+		}
+		this.size = size;
+		ShapeType newShapeType = shapeType;
+		shapeType = ShapeType.none;
+		setShape(newShapeType);
 	}
 
 	/**

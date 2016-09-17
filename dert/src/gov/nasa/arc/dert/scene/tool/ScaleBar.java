@@ -1,6 +1,5 @@
 package gov.nasa.arc.dert.scene.tool;
 
-import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
@@ -12,7 +11,6 @@ import gov.nasa.arc.dert.state.ScaleBarState;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
-import gov.nasa.arc.dert.view.world.MoveEdit;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.awt.Color;
@@ -62,7 +60,7 @@ public class ScaleBar extends FigureMarker implements Tool {
 	private int cellCount;
 	private double radius;
 	
-	private Vector3 offset;
+	private double xOff, yOff;
 
 	/**
 	 * Constructor
@@ -70,7 +68,7 @@ public class ScaleBar extends FigureMarker implements Tool {
 	 * @param state
 	 */
 	public ScaleBar(ScaleBarState state) {
-		super(state.name, state.location, state.size, state.color, state.labelVisible, false, state.pinned);
+		super(state.name, state.location, state.size, state.zOff, state.color, state.labelVisible, false, state.pinned);
 		this.state = state;
 		cellCount = state.cellCount;
 		radius = state.radius;
@@ -78,10 +76,8 @@ public class ScaleBar extends FigureMarker implements Tool {
 		setAzimuth(state.azimuth);
 		setTilt(state.tilt);
 		setVisible(state.visible);
-		setStrictZ(state.strictZ);
 		this.state = state;
 		
-		offset = new Vector3();
 		contents.detachChild(surfaceNormalArrow);
 		surfaceNormalArrow = null;
 		contents.setScale(1);
@@ -127,38 +123,18 @@ public class ScaleBar extends FigureMarker implements Tool {
 	public void setInMotion(boolean inMotion, ReadOnlyVector3 pickPosition) {
 		super.setInMotion(inMotion, pickPosition);
 		if (inMotion) {
-			pickPosition.subtract(getWorldTranslation(), offset);
-			offset.setZ(0);
+			ReadOnlyVector3 trans = getTranslation();
+			xOff = pickPosition.getX()-trans.getX();
+			yOff = pickPosition.getY()-trans.getY();
 		} else {
-			offset.set(Vector3.ZERO);
+			xOff = 0;
+			yOff = 0;
 		}
 	}
 
 	@Override
-	public void setTranslation(double x, double y, double z) {
-		super.setTranslation(x - offset.getX(), y - offset.getY(), z - offset.getZ());
-	}
-
-	@Override
-	public void setTranslation(ReadOnlyVector3 loc) {
-		super.setTranslation(loc.subtract(offset, null));
-	}
-
-	/**
-	 * Set the location
-	 * 
-	 * @param i
-	 * @param p
-	 */
-	@Override
-	public void setLocation(double x, double y, double z, boolean doEdit, boolean zOnly) {
-		if (doEdit)
-			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(this, new Vector3(getTranslation()), strictZ));
-		if (zOnly)
-			super.setTranslation(x, y, z);
-		else
-			setTranslation(x, y, z);
-		updateListeners();
+	public void setLocation(double x, double y, double z, boolean doEdit) {
+		super.setLocation(x - xOff, y - yOff, z, doEdit);
 	}
 	
 	public int getCellCount() {
