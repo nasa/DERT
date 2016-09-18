@@ -20,6 +20,7 @@ import java.util.TimeZone;
 import com.ardor3d.light.DirectionalLight;
 import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
+import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.Renderer;
 import com.ardor3d.renderer.state.LightState;
@@ -29,6 +30,7 @@ import com.ardor3d.scenegraph.hint.CullHint;
 
 public class Lighting {
 
+	public static ReadOnlyColorRGBA defaultBackgroundColor = ColorRGBA.LIGHT_GRAY;
 	public static String DATE_FORMAT;
 
 	// Defaults for light position (artificial)
@@ -66,6 +68,11 @@ public class Lighting {
 	// Current time
 	protected long timeUTC;
 
+	// The background color
+	private ColorRGBA backgroundColor;
+	private ReadOnlyColorRGBA background;
+	private float backgroundSat = 1;
+
 	// Global light state
 	protected transient LightState lightState;
 
@@ -87,6 +94,8 @@ public class Lighting {
 		azimuth = defaultAz;
 		elevation = defaultEl;
 		direction = new Vector3(Vector3.NEG_UNIT_Z);
+		background = defaultBackgroundColor;
+		backgroundColor = new ColorRGBA(background);
 	}
 
 	/**
@@ -106,6 +115,8 @@ public class Lighting {
 		refLoc = StateUtil.getVector3(map, "ReferenceLocation", refLoc);
 		epoch = (Date)map.get("Epoch");
 		timeUTC = StateUtil.getLong(map, "TimeUTC", timeUTC);
+		background = StateUtil.getColorRGBA(map, "BackgroundColor", defaultBackgroundColor);
+		backgroundColor = new ColorRGBA(background);
 	}
 
 	/**
@@ -273,8 +284,10 @@ public class Lighting {
 	 */
 	public void setTime(long timeUTC) {
 		this.timeUTC = timeUTC;
-		if (!isLamp)
+		if (!isLamp) {
 			light.setTime(timeUTC, Landscape.getInstance().getGlobeName(), "Sun", getRefLoc());
+			setBackgroundSaturation(light.getElevation());
+		}
 		World.getInstance().getMarble().setSolarDirection(getLightDirection());
 	}
 
@@ -327,6 +340,7 @@ public class Lighting {
 	public void setLightPosition(double az, double el) {
 		light.setAzEl(az, el);
 		light.setPositionFromAzEl();
+		setBackgroundSaturation(el);
 		World.getInstance().getMarble().setSolarDirection(getLightDirection());
 	}
 
@@ -369,7 +383,33 @@ public class Lighting {
 		StateUtil.putVector3(map, "ReferenceLocation", refLoc);
 		map.put("Epoch", epoch);
 		map.put("TimeUTC", new Long(timeUTC));
+		StateUtil.putColorRGBA(map, "BackgroundColor", background);
 		return(map);
+	}
+
+	/**
+	 * Get the background color
+	 * 
+	 * @return
+	 */
+	public ReadOnlyColorRGBA getBackgroundColor() {
+		return (backgroundColor);
+	}
+
+	/**
+	 * Set the background color
+	 * 
+	 * @param color
+	 */
+	public void setBackgroundColor(ReadOnlyColorRGBA color) {
+		background = color;
+		setBackgroundSaturation(backgroundSat);
+	}
+	
+	public void setBackgroundSaturation(double el) {
+		backgroundSat = (float)(Math.max(el, 0)/(Math.PI/2));
+		backgroundColor.set(background.getRed()*backgroundSat, background.getGreen()*backgroundSat, background.getBlue()*backgroundSat, background.getAlpha());
+		World.getInstance().getRoot().markDirty(DirtyType.RenderState);
 	}
 
 	/**

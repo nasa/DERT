@@ -91,7 +91,7 @@ public class FieldCameraScene extends BasicScene implements DirtyEventListener {
 	@Override
 	public void preRender(Renderer renderer) {
 		fieldCamera.cull();
-		ReadOnlyColorRGBA bgCol = World.getInstance().getBackgroundColor();
+		ReadOnlyColorRGBA bgCol = World.getInstance().getLighting().getBackgroundColor();
 		if (!bgCol.equals(backgroundColor)) {
 			renderer.setBackgroundColor(bgCol);
 			backgroundColor = bgCol;

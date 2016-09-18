@@ -16,16 +16,13 @@ import gov.nasa.arc.dert.viewpoint.ViewpointStore;
 import java.awt.Color;
 import java.util.HashMap;
 
-import com.ardor3d.math.type.ReadOnlyColorRGBA;
-
 /**
  * Provides a state object for the World.
  *
  */
 public class WorldState extends State {
 
-	// Colors
-	public ReadOnlyColorRGBA background;
+	// Color
 	public Color surfaceColor;
 
 	// Vertical exaggeration value
@@ -57,7 +54,6 @@ public class WorldState extends State {
 	public WorldState(String name) {
 		super(name, StateType.World, new ViewData(-1, -1, 960, 600, false));
 		surfaceColor = Color.WHITE;
-		background = World.defaultBackgroundColor;
 		time = System.currentTimeMillis();
 		viewData.setVisible(true);
 		lighting = new Lighting();
@@ -68,7 +64,6 @@ public class WorldState extends State {
 		super(map);
 		useLonLat = StateUtil.getBoolean(map, "UseLonLat", false);
 		surfaceColor = StateUtil.getColor(map, "SurfaceColor", Color.WHITE);
-		background = StateUtil.getColorRGBA(map, "Background", World.defaultBackgroundColor);
 		verticalExaggeration = StateUtil.getDouble(map, "VerticalExaggeration", verticalExaggeration);
 		time = StateUtil.getLong(map, "Time", System.currentTimeMillis());
 		currentViewpoint = ViewpointStore.fromHashMap((HashMap<String,Object>)map.get("CurrentViewpoint"));		
@@ -94,8 +89,6 @@ public class WorldState extends State {
 			return(false);
 		if (!surfaceColor.equals(that.surfaceColor)) 
 			return(false);
-		if (!background.equals(that.background)) 
-			return(false);
 		// the same viewdata objects or both are null
 		if (this.currentViewpoint == that.currentViewpoint)
 			return(true);
@@ -112,7 +105,7 @@ public class WorldState extends State {
 	@Override
 	public String toString() {
 		String str = super.toString();
-		str += " time="+time+" background="+background+" surfaceColor="+surfaceColor+" vertexag="+verticalExaggeration+" VP="+currentViewpoint;
+		str += " time="+time+" surfaceColor="+surfaceColor+" vertexag="+verticalExaggeration+" VP="+currentViewpoint;
 		return(str);
 	}
 
@@ -140,7 +133,7 @@ public class WorldState extends State {
 		// create Landscape before world
 		Landscape.createInstance(tileSource, layerManager, surfaceColor);
 		world = World.createInstance(name, new Landmarks(config.getLandmarkStates()),
-			new Tools(config.getToolStates()), new LineSets(config.getLineSetStates()), lighting, background, time);
+			new Tools(config.getToolStates()), new LineSets(config.getLineSetStates()), lighting, time);
 		world.setUseLonLat(useLonLat);
 		if (verticalExaggeration != 1) {
 			world.setVerticalExaggeration(verticalExaggeration);
@@ -168,8 +161,6 @@ public class WorldState extends State {
 				currentViewpoint = wv.getViewpointNode().getViewpoint(currentViewpoint);
 		}
 		map.put("CurrentViewpoint", currentViewpoint.toHashMap());
-		background = world.getBackgroundColor();
-		StateUtil.putColorRGBA(map, "Background", background);
 		verticalExaggeration = world.getVerticalExaggeration();
 		map.put("VerticalExaggeration", new Double(verticalExaggeration));
 		surfaceColor = Landscape.getInstance().getSurfaceColor();

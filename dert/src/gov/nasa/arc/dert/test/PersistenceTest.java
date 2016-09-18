@@ -53,7 +53,7 @@ public class PersistenceTest {
 		World.getInstance().initialize();
 		
 		// WorldState
-		World.getInstance().setBackgroundColor(ColorRGBA.RED);
+		World.getInstance().getLighting().setBackgroundColor(ColorRGBA.RED);
 		World.getInstance().setVerticalExaggeration(3.2);
 		Landscape.getInstance().setSurfaceColor(Color.blue);
 		config.worldState.currentViewpoint = new ViewpointStore();

@@ -14,10 +14,8 @@ import gov.nasa.arc.dert.state.MarbleState;
 import gov.nasa.arc.dert.util.SpatialPickResults;
 import gov.nasa.arc.dert.util.SpatialUtil;
 
-import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Ray3;
 import com.ardor3d.math.Vector3;
-import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.renderer.queue.RenderBucketType;
 import com.ardor3d.renderer.state.BlendState;
 import com.ardor3d.renderer.state.ColorMaskState;
@@ -33,7 +31,6 @@ import com.ardor3d.scenegraph.hint.NormalsMode;
 public class World extends GroupNode {
 
 	// Defaults
-	public static ReadOnlyColorRGBA defaultBackgroundColor = ColorRGBA.DARK_GRAY;
 	public static double defaultStereoFocalDistance = 1;
 	public static double defaultStereoEyeSeparation = 0.0333333;
 	public static boolean defaultHiddenDashed = false;
@@ -73,9 +70,6 @@ public class World extends GroupNode {
 
 	// The tape measure
 	private TapeMeasure ruler;
-
-	// The background color
-	private ReadOnlyColorRGBA backgroundColor;
 	
 	// Show hidden lines as dashed lines
 	private boolean hiddenDashed;
@@ -110,8 +104,8 @@ public class World extends GroupNode {
 	 * @return
 	 */
 	public static World createInstance(String name, Landmarks landmarks, Tools tools,
-		LineSets lineSets, Lighting lighting, ReadOnlyColorRGBA background, long timeUTC) {
-		INSTANCE = new World(name, landmarks, tools, lineSets, lighting, background, timeUTC);
+		LineSets lineSets, Lighting lighting, long timeUTC) {
+		INSTANCE = new World(name, landmarks, tools, lineSets, lighting, timeUTC);
 		return (INSTANCE);
 	}
 
@@ -136,9 +130,8 @@ public class World extends GroupNode {
 	 * @param background
 	 * @param timeUTC
 	 */
-	protected World(String name, Landmarks landmarks, Tools tools, LineSets lineSets, Lighting lighting, ReadOnlyColorRGBA background, long timeUTC) {
+	protected World(String name, Landmarks landmarks, Tools tools, LineSets lineSets, Lighting lighting, long timeUTC) {
 		super(name);
-		backgroundColor = background;
 		this.landmarks = landmarks;
 		this.tools = tools;
 		this.lineSets = lineSets;
@@ -407,31 +400,12 @@ public class World extends GroupNode {
 	public TapeMeasure getTapeMeasure() {
 		return (ruler);
 	}
-
-	/**
-	 * Get the background color
-	 * 
-	 * @return
-	 */
-	public ReadOnlyColorRGBA getBackgroundColor() {
-		return (backgroundColor);
-	}
 	
 	/**
 	 * Get the hidden line representation flag
 	 */
 	public boolean isHiddenDashed() {
 		return(hiddenDashed);
-	}
-
-	/**
-	 * Set the background color
-	 * 
-	 * @param color
-	 */
-	public void setBackgroundColor(ReadOnlyColorRGBA color) {
-		backgroundColor = color;
-		root.markDirty(DirtyType.RenderState);
 	}
 	
 	/**

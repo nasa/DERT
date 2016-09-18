@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.view.world;
 
 import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.landscape.Landscape;
+import gov.nasa.arc.dert.lighting.Lighting;
 import gov.nasa.arc.dert.render.BasicScene;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.state.WorldState;
@@ -35,7 +36,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	private ArrayList<ViewDependent> viewDependentList;
 
 	// Background color
-	private ReadOnlyColorRGBA backgroundColor = ColorRGBA.LIGHT_GRAY;
+	private ColorRGBA backgroundColor = new ColorRGBA(Lighting.defaultBackgroundColor);
 
 	// Viewpoint
 	private ViewpointNode viewpointNode;
@@ -143,10 +144,10 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 
 		viewpointNode.updateGeometricState(0);
 		viewpointNode.getCamera().update();
-		ReadOnlyColorRGBA bgCol = world.getBackgroundColor();
-		if (bgCol != backgroundColor) {
+		ReadOnlyColorRGBA bgCol = world.getLighting().getBackgroundColor();
+		if (!bgCol.equals(backgroundColor)) {
 			renderer.setBackgroundColor(bgCol);
-			backgroundColor = bgCol;
+			backgroundColor.set(bgCol);
 		}
 	}
 

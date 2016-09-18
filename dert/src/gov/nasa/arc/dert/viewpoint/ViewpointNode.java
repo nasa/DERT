@@ -75,6 +75,7 @@ public class ViewpointNode
 	private boolean mapMode, hikeMode;
 	private ViewpointStore oldVP;
 	private double zOffset;
+	
 
 	/**
 	 * Constructor

@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.action.edit;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.lighting.Lighting;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.ui.AbstractDialog;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
@@ -62,7 +63,7 @@ public class BackgroundColorDialog extends AbstractDialog {
 	protected void build() {
 		super.build();		
 		contentArea.setLayout(new FlowLayout());
-		bgCol = World.getInstance().getBackgroundColor();
+		bgCol = World.getInstance().getLighting().getBackgroundColor();
 		csp = new ColorSelectionPanel(UIUtil.colorRGBAToColor(bgCol)) {
 			public void doColor(Color color) {
 				bgCol = UIUtil.colorToColorRGBA(color);
@@ -91,7 +92,7 @@ public class BackgroundColorDialog extends AbstractDialog {
 	 */
 	@Override
 	public boolean okPressed() {
-		World.getInstance().setBackgroundColor(bgCol);
+		World.getInstance().getLighting().setBackgroundColor(bgCol);
 		return (true);
 	}
 
@@ -117,7 +118,7 @@ public class BackgroundColorDialog extends AbstractDialog {
 					}
 					name = name.substring(p + 1);
 					if (name.toLowerCase().equals("default")) {
-						World.defaultBackgroundColor = colorRGBA;
+						Lighting.defaultBackgroundColor = colorRGBA;
 					} else {
 						ColorEntry ce = new ColorEntry(name, colorRGBA);
 						list.add(ce);
@@ -125,7 +126,7 @@ public class BackgroundColorDialog extends AbstractDialog {
 				}
 			}
 		}
-		list.add(0, new ColorEntry("Default", World.defaultBackgroundColor));
+		list.add(0, new ColorEntry("Default", Lighting.defaultBackgroundColor));
 		list.add(0, new ColorEntry("Select", null));
 		predefined = new ColorEntry[list.size()];
 		list.toArray(predefined);
