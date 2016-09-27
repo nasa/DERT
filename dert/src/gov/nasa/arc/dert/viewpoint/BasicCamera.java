@@ -451,12 +451,26 @@ public class BasicCamera extends Camera {
 	}
 
 	/**
-	 * Get the zoom scale factor.
+	 * Get the zoom scale factor index.
 	 * 
 	 * @return
 	 */
 	public int getMagIndex() {
 		return (magIndex);
+	}
+
+	/**
+	 * Get the zoom scale factor index.
+	 * 
+	 * @return
+	 */
+	public static int getMagIndex(double m) {
+		for (int i = 0; i < magFactor.length; ++i) {
+			if (m < magFactor[i]) {
+				return(i);
+			}
+		}
+		return(magFactor.length - 1);
 	}
 
 	/**

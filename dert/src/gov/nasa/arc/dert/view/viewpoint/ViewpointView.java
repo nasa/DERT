@@ -1,6 +1,5 @@
 package gov.nasa.arc.dert.view.viewpoint;
 
-import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.state.ViewpointState;
 import gov.nasa.arc.dert.view.JPanelView;
 
@@ -24,7 +23,6 @@ public class ViewpointView extends JPanelView {
 		super(state);
 		panel = new ViewpointPanel(state);
 		add(panel, BorderLayout.CENTER);
-		Dert.getWorldView().getViewpointNode().setViewpointPanel(panel);
 	}
 	
 	public ViewpointPanel getPanel() {

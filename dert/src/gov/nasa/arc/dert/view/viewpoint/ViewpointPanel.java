@@ -27,6 +27,7 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -64,6 +65,7 @@ public class ViewpointPanel extends JPanel {
 	private ButtonAction prevAction;
 	private ButtonAction nextAction;
 	private JCheckBox hike;
+	private JButton current, save;
 
 	// Fields
 	private Vector3 coord;
@@ -72,6 +74,7 @@ public class ViewpointPanel extends JPanel {
 	// Viewpoint
 	private ViewpointController controller;
 	private ViewpointStore currentVPS, tempVPS;
+	private ViewpointListCellRenderer cellRenderer;
 	private Vector<ViewpointStore> viewpointList;
 	
 	private ViewpointState state;
@@ -104,12 +107,14 @@ public class ViewpointPanel extends JPanel {
 			public void valueChanged(ListSelectionEvent event) {
 				currentVPS = (ViewpointStore) list.getSelectedValue();
 				deleteButton.setEnabled(currentVPS != null);
-				if (currentVPS != null) {
+				if (currentVPS != null)
 					controller.gotoViewpoint(currentVPS);
-				}
 				updateData(true);
+				setEditing(false);
 			}
 		});
+		cellRenderer = new ViewpointListCellRenderer();
+		list.setCellRenderer(cellRenderer);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.getViewport().setView(list);
@@ -187,6 +192,7 @@ public class ViewpointPanel extends JPanel {
 					"Confirm Delete", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
 					Icons.getImageIcon("delete.png"));
 				if (answer == JOptionPane.OK_OPTION) {
+					setEditing(false);
 					int index = controller.removeViewpoints(vpList);
 					list.setListData(viewpointList);
 					list.setSelectedIndex(index);
@@ -240,6 +246,7 @@ public class ViewpointPanel extends JPanel {
 		label.setToolTipText(tipText);
 		panel.add(label);
 		hike = new JCheckBox("");
+		hike.setSelected(controller.getViewpointNode().isHikeMode());
 		hike.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -248,12 +255,41 @@ public class ViewpointPanel extends JPanel {
 					hike.setSelected(!hike.isSelected());
 				}
 				else {
+					setEditing(true);
 					controller.updateLookAt();
 				}
 			}
 		});
-		hike.setSelected(controller.getViewpointNode().isHikeMode());
 		panel.add(hike);
+		current = new JButton("Current");
+		current.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				setEditing(true);
+				updateData(true);
+			}
+		});
+		panel.add(current);
+		save = new JButton("Save");
+		save.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				if (currentVPS != null) {
+					controller.getViewpointNode().getViewpoint(currentVPS);
+					setEditing(false);
+//					currentVPS.location.set(locationField.getLocalValue());
+//					currentVPS.direction.set(directionField.getValue());
+//					currentVPS.distance = distanceField.getValue();
+//					double[] azEl = azElField.getValue();
+//					currentVPS.azimuth = Math.toRadians(azEl[0]);
+//					currentVPS.elevation = Math.toRadians(azEl[1]);
+//					currentVPS.magIndex = BasicCamera.getMagIndex(magnificationField.getValue());
+//					currentVPS.lookAt.set(corField.getLocalValue());
+//					controller.gotoViewpoint(currentVPS);
+				}
+			}
+		});
+		panel.add(save);
 		dataPanel.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -266,7 +302,9 @@ public class ViewpointPanel extends JPanel {
 			public void doChange(ReadOnlyVector3 loc) {
 				if (!controller.getViewpointNode().changeLocation(loc)) {
 					Toolkit.getDefaultToolkit().beep();
-				}				
+				}
+				else
+					setEditing(true);
 			}
 		};
 		CoordAction.listenerList.add(locationField);
@@ -282,6 +320,7 @@ public class ViewpointPanel extends JPanel {
 			@Override
 			public void handleChange(Vector3 dir) {
 				controller.getViewpointNode().changeDirection(dir);
+				setEditing(true);
 			}
 		};
 		directionField.setToolTipText(tipText);
@@ -301,6 +340,7 @@ public class ViewpointPanel extends JPanel {
 				}
 				controller.getViewpointNode().changeAzimuthAndElevation(Math.toRadians(azel[0]),
 					Math.toRadians(90 + azel[1]));
+				setEditing(true);
 			}
 		};
 		azElField.setToolTipText(tipText);
@@ -321,6 +361,8 @@ public class ViewpointPanel extends JPanel {
 				if (!controller.getViewpointNode().changeDistance(value)) {
 					Toolkit.getDefaultToolkit().beep();
 				}
+				else
+					setEditing(true);
 			}
 		};
 		distanceField.setToolTipText(tipText);
@@ -341,6 +383,8 @@ public class ViewpointPanel extends JPanel {
 				if (!controller.getViewpointNode().changeAltitude(value)) {
 					Toolkit.getDefaultToolkit().beep();
 				}
+				else
+					setEditing(true);
 			}
 		};
 		altitudeField.setToolTipText(tipText);
@@ -359,6 +403,7 @@ public class ViewpointPanel extends JPanel {
 					return;
 				}
 				controller.getViewpointNode().changeMagnification(value);
+				setEditing(true);
 			}
 		};
 		magnificationField.setToolTipText(tipText);
@@ -421,5 +466,10 @@ public class ViewpointPanel extends JPanel {
 			CoordAction.listenerList.remove(locationField);
 		if (corField != null)
 			CoordAction.listenerList.remove(corField);
+	}
+	
+	private void setEditing(boolean isEditing) {
+		cellRenderer.setEditing(isEditing);
+		list.repaint();
 	}
 }

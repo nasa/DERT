@@ -8,7 +8,6 @@ import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scenegraph.RasterText;
 import gov.nasa.arc.dert.scenegraph.Text.AlignType;
 import gov.nasa.arc.dert.util.MathUtil;
-import gov.nasa.arc.dert.view.viewpoint.ViewpointPanel;
 import gov.nasa.arc.dert.view.world.CenterScale;
 import gov.nasa.arc.dert.view.world.RGBAxes;
 
@@ -60,16 +59,12 @@ public class ViewpointNode
 	private double elevation = 0;
 	private double azimuth = 0;
 
-	// Display of viewpoint attributes
-	private ViewpointPanel viewpointPanel;
-
 	private boolean strictFrustum;
-	private boolean viewpointSelected;
 
 	// Cross hair
 	private RGBAxes crosshair;
 	private Node overlay;
-	private RasterText corText, dstText, magText, altText;
+	private RasterText corText, dstText, magText, altText, locText, dirText, azElText;
 	private double textSize = 14;
 	private CenterScale centerScale;
 	private boolean mapMode, hikeMode;
@@ -117,20 +112,7 @@ public class ViewpointNode
 		return(camera);
 	}
 
-	/**
-	 * Set the panel that will display viewpoint attributes.
-	 * 
-	 * @param viewpointPanel
-	 */
-	public void setViewpointPanel(ViewpointPanel viewpointPanel) {
-		this.viewpointPanel = viewpointPanel;
-	}
-
 	public void updateStatus() {
-		if (viewpointPanel != null) {
-			viewpointPanel.updateData(viewpointSelected);
-		}
-		viewpointSelected = false;
 		updateOverlay();
 	}
 
@@ -187,6 +169,7 @@ public class ViewpointNode
 	private void createOverlays() {
 		overlay = new Node("_textoverlay");
 		corText = new RasterText("_cor", "", AlignType.Left, false);
+		corText.setTranslation(0, textSize, 0);
 		textSize = corText.getFont()+2;
 		corText.setColor(ColorRGBA.WHITE);
 		corText.setVisible(true);
@@ -199,13 +182,27 @@ public class ViewpointNode
 		dstText = new RasterText("_dst", "", AlignType.Left, false);
 		dstText.setColor(ColorRGBA.WHITE);
 		dstText.setVisible(true);
-		dstText.setTranslation(0, textSize, 0);
 		overlay.attachChild(dstText);
 		altText = new RasterText("_alt", "", AlignType.Left, false);
 		altText.setColor(ColorRGBA.WHITE);
 		altText.setVisible(true);
 		altText.setTranslation(0, 3*textSize, 0);
 		overlay.attachChild(altText);
+		azElText = new RasterText("_azel", "", AlignType.Left, false);
+		azElText.setColor(ColorRGBA.WHITE);
+		azElText.setVisible(true);
+		azElText.setTranslation(0, 4*textSize, 0);
+		overlay.attachChild(azElText);
+		dirText = new RasterText("_dir", "", AlignType.Left, false);
+		dirText.setColor(ColorRGBA.WHITE);
+		dirText.setVisible(true);
+		dirText.setTranslation(0, 5*textSize, 0);
+		overlay.attachChild(dirText);
+		locText = new RasterText("_loc", "", AlignType.Left, false);
+		locText.setColor(ColorRGBA.WHITE);
+		locText.setVisible(true);
+		locText.setTranslation(0, 6*textSize, 0);
+		overlay.attachChild(locText);
 		overlay.setTranslation(textSize, textSize, 0);
 		overlay.updateGeometricState(0);
 		overlay.getSceneHints().setRenderBucketType(RenderBucketType.Ortho);
@@ -220,6 +217,7 @@ public class ViewpointNode
 	}
 	
 	private void updateOverlay() {
+		// location of center of rotation
 		if (hikeMode)
 			tmpVec.set(camera.getLocation());
 		else
@@ -228,22 +226,48 @@ public class ViewpointNode
 		String str = null;
 		if (World.getInstance().getUseLonLat()) {
 			Landscape.getInstance().worldToSphericalCoordinate(tmpVec);
-			str = String.format("CoR Loc: "+Landscape.stringFormat+" %s "+Landscape.stringFormat+" %s", Math.abs(tmpVec.getXf()), (tmpVec.getXf() < 0 ? "W" : "E"), Math.abs(tmpVec.getYf()), (tmpVec.getYf() < 0 ? "S" : "N"));
+			str = String.format("CoR: "+Landscape.stringFormat+"%s, "+Landscape.stringFormat+"%s", Math.abs(tmpVec.getXf()), (tmpVec.getXf() < 0 ? "W" : "E"), Math.abs(tmpVec.getYf()), (tmpVec.getYf() < 0 ? "S" : "N"));
 		}
 		else
-			str = String.format("CoR Loc: "+Landscape.stringFormat+" "+Landscape.stringFormat, tmpVec.getXf(), tmpVec.getYf());
+			str = String.format("CoR: "+Landscape.stringFormat+", "+Landscape.stringFormat, tmpVec.getXf(), tmpVec.getYf());
 		corText.setText(str);
+		
+		// location of viewpoint
 		tmpVec.set(camera.getLocation());
+		double height = tmpVec.getZ()-Landscape.getInstance().getZ(tmpVec.getX(), tmpVec.getY());
 		Landscape.getInstance().localToWorldCoordinate(tmpVec);
-		altText.setText(String.format("Alt: "+Landscape.stringFormat, tmpVec.getZ()));
+		altText.setText(String.format("Hgt Abv Grnd: "+Landscape.stringFormat, height));
+		if (World.getInstance().getUseLonLat()) {
+			Landscape.getInstance().worldToSphericalCoordinate(tmpVec);
+			str = String.format("Loc: "+Landscape.stringFormat+"%s, "+Landscape.stringFormat+"%s", Math.abs(tmpVec.getXf()), (tmpVec.getXf() < 0 ? "W" : "E"), Math.abs(tmpVec.getYf()), (tmpVec.getYf() < 0 ? "S" : "N"));
+		}
+		else
+			str = String.format("Loc: "+Landscape.stringFormat+", "+Landscape.stringFormat, tmpVec.getX(), tmpVec.getY());
+		str += String.format(", "+Landscape.stringFormat, tmpVec.getZ());
+		locText.setText(str);
+		
+		// Direction
+		tmpVec.set(camera.getDirection());
+		str = String.format("Dir: "+Landscape.stringFormat+", "+Landscape.stringFormat+", "+Landscape.stringFormat, tmpVec.getX(), tmpVec.getY(), tmpVec.getZ());
+		dirText.setText(str);
+		
+		// Az/El location
+		str = String.format("Az/El: "+Landscape.stringFormat+", "+Landscape.stringFormat, Math.toDegrees(azimuth), Math.toDegrees(elevation-Math.PI/2));
+		azElText.setText(str);
+		
+		// distance from viewpoint to center of rotation
 		double dist = 0;
 		if (!hikeMode)
 			dist = camera.getDistanceToCoR();
-		str = String.format("CoR Dist: "+Landscape.stringFormat, dist);
+		str = String.format("Dist to CoR: "+Landscape.stringFormat, dist);
 		dstText.setText(str);
+		
+		// Magnification
 		double mag = camera.getMagnification();
 		str = String.format("Mag: "+Landscape.stringFormat, mag);
 		magText.setText(str);
+		
+		// Scale
 		double s = camera.getPixelSizeAt(camera.getLookAt(), true);
 		str = String.format(Landscape.stringFormat, (s*100));
 		centerScale.setText(str);
@@ -456,7 +480,6 @@ public class ViewpointNode
 	 *            set the camera frustum
 	 */
 	public void setViewpoint(ViewpointStore vps, boolean strict, boolean vpSelected) {
-		viewpointSelected = vpSelected;
 		strictFrustum = strict;
 		hikeMode = vps.hikeMode;
 		zOffset = vps.zOffset;

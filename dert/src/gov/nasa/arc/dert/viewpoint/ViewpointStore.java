@@ -42,22 +42,7 @@ public class ViewpointStore {
 	}
 	
 	public ViewpointStore(String name, ViewpointStore that) {
-		this.name = name;
-		this.location = new Vector3(that.location);
-		this.direction = new Vector3(that.direction);
-		this.lookAt = new Vector3(that.lookAt);
-		this.frustumLeft = that.frustumLeft;
-		this.frustumRight = that.frustumRight;
-		this.frustumBottom = that.frustumBottom;
-		this.frustumTop = that.frustumTop;
-		this.frustumNear = that.frustumNear;
-		this.frustumFar = that.frustumFar;
-		this.distance = that.distance;
-		this.azimuth = that.azimuth;
-		this.elevation = that.elevation;
-		this.magIndex = that.magIndex;
-		this.hikeMode = that.hikeMode;
-		this.zOffset = that.zOffset;
+		set(name, that);
 	}
 	
 	public static ViewpointStore fromHashMap(HashMap<String,Object> map) {
@@ -119,6 +104,25 @@ public class ViewpointStore {
 		if (!this.lookAt.equals(that.lookAt)) 
 			return(false);
 		return(true);
+	}
+
+	public void set(String name, ViewpointStore that) {
+		this.name = name;
+		this.location = new Vector3(that.location);
+		this.direction = new Vector3(that.direction);
+		this.lookAt = new Vector3(that.lookAt);
+		this.frustumLeft = that.frustumLeft;
+		this.frustumRight = that.frustumRight;
+		this.frustumBottom = that.frustumBottom;
+		this.frustumTop = that.frustumTop;
+		this.frustumNear = that.frustumNear;
+		this.frustumFar = that.frustumFar;
+		this.distance = that.distance;
+		this.azimuth = that.azimuth;
+		this.elevation = that.elevation;
+		this.magIndex = that.magIndex;
+		this.hikeMode = that.hikeMode;
+		this.zOffset = that.zOffset;
 	}
 
 	public void set(BasicCamera camera) {
