@@ -427,6 +427,7 @@ public class ViewpointPanel extends JPanel {
 		} else {
 			altitudeField.setValue(alt);
 		}
+		hike.setSelected(tempVPS.hikeMode);
 	}
 	
 	public void clearSelection() {
