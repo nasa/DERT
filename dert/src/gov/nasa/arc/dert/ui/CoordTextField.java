@@ -68,6 +68,15 @@ public abstract class CoordTextField
 		return(valueVec.getZf());
 	}
 	
+	public ReadOnlyVector3 getLocalValue() {
+		valueVec.set(getValue());
+		if (World.getInstance().getUseLonLat())
+			Landscape.getInstance().sphericalToWorldCoordinate(valueVec);
+		// Convert from OpenGL to World coordinates
+		Landscape.getInstance().worldToLocalCoordinate(valueVec);
+		return(valueVec);
+	}
+	
 	public void coordDisplayChanged() {
 		setLocalValue(coord);
 	}

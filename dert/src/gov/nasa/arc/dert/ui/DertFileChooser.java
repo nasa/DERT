@@ -92,10 +92,12 @@ public class DertFileChooser extends JFileChooser {
 		}
 	}
 
-	public void addNewDirectoryButton(Component parent) {
+	public void addNewDirectoryButton(Container parent) {
 		Component[] child = null;
 		if (parent == null)
 			child = getComponents();
+		else
+			child = parent.getComponents();
 		for (int i = 0; i < child.length; ++i) {
 			if (child[i] instanceof JButton) {
 				JButton button = (JButton) child[i];
@@ -119,7 +121,7 @@ public class DertFileChooser extends JFileChooser {
 					button.getParent().add(nd, 0);
 				}
 			} else if ((child[i] != null) && (child[i] instanceof Container)) {
-				addNewDirectoryButton(child[i]);
+				addNewDirectoryButton((Container)child[i]);
 			}
 		}
 	}
