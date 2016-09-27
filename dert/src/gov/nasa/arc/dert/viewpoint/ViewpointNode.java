@@ -229,7 +229,8 @@ public class ViewpointNode
 			str = String.format("CoR: "+Landscape.stringFormat+"%s, "+Landscape.stringFormat+"%s", Math.abs(tmpVec.getXf()), (tmpVec.getXf() < 0 ? "W" : "E"), Math.abs(tmpVec.getYf()), (tmpVec.getYf() < 0 ? "S" : "N"));
 		}
 		else
-			str = String.format("CoR: "+Landscape.stringFormat+", "+Landscape.stringFormat, tmpVec.getXf(), tmpVec.getYf());
+			str = String.format("CoR: "+Landscape.stringFormat+", "+Landscape.stringFormat, tmpVec.getX(), tmpVec.getY());
+		str += String.format(", "+Landscape.stringFormat, tmpVec.getZ());
 		corText.setText(str);
 		
 		// location of viewpoint

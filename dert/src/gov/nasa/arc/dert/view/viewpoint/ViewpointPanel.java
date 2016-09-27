@@ -277,15 +277,6 @@ public class ViewpointPanel extends JPanel {
 				if (currentVPS != null) {
 					controller.getViewpointNode().getViewpoint(currentVPS);
 					setEditing(false);
-//					currentVPS.location.set(locationField.getLocalValue());
-//					currentVPS.direction.set(directionField.getValue());
-//					currentVPS.distance = distanceField.getValue();
-//					double[] azEl = azElField.getValue();
-//					currentVPS.azimuth = Math.toRadians(azEl[0]);
-//					currentVPS.elevation = Math.toRadians(azEl[1]);
-//					currentVPS.magIndex = BasicCamera.getMagIndex(magnificationField.getValue());
-//					currentVPS.lookAt.set(corField.getLocalValue());
-//					controller.gotoViewpoint(currentVPS);
 				}
 			}
 		});
@@ -410,23 +401,6 @@ public class ViewpointPanel extends JPanel {
 		panel.add(magnificationField);
 		dataPanel.add(panel);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		tipText = "Location of center of rotation in East(+X), North(+Y), Elevation(+Z) coordinates";
-		label = new JLabel("Cntr of Rot", SwingConstants.RIGHT);
-		label.setToolTipText(tipText);
-		panel.add(label);
-		corField = new CoordTextField(20, tipText, "0.000", true) {
-			@Override
-			public void doChange(ReadOnlyVector3 coord) {
-				// do nothing
-			}
-		};
-		CoordAction.listenerList.add(corField);
-		corField.setEditable(false);
-		corField.setBackground(panel.getBackground());
-		panel.add(corField);
-		dataPanel.add(panel);
-
 		updateData(false);
 		return (dataPanel);
 	}
@@ -453,8 +427,6 @@ public class ViewpointPanel extends JPanel {
 		} else {
 			altitudeField.setValue(alt);
 		}
-		coord.set(tempVPS.lookAt);
-		corField.setLocalValue(coord);
 	}
 	
 	public void clearSelection() {
