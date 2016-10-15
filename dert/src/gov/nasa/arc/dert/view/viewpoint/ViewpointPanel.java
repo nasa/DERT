@@ -57,9 +57,9 @@ public class ViewpointPanel extends JPanel {
 	private JPanel buttonBar;
 	private CoordTextField locationField;
 	private Vector3TextField directionField;
-	private DoubleTextField distanceField;
+//	private DoubleTextField distanceField;
 	private DoubleArrayTextField azElField;
-	private DoubleTextField altitudeField;
+//	private DoubleTextField altitudeField;
 	private DoubleTextField magnificationField;
 	private CoordTextField corField;
 	private ButtonAction prevAction;
@@ -276,6 +276,7 @@ public class ViewpointPanel extends JPanel {
 			public void actionPerformed(ActionEvent event) {
 				if (currentVPS != null) {
 					controller.getViewpointNode().getViewpoint(currentVPS);
+					updateData(true);
 					setEditing(false);
 				}
 			}
@@ -304,7 +305,7 @@ public class ViewpointPanel extends JPanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		tipText = "Vector pointing to center of rotation from viewpoint (X,Y,Z)";
-		label = new JLabel("Direction", SwingConstants.RIGHT);
+		label = new JLabel("Direction Vector", SwingConstants.RIGHT);
 		label.setToolTipText(tipText);
 		panel.add(label);
 		directionField = new Vector3TextField(20, new Vector3(), "0.000", true) {
@@ -312,6 +313,7 @@ public class ViewpointPanel extends JPanel {
 			public void handleChange(Vector3 dir) {
 				controller.getViewpointNode().changeDirection(dir);
 				setEditing(true);
+				updateData(true);
 			}
 		};
 		directionField.setToolTipText(tipText);
@@ -320,7 +322,7 @@ public class ViewpointPanel extends JPanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		tipText = "Direction in degrees from N, degrees from hort";
-		label = new JLabel("Az,El", SwingConstants.RIGHT);
+		label = new JLabel("Direction Az,El", SwingConstants.RIGHT);
 		label.setToolTipText(tipText);
 		panel.add(label);
 		azElField = new DoubleArrayTextField(20, new double[2], "0.00") {
@@ -332,55 +334,58 @@ public class ViewpointPanel extends JPanel {
 				controller.getViewpointNode().changeAzimuthAndElevation(Math.toRadians(azel[0]),
 					Math.toRadians(90 + azel[1]));
 				setEditing(true);
+				updateData(true);
 			}
 		};
 		azElField.setToolTipText(tipText);
 		panel.add(azElField);
 		dataPanel.add(panel);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		tipText = "Distance from viewpoint to center of rotation";
-		label = new JLabel("Distance", SwingConstants.RIGHT);
-		label.setToolTipText(tipText);
-		panel.add(label);
-		distanceField = new DoubleTextField(20, 0, false, "0.000") {
-			@Override
-			protected void handleChange(double value) {
-				if (Double.isNaN(value)) {
-					return;
-				}
-				if (!controller.getViewpointNode().changeDistance(value)) {
-					Toolkit.getDefaultToolkit().beep();
-				}
-				else
-					setEditing(true);
-			}
-		};
-		distanceField.setToolTipText(tipText);
-		panel.add(distanceField);
-		dataPanel.add(panel);
+//		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+//		tipText = "Distance from viewpoint to center of rotation";
+//		label = new JLabel("Distance to CoR", SwingConstants.RIGHT);
+//		label.setToolTipText(tipText);
+//		panel.add(label);
+//		distanceField = new DoubleTextField(20, 0, false, "0.000") {
+//			@Override
+//			protected void handleChange(double value) {
+//				if (Double.isNaN(value)) {
+//					return;
+//				}
+//				if (!controller.getViewpointNode().changeDistance(value)) {
+//					Toolkit.getDefaultToolkit().beep();
+//				}
+//				else
+//					setEditing(true);
+//			}
+//		};
+//		distanceField.setToolTipText(tipText);
+//		panel.add(distanceField);
+//		dataPanel.add(panel);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		tipText = "Viewpoint height above terrain";
-		label = new JLabel("Height", SwingConstants.RIGHT);
-		label.setToolTipText(tipText);
-		panel.add(label);
-		altitudeField = new DoubleTextField(20, 0, false, "0.000") {
-			@Override
-			protected void handleChange(double value) {
-				if (Double.isNaN(value)) {
-					return;
-				}
-				if (!controller.getViewpointNode().changeAltitude(value)) {
-					Toolkit.getDefaultToolkit().beep();
-				}
-				else
-					setEditing(true);
-			}
-		};
-		altitudeField.setToolTipText(tipText);
-		panel.add(altitudeField);
-		dataPanel.add(panel);
+//		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+//		tipText = "Viewpoint height above terrain";
+//		label = new JLabel("Height from Ground", SwingConstants.RIGHT);
+//		label.setToolTipText(tipText);
+//		panel.add(label);
+//		altitudeField = new DoubleTextField(20, 0, false, "0.000") {
+//			@Override
+//			protected void handleChange(double value) {
+//				if (Double.isNaN(value)) {
+//					return;
+//				}
+//				if (!controller.getViewpointNode().changeAltitude(value)) {
+//					Toolkit.getDefaultToolkit().beep();
+//				}
+//				else {
+//					setEditing(true);
+//					controller.updateLookAt();
+//				}
+//			}
+//		};
+//		altitudeField.setToolTipText(tipText);
+//		panel.add(altitudeField);
+//		dataPanel.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		tipText = "Magnification scale factor";
@@ -416,17 +421,17 @@ public class ViewpointPanel extends JPanel {
 		coord.set(tempVPS.location);
 		locationField.setLocalValue(coord);
 		directionField.setValue(tempVPS.direction);
-		distanceField.setValue(tempVPS.distance);
+//		distanceField.setValue(tempVPS.distance);
 		azEl[0] = Math.toDegrees(tempVPS.azimuth);
 		azEl[1] = Math.toDegrees(tempVPS.elevation);
 		azElField.setValue(azEl);
 		magnificationField.setValue(BasicCamera.magFactor[tempVPS.magIndex]);
-		double alt = viewpointNode.getAltitude();
-		if (Double.isNaN(alt)) {
-			altitudeField.setText("N/A");
-		} else {
-			altitudeField.setValue(alt);
-		}
+//		double alt = viewpointNode.getAltitude();
+//		if (Double.isNaN(alt)) {
+//			altitudeField.setText("N/A");
+//		} else {
+//			altitudeField.setValue(alt);
+//		}
 		hike.setSelected(tempVPS.hikeMode);
 	}
 	

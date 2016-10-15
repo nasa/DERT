@@ -47,7 +47,7 @@ public class FlyThroughDialog extends JDialog {
 	private DoubleTextField heightText;
 	private JButton playButton, pauseButton, stopButton;
 	private JButton closeButton;
-	private JSpinner inbetweenSpinner, millisSpinner;
+	private JSpinner framesSpinner, millisSpinner;
 	private JCheckBox loop, grab;
 	private JLabel flyStatus;
 	private JTextField fileText;
@@ -108,9 +108,9 @@ public class FlyThroughDialog extends JDialog {
 		content.setLayout(new GridLayout(6, 1));
 
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Number of Inbetween Frames"));
-		inbetweenSpinner = new JSpinner(new SpinnerNumberModel(10, 0, 1000, 1));
-		panel.add(inbetweenSpinner);
+		panel.add(new JLabel("Number of Frames"));
+		framesSpinner = new JSpinner(new SpinnerNumberModel(10, 0, 10000, 1));
+		panel.add(framesSpinner);
 		content.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -167,7 +167,7 @@ public class FlyThroughDialog extends JDialog {
 		setTitle("Fly Through" + ((p != null) ? " " + p.getName() : " Viewpoints"));
 		path = p;
 		FlyThroughParameters flyParams = controller.getFlyThroughParameters();
-		inbetweenSpinner.getModel().setValue(flyParams.numInbetweens);
+		framesSpinner.getModel().setValue(flyParams.numFrames);
 		millisSpinner.getModel().setValue(flyParams.millisPerFrame);
 		heightText.setValue(flyParams.pathHeight);
 		loop.setSelected(flyParams.loop);
@@ -175,9 +175,9 @@ public class FlyThroughDialog extends JDialog {
 		fileText.setText(flyParams.imageSequencePath);
 
 		if (path == null) {
-			controller.flyViewpoints(flyParams.numInbetweens, flyParams.millisPerFrame, flyParams.loop, flyParams.grab, fileText.getText());
+			controller.flyViewpoints(flyParams.numFrames, flyParams.millisPerFrame, flyParams.loop, flyParams.grab, fileText.getText());
 		} else {
-			controller.flyPath(path, flyParams.numInbetweens, flyParams.millisPerFrame, flyParams.loop,
+			controller.flyPath(path, flyParams.numFrames, flyParams.millisPerFrame, flyParams.loop,
 				flyParams.pathHeight, flyParams.grab, fileText.getText());
 		}
 		pack();
@@ -199,7 +199,7 @@ public class FlyThroughDialog extends JDialog {
 	 */
 	public void enableParameters(boolean enable) {
 		heightText.setEnabled(enable);
-		inbetweenSpinner.setEnabled(enable);
+		framesSpinner.setEnabled(enable);
 		millisSpinner.setEnabled(enable);
 		grab.setEnabled(enable);
 		loop.setEnabled(enable);
@@ -207,7 +207,7 @@ public class FlyThroughDialog extends JDialog {
 	}
 	
 	private boolean setParameters() {
-		int numInbetweens = (Integer) inbetweenSpinner.getValue();
+		int numFrames = (Integer) framesSpinner.getValue();
 		int millis = (Integer) millisSpinner.getValue();
 		double height = heightText.getValue();
 		if (Double.isNaN(height)) {					
@@ -221,9 +221,9 @@ public class FlyThroughDialog extends JDialog {
 		}
 			
 		if (path == null) {
-			controller.flyViewpoints(numInbetweens, millis, loop.isSelected(), grab.isSelected(), fileText.getText());
+			controller.flyViewpoints(numFrames, millis, loop.isSelected(), grab.isSelected(), fileText.getText());
 		} else {
-			controller.flyPath(path, numInbetweens, millis, loop.isSelected(), height, grab.isSelected(), fileText.getText());
+			controller.flyPath(path, numFrames, millis, loop.isSelected(), height, grab.isSelected(), fileText.getText());
 		}
 		
 		return(true);

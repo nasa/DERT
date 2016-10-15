@@ -281,13 +281,14 @@ public class PointSet extends Node {
 	}
 	
 	/**
-	 * Get a curve of point interpolated between the path waypoints.
-	 * @param steps
+	 * Get a curve of points interpolated between the path waypoints.
+	 * @param numFrames
 	 * @return
 	 */
-	public Vector3[] getCurve(int steps) {
+	public Vector3[] getCurve(int numFrames) {
 		getPointList();
 		int n = pointList.size();
+		int steps = numFrames/n;
 		if (steps <= 1) {
 			Vector3[] vectors = new Vector3[n];
 			pointList.toArray(vectors);

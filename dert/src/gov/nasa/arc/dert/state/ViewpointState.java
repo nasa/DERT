@@ -20,7 +20,7 @@ public class ViewpointState extends PanelState {
 	 * Constructor
 	 */
 	public ViewpointState() {
-		super(PanelType.Viewpoint, "DERT Viewpoint", new ViewData(-1, -1, 525, 400, false));
+		super(PanelType.Viewpoint, "DERT Viewpoint", new ViewData(-1, -1, 525, 300, false));
 		viewpointList = new Vector<ViewpointStore>();
 		flyParams = new FlyThroughParameters();
 	}

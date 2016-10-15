@@ -652,25 +652,17 @@ public class ViewpointNode
 	 */
 	public void changeDirection(Vector3 dir) {
 		dir.normalizeLocal();
-		changeCamera(dir);
-	}
-
-	/**
-	 * Propagate camera direction changes to lookat, distance, and angles.
-	 * 
-	 * @param dir
-	 */
-	private void changeCamera(ReadOnlyVector3 dir) {
 		Vector3 angle = MathUtil.directionToAzEl(dir, null);
 		// This function returns the az angle around +Z axis from +Y
 		// and the el angle around +X axis from +Y
 		// We want the az angle to rotate around the -Z axis and
 		// the el angle to rotate around +X axis from the -Z axis.
 		setAzAndEl(-angle.getX(), angle.getY() + Math.PI / 2);
-		lookAt.set(dir);
-		lookAt.scaleAddLocal(camera.getDistanceToCoR(), camera.getLocation());
-		camera.setLookAt(lookAt);
-		rotateTurntable(camera.getDistanceToCoR());
+//		lookAt.set(dir);
+//		lookAt.scaleAddLocal(camera.getDistanceToCoR(), camera.getLocation());
+//		camera.setLookAt(lookAt);
+//		rotateTurntable(camera.getDistanceToCoR());
+		rotateCamera();
 		updateFromCamera();
 		updateCrosshair();
 		updateGeometricState(0);
@@ -735,7 +727,8 @@ public class ViewpointNode
 	public void changeAzimuthAndElevation(double az, double el) {
 		azimuth = az;
 		elevation = el;
-		rotateTurntable(camera.getDistanceToCoR());
+//		rotateTurntable(camera.getDistanceToCoR());
+		rotateCamera();
 	}
 
 	private void setAzAndEl(double az, double el) {

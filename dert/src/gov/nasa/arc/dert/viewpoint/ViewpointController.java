@@ -499,11 +499,11 @@ public class ViewpointController {
 	 * @param millis
 	 * @param loop
 	 */
-	public void flyViewpoints(int numInbetweens, int millis, boolean loop, boolean grab, String seqPath) {
-    	if (numInbetweens <= 1)
+	public void flyViewpoints(int numFrames, int millis, boolean loop, boolean grab, String seqPath) {
+    	if (numFrames <= 1)
     		return;
     	
-		flyParams.numInbetweens = numInbetweens;
+		flyParams.numFrames = numFrames;
 		flyParams.millisPerFrame = millis;
 		flyParams.loop = loop;
 		flyParams.grab = grab;
@@ -512,13 +512,35 @@ public class ViewpointController {
 		flyList = new Vector<ViewpointStore>();
 		
 		int vpCount = viewpointList.size();
-		double delta = 1.0/numInbetweens;
-		ViewpointStore vps = viewpointList.get(0);
-		for (int i = 1; i < vpCount; ++i) {
-			for (float t = 0; t < 1.0; t += delta) {
-				flyList.add(vps.getInbetween(viewpointList.get(i), t));
+		
+		double dist = 0;
+		ViewpointStore vps1 = viewpointList.get(0);
+		ViewpointStore vps2 = null;
+		for (int i=1; i<vpCount; ++i) {
+			vps2 = viewpointList.get(i);
+			dist += vps1.location.distance(vps2.location);
+			vps1 = vps2;
+		}
+		double delta = dist/numFrames;
+		vps2 = viewpointList.get(0);
+		flyList.add(vps2);
+		int k = 0;
+		dist = 0;
+		double d = delta;
+		for (int i=0; i<numFrames; ++i) {
+			if (d > dist) {
+				d = d-dist;
+				vps1 = vps2;
+				k ++;
+				if (k >= viewpointList.size())
+					break;
+				vps2 = viewpointList.get(k);
+				dist = vps1.location.distance(vps2.location);
 			}
-			vps = viewpointList.get(i);
+			if (dist > 0) {
+				flyList.add(vps1.getInbetween(vps2, d/dist));
+				d += delta;
+			}
 		}
 		flyList.add(viewpointList.get(viewpointList.size() - 1));
 
@@ -560,15 +582,15 @@ public class ViewpointController {
 	 * @param loop
 	 * @param height
 	 */
-	public void flyPath(Path path, int numInbetweens, int millis, boolean loop, double height, boolean grab, String seqPath) {
-		flyParams.numInbetweens = numInbetweens;
+	public void flyPath(Path path, int numFrames, int millis, boolean loop, double height, boolean grab, String seqPath) {
+		flyParams.numFrames = numFrames;
 		flyParams.millisPerFrame = millis;
 		flyParams.loop = loop;
 		flyParams.pathHeight = height;
 		flyParams.grab = grab;
 		flyParams.imageSequencePath = seqPath;
 		
-		Vector3[] curve = path.getCurve(numInbetweens);
+		Vector3[] curve = path.getCurve(numFrames);
 
 		flyList = new Vector<ViewpointStore>();
 		BasicCamera cam = new BasicCamera((BasicCamera)viewpointNode.getCamera());

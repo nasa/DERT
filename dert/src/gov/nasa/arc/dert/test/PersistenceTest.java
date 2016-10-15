@@ -85,7 +85,7 @@ public class PersistenceTest {
 		store.magIndex = 2;
 		config.viewPtState.getViewpointList().add(store);
 		FlyThroughParameters flyParams = config.viewPtState.getFlyParams();
-		flyParams.numInbetweens = 13;
+		flyParams.numFrames = 13;
 		flyParams.millisPerFrame = 444;
 		flyParams.pathHeight = 17;
 		flyParams.loop = true;

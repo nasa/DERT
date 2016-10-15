@@ -109,7 +109,6 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
     }
 
 	public void enableFrameGrab(String grabFilePath, int grabX, int grabY, int grabWidth, int grabHeight) {
-		String oldFilePath = this.grabFilePath;
 		this.grabFilePath = grabFilePath;
 		this.frameGrab = (grabFilePath != null);
 		this.grabX = grabX;
@@ -118,7 +117,7 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
 		this.grabHeight = grabHeight;
 		if (!frameGrab) {
 			if (store != null) {
-				Console.getInstance().println("Rendered "+frameCount+" frames to "+oldFilePath+".");
+				Console.getInstance().println(frameCount+" frames");
 				store = null;
 				System.gc();
 			}
@@ -128,7 +127,7 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
 	public void grabFrame() {
 		makeCurrentContext();
 		if (store == null) {
-			Console.getInstance().println("Rendering image sequence to "+Dert.getUserPath()+"/DertImageSequence");
+			Console.getInstance().println("Rendering image sequence to "+grabFilePath);
 			frameCount = 0;
 			int n = _renderer.getExpectedBufferSizeToGrabScreenContents(ImageDataFormat.RGBA, PixelDataType.Byte, grabWidth, grabHeight);
 			store = ByteBuffer.allocateDirect(n);

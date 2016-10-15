@@ -7,7 +7,7 @@ package gov.nasa.arc.dert.viewpoint;
  */
 public class FlyThroughParameters {
 
-	public int numInbetweens;
+	public int numFrames;
 	public int millisPerFrame;
 	public double pathHeight;
 	public boolean loop;
@@ -15,15 +15,15 @@ public class FlyThroughParameters {
 	public String imageSequencePath;
 	
 	public FlyThroughParameters() {
-		numInbetweens = 10;
+		numFrames = 10;
 		millisPerFrame = 100;
 		pathHeight = 5;
 		loop = false;
 		grab = false;
 	}
 	
-	public FlyThroughParameters(int numInbetweens, int millisPerFrame, double pathHeight, boolean loop, boolean grab) {
-		this.numInbetweens = numInbetweens;
+	public FlyThroughParameters(int numFrames, int millisPerFrame, double pathHeight, boolean loop, boolean grab) {
+		this.numFrames = numFrames;
 		this.millisPerFrame = millisPerFrame;
 		this.pathHeight = pathHeight;
 		this.loop = loop;
@@ -32,7 +32,7 @@ public class FlyThroughParameters {
 	
 	public double[] toArray() {
 		double[] array = new double[5];
-		array[0] = numInbetweens;
+		array[0] = numFrames;
 		array[1] = millisPerFrame;
 		array[2] = pathHeight;
 		array[3] = loop ? 1 : 0;
@@ -49,7 +49,7 @@ public class FlyThroughParameters {
 	
 	@Override
 	public String toString() {
-		String str = "FlyThroughParameters["+numInbetweens+","+millisPerFrame+","+pathHeight+","+loop+","+grab+","+imageSequencePath+"]";
+		String str = "FlyThroughParameters["+numFrames+","+millisPerFrame+","+pathHeight+","+loop+","+grab+","+imageSequencePath+"]";
 		return(str);
 	}
 
