@@ -104,8 +104,9 @@ public class LayersPanel extends GroupPanel {
 	 */
 	public void updateVisibleLayers() {
 		Vector<LayerInfo> visibleLayers = Landscape.getInstance().getLayerManager().getVisibleLayers();
-		for (int i = 0; i < visibleLayers.size(); ++i)
+		for (int i = 0; i < visibleLayers.size(); ++i) {
 			layer[i].set(visibleLayers.get(i));
+		}
 		adjustBlendFactors(1, -1);
 	}
 

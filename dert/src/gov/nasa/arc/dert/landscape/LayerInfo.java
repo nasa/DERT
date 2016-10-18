@@ -152,8 +152,12 @@ public class LayerInfo implements Comparable<LayerInfo> {
 			map.put("ColorMap.minimum", new Double(colorMap.getMinimum()));
 			map.put("ColorMap.maximum", new Double(colorMap.getMaximum()));
 		}
-		else if (colorMapName != null)
+		else if (colorMapName != null) {
 			map.put("ColorMap.name", colorMapName);
+			map.put("ColorMap.gradient", new Boolean(gradient));
+			map.put("ColorMap.minimum", new Double(minimum));
+			map.put("ColorMap.maximum", new Double(maximum));
+		}
 		return(map);
 	}
 

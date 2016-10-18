@@ -43,8 +43,10 @@ public class ColorBar extends JPanel implements ColorMapListener {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				if ((dialog != null) && dialog.isVisible())
+				if ((dialog != null) && dialog.isVisible()) {
+					dialog.setVisible(true);
 					return;
+				}
 				double range = colorMap.getBaseMaximum() - colorMap.getBaseMinimum();
 				dialog = new ColorMapDialog(null, "Color Map Settings", colorMap.getMinimum() - 10 * range,
 					colorMap.getMaximum() + 10 * range, colorMap);

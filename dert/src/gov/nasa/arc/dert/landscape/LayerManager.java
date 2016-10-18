@@ -82,7 +82,7 @@ public class LayerManager {
 		gridCellSize = StateUtil.getDouble(map, "GridCellSize", 0);
 		gridEnabled = StateUtil.getBoolean(map, "GridEnabled", false);
 		int n = StateUtil.getInteger(map, "LayerInfoCount", 0);
-		visibleLayers = new Vector<LayerInfo>(NUM_LAYERS);
+		visibleLayers = new Vector<LayerInfo>();
 		visibleLayers.setSize(NUM_LAYERS);
 		for (int i=0; i<NUM_LAYERS; ++i) {
 			HashMap<String,Object> liMap = (HashMap<String,Object>)map.get("LayerInfo"+i);

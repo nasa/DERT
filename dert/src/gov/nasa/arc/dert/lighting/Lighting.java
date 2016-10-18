@@ -407,7 +407,11 @@ public class Lighting {
 	}
 	
 	public void setBackgroundSaturation(double el) {
-		backgroundSat = (float)(Math.max(el, 0)/(Math.PI/2));
+		// Start to darken at 8.5 degrees from horizon.
+		if (el <= 0.15)
+			backgroundSat = (float)(Math.max(el, 0)/0.15);
+		else
+			backgroundSat = 1;
 		backgroundColor.set(background.getRed()*backgroundSat, background.getGreen()*backgroundSat, background.getBlue()*backgroundSat, background.getAlpha());
 		World.getInstance().getRoot().markDirty(DirtyType.RenderState);
 	}
