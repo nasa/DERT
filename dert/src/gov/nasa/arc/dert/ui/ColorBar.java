@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.ColorMapListener;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,7 +49,7 @@ public class ColorBar extends JPanel implements ColorMapListener {
 					return;
 				}
 				double range = colorMap.getBaseMaximum() - colorMap.getBaseMinimum();
-				dialog = new ColorMapDialog(null, "Color Map Settings", colorMap.getMinimum() - 10 * range,
+				dialog = new ColorMapDialog((Dialog)getTopLevelAncestor(), "Color Map Settings", colorMap.getMinimum() - 10 * range,
 					colorMap.getMaximum() + 10 * range, colorMap);
 				dialog.open();
 				dialog.setRange(colorMap.getMinimum(), colorMap.getMaximum());

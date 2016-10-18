@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.io.geojson;
 
 import gov.nasa.arc.dert.io.geojson.json.JsonObject;
+import gov.nasa.arc.dert.landscape.Landscape;
 
 /**
  * Provides a GeoJSON Object.
@@ -38,9 +39,10 @@ public class GeoJsonObject {
 
 	private void createCRS(JsonObject jsonObject) {
 		if (jsonObject == null) {
-			return;
+			crs = new CoordinateReferenceSystem(Landscape.getInstance().getSpatialReferenceSystem().getProjection());
 		}
-		crs = new CoordinateReferenceSystem();
+		else
+			crs = new CoordinateReferenceSystem(jsonObject);
 	}
 
 }

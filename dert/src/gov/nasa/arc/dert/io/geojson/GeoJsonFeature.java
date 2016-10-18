@@ -29,7 +29,7 @@ public class GeoJsonFeature extends GeoJsonObject {
 
 		// create the geometry object for this feature
 		jObj = jsonObject.getJsonObject("geometry");
-		geometry = Geometry.createGeometry(jObj);
+		geometry = Geometry.createGeometry(jObj, crs);
 	}
 
 	private void createProperties(JsonObject jObj) {

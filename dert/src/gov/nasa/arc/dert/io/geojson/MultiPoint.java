@@ -15,7 +15,7 @@ public class MultiPoint extends Geometry {
 	 * 
 	 * @param jsonObject
 	 */
-	public MultiPoint(JsonObject jsonObject) {
+	public MultiPoint(JsonObject jsonObject, CoordinateReferenceSystem crs) {
 		super(jsonObject);
 		Object[] arrayN = jsonObject.getArray("coordinates");
 		int n = arrayN.length;
@@ -27,6 +27,7 @@ public class MultiPoint extends Geometry {
 			for (int p = 0; p < posLength; ++p) {
 				coordinate[i][p] = ((Double)pos[p]).doubleValue();
 			}
+			crs.translate(coordinate[i]);
 		}
 	}
 

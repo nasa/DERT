@@ -15,13 +15,14 @@ public class Point extends Geometry {
 	 * 
 	 * @param jsonObject
 	 */
-	public Point(JsonObject jsonObject) {
+	public Point(JsonObject jsonObject, CoordinateReferenceSystem crs) {
 		super(jsonObject);
 		Object[] coordArray = jsonObject.getArray("coordinates");
 		coordinate = new double[coordArray.length];
 		for (int i = 0; i < coordArray.length; ++i) {
 			coordinate[i] = ((Double)coordArray[i]).doubleValue();
 		}
+		crs.translate(coordinate);
 	}
 
 	/**

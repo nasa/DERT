@@ -15,7 +15,7 @@ public class Polygon extends Geometry {
 	 * 
 	 * @param jsonObject
 	 */
-	public Polygon(JsonObject jsonObject) {
+	public Polygon(JsonObject jsonObject, CoordinateReferenceSystem crs) {
 		super(jsonObject);
 		Object[] arrayN = jsonObject.getArray("coordinates");
 		int n = arrayN.length;
@@ -31,6 +31,7 @@ public class Polygon extends Geometry {
 				for (int p = 0; p < posLength; ++p) {
 					coordinate[i][j][p] = ((Double)pos[p]).doubleValue();
 				}
+				crs.translate(coordinate[i][j]);
 			}
 		}
 	}

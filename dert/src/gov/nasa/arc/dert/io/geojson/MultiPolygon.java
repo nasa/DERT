@@ -15,7 +15,7 @@ public class MultiPolygon extends Geometry {
 	 * 
 	 * @param jsonObject
 	 */
-	public MultiPolygon(JsonObject jsonObject) {
+	public MultiPolygon(JsonObject jsonObject, CoordinateReferenceSystem crs) {
 		super(jsonObject);
 		Object[] arrayN = jsonObject.getArray("coordinates");
 		int n = arrayN.length;
@@ -35,6 +35,7 @@ public class MultiPolygon extends Geometry {
 					for (int p = 0; p < posLength; ++p) {
 						coordinate[i][j][k][p] = ((Double)pos[p]).doubleValue();
 					}
+					crs.translate(coordinate[i][j][k]);
 				}
 			}
 		}
