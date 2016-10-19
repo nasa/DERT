@@ -228,7 +228,8 @@ public abstract class MapElementBasePanel extends JPanel {
 	 */
 	public void updateData(MapElement mapElement) {
 		nameLabel.setText(mapElement.getName());
-		pinnedCheckBox.setSelected(mapElement.isPinned());
+		if (pinnedCheckBox != null)
+			pinnedCheckBox.setSelected(mapElement.isPinned());
 	}
 
 	/**

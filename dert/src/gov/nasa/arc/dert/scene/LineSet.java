@@ -22,7 +22,6 @@ import com.ardor3d.bounding.BoundingVolume;
 import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.renderer.state.ZBufferState;
 import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
@@ -49,8 +48,6 @@ public class LineSet extends GroupNode implements MapElement {
 
 	// The location of the origin
 	private Vector3 location;
-	
-	private ZBufferState zBufferState;
 
 	/**
 	 * Constructor
@@ -82,10 +79,6 @@ public class LineSet extends GroupNode implements MapElement {
 		if (getNumberOfChildren() == 0) {
 			throw new IllegalStateException("No vectors found.");
 		}
-
-		zBufferState = new ZBufferState();
-		zBufferState.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
-		setRenderState(zBufferState);
 		
 	}
 
@@ -158,7 +151,7 @@ public class LineSet extends GroupNode implements MapElement {
 	private void setColor(Node node, ColorRGBA colorRGBA) {
 		int n = node.getNumberOfChildren();
 		for (int i = 0; i < n; ++i) {
-			Spatial child = getChild(i);
+			Spatial child = node.getChild(i);
 			if (child instanceof LineStrip) {
 				((LineStrip) child).setDefaultColor(colorRGBA);
 			} else if (child instanceof GroupNode) {
@@ -267,15 +260,6 @@ public class LineSet extends GroupNode implements MapElement {
 		location.set(getWorldTranslation());
 		Landscape.getInstance().localToWorldCoordinate(location);
 		return (location);
-	}
-	
-	public void enableZBuffer(boolean enable) {
-		zBufferState.setEnabled(enable);
-		markDirty(DirtyType.RenderState);
-	}
-	
-	public boolean isZBufferEnabled() {
-		return(zBufferState.isEnabled());
 	}
 	
 	public void ground() {

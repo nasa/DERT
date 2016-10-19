@@ -11,6 +11,7 @@ import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.IndexMode;
 import com.ardor3d.scenegraph.FloatBufferData;
 import com.ardor3d.scenegraph.Line;
+import com.ardor3d.scenegraph.hint.TextureCombineMode;
 
 /**
  * A line object with multiple segments.
@@ -31,6 +32,7 @@ public class LineStrip extends Line {
 		final FloatBufferData coords) {
 		super(name, vertex, normal, color, coords);
 		getMeshData().setIndexMode(IndexMode.LineStrip);
+		getSceneHints().setTextureCombineMode(TextureCombineMode.Off);
 	}
 
 	/**
