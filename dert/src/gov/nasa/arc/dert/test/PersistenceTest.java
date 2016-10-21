@@ -13,7 +13,7 @@ import gov.nasa.arc.dert.state.FieldCameraState;
 import gov.nasa.arc.dert.state.FigureState;
 import gov.nasa.arc.dert.state.GridState;
 import gov.nasa.arc.dert.state.ImageBoardState;
-import gov.nasa.arc.dert.state.LineSetState;
+import gov.nasa.arc.dert.state.FeatureSetState;
 import gov.nasa.arc.dert.state.PathState;
 import gov.nasa.arc.dert.state.PlacemarkState;
 import gov.nasa.arc.dert.state.PlaneState;
@@ -128,7 +128,7 @@ public class PersistenceTest {
 		ib.position = new Vector3(13, 14, 15);
 		config.mapElementStateList.add(ib);
 		
-		LineSetState ls = new LineSetState("Test", testLoc, Color.red);
+		FeatureSetState ls = new FeatureSetState("Test", testLoc, Color.red);
 		ls.filePath = testLoc+"/lineset";
 		config.mapElementStateList.add(ls);
 		
@@ -174,7 +174,7 @@ public class PersistenceTest {
 		System.err.println("Original FigureState: "+f);
 		System.err.println("Original GridState: "+g);
 		System.err.println("Original ImageBoardState: "+ib);
-		System.err.println("Original LineSetState: "+ls);
+		System.err.println("Original FeatureSetState: "+ls);
 		System.err.println("Original PathState: "+p);
 		System.err.println("Original PlacemarkState: "+pl);
 		System.err.println("Original PlaneState: "+pn);
@@ -189,7 +189,7 @@ public class PersistenceTest {
 		System.err.println("Saved FigureState: "+newConfig.mapElementStateList.get(1));
 		System.err.println("Saved GridState: "+newConfig.mapElementStateList.get(2));
 		System.err.println("Saved ImageBoardState: "+newConfig.mapElementStateList.get(3));
-		System.err.println("Saved LineSetState: "+newConfig.mapElementStateList.get(4));
+		System.err.println("Saved FeatureSetState: "+newConfig.mapElementStateList.get(4));
 		PathState sp = (PathState)newConfig.mapElementStateList.get(5);
 		System.err.println("Saved PathState: "+sp);
 		System.err.println("Saved PlacemarkState: "+newConfig.mapElementStateList.get(6));

@@ -12,9 +12,9 @@ import gov.nasa.arc.dert.raster.proj.Proj4;
 import gov.nasa.arc.dert.render.BasicScene;
 import gov.nasa.arc.dert.render.SceneCanvas;
 import gov.nasa.arc.dert.render.SceneFramework;
-import gov.nasa.arc.dert.scene.LineSet;
-import gov.nasa.arc.dert.scene.LineSets;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.scene.featureset.FeatureSet;
+import gov.nasa.arc.dert.scene.featureset.FeatureSets;
 import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
 import gov.nasa.arc.dert.scene.landmark.Landmarks;
@@ -294,7 +294,7 @@ public class Dert {
 			CartesianGrid.setDefaultsFromProperties(dertProperties);
 			RadialGrid.setDefaultsFromProperties(dertProperties);
 			Profile.setDefaultsFromProperties(dertProperties);
-			LineSet.setDefaultsFromProperties(dertProperties);
+			FeatureSet.setDefaultsFromProperties(dertProperties);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -371,7 +371,7 @@ public class Dert {
 			Properties properties = new Properties();
 			Landmarks.saveDefaultsToProperties(properties);
 			Tools.saveDefaultsToProperties(properties);
-			LineSets.saveDefaultsToProperties(properties);
+			FeatureSets.saveDefaultsToProperties(properties);
 
 			// Write file to dertstash.
 			File f = new File(userPath, "prefs.properties");

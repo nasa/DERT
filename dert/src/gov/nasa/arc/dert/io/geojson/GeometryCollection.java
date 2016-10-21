@@ -19,7 +19,7 @@ public class GeometryCollection extends Geometry {
 	 * @param jsonObject
 	 */
 	public GeometryCollection(JsonObject jsonObject, CoordinateReferenceSystem crs) {
-		super(jsonObject);
+		super(jsonObject, GeojsonType.GeometryCollection);
 		geometryList = new ArrayList<Geometry>();
 
 		Object[] arrayN = jsonObject.getArray("geometries");

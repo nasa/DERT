@@ -14,6 +14,7 @@ import gov.nasa.arc.dert.state.PlaneState;
 import gov.nasa.arc.dert.util.ImageUtil;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.StringUtil;
+import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
@@ -518,8 +519,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		}
 
 		// set the color of the body
-		float[] col = color.getRGBComponents(null);
-		colorRGBA = new ColorRGBA(col[0], col[1], col[2], col[3]);
+		colorRGBA = UIUtil.colorToColorRGBA(color);
 
 		MaterialState lineMS = new MaterialState();
 		lineMS.setDiffuse(ColorRGBA.BLACK);
@@ -527,7 +527,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		lineMS.setEmissive(MaterialState.MaterialFace.FrontAndBack, colorRGBA);
 		triangleLine.setRenderState(lineMS);
 
-		colorRGBA = new ColorRGBA(col[0], col[1], col[2], col[3] * 0.4f);
+		colorRGBA.setAlpha(colorRGBA.getAlpha()*0.4f);
 		MaterialState polyMS = new MaterialState();
 		polyMS.setDiffuse(MaterialState.MaterialFace.FrontAndBack, colorRGBA);
 		polyMS.setAmbient(MaterialState.MaterialFace.FrontAndBack, ColorRGBA.BLACK);

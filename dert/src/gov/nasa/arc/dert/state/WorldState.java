@@ -4,8 +4,8 @@ import gov.nasa.arc.dert.io.FileSystemTileSource;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.LayerManager;
 import gov.nasa.arc.dert.lighting.Lighting;
-import gov.nasa.arc.dert.scene.LineSets;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.scene.featureset.FeatureSets;
 import gov.nasa.arc.dert.scene.landmark.Landmarks;
 import gov.nasa.arc.dert.scene.tool.Tools;
 import gov.nasa.arc.dert.util.StateUtil;
@@ -133,7 +133,7 @@ public class WorldState extends State {
 		// create Landscape before world
 		Landscape.createInstance(tileSource, layerManager, surfaceColor);
 		world = World.createInstance(name, new Landmarks(config.getLandmarkStates()),
-			new Tools(config.getToolStates()), new LineSets(config.getLineSetStates()), lighting, time);
+			new Tools(config.getToolStates()), new FeatureSets(config.getFeatureSetStates()), lighting, time);
 		world.setUseLonLat(useLonLat);
 		if (verticalExaggeration != 1) {
 			world.setVerticalExaggeration(verticalExaggeration);

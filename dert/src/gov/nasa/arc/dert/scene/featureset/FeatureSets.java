@@ -1,9 +1,9 @@
-package gov.nasa.arc.dert.scene;
+package gov.nasa.arc.dert.scene.featureset;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
-import gov.nasa.arc.dert.state.LineSetState;
+import gov.nasa.arc.dert.state.FeatureSetState;
 import gov.nasa.arc.dert.view.Console;
 
 import java.awt.EventQueue;
@@ -20,13 +20,13 @@ import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
 
 /**
- * Provides a set of LineSet map elements.
+ * Provides a set of FeatureSet map elements.
  *
  */
-public class LineSets extends GroupNode {
+public class FeatureSets extends GroupNode {
 
-	// List of LineSets
-	private ArrayList<LineSetState> lineSetList;
+	// List of FeatureSets
+	private ArrayList<FeatureSetState> featureSetList;
 
 	// Thread service for updating
 	private ExecutorService executor;
@@ -36,24 +36,24 @@ public class LineSets extends GroupNode {
 	/**
 	 * Constructor
 	 * 
-	 * @param lineSetList
+	 * @param featureSetList
 	 */
-	public LineSets(ArrayList<LineSetState> lineSetList) {
-		super("LineSets");
-		this.lineSetList = lineSetList;
+	public FeatureSets(ArrayList<FeatureSetState> featureSetList) {
+		super("FeatureSets");
+		this.featureSetList = featureSetList;
 		executor = Executors.newFixedThreadPool(5);
 	}
 
 	/**
-	 * Initialize this LineSets object
+	 * Initialize this FeatureSets object
 	 */
 	public void initialize() {
 		TextureState ts = new TextureState();
 		ts.setEnabled(false);
 		setRenderState(ts);
-		for (int i = 0; i < lineSetList.size(); ++i) {
-			LineSetState state = lineSetList.get(i);
-			addLineSet(state, false);
+		for (int i = 0; i < featureSetList.size(); ++i) {
+			FeatureSetState state = featureSetList.get(i);
+			addFeatureSet(state, false);
 		}
 
 		zBufferState = new ZBufferState();
@@ -63,7 +63,7 @@ public class LineSets extends GroupNode {
 	}
 
 	/**
-	 * The landscape has changed, update the elevation of all the LineSets
+	 * The landscape has changed, update the elevation of all the FeatureSets
 	 * 
 	 * @param quadTree
 	 */
@@ -74,7 +74,7 @@ public class LineSets extends GroupNode {
 				@Override
 				public void run() {
 					Thread.yield();
-					boolean modified = ((LineSet) child).updateElevation(quadTree);
+					boolean modified = ((FeatureSet) child).updateElevation(quadTree);
 					if (modified) {
 						EventQueue.invokeLater(new Runnable() {
 							@Override
@@ -90,21 +90,20 @@ public class LineSets extends GroupNode {
 	}
 
 	/**
-	 * Add a LineSet to the list
+	 * Add a FeatureSet to the list
 	 * 
 	 * @param state
 	 * @param update
 	 * @return
 	 */
-	public LineSet addLineSet(LineSetState state, boolean update) {
+	public FeatureSet addFeatureSet(FeatureSetState state, boolean update) {
 		try {
-			LineSet lineSet = new LineSet(state);
-			Spatial spatial = lineSet;
-			attachChild(spatial);
+			FeatureSet featureSet = new FeatureSet(state);
+			attachChild(featureSet);
 			if (update) {
-				spatial.updateGeometricState(0, true);
+				featureSet.updateGeometricState(0, true);
 			}
-			return (lineSet);
+			return (featureSet);
 		} catch (Exception e) {
 			Console.getInstance().println(e.getMessage());
 			JOptionPane.showMessageDialog(Dert.getMainWindow(), e.getMessage());
@@ -113,13 +112,13 @@ public class LineSets extends GroupNode {
 	}
 
 	/**
-	 * Show all LineSets
+	 * Show all FeatureSets
 	 * 
 	 * @param visible
 	 */
 	public void setAllVisible(boolean visible) {
 		for (int i = 0; i < getNumberOfChildren(); ++i) {
-			((LineSet) getChild(i)).setVisible(visible);
+			((FeatureSet) getChild(i)).setVisible(visible);
 		}
 	}
 	
@@ -137,7 +136,7 @@ public class LineSets extends GroupNode {
 	 * @param properties
 	 */
 	public static void saveDefaultsToProperties(Properties properties) {
-		LineSet.saveDefaultsToProperties(properties);
+		FeatureSet.saveDefaultsToProperties(properties);
 	}
 
 }

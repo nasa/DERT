@@ -6,7 +6,7 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.landscape.QuadTreeCache;
 import gov.nasa.arc.dert.lighting.Lighting;
-import gov.nasa.arc.dert.scene.LineSet;
+import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
 import gov.nasa.arc.dert.scene.landmark.Placemark;
@@ -179,7 +179,7 @@ public class DertTest {
 			CartesianGrid.setDefaultsFromProperties(dertProperties);
 			RadialGrid.setDefaultsFromProperties(dertProperties);
 			Profile.setDefaultsFromProperties(dertProperties);
-			LineSet.setDefaultsFromProperties(dertProperties);
+			FeatureSet.setDefaultsFromProperties(dertProperties);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -22,10 +22,10 @@ import gov.nasa.arc.dert.action.mapelement.PinMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.PlaceHereAction;
 import gov.nasa.arc.dert.action.mapelement.RenameAction;
 import gov.nasa.arc.dert.render.SceneCanvasPanel;
-import gov.nasa.arc.dert.scene.LineSet;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.Marble;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
 import gov.nasa.arc.dert.scene.landmark.Landmark;
 import gov.nasa.arc.dert.scene.tapemeasure.TapeMeasure;
@@ -352,7 +352,7 @@ public class WorldInputHandler implements InputHandler {
 							menu.add(new PinMapElementAction(((Waypoint) mapElement).getPath()));
 							menu.add(new OnGroundAction((Waypoint) mapElement));
 							menu.add(new OpenAnnotationAction(mapElement));
-						} else if (!(mapElement instanceof LineSet)) {
+						} else if (!(mapElement instanceof FeatureSet)) {
 							menu.add(new HideMapElementAction(mapElement));
 							menu.add(new DeleteMapElementAction(mapElement));
 							menu.add(new RenameAction(mapElement));

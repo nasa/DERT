@@ -15,7 +15,6 @@ import java.awt.Color;
 
 import com.ardor3d.bounding.BoundingBox;
 import com.ardor3d.bounding.BoundingVolume;
-import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -51,7 +50,6 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 
 	// Color
 	protected Color color = Color.white;
-	protected ColorRGBA colorRGBA;
 	protected float lineWidth;
 
 	// scale factor for viewpoint resizing
@@ -73,12 +71,10 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 		this.lineWidth = state.lineWidth;
 		offset = new Vector3();
 		setLocation(state.location, false);
-		colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
-			color.getAlpha() / 255f);
 
 		lattice = new HiddenLine("_lattice", IndexMode.Lines);
 		SpatialUtil.setPickHost(lattice, this);
-		lattice.setColor(colorRGBA);
+		lattice.setColor(color);
 		lattice.setModelBound(new BoundingBox());
 
 		MaterialState ms = new MaterialState();
@@ -138,12 +134,8 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	 * @param color
 	 */
 	public void setColor(Color color) {
-		if (!this.color.equals(color)) {
-			this.color = color;
-			colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
-				color.getAlpha() / 255f);
-			lattice.setColor(colorRGBA);
-		}
+		this.color = color;
+		lattice.setColor(color);
 	}
 
 	/**
@@ -156,7 +148,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 
 	@Override
 	protected void enableHighlight(boolean enable) {
-		lattice.highlight(enable, colorRGBA);
+		lattice.highlight(enable, color);
 	}
 
 	/**

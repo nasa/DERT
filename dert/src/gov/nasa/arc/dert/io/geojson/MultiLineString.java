@@ -16,7 +16,7 @@ public class MultiLineString extends Geometry {
 	 * @param jsonObject
 	 */
 	public MultiLineString(JsonObject jsonObject, CoordinateReferenceSystem crs) {
-		super(jsonObject);
+		super(jsonObject, GeojsonType.MultiLineString);
 		Object[] arrayN = jsonObject.getArray("coordinates");
 		int n = arrayN.length;
 		Object[] arrayM = (Object[])arrayN[0];

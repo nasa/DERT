@@ -4,9 +4,9 @@ import gov.nasa.arc.dert.landscape.LayerInfo.LayerType;
 import gov.nasa.arc.dert.raster.ProjectionInfo;
 import gov.nasa.arc.dert.raster.SpatialReferenceSystem;
 import gov.nasa.arc.dert.render.JoglRendererDouble;
-import gov.nasa.arc.dert.scene.LineSet;
+import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
-import gov.nasa.arc.dert.state.LineSetState;
+import gov.nasa.arc.dert.state.FeatureSetState;
 import gov.nasa.arc.dert.util.StringUtil;
 
 import java.awt.Color;
@@ -121,8 +121,8 @@ public class VectorPyramidLayerFactory extends PyramidLayerFactory {
 			false), new JoglRendererDouble(), ColorRGBA.BLACK_NO_ALPHA);
 
 		// Load the vector file into an Ardor3D object.
-		LineSetState state = new LineSetState(layerName, sourceFilePath, color);
-		root = new LineSet(state, elevAttrName, srs);
+		FeatureSetState state = new FeatureSetState(layerName, sourceFilePath, color);
+		root = new FeatureSet(state, elevAttrName, srs);
 		root.updateGeometricState(0);
 
 		// Create a sub-directory for the layer

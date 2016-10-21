@@ -3,6 +3,7 @@ package gov.nasa.arc.dert.scenegraph;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.scenegraph.Text.AlignType;
+import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
@@ -63,8 +64,6 @@ public abstract class Marker extends Movable implements ViewDependent {
 		this.zOff = zOff;
 		setPinned(pinned);
 		worldLoc = new Vector3();
-		colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
-			color.getAlpha() / 255f);
 		if (point != null)
 			setLocation(point, false);
 
@@ -165,12 +164,9 @@ public abstract class Marker extends Movable implements ViewDependent {
 	 * @param newColor
 	 */
 	public void setColor(Color newColor) {
-		if ((color != null) && color.equals(newColor)) {
-			return;
-		}
+		System.err.println("Marker.setColor "+newColor+" "+materialState);
 		color = newColor;
-		colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
-			color.getAlpha() / 255f);
+		colorRGBA = UIUtil.colorToColorRGBA(color);
 		if (materialState == null) {
 			// add a material state
 			materialState = new MaterialState();
@@ -180,6 +176,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 		}
 		setMaterialState();
 		markDirty(DirtyType.RenderState);
+		updateWorldRenderStates(true);
 	}
 
 	protected abstract void setMaterialState();

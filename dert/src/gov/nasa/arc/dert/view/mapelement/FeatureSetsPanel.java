@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.icon.Icons;
-import gov.nasa.arc.dert.scene.LineSet;
+import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 
@@ -19,15 +19,15 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 /**
- * Provides controls for setting LineSet preferences and adding LineSets.
+ * Provides controls for setting FeatureSet preferences and adding FeatureSets.
  *
  */
-public class LineSetsPanel extends JPanel {
+public class FeatureSetsPanel extends JPanel {
 
 	/**
 	 * Constructor
 	 */
-	public LineSetsPanel() {
+	public FeatureSetsPanel() {
 		super();
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		setLayout(new BorderLayout());
@@ -38,20 +38,20 @@ public class LineSetsPanel extends JPanel {
 		panel.add(new JLabel("Add:"));
 
 		JButton addButton = new JButton(Icons.getImageIcon("lineset.png"));
-		addButton.setToolTipText("LineSet");
+		addButton.setToolTipText("FeatureSet");
 		addButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				addLineSet(MapElementState.Type.LineSet);
+				addFeatureSet(MapElementState.Type.FeatureSet);
 			}
 		});
 		panel.add(addButton);
 		topPanel.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("All LineSets:"));
+		panel.add(new JLabel("All FeatureSets:"));
 		JButton hideAllButton = new JButton("Hide");
-		hideAllButton.setToolTipText("hide all LineSets");
+		hideAllButton.setToolTipText("hide all FeatureSets");
 		hideAllButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -61,7 +61,7 @@ public class LineSetsPanel extends JPanel {
 		panel.add(hideAllButton);
 
 		JButton showAllButton = new JButton("Show");
-		showAllButton.setToolTipText("show all LineSets");
+		showAllButton.setToolTipText("show all FeatureSets");
 		showAllButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -70,18 +70,18 @@ public class LineSetsPanel extends JPanel {
 		});
 		panel.add(showAllButton);
 		topPanel.add(panel);
-		topPanel.add(new JLabel("LineSet Preferences", SwingConstants.LEFT));
+		topPanel.add(new JLabel("FeatureSet Preferences", SwingConstants.LEFT));
 		add(topPanel, BorderLayout.NORTH);
 
-		// LineSet Preferences
+		// FeatureSet Preferences
 		panel = new JPanel();
 		panel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
 		panel.add(new JLabel("Color:", SwingConstants.RIGHT));
-		ColorSelectionPanel colorList = new ColorSelectionPanel(LineSet.defaultColor) {
+		ColorSelectionPanel colorList = new ColorSelectionPanel(FeatureSet.defaultColor) {
 			@Override
 			public void doColor(Color color) {
-				LineSet.defaultColor = color;
+				FeatureSet.defaultColor = color;
 			}
 		};
 		panel.add(colorList);
@@ -89,16 +89,16 @@ public class LineSetsPanel extends JPanel {
 	}
 
 	/**
-	 * Add a new LineSet. Overridden by implementing class.
+	 * Add a new FeatureSet. Overridden by implementing class.
 	 * 
 	 * @param type
 	 */
-	public void addLineSet(MapElementState.Type type) {
+	public void addFeatureSet(MapElementState.Type type) {
 		// nothing here
 	}
 
 	/**
-	 * Set visibility of all LineSets. Overridden by implementing class.
+	 * Set visibility of all FeatureSets. Overridden by implementing class.
 	 * 
 	 * @param visible
 	 */

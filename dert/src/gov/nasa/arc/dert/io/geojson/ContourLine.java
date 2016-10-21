@@ -2,13 +2,15 @@ package gov.nasa.arc.dert.io.geojson;
 
 import gov.nasa.arc.dert.scenegraph.LineStrip;
 import gov.nasa.arc.dert.scenegraph.VectorText;
+import gov.nasa.arc.dert.util.UIUtil;
 
+import java.awt.Color;
 import java.nio.FloatBuffer;
 
 import com.ardor3d.bounding.BoundingVolume;
+import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Matrix3;
 import com.ardor3d.math.Vector3;
-import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.scenegraph.Node;
 
 /**
@@ -23,15 +25,16 @@ public class ContourLine extends Node {
 	 * 
 	 * @param line
 	 * @param elevation
-	 * @param defaultColor
+	 * @param color
 	 */
-	public ContourLine(LineStrip line, double elevation, ReadOnlyColorRGBA defaultColor) {
+	public ContourLine(LineStrip line, double elevation, Color color) {
 		super(Integer.toString((int) elevation));
 
 		attachChild(line);
 		VectorText label = new VectorText(getName(), getName());
 		label.setScaleFactor(0.05f);
-		label.setColor(defaultColor);
+		ColorRGBA colorRGBA = UIUtil.colorToColorRGBA(color);
+		label.setColor(colorRGBA);
 		BoundingVolume lBound = line.getModelBound();
 
 		// draw label if it is smaller than the contour

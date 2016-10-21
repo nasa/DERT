@@ -5,10 +5,13 @@ import gov.nasa.arc.dert.io.geojson.json.JsonObject;
 import gov.nasa.arc.dert.io.geojson.json.JsonReader;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.raster.SpatialReferenceSystem;
-import gov.nasa.arc.dert.scene.LineSet;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.scene.featureset.Feature;
+import gov.nasa.arc.dert.scene.featureset.FeatureSet;
+import gov.nasa.arc.dert.scenegraph.FigureMarker;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.scenegraph.LineStrip;
+import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.view.Console;
 
 import java.awt.Color;
@@ -19,10 +22,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.ardor3d.bounding.BoundingBox;
-import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.scenegraph.Spatial;
+import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.hint.LightCombineMode;
 import com.ardor3d.util.geom.BufferUtils;
 
@@ -81,12 +83,12 @@ public class GeojsonLoader {
 	}
 
 	/**
-	 * Convert a GeoJsonObject to a LineSet
+	 * Convert a GeoJsonObject to a FeatureSet
 	 * 
 	 * @param gjRoot
 	 *            the GeoJsonObject
 	 * @param root
-	 *            the LineSet
+	 *            the FeatureSet
 	 * @param pointColor
 	 *            color for Points (points and multipoints are not currently
 	 *            supported)
@@ -94,10 +96,9 @@ public class GeojsonLoader {
 	 *            color for Lines
 	 * @param elevAttrName
 	 *            the elevation attribute name (from gdaldem)
-	 * @return the LineSet
+	 * @return the FeatureSet
 	 */
-	public LineSet geoJsonToArdor3D(GeoJsonObject gjRoot, LineSet root, Color pointColor, Color lineColor,
-		String elevAttrName) {
+	public FeatureSet geoJsonToArdor3D(GeoJsonObject gjRoot, FeatureSet root, Color color, String elevAttrName) {
 		// no elevation (Z) values so this will be 2D, make Z the minimum
 		// landscape elevation
 		landscapeMinZ = 0;
@@ -109,20 +110,22 @@ public class GeojsonLoader {
 		root.getSceneHints().setLightCombineMode(LightCombineMode.Off);
 		int count = 0;
 		if (gjRoot instanceof GeoJsonFeature) {
-			GeoJsonFeature feature = (GeoJsonFeature) gjRoot;
-			Spatial spatial = geojsonFeatureToArdor3D(feature, pointColor, lineColor, elevAttrName, count);
-			if (spatial != null) {
-				root.attachChild(spatial);
+			GeoJsonFeature gjFeature = (GeoJsonFeature) gjRoot;
+			Feature feature = geojsonFeatureToArdor3D(gjFeature, color, elevAttrName, count);
+			if (feature != null) {
+				feature.setColor(color);
+				root.attachChild(feature);
 				count++;
 			}
 		} else if (gjRoot instanceof GeoJsonFeatureCollection) {
 			GeoJsonFeatureCollection collection = (GeoJsonFeatureCollection) gjRoot;
 			ArrayList<GeoJsonFeature> featureList = collection.getFeatureList();
 			for (int i = 0; i < featureList.size(); ++i) {
-				Spatial spatial = geojsonFeatureToArdor3D(featureList.get(i), pointColor, lineColor, elevAttrName,
-					count);
-				if (spatial != null) {
-					root.attachChild(spatial);
+				GeoJsonFeature gjFeature = featureList.get(i);
+				Feature feature = geojsonFeatureToArdor3D(gjFeature, color, elevAttrName, count);
+				if (feature != null) {
+					feature.setColor(color);
+					root.attachChild(feature);
 					count++;
 				}
 			}
@@ -135,110 +138,182 @@ public class GeojsonLoader {
 		return (root);
 	}
 
-	private Spatial geojsonFeatureToArdor3D(GeoJsonFeature feature, Color pointColor, Color lineColor,
-		String elevAttrName, int count) {
-		ColorRGBA lineColorRGBA = new ColorRGBA(lineColor.getRed() / 255.0f, lineColor.getGreen() / 255.0f,
-			lineColor.getBlue() / 255.0f, lineColor.getAlpha() / 255.0f);
-		Spatial spatial = null;
-		// this is a contour map, we have an elevation attribute from gdaldem
-		boolean isContour = (elevAttrName != null);
+	private Feature geojsonFeatureToArdor3D(GeoJsonFeature gjFeature, Color color, String elevAttrName, int count) {
 		minZ = Double.MAX_VALUE;
 		maxZ = -Double.MAX_VALUE;
-		Geometry geometry = feature.getGeometry();
-		if (geometry == null) {
+		Geometry geometry = gjFeature.getGeometry();
+		if (geometry == null)
 			return (null);
-		} else if (geometry instanceof LineString) {
-			LineString lineString = (LineString) geometry;
-			double[][] coordinate = lineString.getCoordinates();
-			if (coordinate == null) {
-				return (null);
+		String name = gjFeature.getId();
+		if (name == null)
+			name = "Feature"+count;
+		Feature feature = new Feature(name, color, gjFeature.getProperties());
+		if (geojsonGeometryToArdor3D(feature, geometry, color, elevAttrName, count, feature.getProperties())) {
+			feature.updateGeometricState(0, true);
+			return (feature);
+		}
+		return(null);
+	}
+
+	private boolean geojsonGeometryToArdor3D(Node parent, Geometry geometry, Color color, String elevAttrName, int count, HashMap<String, Object> properties) {
+		// this is a contour map, we have an elevation attribute from gdaldem
+		boolean isContour = (elevAttrName != null);
+		LineStrip lineStrip = null;
+		ReadOnlyVector3 pos = null;
+		switch (geometry.type) {
+		case Point:
+			Point point = (Point) geometry;
+			double[] pCoord = point.getCoordinates();
+			if (pCoord == null)
+				return (false);
+			if (pCoord.length == 0)
+				return (false);
+			pos = toWorld(pCoord, false);
+			if (pos != null) {
+				FigureMarker fm = new FigureMarker("_geom", pos, 0.5, 0, color, false, true, true);
+				fm.setShape(ShapeType.sphere);
+				parent.attachChild(fm);
+				minZ = pos.getZ();
+				maxZ = pos.getZ();
 			}
-			if (coordinate.length == 0) {
-				return (null);
+			break;
+			
+		case MultiPoint:
+			MultiPoint mPoint = (MultiPoint) geometry;
+			double[][] mpCoord = mPoint.getCoordinates();
+			if (mpCoord == null) {
+				return (false);
 			}
-			FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(3 * coordinate.length);
-			for (int i = 0; i < coordinate.length; ++i) {
-				ReadOnlyVector3 coord = toWorld(coordinate[i], !isContour);
+			if (mpCoord.length == 0) {
+				return (false);
+			}
+			for (int i = 0; i < mpCoord.length; ++i) {
+				if (mpCoord[i].length == 0) {
+					continue;
+				}
+				pos = toWorld(mpCoord[i], false);
 				if (coord != null) {
-					vertexBuffer.put((float) coord.getX()).put((float) coord.getY()).put((float) coord.getZ());
-					minZ = Math.min(minZ, coord.getZ());
-					maxZ = Math.max(maxZ, coord.getZ());
+					FigureMarker fm = new FigureMarker("_geom"+i, pos, 0.5, 0, color, false, true, true);
+					fm.setShape(ShapeType.sphere);
+					parent.attachChild(fm);
+					minZ = Math.min(minZ, pos.getZ());
+					maxZ = Math.max(maxZ, pos.getZ());
 				}
 			}
-			vertexBuffer.flip();
-			if (vertexBuffer.limit() == 0) {
-				return (null);
-			}
-			LineStrip line = new LineStrip("linestring" + count, vertexBuffer, null, null, null);
-			line.setLineWidth(2);
-			line.setModelBound(new BoundingBox());
-			line.updateModelBound();
-			line.setDefaultColor(lineColorRGBA);
-			line.getSceneHints().setLightCombineMode(LightCombineMode.Off);
+			break;
+			
+		case LineString:
+			LineString lineString = (LineString) geometry;
+			double[][] lsCoord = lineString.getCoordinates();
+			if (lsCoord == null)
+				return (false);
+			if (lsCoord.length == 0)
+				return (false);
+			lineStrip = createLineStrip("_geom", lsCoord, color);
+			if (lineStrip == null)
+				return(false);
 
 			// if this is a contour map put the line strip in a Contour object
 			if (isContour) {
-				HashMap<String, Object> properties = feature.getProperties();
 				Object elevation = properties.get(elevAttrName);
 				if (elevation != null) {
-					spatial = new ContourLine(line, (Double) elevation, lineColorRGBA);
+					parent.attachChild(new ContourLine(lineStrip, (Double) elevation, color));
 				} else {
-					spatial = line;
+					parent.attachChild(lineStrip);
 				}
 			} else {
-				spatial = line;
+				parent.attachChild(lineStrip);
 //				System.err.println("GeojsonLoader.geojsonFeatureToArdor3D "+coordinate.length+" "+minZ+" "+maxZ+" "+line.getModelBound());
 			}
-		}
-		// GeoJSON MultiLineString
-		else if (geometry instanceof MultiLineString) {
-			MultiLineString lineString = (MultiLineString) geometry;
-			double[][][] coordinate = lineString.getCoordinates();
-			if (coordinate == null) {
-				return (null);
+			break;
+			
+		case MultiLineString:
+			MultiLineString multilineString = (MultiLineString) geometry;
+			double[][][] mlsCoord = multilineString.getCoordinates();
+			if (mlsCoord == null) {
+				return (false);
 			}
-			if (coordinate.length == 0) {
-				return (null);
+			if (mlsCoord.length == 0) {
+				return (false);
 			}
-			GroupNode group = new GroupNode("group" + count);
-			for (int i = 0; i < coordinate.length; ++i) {
-				if (coordinate[i].length == 0) {
+			for (int i = 0; i < mlsCoord.length; ++i) {
+				if (mlsCoord[i].length == 0) {
 					continue;
 				}
-				FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(3 * coordinate[i].length);
-				for (int j = 0; j < coordinate[i].length; ++j) {
-					ReadOnlyVector3 coord = toWorld(coordinate[i][j], !isContour);
-					if (coord != null) {
-						vertexBuffer.put((float) coord.getX()).put((float) coord.getY()).put((float) coord.getZ());
-						minZ = Math.min(minZ, coord.getZ());
-						maxZ = Math.max(maxZ, coord.getZ());
-					}
-				}
-				vertexBuffer.flip();
-				if (vertexBuffer.limit() == 0) {
+				lineStrip = createLineStrip("_geom"+i, mlsCoord[i], color);
+				if (lineStrip == null)
 					continue;
-				}
-				LineStrip line = new LineStrip("linestring" + i, vertexBuffer, null, null, null);
-				line.setLineWidth(2);
-				line.setModelBound(new BoundingBox());
-				line.updateModelBound();
-				line.setDefaultColor(lineColorRGBA);
-				line.getSceneHints().setLightCombineMode(LightCombineMode.Off);
 				if (isContour) {
-					HashMap<String, Object> properties = feature.getProperties();
 					Object elevation = properties.get(elevAttrName);
 					if (elevation != null) {
-						group.attachChild(new ContourLine(line, (Double) elevation, lineColorRGBA));
+						parent.attachChild(new ContourLine(lineStrip, (Double) elevation, color));
 					} else {
-						group.attachChild(line);
+						parent.attachChild(lineStrip);
 					}
 				} else {
-					group.attachChild(line);
+					parent.attachChild(lineStrip);
 				}
 			}
-			spatial = group;
+			break;
+			
+		case Polygon:
+			Polygon polygon = (Polygon) geometry;
+			double[][][] plyCoord = polygon.getCoordinates();
+			if (plyCoord == null) {
+				return (false);
+			}
+			if (plyCoord.length == 0) {
+				return (false);
+			}
+			for (int i = 0; i < plyCoord.length; ++i) {
+				if (plyCoord[i].length == 0) {
+					continue;
+				}
+				lineStrip = createLineStrip("_geom"+i, plyCoord[i], color);
+				if (lineStrip != null)
+					parent.attachChild(lineStrip);
+			}
+			break;
+			
+		case MultiPolygon:
+			MultiPolygon multiPolygon = (MultiPolygon) geometry;
+			double[][][][] mplyCoord = multiPolygon.getCoordinates();
+			if (mplyCoord == null) {
+				return (false);
+			}
+			if (mplyCoord.length == 0) {
+				return (false);
+			}
+			for (int i = 0; i < mplyCoord.length; ++i) {
+				if (mplyCoord[i].length == 0) {
+					continue;
+				}
+				for (int j=0; j<mplyCoord[i].length; ++j) {
+					if (mplyCoord[i][j].length == 0)
+						continue;
+					lineStrip = createLineStrip("_geom"+i+"."+j, mplyCoord[i][j], color);
+					if (lineStrip != null)
+						parent.attachChild(lineStrip);
+				}
+			}
+			break;
+			
+		case GeometryCollection:
+			GeometryCollection geometryCollection = (GeometryCollection) geometry;
+			ArrayList<Geometry> geometryList = geometryCollection.getGeometryList();
+			if (geometryList.size() == 0)
+				return(false);
+			GroupNode group = new GroupNode("_geom");
+			for (int i=0; i<geometryList.size(); ++i) {
+				Geometry geom = geometryList.get(i);
+				geojsonGeometryToArdor3D(group, geom, color, elevAttrName, count, properties);
+			}
+			parent.attachChild(group);
+			break;
+			
 		}
-		return (spatial);
+		return(true);
+		
 	}
 
 	private ReadOnlyVector3 toWorld(double[] coordinate, boolean getZ) {
@@ -261,6 +336,29 @@ public class GeojsonLoader {
 		} else {
 			throw new IllegalArgumentException("GeoJSON Position has < 2 elements.");
 		}
+	}
+	
+	private LineStrip createLineStrip(String name, double[][] coord, Color color) {
+		FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(3 * coord.length);
+		for (int i = 0; i < coord.length; ++i) {
+			ReadOnlyVector3 pos = toWorld(coord[i], true);
+			if (pos != null) {
+				vertexBuffer.put(pos.getXf()).put(pos.getYf()).put(pos.getZf());
+				minZ = Math.min(minZ, pos.getZ());
+				maxZ = Math.max(maxZ, pos.getZ());
+			}
+		}
+		vertexBuffer.flip();
+		if (vertexBuffer.limit() > 0) {
+			LineStrip lineStrip = new LineStrip(name, vertexBuffer, null, null, null);
+			lineStrip.setLineWidth(2);
+			lineStrip.setModelBound(new BoundingBox());
+			lineStrip.updateModelBound();
+			lineStrip.setColor(color);
+			lineStrip.getSceneHints().setLightCombineMode(LightCombineMode.Off);
+			return(lineStrip);
+		}
+		return(null);
 	}
 
 }

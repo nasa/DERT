@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.state.GridState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.util.StringUtil;
+import gov.nasa.arc.dert.util.UIUtil;
 
 import java.awt.Color;
 import java.nio.FloatBuffer;
@@ -11,6 +12,7 @@ import java.util.Properties;
 
 import javax.swing.Icon;
 
+import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.MathUtils;
 import com.ardor3d.util.geom.BufferUtils;
 
@@ -146,6 +148,8 @@ public class RadialGrid extends Grid {
 
 	@Override
 	protected void buildText() {
+		ColorRGBA colorRGBA = UIUtil.colorToColorRGBA(color);
+		
 		text.detachAllChildren();
 		if (compassRose) {
 			text.attachChild(createText("_N", "N", 0, radius, colorRGBA));

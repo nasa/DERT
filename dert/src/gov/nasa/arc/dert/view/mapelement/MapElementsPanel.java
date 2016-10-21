@@ -3,10 +3,10 @@ package gov.nasa.arc.dert.view.mapelement;
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.mapelement.NameDialog;
 import gov.nasa.arc.dert.icon.Icons;
-import gov.nasa.arc.dert.scene.LineSet;
-import gov.nasa.arc.dert.scene.LineSets;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.scene.featureset.FeatureSet;
+import gov.nasa.arc.dert.scene.featureset.FeatureSets;
 import gov.nasa.arc.dert.scene.landmark.Landmark;
 import gov.nasa.arc.dert.scene.landmark.Landmarks;
 import gov.nasa.arc.dert.scene.tool.Path;
@@ -65,7 +65,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	// Tree displaying list of map elements
 	private DefaultTreeModel treeModel;
 	private JTree tree;
-	private DefaultMutableTreeNode rootNode, landmarksNode, toolsNode, lineSetsNode;
+	private DefaultMutableTreeNode rootNode, landmarksNode, toolsNode, featureSetsNode;
 
 	// Buttons for actions applying to all map elements
 	private JButton showButton, deleteButton, seekButton, renameButton, findButton;
@@ -74,7 +74,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	private PlacemarkPanel placemarkPanel;
 	private FigurePanel figurePanel;
 	private ImageBoardPanel imageBoardPanel;
-	private LineSetPanel lineSetPanel;
+	private FeatureSetPanel featureSetPanel;
 	private PathPanel pathPanel;
 	private PlanePanel planePanel;
 	private CartesianGridPanel cartesianGridPanel;
@@ -86,7 +86,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	// MapElement category panels
 	private LandmarksPanel landmarksPanel;
 	private ToolsPanel toolsPanel;
-	private LineSetsPanel lineSetsPanel;
+	private FeatureSetsPanel featureSetsPanel;
 
 	// Controls
 	private MapElementBasePanel currentPanel;
@@ -277,7 +277,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		SceneGraphManager.getSceneGraphManager().addDirtyEventListener(this);
 		tree.expandPath(new TreePath(new Object[] { rootNode, landmarksNode }));
 		tree.expandPath(new TreePath(new Object[] { rootNode, toolsNode }));
-		tree.expandPath(new TreePath(new Object[] { rootNode, lineSetsNode }));
+		tree.expandPath(new TreePath(new Object[] { rootNode, featureSetsNode }));
 		selectMapElement(state.getLastMapElement());
 	}
 
@@ -305,12 +305,16 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			treeModel.nodeStructureChanged(toolsNode);
 			tree.setSelectionPath(new TreePath(new Object[] { rootNode, toolsNode, treeNode }));
 		}
-		// Add lineset
-		else if (mapElement instanceof LineSet) {
-			DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(mapElement, false);
-			lineSetsNode.add(treeNode);
-			treeModel.nodeStructureChanged(lineSetsNode);
-			tree.setSelectionPath(new TreePath(new Object[] { rootNode, lineSetsNode, treeNode }));
+		// Add FeatureSet
+		else if (mapElement instanceof FeatureSet) {
+			DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(mapElement, true);
+			FeatureSet fSet = (FeatureSet)mapElement;
+			for (int j = 0; j < fSet.getNumberOfChildren(); ++j) {
+				treeNode.add(new DefaultMutableTreeNode(fSet.getChild(j), false));
+			}
+			featureSetsNode.add(treeNode);
+			treeModel.nodeStructureChanged(featureSetsNode);
+			tree.setSelectionPath(new TreePath(new Object[] { rootNode, featureSetsNode, treeNode }));
 		}
 		// Add waypoint
 		else if (mapElement instanceof Waypoint) {
@@ -353,9 +357,9 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 				}
 			}
 		}
-		n = lineSetsNode.getChildCount();
+		n = featureSetsNode.getChildCount();
 		for (int i = 0; i < n; ++i) {
-			DefaultMutableTreeNode child = (DefaultMutableTreeNode) lineSetsNode.getChildAt(i);
+			DefaultMutableTreeNode child = (DefaultMutableTreeNode) featureSetsNode.getChildAt(i);
 			if (child.toString().contains(searchStr)) {
 				list.add(new TreePath(child.getPath()));
 			}
@@ -403,17 +407,17 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			if (treeNode != null) {
 				tree.setSelectionPath(new TreePath(new Object[] { rootNode, toolsNode, treeNode }));
 			}
-		} else if (mapElement instanceof LineSet) {
-			int n = lineSetsNode.getChildCount();
+		} else if (mapElement instanceof FeatureSet) {
+			int n = featureSetsNode.getChildCount();
 			for (int i = 0; i < n; ++i) {
-				DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) lineSetsNode.getChildAt(i);
+				DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) featureSetsNode.getChildAt(i);
 				if ((MapElement) dmtn.getUserObject() == mapElement) {
 					treeNode = dmtn;
 					break;
 				}
 			}
 			if (treeNode != null) {
-				tree.setSelectionPath(new TreePath(new Object[] { rootNode, lineSetsNode, treeNode }));
+				tree.setSelectionPath(new TreePath(new Object[] { rootNode, featureSetsNode, treeNode }));
 			}
 		}
 	}
@@ -439,10 +443,10 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 					break;
 				}
 			}
-		} else if (mapElement instanceof LineSet) {
-			int n = lineSetsNode.getChildCount();
+		} else if (mapElement instanceof FeatureSet) {
+			int n = featureSetsNode.getChildCount();
 			for (int i = 0; i < n; ++i) {
-				DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) lineSetsNode.getChildAt(i);
+				DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) featureSetsNode.getChildAt(i);
 				if ((MapElement) dmtn.getUserObject() == mapElement) {
 					treeNode = dmtn;
 					break;
@@ -519,20 +523,20 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 				tree.setSelectionPath(new TreePath(new Object[] { rootNode, toolsNode }));
 				doSelection(toolsNode);
 			}
-		} else if (mapElement instanceof LineSet) {
-			for (int i = 0; i < lineSetsNode.getChildCount(); ++i) {
-				DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) lineSetsNode.getChildAt(i);
+		} else if (mapElement instanceof FeatureSet) {
+			for (int i = 0; i < featureSetsNode.getChildCount(); ++i) {
+				DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) featureSetsNode.getChildAt(i);
 				MapElement me = (MapElement) treeNode.getUserObject();
 				if (me.getName().equals(mapElement.getName())) {
 					selected = (treeNode == selectedNode);
-					lineSetsNode.remove(treeNode);
+					featureSetsNode.remove(treeNode);
 					break;
 				}
 			}
-			treeModel.nodeStructureChanged(lineSetsNode);
+			treeModel.nodeStructureChanged(featureSetsNode);
 			if (selected) {
-				tree.setSelectionPath(new TreePath(new Object[] { rootNode, lineSetsNode }));
-				doSelection(lineSetsNode);
+				tree.setSelectionPath(new TreePath(new Object[] { rootNode, featureSetsNode }));
+				doSelection(featureSetsNode);
 			}
 		} else if (mapElement instanceof Waypoint) {
 			Waypoint waypoint = (Waypoint) mapElement;
@@ -590,12 +594,15 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			}
 		}
 
-		LineSets lineSets = World.getInstance().getLineSets();
-		lineSetsNode = new DefaultMutableTreeNode("LineSets", true);
-		rootNode.add(lineSetsNode);
-		for (int i = 0; i < lineSets.getNumberOfChildren(); ++i) {
-			LineSet vg = (LineSet) lineSets.getChild(i);
-			lineSetsNode.add(new DefaultMutableTreeNode(vg, false));
+		FeatureSets featureSets = World.getInstance().getFeatureSets();
+		featureSetsNode = new DefaultMutableTreeNode("FeatureSets", true);
+		rootNode.add(featureSetsNode);
+		for (int i = 0; i < featureSets.getNumberOfChildren(); ++i) {
+			FeatureSet vg = (FeatureSet) featureSets.getChild(i);
+			DefaultMutableTreeNode featureSetNode = new DefaultMutableTreeNode(vg, true);
+			featureSetsNode.add(featureSetNode);
+			for (int j = 0; j < vg.getNumberOfChildren(); ++j)
+				featureSetNode.add(new DefaultMutableTreeNode(vg.getChild(j), false));
 		}
 
 		treeModel = new DefaultTreeModel(rootNode);
@@ -648,28 +655,28 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 				};
 			}
 			splitPane.setRightComponent(toolsPanel);
-		} else if (treeNode == lineSetsNode) {
+		} else if (treeNode == featureSetsNode) {
 			showButton.setEnabled(false);
 			deleteButton.setEnabled(false);
 			seekButton.setEnabled(false);
 			renameButton.setEnabled(false);
 			tree.clearSelection();
-			if (lineSetsPanel == null) {
-				lineSetsPanel = new LineSetsPanel() {
+			if (featureSetsPanel == null) {
+				featureSetsPanel = new FeatureSetsPanel() {
 					@Override
-					public void addLineSet(MapElementState.Type type) {
+					public void addFeatureSet(MapElementState.Type type) {
 						setPanel(type, null);
 					}
 
 					@Override
 					public void setAllVisible(boolean visible) {
-						LineSets groups = World.getInstance().getLineSets();
+						FeatureSets groups = World.getInstance().getFeatureSets();
 						groups.setAllVisible(visible);
 						treeModel.nodeChanged(rootNode);
 					}
 				};
 			}
-			splitPane.setRightComponent(lineSetsPanel);
+			splitPane.setRightComponent(featureSetsPanel);
 		} else {
 			currentMapElement = (MapElement) treeNode.getUserObject();
 			showButton.setEnabled(true);
@@ -680,7 +687,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			}
 			deleteButton.setEnabled(true);
 			seekButton.setEnabled(true);
-			if ((currentMapElement instanceof LineSet) || (currentMapElement instanceof Waypoint)) {
+			if ((currentMapElement instanceof FeatureSet) || (currentMapElement instanceof Waypoint)) {
 				renameButton.setEnabled(false);
 			} else {
 				renameButton.setEnabled(true);
@@ -696,7 +703,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		splitPane.setRightComponent(emptyPanel);
 		currentPanel = null;
 		for (int i = 0; i < treeNode.length; ++i) {
-			if ((treeNode[i] == landmarksNode) || (treeNode[i] == toolsNode) || (treeNode[i] == lineSetsNode)) {
+			if ((treeNode[i] == landmarksNode) || (treeNode[i] == toolsNode) || (treeNode[i] == featureSetsNode)) {
 				showButton.setEnabled(false);
 				deleteButton.setEnabled(false);
 				seekButton.setEnabled(false);
@@ -750,11 +757,11 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			}
 			currentPanel = imageBoardPanel;
 			break;
-		case LineSet:
-			if (lineSetPanel == null) {
-				lineSetPanel = new LineSetPanel(this);
+		case FeatureSet:
+			if (featureSetPanel == null) {
+				featureSetPanel = new FeatureSetPanel(this);
 			}
-			currentPanel = lineSetPanel;
+			currentPanel = featureSetPanel;
 			break;
 		case Path:
 			if (pathPanel == null) {
@@ -868,8 +875,8 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		if (imageBoardPanel != null) {
 			imageBoardPanel.dispose();
 		}
-		if (lineSetPanel != null) {
-			lineSetPanel.dispose();
+		if (featureSetPanel != null) {
+			featureSetPanel.dispose();
 		}
 		if (pathPanel != null) {
 			pathPanel.dispose();

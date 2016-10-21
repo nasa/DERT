@@ -5,6 +5,7 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.lighting.Lighting;
 import gov.nasa.arc.dert.render.DirtyEventHandler;
 import gov.nasa.arc.dert.render.SelectionHandler;
+import gov.nasa.arc.dert.scene.featureset.FeatureSets;
 import gov.nasa.arc.dert.scene.landmark.Landmarks;
 import gov.nasa.arc.dert.scene.tapemeasure.TapeMeasure;
 import gov.nasa.arc.dert.scene.tool.Tools;
@@ -50,8 +51,8 @@ public class World extends GroupNode {
 	// Tool map elements group
 	private Tools tools;
 
-	// LineSet map elements group
-	private LineSets lineSets;
+	// FeatureSet map elements group
+	private FeatureSets featureSets;
 
 	// Special figure
 	private Marble marble;
@@ -97,15 +98,15 @@ public class World extends GroupNode {
 	 * @param landscape
 	 * @param landmarks
 	 * @param tools
-	 * @param lineSets
+	 * @param featureSets
 	 * @param lighting
 	 * @param background
 	 * @param timeUTC
 	 * @return
 	 */
 	public static World createInstance(String name, Landmarks landmarks, Tools tools,
-		LineSets lineSets, Lighting lighting, long timeUTC) {
-		INSTANCE = new World(name, landmarks, tools, lineSets, lighting, timeUTC);
+		FeatureSets featureSets, Lighting lighting, long timeUTC) {
+		INSTANCE = new World(name, landmarks, tools, featureSets, lighting, timeUTC);
 		return (INSTANCE);
 	}
 
@@ -125,16 +126,16 @@ public class World extends GroupNode {
 	 * @param landscape
 	 * @param landmarks
 	 * @param tools
-	 * @param lineSets
+	 * @param featureSets
 	 * @param lighting
 	 * @param background
 	 * @param timeUTC
 	 */
-	protected World(String name, Landmarks landmarks, Tools tools, LineSets lineSets, Lighting lighting, long timeUTC) {
+	protected World(String name, Landmarks landmarks, Tools tools, FeatureSets featureSets, Lighting lighting, long timeUTC) {
 		super(name);
 		this.landmarks = landmarks;
 		this.tools = tools;
-		this.lineSets = lineSets;
+		this.featureSets = featureSets;
 		this.lighting = lighting;
 		this.timeUTC = timeUTC;
 
@@ -176,10 +177,10 @@ public class World extends GroupNode {
 		// initialize the map elements
 		landmarks.initialize();
 		tools.initialize();
-		lineSets.initialize();
+		featureSets.initialize();
 		contents.attachChild(landmarks);
 		contents.attachChild(tools);
-		contents.attachChild(lineSets);
+		contents.attachChild(featureSets);
 
 		// initialize lighting
 		root.setRenderState(lighting.getGlobalLightState());
@@ -301,8 +302,8 @@ public class World extends GroupNode {
 	 * 
 	 * @return
 	 */
-	public LineSets getLineSets() {
-		return (lineSets);
+	public FeatureSets getFeatureSets() {
+		return (featureSets);
 	}
 
 	/**
@@ -421,7 +422,7 @@ public class World extends GroupNode {
 	public void setMapElementsOnTop(boolean onTop) {
 		landmarks.setOnTop(onTop);
 		tools.setOnTop(onTop);
-		lineSets.setOnTop(onTop);
+		featureSets.setOnTop(onTop);
 		root.markDirty(DirtyType.RenderState);
 	}
 	

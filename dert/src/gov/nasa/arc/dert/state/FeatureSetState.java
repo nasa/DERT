@@ -1,18 +1,18 @@
 package gov.nasa.arc.dert.state;
 
-import gov.nasa.arc.dert.scene.LineSet;
+import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.util.StateUtil;
 
 import java.awt.Color;
 import java.util.HashMap;
 
 /**
- * Provides a state object for a LineSet.
+ * Provides a state object for a FeatureSet.
  *
  */
-public class LineSetState extends MapElementState {
+public class FeatureSetState extends MapElementState {
 
-	// Path to the LineSet file
+	// Path to the FeatureSet file
 	public String filePath;
 
 	/**
@@ -22,8 +22,8 @@ public class LineSetState extends MapElementState {
 	 * @param filePath
 	 * @param color
 	 */
-	public LineSetState(String name, String filePath, Color color) {
-		super(0, MapElementState.Type.LineSet, "", 1.0, color, false);
+	public FeatureSetState(String name, String filePath, Color color) {
+		super(0, MapElementState.Type.FeatureSet, "", 1.0, color, false);
 		this.name = name;
 		this.filePath = filePath;
 		pinned = true;
@@ -37,9 +37,9 @@ public class LineSetState extends MapElementState {
 	 * @param color
 	 * @param notes
 	 */
-	public LineSetState(String name, String filePath, Color color, String notes) {
+	public FeatureSetState(String name, String filePath, Color color, String notes) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
-			.incrementMapElementCount(MapElementState.Type.LineSet), MapElementState.Type.LineSet, "", 1.0, color,
+			.incrementMapElementCount(MapElementState.Type.FeatureSet), MapElementState.Type.FeatureSet, "", 1.0, color,
 			false);
 		this.name = name;
 		this.filePath = filePath;
@@ -50,16 +50,16 @@ public class LineSetState extends MapElementState {
 	/**
 	 * Constructor for hash map
 	 */
-	public LineSetState(HashMap<String,Object> map) {
+	public FeatureSetState(HashMap<String,Object> map) {
 		super(map);
 		filePath = StateUtil.getString(map, "FilePath", null);
 	}
 	
 	@Override
 	public boolean isEqualTo(State state) {
-		if ((state == null) || !(state instanceof LineSetState)) 
+		if ((state == null) || !(state instanceof FeatureSetState)) 
 			return(false);
-		LineSetState that = (LineSetState)state;
+		FeatureSetState that = (FeatureSetState)state;
 		if (!super.isEqualTo(that)) 
 			return(false);
 		if (!this.filePath.equals(that.filePath)) 
@@ -71,8 +71,8 @@ public class LineSetState extends MapElementState {
 	public HashMap<String,Object> save() {
 		HashMap<String,Object> map = super.save();
 		if (mapElement != null) {
-			LineSet lineSet = (LineSet) mapElement;
-			filePath = lineSet.getFilePath();
+			FeatureSet featureSet = (FeatureSet) mapElement;
+			filePath = featureSet.getFilePath();
 		}
 		map.put("FilePath", filePath);
 		return(map);

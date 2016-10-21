@@ -128,7 +128,8 @@ public class Tools extends GroupNode {
 			break;
 		case Waypoint:
 		case Marble:
-		case LineSet:
+		case FeatureSet:
+		case Feature:
 			break;
 		}
 

@@ -11,14 +11,17 @@ public abstract class Geometry extends GeoJsonObject {
 	public static enum GeojsonType {
 		Point, MultiPoint, LineString, MultiLineString, Polygon, MultiPolygon, GeometryCollection
 	}
+	
+	public GeojsonType type;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param jsonObject
 	 */
-	public Geometry(JsonObject jsonObject) {
+	public Geometry(JsonObject jsonObject, GeojsonType type) {
 		super(jsonObject);
+		this.type = type;
 	}
 
 	/**

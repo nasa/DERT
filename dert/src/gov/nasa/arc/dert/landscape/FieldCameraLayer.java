@@ -207,7 +207,7 @@ public class FieldCameraLayer extends Layer {
 	 * @param instColor
 	 */
 	public void setColor(Color instColor) {
-		color = new Color(instColor.getRed(), instColor.getGreen(), instColor.getBlue(), instColor.getAlpha());
+		color = instColor;
 		if (fColor == null) {
 			fColor = new float[4];
 		}

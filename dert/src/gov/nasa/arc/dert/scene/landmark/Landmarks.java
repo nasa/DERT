@@ -105,7 +105,8 @@ public class Landmarks extends GroupNode {
 		case Plane:
 		case Profile:
 		case FieldCamera:
-		case LineSet:
+		case FeatureSet:
+		case Feature:
 		case CartesianGrid:
 		case RadialGrid:
 		case Waypoint:

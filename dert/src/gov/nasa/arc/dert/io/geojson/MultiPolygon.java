@@ -16,7 +16,7 @@ public class MultiPolygon extends Geometry {
 	 * @param jsonObject
 	 */
 	public MultiPolygon(JsonObject jsonObject, CoordinateReferenceSystem crs) {
-		super(jsonObject);
+		super(jsonObject, GeojsonType.MultiPolygon);
 		Object[] arrayN = jsonObject.getArray("coordinates");
 		int n = arrayN.length;
 		Object[] arrayM = (Object[])arrayN[0];

@@ -62,5 +62,13 @@ public class GeoJsonFeature extends GeoJsonObject {
 	public Geometry getGeometry() {
 		return (geometry);
 	}
-
+	
+	/**
+	 * Get the Feature id
+	 * 
+	 * @return id
+	 */
+	public String getId() {
+		return(id);
+	}
 }

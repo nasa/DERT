@@ -16,7 +16,7 @@ public class LineString extends Geometry {
 	 * @param jsonObject
 	 */
 	public LineString(JsonObject jsonObject, CoordinateReferenceSystem crs) {
-		super(jsonObject);
+		super(jsonObject, GeojsonType.LineString);
 		Object[] arrayN = jsonObject.getArray("coordinates");
 		int n = arrayN.length;
 		if (n < 2) {

@@ -2,15 +2,19 @@ package gov.nasa.arc.dert.scenegraph;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
+import gov.nasa.arc.dert.util.UIUtil;
 
+import java.awt.Color;
 import java.nio.FloatBuffer;
 
 import com.ardor3d.bounding.BoundingBox;
+import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.IndexMode;
 import com.ardor3d.scenegraph.FloatBufferData;
 import com.ardor3d.scenegraph.Line;
+import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.TextureCombineMode;
 
 /**
@@ -83,6 +87,17 @@ public class LineStrip extends Line {
 			return (true);
 		}
 		return (false);
+	}
+	
+	@Override
+	public String toString() {
+		return(getName());
+	}
+	
+	public void setColor(Color color) {
+		ColorRGBA colorRGBA = UIUtil.colorToColorRGBA(color);
+		setDefaultColor(colorRGBA);
+		markDirty(DirtyType.RenderState);
 	}
 
 }

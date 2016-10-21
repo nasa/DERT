@@ -95,6 +95,7 @@ public class SceneCanvasPanel extends Panel implements Updater {
 	 */
 	public void initialize() {
 		canvas.init();
+		setComponentZOrder(canvas, 0);
 		if (!initialized) {
 			SceneFramework.getInstance().getFrameHandler().addCanvas(canvas);
 			SceneFramework.getInstance().getFrameHandler().addUpdater(SceneCanvasPanel.this);

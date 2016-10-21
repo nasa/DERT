@@ -13,6 +13,7 @@ import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.state.ProfileState;
 import gov.nasa.arc.dert.util.ImageUtil;
 import gov.nasa.arc.dert.util.StringUtil;
+import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
@@ -443,17 +444,13 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * @param color
 	 */
 	public void setColor(Color color) {
-		if (this.color.equals(color)) {
-			return;
-		}
 		this.color = color;
 		endpointA.setColor(color);
 		endpointB.setColor(color);
-		colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
-			color.getAlpha() / 255f);
+		colorRGBA = UIUtil.colorToColorRGBA(color);
 		MaterialState ms = (MaterialState) line.getLocalRenderState(RenderState.StateType.Material);
-		ms.setDiffuse(new ColorRGBA(0, 0, 0, 1));
-		ms.setAmbient(new ColorRGBA(0, 0, 0, 1));
+		ms.setDiffuse(ColorRGBA.BLACK);
+		ms.setAmbient(ColorRGBA.BLACK);
 		ms.setEmissive(MaterialState.MaterialFace.FrontAndBack, colorRGBA);
 		state.setColor(color);
 		line.markDirty(DirtyType.RenderState);

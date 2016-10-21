@@ -19,6 +19,7 @@ import gov.nasa.arc.dert.util.ImageUtil;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
+import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
@@ -648,8 +649,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 */
 	public void setColor(Color newColor) {
 		color = newColor;
-		colorRGBA = new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
-			color.getAlpha() / 255f);
+		colorRGBA = UIUtil.colorToColorRGBA(color);
 		if (materialState == null) {
 			// add a material state
 			materialState = new MaterialState();

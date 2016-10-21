@@ -16,9 +16,7 @@ import gov.nasa.arc.dert.viewpoint.ViewDependent;
 import java.awt.Color;
 
 import com.ardor3d.bounding.BoundingBox;
-import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
-import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.state.MaterialState;
 import com.ardor3d.renderer.state.MaterialState.MaterialFace;
@@ -60,7 +58,7 @@ public class TapeMeasure extends Node implements ViewDependent, CoordListener {
 	protected float pointSize = 0.4f;
 
 	// Default line segment color
-	protected ReadOnlyColorRGBA lineColor = ColorRGBA.RED;
+	protected Color lineColor = Color.red;
 
 	// Measurement information dialog
 	private TextDialog textDialog;

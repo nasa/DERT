@@ -102,8 +102,8 @@ public class Configuration {
 						case Billboard:
 							mapElementStateList.add(new ImageBoardState(meMap));
 							break;
-						case LineSet:
-							mapElementStateList.add(new LineSetState(meMap));
+						case FeatureSet:
+							mapElementStateList.add(new FeatureSetState(meMap));
 							break;
 						case Path:
 							mapElementStateList.add(new PathState(meMap));
@@ -131,6 +131,8 @@ public class Configuration {
 							break;
 						case Scale:
 							mapElementStateList.add(new ScaleBarState(meMap));
+							break;
+						case Feature:
 							break;
 						}
 				}
@@ -282,8 +284,8 @@ public class Configuration {
 				mapElement = World.getInstance().getLandmarks().addLandmark((LandmarkState) state, true);
 			} else if (state instanceof ToolState) {
 				mapElement = World.getInstance().getTools().addTool((ToolState) state, true);
-			} else if (state instanceof LineSetState) {
-				mapElement = World.getInstance().getLineSets().addLineSet((LineSetState) state, true);
+			} else if (state instanceof FeatureSetState) {
+				mapElement = World.getInstance().getFeatureSets().addFeatureSet((FeatureSetState) state, true);
 			}
 		}
 		World world = World.getInstance();
@@ -400,16 +402,16 @@ public class Configuration {
 	}
 
 	/**
-	 * Get all the LineSet states
+	 * Get all the FeatureSet states
 	 * 
 	 * @return
 	 */
-	public ArrayList<LineSetState> getLineSetStates() {
-		ArrayList<LineSetState> states = new ArrayList<LineSetState>();
+	public ArrayList<FeatureSetState> getFeatureSetStates() {
+		ArrayList<FeatureSetState> states = new ArrayList<FeatureSetState>();
 		for (int i = 0; i < mapElementStateList.size(); ++i) {
 			State state = mapElementStateList.get(i);
-			if (state instanceof LineSetState) {
-				states.add((LineSetState) state);
+			if (state instanceof FeatureSetState) {
+				states.add((FeatureSetState) state);
 			}
 		}
 		return (states);

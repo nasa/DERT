@@ -1,6 +1,6 @@
 package gov.nasa.arc.dert.view.mapelement;
 
-import gov.nasa.arc.dert.scene.LineSet;
+import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.scene.landmark.Landmark;
 import gov.nasa.arc.dert.scene.tool.Tool;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
@@ -73,9 +73,9 @@ public class MapElementTreeCellRenderer extends DefaultTreeCellRenderer {
 			}
 			setIcon(null);
 			setText(waypoint.getName());
-		} else if (value instanceof LineSet) {
-			LineSet vectorGroup = (LineSet) value;
-			setIcon(null);
+		} else if (value instanceof FeatureSet) {
+			FeatureSet vectorGroup = (FeatureSet) value;
+			setIcon(vectorGroup.getIcon());
 			setText(vectorGroup.getName());
 		}
 		return (this);

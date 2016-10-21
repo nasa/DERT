@@ -1,25 +1,20 @@
-package gov.nasa.arc.dert.scene;
+package gov.nasa.arc.dert.scene.featureset;
 
 import gov.nasa.arc.dert.icon.Icons;
-import gov.nasa.arc.dert.io.geojson.GeoJsonObject;
-import gov.nasa.arc.dert.io.geojson.GeojsonLoader;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
-import gov.nasa.arc.dert.raster.SpatialReferenceSystem;
-import gov.nasa.arc.dert.scenegraph.GroupNode;
+import gov.nasa.arc.dert.scene.MapElement;
+import gov.nasa.arc.dert.scenegraph.FigureMarker;
 import gov.nasa.arc.dert.scenegraph.LineStrip;
-import gov.nasa.arc.dert.state.LineSetState;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
-import gov.nasa.arc.dert.util.StringUtil;
 
 import java.awt.Color;
-import java.util.Properties;
+import java.util.HashMap;
 
 import javax.swing.Icon;
 
 import com.ardor3d.bounding.BoundingVolume;
-import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Node;
@@ -27,59 +22,32 @@ import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.CullHint;
 
-/**
- * Provides a MapElement that consists of a set of lines. Input is from a
- * GeoJSON file
- *
- */
-public class LineSet extends GroupNode implements MapElement {
+public class Feature
+	extends Node
+	implements MapElement {
 
 	public static final Icon icon = Icons.getImageIcon("lineset.png");
-	public static Color defaultColor = Color.white;
 
 	// Line color
 	private Color color;
 
-	// Path to GeoJSON file
-	private String filePath;
-
-	// The map element state object
-	private LineSetState state;
-
 	// The location of the origin
 	private Vector3 location;
+	
+	// Feature properties
+	private HashMap<String,Object> properties;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param state
-	 */
-	public LineSet(LineSetState state) {
-		this(state, null, Landscape.getInstance().getSpatialReferenceSystem());
-	}
-
-	/**
-	 * Constructor for contours
-	 * 
-	 * @param state
 	 * @param elevAttrName
 	 */
-	public LineSet(LineSetState state, String elevAttrName, SpatialReferenceSystem srs) {
-		super(state.name);
+	public Feature(String name, Color color, HashMap<String,Object> properties) {
+		super(name);
 		location = new Vector3();
-		this.filePath = state.filePath;
-		color = state.color;
-		setVisible(state.visible);
-		this.state = state;
-		state.setMapElement(this);
-		// Load the vector file into an Ardor3D object.
-		GeojsonLoader jsonLoader = new GeojsonLoader(srs);
-		GeoJsonObject gjRoot = jsonLoader.load(filePath);
-		jsonLoader.geoJsonToArdor3D(gjRoot, this, Color.white, state.color, elevAttrName);
-		if (getNumberOfChildren() == 0) {
-			throw new IllegalStateException("No vectors found.");
-		}
-		
+		this.properties = properties;
+		this.color = color;
 	}
 
 	/**
@@ -87,7 +55,7 @@ public class LineSet extends GroupNode implements MapElement {
 	 */
 	@Override
 	public MapElementState getState() {
-		return (state);
+		return (null);
 	}
 
 	/**
@@ -112,7 +80,7 @@ public class LineSet extends GroupNode implements MapElement {
 	}
 
 	/**
-	 * Pin this Lineset (does nothing)
+	 * Pin this Feature (does nothing)
 	 */
 	@Override
 	public void setPinned(boolean pinned) {
@@ -142,31 +110,23 @@ public class LineSet extends GroupNode implements MapElement {
 	 */
 	public void setColor(Color color) {
 		this.color = color;
-		ColorRGBA colorRGBA = new ColorRGBA(color.getRed() / 255.0f, color.getGreen() / 255.0f,
-			color.getBlue() / 255.0f, color.getAlpha() / 255.0f);
-		setColor(this, colorRGBA);
-		markDirty(DirtyType.RenderState);
+		setColor(this);
 	}
 
-	private void setColor(Node node, ColorRGBA colorRGBA) {
+	private void setColor(Node node) {
 		int n = node.getNumberOfChildren();
 		for (int i = 0; i < n; ++i) {
 			Spatial child = node.getChild(i);
 			if (child instanceof LineStrip) {
-				((LineStrip) child).setDefaultColor(colorRGBA);
-			} else if (child instanceof GroupNode) {
-				setColor((GroupNode) child, colorRGBA);
+				((LineStrip) child).setColor(color);
+			}
+			else if (child instanceof FigureMarker) {
+				((FigureMarker) child).setColor(color);
+			}
+			else if (child instanceof Node) {
+				setColor((Node) child);
 			}
 		}
-	}
-
-	/**
-	 * Get the GeoJSON file path
-	 * 
-	 * @return
-	 */
-	public String getFilePath() {
-		return (filePath);
 	}
 
 	/**
@@ -207,7 +167,7 @@ public class LineSet extends GroupNode implements MapElement {
 	 */
 //	@Override
 	public Type getType() {
-		return (Type.LineSet);
+		return (Type.Feature);
 	}
 
 	/**
@@ -250,7 +210,7 @@ public class LineSet extends GroupNode implements MapElement {
 	 * @return
 	 */
 	public Icon getIcon() {
-		return (icon);
+		return (null);
 	}
 
 	/**
@@ -273,23 +233,13 @@ public class LineSet extends GroupNode implements MapElement {
 	public double getZOffset() {
 		return(0);
 	}
-
-	/**
-	 * Set the defaults
-	 * 
-	 * @param properties
-	 */
-	public static void setDefaultsFromProperties(Properties properties) {
-		defaultColor = StringUtil.getColorValue(properties, "MapElement.LineSet.defaultColor", defaultColor, false);
+	
+	public HashMap<String,Object> getProperties() {
+		return(properties);
 	}
-
-	/**
-	 * Save the defaults
-	 * 
-	 * @param properties
-	 */
-	public static void saveDefaultsToProperties(Properties properties) {
-		properties.setProperty("MapElement.LineSet.defaultColor", StringUtil.colorToString(defaultColor));
+	
+	public String toString() {
+		return(getName());
 	}
 
 }

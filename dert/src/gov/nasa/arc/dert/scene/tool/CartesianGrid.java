@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.state.GridState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.util.StringUtil;
+import gov.nasa.arc.dert.util.UIUtil;
 
 import java.awt.Color;
 import java.nio.FloatBuffer;
@@ -11,6 +12,7 @@ import java.util.Properties;
 
 import javax.swing.Icon;
 
+import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.util.geom.BufferUtils;
 
 /**
@@ -145,6 +147,7 @@ public class CartesianGrid extends Grid {
 	protected void buildText() {
 		text.detachAllChildren();
 		int k = 0;
+		ColorRGBA colorRGBA = UIUtil.colorToColorRGBA(color);
 
 		// add Y axis line
 		text.attachChild(createColumnText("_cb0", 0, 0, min[1], colorRGBA));

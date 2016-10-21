@@ -1,13 +1,14 @@
 package gov.nasa.arc.dert.scenegraph;
 
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.util.UIUtil;
 
+import java.awt.Color;
 import java.nio.FloatBuffer;
 
 import com.ardor3d.bounding.BoundingBox;
 import com.ardor3d.bounding.BoundingVolume;
 import com.ardor3d.math.ColorRGBA;
-import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.IndexMode;
 import com.ardor3d.renderer.state.MaterialState;
@@ -142,7 +143,8 @@ public class HiddenLine
 	 * 
 	 * @param color
 	 */
-	public void setColor(ReadOnlyColorRGBA colorRGBA) {
+	public void setColor(Color color) {
+		ColorRGBA colorRGBA = UIUtil.colorToColorRGBA(color);
 
 		MaterialState lineMS = new MaterialState();
 		lineMS.setDiffuse(ColorRGBA.BLACK);
@@ -152,7 +154,9 @@ public class HiddenLine
 		dashedLine.setRenderState(lineMS);
 	}
 
-	public void highlight(boolean enable, ColorRGBA colorRGBA) {
+	public void highlight(boolean enable, Color color) {
+		ColorRGBA colorRGBA = UIUtil.colorToColorRGBA(color);
+		
 		MaterialState materialState = (MaterialState) line.getLocalRenderState(RenderState.StateType.Material);
 		if (enable) {
 			materialState.setAmbient(MaterialFace.FrontAndBack, colorRGBA);

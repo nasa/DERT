@@ -4,10 +4,8 @@ import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scenegraph.BillboardMarker;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
-import gov.nasa.arc.dert.scenegraph.RasterText;
 import gov.nasa.arc.dert.scenegraph.Shape;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
-import gov.nasa.arc.dert.scenegraph.Text.AlignType;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.state.WaypointState;
@@ -165,17 +163,17 @@ public class Waypoint extends BillboardMarker implements MapElement {
 		}
 	}
 
-	@Override
-	protected void createLabel(boolean labelVisible) {
-		if (useSphere)
-			super.createLabel(labelVisible);
-		else {
-			label = new RasterText("_label", labelStr, AlignType.Center, true);
-			label.setScaleFactor((float) (0.75 * size));
-			label.setColor(labelColorRGBA);
-			label.setTranslation(0, 1.5, 0);
-			label.setVisible(labelVisible);
-		}
-	}
+//	@Override
+//	protected void createLabel(boolean labelVisible) {
+//		if (useSphere)
+//			super.createLabel(labelVisible);
+//		else {
+//			label = new RasterText("_label", labelStr, AlignType.Center, true);
+//			label.setScaleFactor((float) (0.75 * size));
+//			label.setColor(labelColorRGBA);
+//			label.setTranslation(0, 1.5, 0);
+//			label.setVisible(labelVisible);
+//		}
+//	}
 
 }

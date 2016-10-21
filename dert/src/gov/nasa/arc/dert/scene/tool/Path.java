@@ -14,6 +14,7 @@ import gov.nasa.arc.dert.state.PathState;
 import gov.nasa.arc.dert.state.WaypointState;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.StringUtil;
+import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
@@ -376,9 +377,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		}
 
 		// set the color of the body
-		float[] col = color.getRGBComponents(null);
-		colorRGBA = new ColorRGBA(col[0], col[1], col[2], col[3]);
-		line.setColor(colorRGBA);
+		line.setColor(color);
 //
 //		MaterialState lineMS = new MaterialState();
 //		lineMS.setDiffuse(new ColorRGBA(0, 0, 0, 1));
@@ -392,6 +391,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 ////		lineMS.setEmissive(MaterialState.MaterialFace.FrontAndBack, dashColor);
 //		dashedLine.setRenderState(lineMS);
 
+		colorRGBA = UIUtil.colorToColorRGBA(color);
 		MaterialState polyMS = new MaterialState();
 		ColorRGBA polyColor = new ColorRGBA(colorRGBA);
 		polyColor.setAlpha(0.5f);
