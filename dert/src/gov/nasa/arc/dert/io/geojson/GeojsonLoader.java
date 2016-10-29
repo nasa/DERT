@@ -41,6 +41,8 @@ public class GeojsonLoader {
 	private CoordinateReferenceSystem crs;
 	private SpatialReferenceSystem srs;
 	private double landscapeMinZ;
+	
+//	private Texture texture;
 
 	/**
 	 * Constructor
@@ -60,6 +62,8 @@ public class GeojsonLoader {
 	 * @return a GeoJSON object
 	 */
 	public GeoJsonObject load(String filePath, String labelProp) {
+//		texture = ImageUtil.createTexture(ImageBoard.defaultImagePath, true);
+//		texture.setApply(ApplyMode.Modulate);
 		this.filePath = filePath;
 		this.labelProp = labelProp;
 		File file = null;
@@ -134,6 +138,7 @@ public class GeojsonLoader {
 				}
 			}
 		}
+		root.setLabelVisible(true);
 		Console console = Console.getInstance();
 		if (console != null)
 			console.println("Found " + count + " features for GeoJSON file " + filePath + ".");
@@ -177,8 +182,11 @@ public class GeojsonLoader {
 				return (false);
 			pos = toWorld(pCoord, false);
 			if (pos != null) {
-				FigureMarker fm = new FigureMarker("_geom", pos, 0.5, 0, color, false, true, true);
-				fm.setShape(ShapeType.sphere);
+				FigureMarker fm = new FigureMarker(parent.getName(), pos, 1, 0, color, false, true, true);
+				fm.setShape(ShapeType.crystal);
+				fm.setAutoShowLabel(true);
+//				BillboardMarker fm = new BillboardMarker("_geom", pos, 0.5, 0, color, false, true);
+//				fm.setTexture(texture, texture);
 				parent.attachChild(fm);
 				minZ = pos.getZ();
 				maxZ = pos.getZ();
@@ -200,7 +208,7 @@ public class GeojsonLoader {
 				}
 				pos = toWorld(mpCoord[i], false);
 				if (coord != null) {
-					FigureMarker fm = new FigureMarker("_geom"+i, pos, 0.5, 0, color, false, true, true);
+					FigureMarker fm = new FigureMarker(parent.getName()+i, pos, 0.5, 0, color, false, true, true);
 					fm.setShape(ShapeType.sphere);
 					parent.attachChild(fm);
 					minZ = Math.min(minZ, pos.getZ());

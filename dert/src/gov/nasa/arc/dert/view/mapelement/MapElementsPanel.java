@@ -5,6 +5,7 @@ import gov.nasa.arc.dert.action.mapelement.NameDialog;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.scene.featureset.Feature;
 import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.scene.featureset.FeatureSets;
 import gov.nasa.arc.dert.scene.landmark.Landmark;
@@ -425,6 +426,32 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			if (treeNode != null) {
 				tree.setSelectionPath(new TreePath(new Object[] { rootNode, featureSetsNode, treeNode }));
 			}
+		} else if (mapElement instanceof Feature) {
+			FeatureSet fs = (FeatureSet)((Feature)mapElement).getParent();
+			int n = featureSetsNode.getChildCount();
+			DefaultMutableTreeNode fstnode = null;
+			for (int i = 0; i < n; ++i) {
+				DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) featureSetsNode.getChildAt(i);
+				if ((MapElement) dmtn.getUserObject() == fs) {
+					fstnode = dmtn;
+					break;
+				}
+			}
+			if (fstnode != null) {
+				n = fstnode.getChildCount();
+				for (int i=0; i<n; ++i) {
+					DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) fstnode.getChildAt(i);
+					if ((MapElement) dmtn.getUserObject() == mapElement) {
+						treeNode = dmtn;
+						break;
+					}
+				}
+				if (treeNode != null) {
+					TreePath treePath = new TreePath(new Object[] { rootNode, featureSetsNode, fstnode, treeNode });
+					tree.setSelectionPath(treePath);
+					tree.scrollPathToVisible(treePath);
+				}
+			}
 		}
 	}
 
@@ -470,6 +497,26 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 						DefaultMutableTreeNode wpNode = (DefaultMutableTreeNode) pathNode.getChildAt(j);
 						if ((MapElement) wpNode.getUserObject() == mapElement) {
 							treeNode = wpNode;
+							break;
+						}
+					}
+				}
+				if (treeNode != null) {
+					break;
+				}
+			}
+		} else if (mapElement instanceof Feature) {
+			Feature feature = (Feature) mapElement;
+			FeatureSet featureSet = (FeatureSet)feature.getParent();
+			int n = featureSetsNode.getChildCount();
+			for (int i = 0; i < n; ++i) {
+				DefaultMutableTreeNode fsNode = (DefaultMutableTreeNode) featureSetsNode.getChildAt(i);
+				if ((MapElement) fsNode.getUserObject() == featureSet) {
+					int m = fsNode.getChildCount();
+					for (int j = 0; j < m; ++j) {
+						DefaultMutableTreeNode fNode = (DefaultMutableTreeNode) fsNode.getChildAt(j);
+						if ((MapElement) fNode.getUserObject() == mapElement) {
+							treeNode = fNode;
 							break;
 						}
 					}
@@ -699,9 +746,12 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			} else {
 				showButton.setText("Show");
 			}
-			deleteButton.setEnabled(true);
+			if (currentMapElement instanceof Feature)
+				deleteButton.setEnabled(false);
+			else
+				deleteButton.setEnabled(true);
 			seekButton.setEnabled(true);
-			if ((currentMapElement instanceof FeatureSet) || (currentMapElement instanceof Waypoint)) {
+			if ((currentMapElement instanceof Feature) || (currentMapElement instanceof Waypoint)) {
 				renameButton.setEnabled(false);
 			} else {
 				renameButton.setEnabled(true);

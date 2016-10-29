@@ -21,10 +21,12 @@ import gov.nasa.arc.dert.action.mapelement.OpenBillboardAction;
 import gov.nasa.arc.dert.action.mapelement.PinMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.PlaceHereAction;
 import gov.nasa.arc.dert.action.mapelement.RenameAction;
+import gov.nasa.arc.dert.landscape.QuadTreeMesh;
 import gov.nasa.arc.dert.render.SceneCanvasPanel;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.Marble;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.scene.featureset.Feature;
 import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
 import gov.nasa.arc.dert.scene.landmark.Landmark;
@@ -168,15 +170,24 @@ public class WorldInputHandler implements InputHandler {
 		if (mouseButton != 1) {
 			return (false);
 		}
-		movable = findMovable(spat);
 		
-		spat = movable;
-		while (!(spat instanceof MapElement) && (spat != null)) {
-			spat = spat.getParent();
-		}
-		MapElementsView view = ConfigurationManager.getInstance().getCurrentConfiguration().getMapElementsView();
-		if (view != null)
-			view.selectMapElement((MapElement)spat);
+		// We picked the landscape
+		if (spat instanceof QuadTreeMesh)
+			return(false);
+		
+		// Is spat a movable?
+		movable = findMovable(spat);		
+//		if (movable != null)
+//			spat = movable;
+//		
+//		while (!(spat instanceof MapElement) && (spat != null)) {
+//			spat = spat.getParent();
+//		}
+//		if (spat != null) {
+//			MapElementsView view = ConfigurationManager.getInstance().getCurrentConfiguration().getMapElementsView();
+//			if (view != null)
+//				view.selectMapElement((MapElement)spat);
+//		}
 		return (hasMouse());
 	}
 
@@ -305,7 +316,12 @@ public class WorldInputHandler implements InputHandler {
 				path.click(pickPosition);
 			} else if (lastSelection instanceof World) {
 				World.getInstance().getMarble().update(pickPosition, getPickNormal(), controller.getViewpointNode().getCamera());
+			} else if (lastSelection instanceof MapElement) {
+				MapElementsView view = ConfigurationManager.getInstance().getCurrentConfiguration().getMapElementsView();
+				if (view != null)
+					view.selectMapElement((MapElement)lastSelection);
 			}
+
 		} else if (mouseButton == 2) {
 			// set the new center of rotation
 			setCenterOfRotation();
@@ -352,7 +368,16 @@ public class WorldInputHandler implements InputHandler {
 							menu.add(new PinMapElementAction(((Waypoint) mapElement).getPath()));
 							menu.add(new OnGroundAction((Waypoint) mapElement));
 							menu.add(new OpenAnnotationAction(mapElement));
-						} else if (!(mapElement instanceof FeatureSet)) {
+						}
+						else if (mapElement instanceof FeatureSet) {
+							menu.add(new HideMapElementAction(mapElement));
+							menu.add(new DeleteMapElementAction(mapElement));
+							menu.add(new RenameAction(mapElement));
+							menu.add(new EditAction(mapElement));
+							menu.add(new OpenAnnotationAction(mapElement));
+						} else if (mapElement instanceof Feature) {
+							menu.add(new HideMapElementAction(mapElement));
+						} else {
 							menu.add(new HideMapElementAction(mapElement));
 							menu.add(new DeleteMapElementAction(mapElement));
 							menu.add(new RenameAction(mapElement));

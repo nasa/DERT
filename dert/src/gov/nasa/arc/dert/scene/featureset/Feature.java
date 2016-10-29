@@ -6,6 +6,7 @@ import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
 import gov.nasa.arc.dert.scenegraph.LineStrip;
+import gov.nasa.arc.dert.scenegraph.Marker;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 
@@ -36,6 +37,8 @@ public class Feature
 	
 	// Feature properties
 	private HashMap<String,Object> properties;
+	
+	private boolean labelVisible;
 
 	/**
 	 * Constructor
@@ -144,6 +147,10 @@ public class Feature
 					modified = true;
 				}
 			}
+			else if (child instanceof FigureMarker) {
+				FigureMarker fm = (FigureMarker)child;
+				modified |= fm.updateElevation(quadTree);
+			}
 		}
 		return (modified);
 	}
@@ -158,6 +165,10 @@ public class Feature
 			if (child instanceof LineStrip) {
 				LineStrip lineStrip = (LineStrip) child;
 				lineStrip.setScale(1, 1, vertExag);
+			}
+			else if (child instanceof FigureMarker) {
+				FigureMarker fm = (FigureMarker)child;
+				fm.setVerticalExaggeration(vertExag, oldVertExag, minZ);
 			}
 		}
 	}
@@ -175,9 +186,18 @@ public class Feature
 	 */
 	@Override
 	public double getSeekPointAndDistance(Vector3 point) {
-		BoundingVolume bv = getWorldBound();
-		point.set(bv.getCenter());
-		return (bv.getRadius() * 1.5);
+		Spatial child = getChild(0);
+		double distance = 1;
+		if (child instanceof Marker) {
+			point.set(child.getWorldTranslation());
+			distance = Math.max(((Marker)child).getSize(), 20);
+		}
+		else {
+			BoundingVolume bv = child.getWorldBound();
+			point.set(bv.getCenter());
+			distance = bv.getRadius();
+		}
+		return (distance);
 	}
 
 	/**
@@ -185,7 +205,21 @@ public class Feature
 	 */
 	@Override
 	public void setLabelVisible(boolean visible) {
-		// do nothing
+		labelVisible = visible;
+		setLabelVisible(this);
+	}
+
+	private void setLabelVisible(Node node) {
+		int n = node.getNumberOfChildren();
+		for (int i = 0; i < n; ++i) {
+			Spatial child = node.getChild(i);
+			if (child instanceof FigureMarker) {
+				((FigureMarker) child).setLabelVisible(labelVisible);
+			}
+			else if (child instanceof Node) {
+				setLabelVisible((Node) child);
+			}
+		}
 	}
 
 	/**

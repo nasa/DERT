@@ -36,6 +36,7 @@ public class FigureMarker extends Marker {
 	// flag to maintain the original size as viewpoint changes. If true, resize
 	// as viewpoint changes.
 	protected boolean autoScale;
+	protected boolean autoShowLabel = false;
 
 	/**
 	 * Constructor
@@ -67,6 +68,10 @@ public class FigureMarker extends Marker {
 		updateWorldTransform(true);
 		updateWorldBound(true);
 		scaleShape(scale);
+	}
+	
+	public void setAutoShowLabel(boolean show) {
+		autoShowLabel = show;
 	}
 
 	@Override
@@ -232,6 +237,16 @@ public class FigureMarker extends Marker {
 			oldScale = scale;
 			if (autoScale) {
 				scaleShape(scale);
+			}
+		}
+		if (labelVisible) {
+			if (autoShowLabel) {
+				if (scale <= PIXEL_SIZE) {
+					if (!label.isVisible())
+						label.setVisible(true);
+				}
+				else if (label.isVisible())
+					label.setVisible(false);
 			}
 		}
 	}

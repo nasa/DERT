@@ -4,14 +4,14 @@ import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.FeatureSetState;
 import gov.nasa.arc.dert.ui.AbstractDialog;
+import gov.nasa.arc.dert.ui.GBCHelper;
 import gov.nasa.arc.dert.util.FileHelper;
 import gov.nasa.arc.dert.util.StringUtil;
 
-import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -19,7 +19,6 @@ import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class FeatureSetDialog
@@ -44,14 +43,14 @@ public class FeatureSetDialog
 	protected void build() {
 		super.build();
 		
-		contentArea.setLayout(new GridLayout(3, 1));
-
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel("File"), BorderLayout.WEST);
+		contentArea.setMaximumSize(new Dimension(1000, -1));
+		contentArea.setLayout(new GridBagLayout());
+		
+		JLabel label = new JLabel("File");
+		contentArea.add(label, GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
 		fileText = new JTextField();
 		fileText.setToolTipText("path to GeoJSON file");
-		panel.add(fileText, BorderLayout.CENTER);
-		panel.setMaximumSize(new Dimension(1000, -1));
+		contentArea.add(fileText, GBCHelper.getGBC(1, 0, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
 		
 		browseButton = new JButton("Browse");
 		browseButton.setToolTipText("browse to GeoJSON file");
@@ -61,19 +60,17 @@ public class FeatureSetDialog
 				setFile();
 			}
 		});
-		panel.add(browseButton, BorderLayout.EAST);
-		contentArea.add(panel);
+		contentArea.add(browseButton, GBCHelper.getGBC(4, 0, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 		
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		isProjected = new JCheckBox("Is Projected");
-		panel.add(isProjected);
-		contentArea.add(panel);
+		label = new JLabel("Is projected but contains no CRS: ");
+		contentArea.add(label, GBCHelper.getGBC(0, 1, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
+		isProjected = new JCheckBox();
+		contentArea.add(isProjected, GBCHelper.getGBC(3, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
 		
-		panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel("Property to use as label: "), BorderLayout.WEST);
+		label = new JLabel("Property to use as label: ");
+		contentArea.add(label, GBCHelper.getGBC(0, 2, 2, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
 		labelText = new JTextField();
-		panel.add(labelText, BorderLayout.CENTER);
-		contentArea.add(panel);
+		contentArea.add(labelText, GBCHelper.getGBC(2, 2, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
 		
 		width = 400;
 		height = 200;

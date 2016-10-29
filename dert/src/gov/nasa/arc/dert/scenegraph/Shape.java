@@ -30,7 +30,7 @@ import com.ardor3d.scenegraph.shape.Torus;
 public class Shape extends Node {
 
 	public static enum ShapeType {
-		none, arrow, ball, box, cone, cylinder, dart, disk, dome, flag, pyramid, quad, rod, sphere, teapot, torus
+		none, arrow, ball, box, cone, cylinder, dart, disk, dome, flag, crystal, pyramid, quad, rod, sphere, teapot, torus
 	}
 
 	public static Vector3[] SHAPE_TEXT_OFFSET = { new Vector3(0, 0, 0), new Vector3(0, 0.3, 0), new Vector3(0, 1.2, 0),
@@ -108,6 +108,9 @@ public class Shape extends Node {
 			geometry = new Flag("_flag", arg1);
 			geometry.setTranslation(0, 0, 0.5f*arg1);
 			break;
+		case crystal:
+			geometry = new Sphere("_octahedron", 4, 4, arg2);
+			break;
 		case pyramid:
 			geometry = new Pyramid("_pyramid", arg1, arg2);
 			geometry.setRotation(new Matrix3().fromAngles(Math.PI / 2, 0, 0));
@@ -184,6 +187,9 @@ public class Shape extends Node {
 		case flag:
 			geometry = new Flag("_flag", 2 * size);
 			geometry.setTranslation(0, 0, size);
+			break;
+		case crystal:
+			geometry = new Sphere("_octahedron", 4, 4, size * 0.5f);
 			break;
 		case pyramid:
 			geometry = new Pyramid("_pyramid", size, size);

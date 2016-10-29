@@ -52,6 +52,8 @@ public abstract class Marker extends Movable implements ViewDependent {
 
 	// contains label and spatials specific to marker type
 	protected Node contents;
+	
+	protected boolean labelVisible;
 
 	/**
 	 * Constructor
@@ -60,6 +62,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 		super(name);
 		billboard = new Billboard("_billboard");
 		this.labelStr = name;
+		this.labelVisible = labelVisible;
 		this.size = size;
 		this.zOff = zOff;
 		setPinned(pinned);
@@ -84,7 +87,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 		attachChild(contents);
 
 		// create the label object
-		createLabel(labelVisible);
+		createLabel();
 		billboard.attachChild(label);
 		contents.attachChild(billboard);
 
@@ -179,7 +182,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 
 	protected abstract void setMaterialState();
 
-	protected void createLabel(boolean labelVisible) {
+	protected void createLabel() {
 		label = new RasterText("_label", labelStr, AlignType.Center, true);
 		label.setScaleFactor((float) (0.75 * size));
 		label.setColor(labelColorRGBA);
@@ -193,6 +196,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 	 * @param labelVisible
 	 */
 	public void setLabelVisible(boolean labelVisible) {
+		this.labelVisible = labelVisible;
 		label.setVisible(labelVisible);
 	}
 
@@ -228,7 +232,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 	 * @return
 	 */
 	public boolean isLabelVisible() {
-		return (label.isVisible());
+		return (labelVisible);
 	}
 
 	/**
@@ -245,6 +249,10 @@ public abstract class Marker extends Movable implements ViewDependent {
 
 	protected void scaleShape(double scale) {
 		contents.setScale(size * scale);
+	}
+	
+	public double getShapeScale() {
+		return(scale);
 	}
 
 	/**

@@ -8,7 +8,6 @@ import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.raster.SpatialReferenceSystem;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
-import gov.nasa.arc.dert.scenegraph.LineStrip;
 import gov.nasa.arc.dert.state.FeatureSetState;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
@@ -47,6 +46,8 @@ public class FeatureSet extends GroupNode implements MapElement {
 
 	// The location of the origin
 	private Vector3 location;
+	
+	private boolean labelVisible;
 
 	/**
 	 * Constructor
@@ -164,12 +165,9 @@ public class FeatureSet extends GroupNode implements MapElement {
 		boolean modified = false;
 		for (int i = 0; i < getNumberOfChildren(); ++i) {
 			Spatial child = getChild(i);
-			if (child instanceof LineStrip) {
-				LineStrip lineStrip = (LineStrip) child;
-				if (lineStrip.intersects(quadTree)) {
-					lineStrip.updateElevation(quadTree);
-					modified = true;
-				}
+			if (child instanceof Feature) {
+				Feature feature = (Feature) child;
+				modified |= feature.updateElevation(quadTree);
 			}
 		}
 		return (modified);
@@ -182,9 +180,9 @@ public class FeatureSet extends GroupNode implements MapElement {
 	public void setVerticalExaggeration(double vertExag, double oldVertExag, double minZ) {
 		for (int i = 0; i < getNumberOfChildren(); ++i) {
 			Spatial child = getChild(i);
-			if (child instanceof LineStrip) {
-				LineStrip lineStrip = (LineStrip) child;
-				lineStrip.setScale(1, 1, vertExag);
+			if (child instanceof Feature) {
+				Feature feature = (Feature) child;
+				feature.setVerticalExaggeration(vertExag, oldVertExag, minZ);
 			}
 		}
 	}
@@ -212,7 +210,14 @@ public class FeatureSet extends GroupNode implements MapElement {
 	 */
 	@Override
 	public void setLabelVisible(boolean visible) {
-		// do nothing
+		labelVisible = visible;
+		for (int i = 0; i < getNumberOfChildren(); ++i) {
+			Spatial child = getChild(i);
+			if (child instanceof Feature) {
+				Feature feature = (Feature) child;
+				feature.setLabelVisible(visible);
+			}
+		}
 	}
 
 	/**
@@ -220,7 +225,7 @@ public class FeatureSet extends GroupNode implements MapElement {
 	 */
 	@Override
 	public boolean isLabelVisible() {
-		return (false);
+		return (labelVisible);
 	}
 
 	/**

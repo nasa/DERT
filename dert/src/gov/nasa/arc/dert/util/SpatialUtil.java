@@ -1,7 +1,6 @@
 package gov.nasa.arc.dert.util;
 
-import gov.nasa.arc.dert.scene.tool.Tool;
-import gov.nasa.arc.dert.scenegraph.Marker;
+import gov.nasa.arc.dert.scene.MapElement;
 
 import java.util.HashMap;
 
@@ -101,10 +100,16 @@ public class SpatialUtil {
 			return (null);
 		}
 		Spatial pickHost = spatial;
-		while (!(pickHost instanceof Tool) && (pickHost.getParent() != null)) {
-			if (pickHost instanceof Marker) {
-				return (pickHost);
-			}
+//		while (!(pickHost instanceof Tool) && (pickHost.getParent() != null)) {
+//			if (pickHost instanceof Marker) {
+//				return (pickHost);
+//			}
+//			pickHost = pickHost.getParent();
+//		}
+		while (!(pickHost instanceof MapElement) && (pickHost.getParent() != null)) {
+//			if (pickHost instanceof Marker) {
+//				return (pickHost);
+//			}
 			pickHost = pickHost.getParent();
 		}
 		return (pickHost);

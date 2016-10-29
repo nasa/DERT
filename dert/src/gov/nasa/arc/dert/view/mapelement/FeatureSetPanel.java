@@ -40,7 +40,7 @@ public class FeatureSetPanel extends MapElementBasePanel {
 		super(parent);
 		icon = FeatureSet.icon;
 		type = "FeatureSet";
-		build(true, false, false);
+		build(true, false, true);
 	}
 
 	@Override
@@ -74,6 +74,9 @@ public class FeatureSetPanel extends MapElementBasePanel {
 		propText.setRows(4);
 		groupPanel.add(new JScrollPane(propText), BorderLayout.CENTER);
 		contents.add(groupPanel);
+		
+		pinnedCheckBox.setSelected(true);
+		pinnedCheckBox.setEnabled(false);
 	}
 
 	@Override
@@ -88,6 +91,8 @@ public class FeatureSetPanel extends MapElementBasePanel {
 			colorList.setColor(featureSet.getColor());
 			fileLabel.setText("File: "+featureSet.getFilePath());
 			noteText.setText(featureSet.getState().getAnnotation());
+			labelCheckBox.setSelected(featureSet.isLabelVisible());
+			labelCheckBox.setEnabled(true);
 		}
 		else if (mapElement instanceof Feature) {
 			colorList.setEnabled(false);
@@ -95,6 +100,7 @@ public class FeatureSetPanel extends MapElementBasePanel {
 			FeatureSet fs = (FeatureSet)feature.getParent();
 			if (fs != null)
 				fileLabel.setText("File: "+fs.getFilePath());
+			labelCheckBox.setEnabled(false);
 			nameLabel.setText(feature.getName());
 			HashMap<String,Object> properties = feature.getProperties();
 			Object[] key = properties.keySet().toArray();

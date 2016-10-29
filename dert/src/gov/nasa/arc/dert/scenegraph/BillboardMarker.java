@@ -1,6 +1,5 @@
 package gov.nasa.arc.dert.scenegraph;
 
-import gov.nasa.arc.dert.scenegraph.Text.AlignType;
 import gov.nasa.arc.dert.util.SpatialUtil;
 
 import java.awt.Color;
@@ -26,6 +25,7 @@ public class BillboardMarker extends Marker {
 		super(name, point, size, zOff, color, labelVisible, pinned);
 		setSize(size);
 		getSceneHints().setCastsShadows(false);
+		label.setTranslation(0, 1.5, 0);
 	}
 
 	/**
@@ -66,15 +66,6 @@ public class BillboardMarker extends Marker {
 			billboard.setTexture(nominalTexture);
 			materialState.setEmissive(MaterialFace.FrontAndBack, colorRGBA);
 		}
-	}
-
-	@Override
-	protected void createLabel(boolean labelVisible) {
-		label = new RasterText("_label", labelStr, AlignType.Center, true);
-		label.setScaleFactor((float) (0.75 * size));
-		label.setColor(labelColorRGBA);
-		label.setTranslation(0, 1.5, 0);
-		label.setVisible(labelVisible);
 	}
 
 }
