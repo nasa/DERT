@@ -73,8 +73,8 @@ public class FeatureSet extends GroupNode implements MapElement {
 		state.setMapElement(this);
 		// Load the vector file into an Ardor3D object.
 		GeojsonLoader jsonLoader = new GeojsonLoader(srs);
-		GeoJsonObject gjRoot = jsonLoader.load(filePath);
-		jsonLoader.geoJsonToArdor3D(gjRoot, this, color, elevAttrName);
+		GeoJsonObject gjRoot = jsonLoader.load(filePath, state.labelProp);
+		jsonLoader.geoJsonToArdor3D(gjRoot, this, color, elevAttrName, state.isProjected);
 		if (getNumberOfChildren() == 0) {
 			throw new IllegalStateException("No vectors found.");
 		}

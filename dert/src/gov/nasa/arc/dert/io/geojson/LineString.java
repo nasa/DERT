@@ -15,7 +15,7 @@ public class LineString extends Geometry {
 	 * 
 	 * @param jsonObject
 	 */
-	public LineString(JsonObject jsonObject, CoordinateReferenceSystem crs) {
+	public LineString(JsonObject jsonObject) {
 		super(jsonObject, GeojsonType.LineString);
 		Object[] arrayN = jsonObject.getArray("coordinates");
 		int n = arrayN.length;
@@ -29,7 +29,6 @@ public class LineString extends Geometry {
 			pos = (Object[])arrayN[i];
 			for (int p = 0; p < posLength; ++p)
 				coordinate[i][p] = ((Double)pos[p]).doubleValue();
-			crs.translate(coordinate[i]);
 		}
 	}
 

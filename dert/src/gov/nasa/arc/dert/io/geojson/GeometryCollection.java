@@ -18,7 +18,7 @@ public class GeometryCollection extends Geometry {
 	 * 
 	 * @param jsonObject
 	 */
-	public GeometryCollection(JsonObject jsonObject, CoordinateReferenceSystem crs) {
+	public GeometryCollection(JsonObject jsonObject) {
 		super(jsonObject, GeojsonType.GeometryCollection);
 		geometryList = new ArrayList<Geometry>();
 
@@ -26,7 +26,7 @@ public class GeometryCollection extends Geometry {
 		int n = arrayN.length;
 		for (int i = 0; i < n; ++i) {
 			JsonObject jObj = (JsonObject)arrayN[i];
-			Geometry geometry = Geometry.createGeometry(jObj, crs);
+			Geometry geometry = Geometry.createGeometry(jObj);
 			geometryList.add(geometry);
 		}
 	}

@@ -15,7 +15,7 @@ public class MultiLineString extends Geometry {
 	 * 
 	 * @param jsonObject
 	 */
-	public MultiLineString(JsonObject jsonObject, CoordinateReferenceSystem crs) {
+	public MultiLineString(JsonObject jsonObject) {
 		super(jsonObject, GeojsonType.MultiLineString);
 		Object[] arrayN = jsonObject.getArray("coordinates");
 		int n = arrayN.length;
@@ -31,7 +31,6 @@ public class MultiLineString extends Geometry {
 				for (int p = 0; p < posLength; ++p) {
 					coordinate[i][j][p] = ((Double)pos[p]).doubleValue();
 				}
-				crs.translate(coordinate[i][j]);
 			}
 		}
 	}

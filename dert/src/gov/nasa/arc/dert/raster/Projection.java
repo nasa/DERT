@@ -243,16 +243,12 @@ public class Projection {
 		if (pjProjected == null) {
 			pjProjected = Proj4.newInstance(proj4String);
 		}
-		try {
-			vec.toArray(coord);
-			coord[0] = Math.toRadians(coord[0]);
-			coord[1] = Math.toRadians(coord[1]);
-			pjUnprojected.transform(pjProjected, coord);
-			vec.setX(coord[0]);
-			vec.setY(coord[1]);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		vec.toArray(coord);
+		coord[0] = Math.toRadians(coord[0]);
+		coord[1] = Math.toRadians(coord[1]);
+		pjUnprojected.transform(pjProjected, coord);
+		vec.setX(coord[0]);
+		vec.setY(coord[1]);
 	}
 
 	/**

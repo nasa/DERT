@@ -1,7 +1,6 @@
 package gov.nasa.arc.dert.io.geojson;
 
 import gov.nasa.arc.dert.io.geojson.json.JsonObject;
-import gov.nasa.arc.dert.landscape.Landscape;
 
 /**
  * Provides a GeoJSON Object.
@@ -24,7 +23,8 @@ public class GeoJsonObject {
 		Object[] array = jsonObject.getArray("bbox");
 		createBBox(array);
 		JsonObject jObj = jsonObject.getJsonObject("crs");
-		createCRS(jObj);
+		if (jObj != null)
+			crs = new CoordinateReferenceSystem(jObj);
 	}
 
 	private void createBBox(Object[] array) {
@@ -35,14 +35,6 @@ public class GeoJsonObject {
 		for (int i = 0; i < array.length; ++i) {
 			bbox[i] = ((Double)array[i]).doubleValue();
 		}
-	}
-
-	private void createCRS(JsonObject jsonObject) {
-		if (jsonObject == null) {
-			crs = new CoordinateReferenceSystem(Landscape.getInstance().getSpatialReferenceSystem().getProjection());
-		}
-		else
-			crs = new CoordinateReferenceSystem(jsonObject);
 	}
 
 }

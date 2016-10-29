@@ -28,6 +28,7 @@ import gov.nasa.arc.dert.view.world.WorldView;
 import gov.nasa.arc.dert.viewpoint.ViewpointNode;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -91,6 +92,8 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	// Controls
 	private MapElementBasePanel currentPanel;
 	private JPanel emptyPanel;
+	private JPanel panelPane;
+	private CardLayout panelLayout;
 	private JSplitPane splitPane;
 
 	// Map elements
@@ -145,10 +148,13 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		JScrollPane scrollPane = new JScrollPane(tree);
 		scrollPane.setMinimumSize(new Dimension(128, 128));
 		splitPane.setLeftComponent(scrollPane);
-
-		// Start with an empty panel when no map element is selected
+		
+		// Pane for panels
+		panelLayout = new CardLayout();
+		panelPane = new JPanel(panelLayout);
+		splitPane.setRightComponent(panelPane);
 		emptyPanel = new JPanel();
-		splitPane.setRightComponent(emptyPanel);
+		panelLayout.addLayoutComponent(emptyPanel, "Empty");
 
 		// Common functions
 		JPanel buttonBar = new JPanel(new GridBagLayout());
@@ -631,8 +637,10 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 						treeModel.nodeChanged(rootNode);
 					}
 				};
+				landmarksPanel.setMinimumSize(new Dimension(100, 100));
+				panelPane.add(landmarksPanel, "Landmarks");
 			}
-			splitPane.setRightComponent(landmarksPanel);
+			panelLayout.show(panelPane, "Landmarks");
 		} else if (treeNode == toolsNode) {
 			showButton.setEnabled(false);
 			deleteButton.setEnabled(false);
@@ -653,8 +661,10 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 						treeModel.nodeChanged(rootNode);
 					}
 				};
+				toolsPanel.setMinimumSize(new Dimension(100, 100));
+				panelPane.add(toolsPanel, "Tools");
 			}
-			splitPane.setRightComponent(toolsPanel);
+			panelLayout.show(panelPane, "Tools");
 		} else if (treeNode == featureSetsNode) {
 			showButton.setEnabled(false);
 			deleteButton.setEnabled(false);
@@ -665,7 +675,9 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 				featureSetsPanel = new FeatureSetsPanel() {
 					@Override
 					public void addFeatureSet(MapElementState.Type type) {
-						setPanel(type, null);
+						FeatureSetDialog dialog = new FeatureSetDialog(null);
+						if (dialog.open())
+							setPanel(type, null);
 					}
 
 					@Override
@@ -675,8 +687,10 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 						treeModel.nodeChanged(rootNode);
 					}
 				};
+				featureSetsPanel.setMinimumSize(new Dimension(100, 100));
+				panelPane.add(featureSetsPanel, "FeatureSets");
 			}
-			splitPane.setRightComponent(featureSetsPanel);
+			panelLayout.show(panelPane, "FeatureSets");
 		} else {
 			currentMapElement = (MapElement) treeNode.getUserObject();
 			showButton.setEnabled(true);
@@ -700,8 +714,6 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	private void doSelection(DefaultMutableTreeNode[] treeNode) {
 		currentMapElement = null;
 		currentMapElements = null;
-		splitPane.setRightComponent(emptyPanel);
-		currentPanel = null;
 		for (int i = 0; i < treeNode.length; ++i) {
 			if ((treeNode[i] == landmarksNode) || (treeNode[i] == toolsNode) || (treeNode[i] == featureSetsNode)) {
 				showButton.setEnabled(false);
@@ -733,88 +745,111 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		deleteButton.setEnabled(true);
 		seekButton.setEnabled(false);
 		renameButton.setEnabled(false);
-		splitPane.setRightComponent(emptyPanel);
 		currentPanel = null;
 	}
 
 	private void setPanel(MapElementState.Type type, MapElement mapElement) {
+		currentPanel = null;
+		String card = type.toString();
 		switch (type) {
 		case Placemark:
 			if (placemarkPanel == null) {
 				placemarkPanel = new PlacemarkPanel(this);
+				placemarkPanel.setMinimumSize(new Dimension(100,100));
+				panelPane.add(placemarkPanel, "Placemark");
 			}
 			currentPanel = placemarkPanel;
 			break;
 		case Figure:
 			if (figurePanel == null) {
 				figurePanel = new FigurePanel(this);
+				figurePanel.setMinimumSize(new Dimension(100,100));
+				panelPane.add(figurePanel, "Figure");
 			}
 			currentPanel = figurePanel;
 			break;
 		case Billboard:
 			if (imageBoardPanel == null) {
 				imageBoardPanel = new ImageBoardPanel(this);
+				imageBoardPanel.setMinimumSize(new Dimension(100,100));
+				panelPane.add(imageBoardPanel, "Billboard");
 			}
 			currentPanel = imageBoardPanel;
 			break;
+		case Feature:
+			card = "FeatureSet";
 		case FeatureSet:
 			if (featureSetPanel == null) {
 				featureSetPanel = new FeatureSetPanel(this);
+				featureSetPanel.setMinimumSize(new Dimension(100,100));
+				panelPane.add(featureSetPanel, "FeatureSet");
 			}
 			currentPanel = featureSetPanel;
 			break;
+		case Waypoint:
+			card = "Path";
 		case Path:
 			if (pathPanel == null) {
 				pathPanel = new PathPanel(this);
+				pathPanel.setMinimumSize(new Dimension(100,100));
+				panelPane.add(pathPanel, "Path");
 			}
 			currentPanel = pathPanel;
 			break;
 		case Plane:
 			if (planePanel == null) {
 				planePanel = new PlanePanel(this);
+				planePanel.setMinimumSize(new Dimension(100,100));
+				panelPane.add(planePanel, "Plane");
 			}
 			currentPanel = planePanel;
 			break;
 		case RadialGrid:
 			if (radialGridPanel == null) {
 				radialGridPanel = new RadialGridPanel(this);
+				radialGridPanel.setMinimumSize(new Dimension(100,100));
+				panelPane.add(radialGridPanel, "RadialGrid");
 			}
 			currentPanel = radialGridPanel;
 			break;
 		case CartesianGrid:
 			if (cartesianGridPanel == null) {
 				cartesianGridPanel = new CartesianGridPanel(this);
+				cartesianGridPanel.setMinimumSize(new Dimension(100,100));
+				panelPane.add(cartesianGridPanel, "CartesianGrid");
 			}
 			currentPanel = cartesianGridPanel;
 			break;
 		case FieldCamera:
 			if (fieldCameraPanel == null) {
 				fieldCameraPanel = new FieldCameraPanel(this);
+				fieldCameraPanel.setMinimumSize(new Dimension(100,100));
+				panelPane.add(fieldCameraPanel, "FieldCamera");
 			}
 			currentPanel = fieldCameraPanel;
 			break;
 		case Profile:
 			if (profilePanel == null) {
 				profilePanel = new ProfilePanel(this);
+				profilePanel.setMinimumSize(new Dimension(100,100));
+				panelPane.add(profilePanel, "Profile");
 			}
 			currentPanel = profilePanel;
 			break;
 		case Scale:
 			if (scalePanel == null) {
 				scalePanel = new ScaleBarPanel(this);
+				scalePanel.setMinimumSize(new Dimension(100,100));
+				panelPane.add(scalePanel, "Scale");
 			}
 			currentPanel = scalePanel;
 			break;
-		case Waypoint:
-			if (pathPanel == null) {
-				pathPanel = new PathPanel(this);
-			}
-			currentPanel = pathPanel;
 		default:
 			break;
 		}
-		splitPane.setRightComponent(currentPanel);
+		
 		currentPanel.setMapElement(mapElement);
+		panelLayout.show(panelPane, card);
 		state.setLastMapElement(mapElement);
 	}
 

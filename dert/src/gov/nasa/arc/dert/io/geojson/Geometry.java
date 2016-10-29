@@ -30,31 +30,31 @@ public abstract class Geometry extends GeoJsonObject {
 	 * @param jObj
 	 * @return
 	 */
-	public static Geometry createGeometry(JsonObject jObj, CoordinateReferenceSystem crs) {
+	public static Geometry createGeometry(JsonObject jObj) {
 		String typeStr = jObj.getString("type");
 		GeojsonType type = GeojsonType.valueOf(typeStr);
 		Geometry geometry = null;
 		switch (type) {
 		case Point:
-			geometry = new Point(jObj, crs);
+			geometry = new Point(jObj);
 			break;
 		case MultiPoint:
-			geometry = new MultiPoint(jObj, crs);
+			geometry = new MultiPoint(jObj);
 			break;
 		case LineString:
-			geometry = new LineString(jObj, crs);
+			geometry = new LineString(jObj);
 			break;
 		case MultiLineString:
-			geometry = new MultiLineString(jObj, crs);
+			geometry = new MultiLineString(jObj);
 			break;
 		case Polygon:
-			geometry = new Polygon(jObj, crs);
+			geometry = new Polygon(jObj);
 			break;
 		case MultiPolygon:
-			geometry = new MultiPolygon(jObj, crs);
+			geometry = new MultiPolygon(jObj);
 			break;
 		case GeometryCollection:
-			geometry = new GeometryCollection(jObj, crs);
+			geometry = new GeometryCollection(jObj);
 			break;
 		}
 

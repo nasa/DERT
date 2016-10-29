@@ -55,9 +55,6 @@ public class FigureMarker extends Marker {
 	 * @param type
 	 */
 	public void setShape(ShapeType type) {
-		if (shapeType == type) {
-			return;
-		}
 		if (shape != null) {
 			contents.detachChild(shape);
 		}
@@ -74,7 +71,6 @@ public class FigureMarker extends Marker {
 
 	@Override
 	protected void setMaterialState() {
-		System.err.println("FigureMarker.setMaterialState "+colorRGBA);
 		materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * AMBIENT_FACTOR,
 			colorRGBA.getGreen() * AMBIENT_FACTOR, colorRGBA.getBlue() * AMBIENT_FACTOR, colorRGBA.getAlpha()));
 		materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);

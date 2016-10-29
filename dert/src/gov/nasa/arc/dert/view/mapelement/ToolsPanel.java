@@ -82,7 +82,7 @@ public class ToolsPanel extends JPanel {
 			public void actionPerformed(ActionEvent event) {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
 				PathState state = new PathState(position);
-				Path path = (Path) ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state);
+				Path path = (Path) ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 				newMapElement(MapElementState.Type.Path, path);
 				Dert.getWorldView().getScenePanel().getInputHandler().setPath(path);
 			}
@@ -97,7 +97,7 @@ public class ToolsPanel extends JPanel {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
 				PlaneState state = new PlaneState(position);
 				Plane plane = (Plane) ConfigurationManager.getInstance().getCurrentConfiguration()
-					.addMapElementState(state);
+					.addMapElementState(state, null);
 				newMapElement(MapElementState.Type.Plane, plane);
 			}
 		});
@@ -111,7 +111,7 @@ public class ToolsPanel extends JPanel {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
 				GridState state = GridState.createCartesianGridState(position);
 				CartesianGrid grid = (CartesianGrid) ConfigurationManager.getInstance().getCurrentConfiguration()
-					.addMapElementState(state);
+					.addMapElementState(state, null);
 				newMapElement(MapElementState.Type.CartesianGrid, grid);
 			}
 		});
@@ -125,7 +125,7 @@ public class ToolsPanel extends JPanel {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
 				GridState state = GridState.createRadialGridState(position);
 				RadialGrid grid = (RadialGrid) ConfigurationManager.getInstance().getCurrentConfiguration()
-					.addMapElementState(state);
+					.addMapElementState(state, null);
 				newMapElement(MapElementState.Type.RadialGrid, grid);
 			}
 		});
@@ -139,7 +139,7 @@ public class ToolsPanel extends JPanel {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
 				FieldCameraState state = new FieldCameraState(position);
 				FieldCamera fieldCamera = (FieldCamera) ConfigurationManager.getInstance().getCurrentConfiguration()
-					.addMapElementState(state);
+					.addMapElementState(state, null);
 				newMapElement(MapElementState.Type.FieldCamera, fieldCamera);
 			}
 		});
@@ -153,7 +153,7 @@ public class ToolsPanel extends JPanel {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
 				ProfileState state = new ProfileState(position);
 				Profile profile = (Profile) ConfigurationManager.getInstance().getCurrentConfiguration()
-					.addMapElementState(state);
+					.addMapElementState(state, null);
 				newMapElement(MapElementState.Type.Profile, profile);
 			}
 		});
@@ -167,7 +167,7 @@ public class ToolsPanel extends JPanel {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
 				ScaleBarState state = new ScaleBarState(position);
 				ScaleBar scale = (ScaleBar) ConfigurationManager.getInstance().getCurrentConfiguration()
-					.addMapElementState(state);
+					.addMapElementState(state, null);
 				newMapElement(MapElementState.Type.Scale, scale);
 			}
 		});

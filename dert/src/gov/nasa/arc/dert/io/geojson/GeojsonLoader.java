@@ -35,8 +35,10 @@ import com.ardor3d.util.geom.BufferUtils;
 public class GeojsonLoader {
 
 	private String filePath;
+	private String labelProp;
 	private double minZ, maxZ;
 	private Vector3 coord = new Vector3();
+	private CoordinateReferenceSystem crs;
 	private SpatialReferenceSystem srs;
 	private double landscapeMinZ;
 
@@ -57,8 +59,9 @@ public class GeojsonLoader {
 	 *            path to the file
 	 * @return a GeoJSON object
 	 */
-	public GeoJsonObject load(String filePath) {
+	public GeoJsonObject load(String filePath, String labelProp) {
 		this.filePath = filePath;
+		this.labelProp = labelProp;
 		File file = null;
 		try {
 			file = new File(filePath);
@@ -98,7 +101,10 @@ public class GeojsonLoader {
 	 *            the elevation attribute name (from gdaldem)
 	 * @return the FeatureSet
 	 */
-	public FeatureSet geoJsonToArdor3D(GeoJsonObject gjRoot, FeatureSet root, Color color, String elevAttrName) {
+	public FeatureSet geoJsonToArdor3D(GeoJsonObject gjRoot, FeatureSet root, Color color, String elevAttrName, boolean isProjected) {
+		crs = gjRoot.crs;
+		if (!isProjected && (crs == null))
+			crs = new CoordinateReferenceSystem(Landscape.getInstance().getSpatialReferenceSystem().getProjection());
 		// no elevation (Z) values so this will be 2D, make Z the minimum
 		// landscape elevation
 		landscapeMinZ = 0;
@@ -107,13 +113,12 @@ public class GeojsonLoader {
 			if (world != null)
 				landscapeMinZ = Landscape.getInstance().getMinimumElevation();
 		}
-		root.getSceneHints().setLightCombineMode(LightCombineMode.Off);
+
 		int count = 0;
 		if (gjRoot instanceof GeoJsonFeature) {
 			GeoJsonFeature gjFeature = (GeoJsonFeature) gjRoot;
 			Feature feature = geojsonFeatureToArdor3D(gjFeature, color, elevAttrName, count);
 			if (feature != null) {
-				feature.setColor(color);
 				root.attachChild(feature);
 				count++;
 			}
@@ -124,7 +129,6 @@ public class GeojsonLoader {
 				GeoJsonFeature gjFeature = featureList.get(i);
 				Feature feature = geojsonFeatureToArdor3D(gjFeature, color, elevAttrName, count);
 				if (feature != null) {
-					feature.setColor(color);
 					root.attachChild(feature);
 					count++;
 				}
@@ -144,12 +148,15 @@ public class GeojsonLoader {
 		Geometry geometry = gjFeature.getGeometry();
 		if (geometry == null)
 			return (null);
-		String name = gjFeature.getId();
+		String name = null;
+		if (labelProp != null)
+			name = (String)gjFeature.getProperties().get(labelProp);
+		if ((name == null) || name.isEmpty())
+			name = gjFeature.getId();
 		if (name == null)
 			name = "Feature"+count;
 		Feature feature = new Feature(name, color, gjFeature.getProperties());
 		if (geojsonGeometryToArdor3D(feature, geometry, color, elevAttrName, count, feature.getProperties())) {
-			feature.updateGeometricState(0, true);
 			return (feature);
 		}
 		return(null);
@@ -316,14 +323,40 @@ public class GeojsonLoader {
 		
 	}
 
+//	private ReadOnlyVector3 toWorld(double[] coordinate, boolean getZ) {
+//		if (coordinate.length == 3) {
+//			coord.set(coordinate[0], coordinate[1], coordinate[2]);
+//			srs.getProjection().worldToLocal(coord);
+//			coord.setZ(coord.getZ() - landscapeMinZ);
+//			return (coord);
+//		} else if (coordinate.length == 2) {
+//			coord.set(coordinate[0], coordinate[1], 0);
+//			srs.getProjection().worldToLocal(coord);
+//			if (getZ) {
+//				coord.setZ(Landscape.getInstance().getZ(coord.getX(), coord.getY()));
+//			}
+//			if (Double.isNaN(coord.getZ())) {
+//				return (null);
+//			} else {
+//				return (coord);
+//			}
+//		} else {
+//			throw new IllegalArgumentException("GeoJSON Position has < 2 elements.");
+//		}
+//	}
+
 	private ReadOnlyVector3 toWorld(double[] coordinate, boolean getZ) {
 		if (coordinate.length == 3) {
 			coord.set(coordinate[0], coordinate[1], coordinate[2]);
+			if (crs != null)
+				crs.translate(coordinate, coord);
 			srs.getProjection().worldToLocal(coord);
 			coord.setZ(coord.getZ() - landscapeMinZ);
 			return (coord);
 		} else if (coordinate.length == 2) {
 			coord.set(coordinate[0], coordinate[1], 0);
+			if (crs != null)
+				crs.translate(coordinate, coord);
 			srs.getProjection().worldToLocal(coord);
 			if (getZ) {
 				coord.setZ(Landscape.getInstance().getZ(coord.getX(), coord.getY()));

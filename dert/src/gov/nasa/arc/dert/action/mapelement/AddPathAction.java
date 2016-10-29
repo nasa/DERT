@@ -30,7 +30,7 @@ public class AddPathAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		PathState state = new PathState(position);
-		Path path = (Path) ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state);
+		Path path = (Path) ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 		Dert.getWorldView().getScenePanel().getInputHandler().setPath(path);
 	}
 

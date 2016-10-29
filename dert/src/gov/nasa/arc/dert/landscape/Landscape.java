@@ -672,7 +672,12 @@ public class Landscape extends Node implements ViewDependent {
 	 * @param coord
 	 */
 	public void sphericalToWorldCoordinate(Vector3 coord) {
-		srs.getProjection().sphericalToWorld(coord);
+		try {
+			srs.getProjection().sphericalToWorld(coord);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -692,8 +697,13 @@ public class Landscape extends Node implements ViewDependent {
 	 * @param coord
 	 */
 	public void sphericalToLocalCoordinate(Vector3 coord) {
-		srs.getProjection().sphericalToWorld(coord);
-		srs.getProjection().worldToLocal(coord);
+		try {
+			srs.getProjection().sphericalToWorld(coord);
+			srs.getProjection().worldToLocal(coord);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

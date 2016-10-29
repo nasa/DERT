@@ -32,7 +32,7 @@ public class DeleteEdit extends AbstractUndoableEdit {
 	@Override
 	public void undo() {
 		super.undo();
-		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state);
+		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 	}
 
 	@Override

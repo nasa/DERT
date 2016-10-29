@@ -198,7 +198,10 @@ public class Shape extends Node {
 			geometry.setTranslation(0, 0, 0.1f * size);
 			break;
 		case sphere:
-			geometry = new Sphere("_sphere", 50, 50, size * 0.5f);
+			int n = 50;
+			if (size < 1)
+				n = 25;
+			geometry = new Sphere("_sphere", n, n, size * 0.5f);
 			break;
 		case teapot:
 			geometry = new Teapot("_teapot");

@@ -28,7 +28,7 @@ public class AddPlacemarkAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		PlacemarkState pState = new PlacemarkState(position);
-		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(pState);
+		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(pState, null);
 	}
 
 }

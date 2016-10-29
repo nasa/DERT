@@ -28,7 +28,7 @@ public class AddCartesianGridAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		GridState state = GridState.createCartesianGridState(position);
-		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state);
+		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 	}
 
 }

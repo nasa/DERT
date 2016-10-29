@@ -28,6 +28,6 @@ public class AddProfileAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		ProfileState state = new ProfileState(position);
-		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state);
+		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 	}
 }

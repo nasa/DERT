@@ -30,7 +30,7 @@ public class AddFigureAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		FigureState fState = new FigureState(position, normal);
-		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(fState);
+		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(fState, null);
 	}
 
 }

@@ -28,6 +28,6 @@ public class AddPlaneAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		PlaneState state = new PlaneState(position);
-		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state);
+		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 	}
 }

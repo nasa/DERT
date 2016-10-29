@@ -67,7 +67,7 @@ public class LandmarksPanel extends JPanel {
 			public void actionPerformed(ActionEvent event) {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
 				PlacemarkState pState = new PlacemarkState(position);
-				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(pState);
+				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(pState, null);
 				newMapElement(MapElementState.Type.Placemark, pState.getMapElement());
 			}
 		});
@@ -81,7 +81,7 @@ public class LandmarksPanel extends JPanel {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
 				ReadOnlyVector3 normal = World.getInstance().getMarble().getNormal();
 				FigureState fState = new FigureState(position, normal);
-				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(fState);
+				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(fState, null);
 				newMapElement(MapElementState.Type.Figure, fState.getMapElement());
 			}
 		});
@@ -94,7 +94,7 @@ public class LandmarksPanel extends JPanel {
 			public void actionPerformed(ActionEvent event) {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
 				ImageBoardState iState = new ImageBoardState(position);
-				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(iState);
+				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(iState, null);
 				newMapElement(MapElementState.Type.Billboard, iState.getMapElement());
 			}
 		});

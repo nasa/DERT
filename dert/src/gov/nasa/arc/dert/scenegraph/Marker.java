@@ -164,7 +164,6 @@ public abstract class Marker extends Movable implements ViewDependent {
 	 * @param newColor
 	 */
 	public void setColor(Color newColor) {
-		System.err.println("Marker.setColor "+newColor+" "+materialState);
 		color = newColor;
 		colorRGBA = UIUtil.colorToColorRGBA(color);
 		if (materialState == null) {
@@ -176,7 +175,6 @@ public abstract class Marker extends Movable implements ViewDependent {
 		}
 		setMaterialState();
 		markDirty(DirtyType.RenderState);
-		updateWorldRenderStates(true);
 	}
 
 	protected abstract void setMaterialState();

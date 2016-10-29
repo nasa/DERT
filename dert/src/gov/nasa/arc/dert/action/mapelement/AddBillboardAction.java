@@ -28,7 +28,7 @@ public class AddBillboardAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		ImageBoardState iState = new ImageBoardState(position);
-		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(iState);
+		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(iState, null);
 	}
 
 }

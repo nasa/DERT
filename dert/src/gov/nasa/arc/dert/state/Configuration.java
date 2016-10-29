@@ -13,6 +13,8 @@ import gov.nasa.arc.dert.view.surfaceandlayers.SurfaceAndLayersView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.JTextField;
+
 /**
  * A collection of State objects that represents a snapshot of a DERT session.
  *
@@ -273,7 +275,7 @@ public class Configuration {
 	 * @param state
 	 * @return
 	 */
-	public MapElement addMapElementState(MapElementState state) {
+	public MapElement addMapElementState(MapElementState state, JTextField msgField) {
 		MapElement mapElement = null;
 		if (state instanceof WaypointState) {
 			Path path = (Path) ((WaypointState) state).parent.getMapElement();
@@ -285,7 +287,7 @@ public class Configuration {
 			} else if (state instanceof ToolState) {
 				mapElement = World.getInstance().getTools().addTool((ToolState) state, true);
 			} else if (state instanceof FeatureSetState) {
-				mapElement = World.getInstance().getFeatureSets().addFeatureSet((FeatureSetState) state, true);
+				mapElement = World.getInstance().getFeatureSets().addFeatureSet((FeatureSetState) state, true, msgField);
 			}
 		}
 		World world = World.getInstance();
@@ -302,7 +304,7 @@ public class Configuration {
 	 */
 	public void addMapElementState(MapElementState[] state) {
 		for (int i = 0; i < state.length; ++i) {
-			addMapElementState(state[i]);
+			addMapElementState(state[i], null);
 		}
 	}
 

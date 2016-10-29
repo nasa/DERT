@@ -29,7 +29,7 @@ public class AddScaleAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		ScaleBarState state = new ScaleBarState(position);
-		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state);
+		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 	}
 
 }

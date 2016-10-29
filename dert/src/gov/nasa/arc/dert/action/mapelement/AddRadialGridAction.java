@@ -28,7 +28,7 @@ public class AddRadialGridAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		GridState state = GridState.createRadialGridState(position);
-		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state);
+		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 	}
 
 }

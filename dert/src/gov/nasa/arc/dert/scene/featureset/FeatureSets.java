@@ -1,6 +1,5 @@
 package gov.nasa.arc.dert.scene.featureset;
 
-import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.state.FeatureSetState;
@@ -12,7 +11,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 import com.ardor3d.renderer.state.TextureState;
 import com.ardor3d.renderer.state.ZBufferState;
@@ -51,9 +50,10 @@ public class FeatureSets extends GroupNode {
 		TextureState ts = new TextureState();
 		ts.setEnabled(false);
 		setRenderState(ts);
+		
 		for (int i = 0; i < featureSetList.size(); ++i) {
 			FeatureSetState state = featureSetList.get(i);
-			addFeatureSet(state, false);
+			addFeatureSet(state, false, null);
 		}
 
 		zBufferState = new ZBufferState();
@@ -96,17 +96,19 @@ public class FeatureSets extends GroupNode {
 	 * @param update
 	 * @return
 	 */
-	public FeatureSet addFeatureSet(FeatureSetState state, boolean update) {
+	public FeatureSet addFeatureSet(FeatureSetState state, boolean update, JTextField msgField) {
 		try {
 			FeatureSet featureSet = new FeatureSet(state);
 			attachChild(featureSet);
+			markDirty(DirtyType.RenderState);
 			if (update) {
 				featureSet.updateGeometricState(0, true);
 			}
 			return (featureSet);
 		} catch (Exception e) {
 			Console.getInstance().println(e.getMessage());
-			JOptionPane.showMessageDialog(Dert.getMainWindow(), e.getMessage());
+			if (msgField != null)
+				msgField.setText(e.getMessage());
 			return (null);
 		}
 	}

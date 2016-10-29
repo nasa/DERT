@@ -28,7 +28,7 @@ public class AddCameraAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		FieldCameraState state = new FieldCameraState(position);
-		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state);
+		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 	}
 
 }
