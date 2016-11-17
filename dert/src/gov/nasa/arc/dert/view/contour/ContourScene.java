@@ -221,13 +221,9 @@ public class ContourScene extends BasicScene implements ColorMapListener {
 	}
 
 	@Override
-	public void preRender(Renderer renderer) {
+	public void render(Renderer renderer) {
 		camera.update();
 		camera.apply(renderer);
-	}
-
-	@Override
-	public void render(Renderer renderer) {
 		renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
 		renderer.draw(rootNode);
 	}
