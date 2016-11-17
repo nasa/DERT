@@ -227,7 +227,7 @@ public class Feature
 	 */
 	@Override
 	public boolean isLabelVisible() {
-		return (false);
+		return (labelVisible);
 	}
 
 	/**
