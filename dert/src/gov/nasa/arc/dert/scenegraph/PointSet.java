@@ -53,7 +53,8 @@ public class PointSet extends Node {
 	 *            the index to insert the point, -1 indicates to add at the end
 	 * @return the index where the point was added
 	 */
-	public synchronized int addPoint(Waypoint p, int index) {
+	public int addPoint(Waypoint p, int index) {
+//		System.err.println("PointSet.addPoint "+getNumberOfChildren()+" "+this+" "+index+" "+p.getWorldBound()+" "+p.getTranslation());
 		if ((index == getNumberOfChildren()) || (index < 0)) {
 			attachChild(p);
 			index = getChildIndex(p);			
@@ -62,7 +63,7 @@ public class PointSet extends Node {
 			attachChildAt(p, index);
 			index = getChildIndex(p);
 		}
-		updateGeometricState(0);
+//		updateGeometricState(0, true);
 		return (index);
 	}
 	
@@ -79,11 +80,11 @@ public class PointSet extends Node {
 	 * 
 	 * @param point
 	 */
-	public synchronized void removePoint(Waypoint point) {
+	public void removePoint(Waypoint point) {
 		detachChild(point);
 	}
 
-	private synchronized ArrayList<ReadOnlyVector3> getPointList() {
+	private ArrayList<ReadOnlyVector3> getPointList() {
 		pointList.clear();
 		for (int i = 0; i < getNumberOfChildren(); ++i) {
 			pointList.add(new Vector3(getChild(i).getTranslation()));
@@ -352,5 +353,13 @@ public class PointSet extends Node {
 
         return vectors;
     }
+	
+//    @Override
+//    public void draw(final Renderer r) {
+//    	System.err.println("PointSet.draw "+getName()+" "+getNumberOfChildren()+" "+this);
+//    	for (int i=0; i<getNumberOfChildren(); ++i)
+//    		System.err.println("PointSet.draw "+i+" "+getChild(i)+" "+getChild(i).getClass());
+//    	super.draw(r);
+//    }
 
 }
