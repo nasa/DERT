@@ -19,12 +19,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import com.ardor3d.bounding.BoundingBox;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Node;
+import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.hint.LightCombineMode;
 import com.ardor3d.util.geom.BufferUtils;
 
@@ -138,6 +141,14 @@ public class GeojsonLoader {
 				}
 			}
 		}
+		Collections.sort(root.getChildren(), new Comparator<Spatial>() {
+			public int compare(Spatial spat1, Spatial spat2) {
+				return(spat1.getName().compareTo(spat2.getName()));
+			}
+			public boolean equals(Object obj) {
+				return(this == obj);
+			}
+		});
 		root.setLabelVisible(true);
 		Console console = Console.getInstance();
 		if (console != null)
@@ -182,11 +193,9 @@ public class GeojsonLoader {
 				return (false);
 			pos = toWorld(pCoord, false);
 			if (pos != null) {
-				FigureMarker fm = new FigureMarker(parent.getName(), pos, 1, 0, color, false, true, true);
+				FigureMarker fm = new FigureMarker(parent.getName(), pos, 0.75, 0, color, false, true, true);
 				fm.setShape(ShapeType.crystal);
 				fm.setAutoShowLabel(true);
-//				BillboardMarker fm = new BillboardMarker("_geom", pos, 0.5, 0, color, false, true);
-//				fm.setTexture(texture, texture);
 				parent.attachChild(fm);
 				minZ = pos.getZ();
 				maxZ = pos.getZ();
@@ -208,7 +217,7 @@ public class GeojsonLoader {
 				}
 				pos = toWorld(mpCoord[i], false);
 				if (coord != null) {
-					FigureMarker fm = new FigureMarker(parent.getName()+i, pos, 0.5, 0, color, false, true, true);
+					FigureMarker fm = new FigureMarker(parent.getName()+i, pos, 0.75, 0, color, false, true, true);
 					fm.setShape(ShapeType.sphere);
 					parent.attachChild(fm);
 					minZ = Math.min(minZ, pos.getZ());
