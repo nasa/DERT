@@ -30,9 +30,11 @@ public class RasterText extends Text {
 	private final Matrix3 rot = new Matrix3();
 //	private boolean autoHide = false, doHide;
 	private Vector3 location = new Vector3();
-	private double oldScale;
+//	private double oldScale;
 	
 	private boolean scalable = true;
+	
+	protected double glutWidth;
 	
 	static {
 		glut = new GLUT();		
@@ -103,13 +105,14 @@ public class RasterText extends Text {
 	}
 
 	@Override
-	protected double getWidth(String str) {
-		return (scaleFactor * glut.glutBitmapLength(font, str));
+	protected double getTextWidth() {
+//		System.err.println("RasterText.getWidth "+str+" "+scaleFactor+" "+glut.glutBitmapLength(font, str)+" "+(scaleFactor * glut.glutBitmapLength(font, str)));
+		return (glut.glutBitmapLength(font, textString));
 	}
 
 	@Override
-	protected double getHeight(String str) {
-		return (scaleFactor * fontHeight);
+	protected double getTextHeight() {
+		return (fontHeight);
 	}
 
 	@Override
@@ -141,12 +144,12 @@ public class RasterText extends Text {
 	}
 
 	@Override
-	public synchronized void draw(final Renderer r) {
+	public void draw(final Renderer r) {
 //		if (doHide)
 //			return;
 		update((BasicCamera)ContextManager.getCurrentContext().getCurrentCamera());
 		if (scalable)
-		_worldTransform.setRotation(rot);
+			_worldTransform.setRotation(rot);
 		_worldTransform.setScale(_localTransform.getScale());
 		super.draw(r);
 	}
@@ -183,10 +186,11 @@ public class RasterText extends Text {
 //		if (autoHide) {
 //			doHide = (1 / screenScale < 0.5);
 //		}
-		double scale = screenScale * scaleFactor;
-		if (scalable && (Math.abs(scale - oldScale) > 0.0001)) {
+//		double scale = screenScale * scaleFactor;
+//		if (scalable && (Math.abs(scale - oldScale) > 0.00001)) {
+		if (scalable) {
 			setScaleFactor(screenScale);
-			oldScale = scale;
+//			oldScale = scale;
 		}
 	}
 }

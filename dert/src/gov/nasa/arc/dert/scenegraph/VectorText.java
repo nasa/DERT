@@ -47,15 +47,15 @@ public class VectorText extends Text {
 	}
 
 	@Override
-	protected double getWidth(String str) {
-		Rectangle2D rect = textRenderer.getBounds(str);
-		return(scaleFactor*rect.getWidth());
+	protected double getTextWidth() {
+		Rectangle2D rect = textRenderer.getBounds(textString);
+		return(rect.getWidth());
 	}
 
 	@Override
-	protected double getHeight(String str) {
-		Rectangle2D rect = textRenderer.getBounds(str);
-		return(scaleFactor*rect.getHeight());
+	protected double getTextHeight() {
+		Rectangle2D rect = textRenderer.getBounds(textString);
+		return(rect.getHeight());
 	}
 
 	@Override

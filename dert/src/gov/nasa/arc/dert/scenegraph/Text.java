@@ -41,6 +41,9 @@ public abstract class Text extends Mesh {
 
 	// For visibility
 	protected CullHint cullHint = CullHint.Inherit;
+	
+	// Cache string dimensions
+	protected double width, height;
 
 	/**
 	 * Constructor
@@ -57,8 +60,10 @@ public abstract class Text extends Mesh {
 		this.textString = textString;
 		this.alignment = alignment;
 		scaleFactor = 1;
-		double w = getWidth(textString) / 2.0;
-		double h = getHeight(textString) / 2.0;
+		width = getTextWidth();
+		height = getTextHeight();
+		double w = getWidth() / 2.0;
+		double h = getHeight() / 2.0;
 		switch (alignment) {
 		case Left:
 			position = new Vector3();
@@ -91,11 +96,11 @@ public abstract class Text extends Mesh {
 		setRenderState(ts);
 
 		setDefaultColor(color);
-	}
+	}	
 
-	protected abstract double getWidth(String str);
+	protected abstract double getTextWidth();
 
-	protected abstract double getHeight(String str);
+	protected abstract double getTextHeight();
 
 	/**
 	 * Set the color of the text
@@ -114,16 +119,16 @@ public abstract class Text extends Mesh {
 	 */
 	public void setScaleFactor(double scaleFactor) {
 		this.scaleFactor = scaleFactor;
-		double w = getWidth(textString) / 2.0;
+		double w = getWidth() / 2.0;
 		switch (alignment) {
 		case Left:
-			position = new Vector3();
+			position.set(Vector3.ZERO);
 			break;
 		case Center:
-			position = new Vector3(-w, 0, 0);
+			position.set(-w, 0, 0);
 			break;
 		case Right:
-			position = new Vector3(-w * 2, 0, 0);
+			position.set(-w * 2, 0, 0);
 			break;
 		}
 	}
@@ -138,23 +143,25 @@ public abstract class Text extends Mesh {
 			textString = "";
 		}
 		this.textString = textString;
-		double w = getWidth(textString) / 2.0;
-		double h = getHeight(textString) / 2.0;
+		width = getTextWidth();
+		height = getTextHeight();
+		double w = getWidth() / 2.0;
+		double h = getHeight() / 2.0;
 		switch (alignment) {
 		case Left:
-			position = new Vector3();
+			position.set(Vector3.ZERO);
 			((BoundingBox)_modelBound).setXExtent(w);
 			((BoundingBox)_modelBound).setYExtent(h);
 			((BoundingBox)_modelBound).setCenter(w, h, 0);
 			break;
 		case Center:
-			position = new Vector3(-w, 0, 0);
+			position.set(-w, 0, 0);
 			((BoundingBox)_modelBound).setXExtent(w);
 			((BoundingBox)_modelBound).setYExtent(h);
 			((BoundingBox)_modelBound).setCenter(Vector3.ZERO);
 			break;
 		case Right:
-			position = new Vector3(-w * 2, 0, 0);
+			position.set(-w * 2, 0, 0);
 			((BoundingBox)_modelBound).setXExtent(w);
 			((BoundingBox)_modelBound).setYExtent(h);
 			((BoundingBox)_modelBound).setCenter(-w, h, 0);
@@ -187,7 +194,7 @@ public abstract class Text extends Mesh {
 	 * @return
 	 */
 	public double getWidth() {
-		return (getWidth(textString));
+		return (scaleFactor*getTextWidth());
 	}
 
 	/**
@@ -196,7 +203,7 @@ public abstract class Text extends Mesh {
 	 * @return
 	 */
 	public double getHeight() {
-		return (getHeight(textString));
+		return (scaleFactor*getTextHeight());
 	}
 
 	/**
