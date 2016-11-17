@@ -100,7 +100,8 @@ public class FeatureSetPanel extends MapElementBasePanel {
 			FeatureSet fs = (FeatureSet)feature.getParent();
 			if (fs != null)
 				fileLabel.setText("File: "+fs.getFilePath());
-			labelCheckBox.setEnabled(false);
+			labelCheckBox.setSelected(feature.isLabelVisible());
+			labelCheckBox.setEnabled(true);
 			nameLabel.setText(feature.getName());
 			HashMap<String,Object> properties = feature.getProperties();
 			Object[] key = properties.keySet().toArray();
