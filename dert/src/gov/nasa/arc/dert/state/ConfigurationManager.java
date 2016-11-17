@@ -264,7 +264,7 @@ public class ConfigurationManager {
 
 		try {
 			// Perform UI operations on UI event thread
-			EventQueue.invokeAndWait(new Runnable() {
+			EventQueue.invokeLater(new Runnable() {
 				@Override
 				public void run() {
 					// setup the main virtual world view
