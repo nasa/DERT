@@ -21,7 +21,7 @@ public class DirtyEventHandler implements DirtyEventListener {
 	private GroupNode rootNode;
 
 	// Changed flag
-	private AtomicBoolean changed;
+	public AtomicBoolean changed;
 
 	/**
 	 * Constructor
@@ -41,29 +41,28 @@ public class DirtyEventHandler implements DirtyEventListener {
 		if (spatial == null) {
 			spatial = rootNode;
 		}
-		changed.set(false);
 		switch (type) {
 		case Attached:
 			rootNode.updateGeometricState(0, true);
-			changed.set(!(spatial instanceof Billboard));
+			changed.set(!(spatial instanceof Billboard) || changed.get());
 			break;
 		case Detached:
 			rootNode.updateGeometricState(0, true);
-			changed.set(!(spatial instanceof Billboard));
+			changed.set(!(spatial instanceof Billboard) || changed.get());
 			break;
 		case Bounding:
 			rootNode.updateGeometricState(0, true);
 			break;
 		case RenderState:
 			rootNode.updateGeometricState(0, true);
-			changed.set(!(spatial instanceof Billboard));
+			changed.set(!(spatial instanceof Billboard) || changed.get());
 			break;
 		case Transform:
 			spatial.updateWorldTransform(true);
 			if (spatial instanceof Movable) {
 				((Movable) spatial).notifyListeners();
 			}
-			changed.set(!(spatial instanceof Billboard) && !(spatial instanceof Marble));
+			changed.set(!(spatial instanceof Billboard) && !(spatial instanceof Marble) || changed.get());
 			break;
 		case Destroyed:
 			break;
@@ -74,14 +73,6 @@ public class DirtyEventHandler implements DirtyEventListener {
 	@Override
 	public boolean spatialClean(Spatial spatial, DirtyType type) {
 		return (false);
-	}
-
-	public final boolean getChanged() {
-		return (changed.get());
-	}
-
-	public final void setChanged(boolean value) {
-		changed.set(value);
 	}
 
 }
