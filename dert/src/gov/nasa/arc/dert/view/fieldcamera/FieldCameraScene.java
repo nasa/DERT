@@ -89,17 +89,17 @@ public class FieldCameraScene extends BasicScene implements DirtyEventListener {
 	}
 
 	@Override
-	public void preRender(Renderer renderer) {
+	public void render(Renderer renderer) {
 		fieldCamera.cull();
 		ReadOnlyColorRGBA bgCol = World.getInstance().getLighting().getBackgroundColor();
 		if (!bgCol.equals(backgroundColor)) {
 			renderer.setBackgroundColor(bgCol);
 			backgroundColor = bgCol;
 		}
-	}
-
-	@Override
-	public void postRender(Renderer renderer) {
+		
+		renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
+		renderer.draw(rootNode);
+		
 		fieldCamera.uncull();
 
 		if (crosshairVisible) {
@@ -111,34 +111,28 @@ public class FieldCameraScene extends BasicScene implements DirtyEventListener {
 		}
 	}
 
-	@Override
-	public void render(Renderer renderer) {
-		renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
-		renderer.draw(rootNode);
-	}
-
 	/**
 	 * The world changed
 	 */
 	@Override
 	public boolean spatialDirty(Spatial spatial, DirtyType type) {
-		if (spatial == null) {
-			spatial = rootNode;
-		}
-		switch (type) {
-		case Attached:
-			break;
-		case Detached:
-			break;
-		case Bounding:
-			break;
-		case RenderState:
-			break;
-		case Transform:
-			break;
-		case Destroyed:
-			break;
-		}
+//		if (spatial == null) {
+//			spatial = rootNode;
+//		}
+//		switch (type) {
+//		case Attached:
+//			break;
+//		case Detached:
+//			break;
+//		case Bounding:
+//			break;
+//		case RenderState:
+//			break;
+//		case Transform:
+//			break;
+//		case Destroyed:
+//			break;
+//		}
 		needsRender.set(true);
 		return (false);
 	}
