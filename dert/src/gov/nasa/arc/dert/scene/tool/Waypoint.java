@@ -53,6 +53,8 @@ public class Waypoint extends BillboardMarker implements MapElement {
 		setVisible(state.visible);
 		this.state = state;
 		state.setMapElement(this);
+		// Update this node and its children so they will be drawn.
+		updateGeometricState(0);
 	}
 
 	/**
@@ -175,5 +177,11 @@ public class Waypoint extends BillboardMarker implements MapElement {
 //			label.setVisible(labelVisible);
 //		}
 //	}
+	
+//    @Override
+//    public void draw(final Renderer r) {
+//    	System.err.println("Waypoint.draw "+getName());
+//    	super.draw(r);
+//    }
 
 }
