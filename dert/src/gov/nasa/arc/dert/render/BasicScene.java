@@ -102,41 +102,12 @@ public abstract class BasicScene implements Scene {
 		}
 
 		// render the scene graph if it has changed
-		boolean draw = needsRender(renderer);
-		if (draw) {
-			preRender(renderer);
+		boolean draw = needsRender.get();
+		if (draw)
 			render(renderer);
-			postRender(renderer);
-		}
+		needsRender.set(false);
 
 		return draw;
-	}
-
-	/**
-	 * Do any pre-rendering tasks
-	 * 
-	 * @param renderer
-	 */
-	public void preRender(Renderer renderer) {
-	}
-
-	/**
-	 * Do any post-rendering tasks
-	 * 
-	 * @param renderer
-	 */
-	public void postRender(Renderer renderer) {
-	}
-
-	/**
-	 * Determine if this scene needs to be rendered
-	 * 
-	 * @param renderer
-	 * @return
-	 */
-	public boolean needsRender(Renderer renderer) {
-		boolean doDraw = needsRender.getAndSet(false);
-		return (doDraw);
 	}
 
 	/**
