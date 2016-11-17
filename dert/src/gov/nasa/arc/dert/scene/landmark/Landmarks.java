@@ -22,6 +22,7 @@ import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.state.TextureState;
 import com.ardor3d.renderer.state.ZBufferState;
 import com.ardor3d.scenegraph.Spatial;
+import com.ardor3d.scenegraph.event.DirtyType;
 
 /**
  * Group of Landmarks
@@ -121,6 +122,7 @@ public class Landmarks extends GroupNode {
 				spatial.updateGeometricState(0, true);
 				landmark.update(Dert.getWorldView().getViewpointNode().getCamera());
 			}
+			spatial.markDirty(DirtyType.RenderState);
 		}
 		return (landmark);
 	}
