@@ -119,8 +119,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 
 		this.labelType = state.labelType;
 		this.bodyType = state.bodyType;
-//		lineIsEnabled = this.bodyType == BodyType.Line;
-//		polyIsEnabled = this.bodyType == BodyType.Polygon;
 		this.size = state.size;
 		this.labelVisible = state.labelVisible;
 		this.waypointsVisible = state.waypointsVisible;
@@ -129,7 +127,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		this.lineWidth = state.lineWidth;
 
 		// Create scene graph elements
-		pointSet = new PointSet("_points");
+		pointSet = new PointSet("_points_"+state.name);
 		attachChild(pointSet);
 		
 		line = new HiddenLine("_line", IndexMode.LineStrip);
@@ -154,6 +152,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		enableLine(this.bodyType == BodyType.Line);
 		enablePolygon(this.bodyType == BodyType.Polygon);
 
+		// Update this node and its children so they will be drawn.
 		updateGeometricState(0);
 		
 		currentIndex = -1;
@@ -309,7 +308,8 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		enableLine(lineIsEnabled);
 		enablePolygon(polyIsEnabled);
 
-		updateGeometricState(0);
+//		updateGeometricState(0);
+		markDirty(DirtyType.RenderState);
 		
 		newPoints ++;
 		return (currentWaypoint);
@@ -833,8 +833,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	}
 
 	private void enableLine(boolean enable) {
-		if (lineIsEnabled == enable)
-			return;
 		if (enable) {
 			pointSet.updateLine(line);
 			if (pointSet.getNumberOfChildren() > 1) {
@@ -847,12 +845,9 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			line.getSceneHints().setCullHint(CullHint.Always);
 			lineIsEnabled = false;
 		}
-		updateGeometricState(0, true);
 	}
 
 	private void enablePolygon(boolean enable) {
-		if (polyIsEnabled == enable)
-			return;
 		if (enable) {
 			pointSet.updatePolygon(poly);
 			if (pointSet.getNumberOfChildren() > 2) {
@@ -867,7 +862,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			polyIsEnabled = false;
 		}
 		pointSet.showWaypointsAsSpheres(polyIsEnabled);
-		updateGeometricState(0, true);
+//		updateGeometricState(0, true);
 	}
 	
 	public int getDimensions(Vector3 lBound, Vector3 uBound, Vector3 centroid, double[] distArea) {
