@@ -3,6 +3,7 @@ package gov.nasa.arc.dert.render;
 import gov.nasa.arc.dert.state.State;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Panel;
 
@@ -48,6 +49,7 @@ public class SceneCanvasPanel extends Panel implements Updater {
 	 * @param mainCanvas
 	 */
 	public SceneCanvasPanel(int width, int height, BasicScene bscene, boolean mainCanvas, boolean addBackgroundPanel) {
+		setBackground(Color.red);
 
 		// create the CanvasRenderer and SceneCanvas
 		canvasRenderer = new JoglCanvasRendererDouble(bscene, false);
@@ -59,21 +61,25 @@ public class SceneCanvasPanel extends Panel implements Updater {
 
 			@Override
 			public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
+				System.err.println("SceneCanvasPanel.reshape "+x+" "+y+" "+width+" "+height);
 				scene.resize(width, height);
 			}
 
 			@Override
 			public void init(GLAutoDrawable glautodrawable) {
+				System.err.println("SceneCanvasPanel.initialize ");
 				initialize();
 			}
 
 			@Override
 			public void dispose(GLAutoDrawable glautodrawable) {
+				System.err.println("SceneCanvasPanel.dispose ");
 				// nothing here
 			}
 
 			@Override
 			public void display(GLAutoDrawable glautodrawable) {
+				System.err.println("SceneCanvasPanel.display ");
 				SceneCanvasPanel.this.scene.needsRender.set(true);
 			}
 		};
@@ -100,6 +106,7 @@ public class SceneCanvasPanel extends Panel implements Updater {
 			SceneFramework.getInstance().getFrameHandler().addUpdater(SceneCanvasPanel.this);
 			initialized = true;
 		}
+		System.err.println("SceneCanvasPanel.initialize canvas z order = "+getComponentZOrder(canvas)+", realized = "+canvas.isRealized());
 	}
 
 	/**
