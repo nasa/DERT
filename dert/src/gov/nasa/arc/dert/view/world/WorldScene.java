@@ -55,6 +55,8 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	// viewpoint are loaded.
 	// TODO: Come up with a better way to do this.
 	private int initializingCount;
+	
+	private boolean worldChanged, viewpointChanged;
 
 	/**
 	 * Constructor
@@ -93,7 +95,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		centerScale = viewpointNode.getCenterScale();
 		CoordAction.listenerList.add(viewpointNode);
 		initializingCount = Landscape.getInstance().getBaseMapLevel() * 2;
-		updateBounds();
+		viewpointNode.setSceneBounds();
 		spatialDirty(null, DirtyType.Attached); // add the tiles to the
 												// viewdependent list
 	}
@@ -108,13 +110,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	}
 
 	/**
-	 * Update the bounds
-	 */
-	public void updateBounds() {
-		viewpointNode.setSceneBounds();
-	}
-
-	/**
 	 * Update method called by framework
 	 */
 	@Override
@@ -126,38 +121,39 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 			viewpointNode.changed.set(true);
 			initializingCount--;
 		}
-		if (viewpointNode.changed.get()) {
+		viewpointChanged = viewpointNode.changed.getAndSet(false);
+		if (viewpointChanged) {
 			for (int i = 0; i < viewDependentList.size(); ++i) {
 				viewDependentList.get(i).update(viewpointNode.getCamera());
 			}
 		}
+		worldChanged = World.getInstance().getDirtyEventHandler().changed.getAndSet(false);
+//		System.err.println("WorldScene.update "+viewpointChanged+" "+worldChanged+" "+needsRender.get());
+		needsRender.set(viewpointChanged || worldChanged || needsRender.get());
 	}
 
-	@Override
-	public void preRender(Renderer renderer) {
-		World world = World.getInstance();
-		world.getLighting().prerender(viewpointNode.getCamera(), renderer,
-			world.getDirtyEventHandler().getChanged() || viewpointNode.changed.getAndSet(false));
-		if (world.getDirtyEventHandler().getChanged()) {
+	private void preRender(Renderer renderer) {
+		Lighting lighting = ((World)rootNode).getLighting();
+		lighting.prerender(viewpointNode.getCamera(), renderer, worldChanged);
+		if (worldChanged) {
 			Landscape.getInstance().getLayerManager().renderLayers(renderer);
 		}
 
 		viewpointNode.updateGeometricState(0);
 		viewpointNode.getCamera().update();
-		ReadOnlyColorRGBA bgCol = world.getLighting().getBackgroundColor();
+		ReadOnlyColorRGBA bgCol = lighting.getBackgroundColor();
 		if (!bgCol.equals(backgroundColor)) {
 			renderer.setBackgroundColor(bgCol);
 			backgroundColor.set(bgCol);
 		}
 	}
 
-	@Override
-	public void postRender(Renderer renderer) {
-		World world = World.getInstance();
-		world.getLighting().postrender(viewpointNode.getCamera(), renderer,
-			world.getDirtyEventHandler().getChanged());
-		world.getDirtyEventHandler().setChanged(false);
-		drawNormals(renderer);
+	private void postRender(Renderer renderer) {
+		((World)rootNode).getLighting().postrender(viewpointNode.getCamera(), renderer, worldChanged);
+
+		if (showNormals) {
+			Debugger.drawNormals(rootNode, renderer);
+		}
 		if (showCrosshair) {
 			crosshair.getSceneHints().setCullHint(CullHint.Never);
 			crosshair.onDraw(renderer);
@@ -180,16 +176,8 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	}
 
 	@Override
-	public boolean needsRender(Renderer renderer) {
-		// System.err.println("WorldScene.needsRender "+viewpointNode.changed.get());
-		// boolean doDraw = viewpointNode.changed.getAndSet(false);
-		boolean doDraw = viewpointNode.changed.get();
-		doDraw |= super.needsRender(renderer);
-		return (doDraw);
-	}
-
-	@Override
 	public void render(Renderer renderer) {
+		preRender(renderer);
 		// renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
 		if (viewpointNode.getCamera() instanceof AnaglyphCamera) {
 			AnaglyphCamera camera = (AnaglyphCamera) viewpointNode.getCamera();
@@ -210,6 +198,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 			renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
 			renderer.draw(rootNode);
 		}
+		postRender(renderer);
 	}
 
 	/**
@@ -223,11 +212,11 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		switch (type) {
 		case Attached:
 			addViewDependents(spatial);
-			updateBounds();
+			viewpointNode.setSceneBounds();
 			break;
 		case Detached:
 			removeViewDependents(spatial);
-			updateBounds();
+			viewpointNode.setSceneBounds();
 			break;
 		case Bounding:
 			break;
@@ -339,18 +328,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	 */
 	public boolean getShowCenterScale() {
 		return (showCenterScale);
-	}
-
-	/**
-	 * Draw surface normals
-	 * 
-	 * @param r
-	 */
-	private void drawNormals(Renderer r) {
-
-		if (showNormals) {
-			Debugger.drawNormals(rootNode, r);
-		}
 	}
 
 	/**
