@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.view.mapelement;
 
+import gov.nasa.arc.dert.scene.featureset.Feature;
 import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.scene.landmark.Landmark;
 import gov.nasa.arc.dert.scene.tool.Tool;
@@ -73,10 +74,24 @@ public class MapElementTreeCellRenderer extends DefaultTreeCellRenderer {
 			}
 			setIcon(null);
 			setText(waypoint.getName());
+		} else if (value instanceof Feature) {
+			Feature feature = (Feature) value;
+			if (!feature.isVisible()) {
+				setFont(italicFont);
+			} else {
+				setFont(defaultFont);
+			}
+			setIcon(null);
+			setText(feature.getName());
 		} else if (value instanceof FeatureSet) {
-			FeatureSet vectorGroup = (FeatureSet) value;
-			setIcon(vectorGroup.getIcon());
-			setText(vectorGroup.getName());
+			FeatureSet featureSet = (FeatureSet) value;
+			if (!featureSet.isVisible()) {
+				setFont(italicFont);
+			} else {
+				setFont(defaultFont);
+			}
+			setIcon(featureSet.getIcon());
+			setText(featureSet.getName());
 		}
 		return (this);
 	}
