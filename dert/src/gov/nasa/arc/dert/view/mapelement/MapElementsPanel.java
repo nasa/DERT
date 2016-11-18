@@ -180,6 +180,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 						searchIndex = 0;
 					}
 					tree.setSelectionPath(searchResult[searchIndex]);
+					tree.scrollPathToVisible(searchResult[searchIndex]);
 				}
 			}
 		});
@@ -370,6 +371,13 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			if (child.toString().contains(searchStr)) {
 				list.add(new TreePath(child.getPath()));
 			}
+			int nn = child.getChildCount();
+			for (int j = 0; j < nn; ++j) {
+				DefaultMutableTreeNode grandChild = (DefaultMutableTreeNode) child.getChildAt(j);
+				if (grandChild.toString().contains(searchStr)) {
+					list.add(new TreePath(grandChild.getPath()));
+				}
+			}
 		}
 		if (list.size() == 0) {
 			return (null);
@@ -389,6 +397,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			tree.setSelectionPath(null);
 			return;
 		}
+		TreePath treePath = null;
 		DefaultMutableTreeNode treeNode = null;
 		if (mapElement instanceof Landmark) {
 			int n = landmarksNode.getChildCount();
@@ -399,8 +408,32 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 					break;
 				}
 			}
-			if (treeNode != null) {
-				tree.setSelectionPath(new TreePath(new Object[] { rootNode, landmarksNode, treeNode }));
+			if (treeNode != null)
+				treePath = new TreePath(new Object[] { rootNode, landmarksNode, treeNode });
+		} else if (mapElement instanceof Waypoint) {
+			Path path = ((Waypoint)mapElement).getPath();
+			if (path != null) {
+				int n = toolsNode.getChildCount();
+				DefaultMutableTreeNode ptNode = null;
+				for (int i = 0; i < n; ++i) {
+					DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) toolsNode.getChildAt(i);
+					if ((MapElement) dmtn.getUserObject() == path) {
+						ptNode = dmtn;
+						break;
+					}
+				}
+				if (ptNode != null) {
+					n = ptNode.getChildCount();
+					for (int i=0; i<n; ++i) {
+						DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) ptNode.getChildAt(i);
+						if ((MapElement) dmtn.getUserObject() == mapElement) {
+							treeNode = dmtn;
+							break;
+						}
+					}
+					if (treeNode != null)
+						treePath = new TreePath(new Object[] { rootNode, toolsNode, ptNode, treeNode });
+				}
 			}
 		} else if (mapElement instanceof Tool) {
 			int n = toolsNode.getChildCount();
@@ -411,9 +444,8 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 					break;
 				}
 			}
-			if (treeNode != null) {
-				tree.setSelectionPath(new TreePath(new Object[] { rootNode, toolsNode, treeNode }));
-			}
+			if (treeNode != null)
+				treePath = new TreePath(new Object[] { rootNode, toolsNode, treeNode });
 		} else if (mapElement instanceof FeatureSet) {
 			int n = featureSetsNode.getChildCount();
 			for (int i = 0; i < n; ++i) {
@@ -423,9 +455,8 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 					break;
 				}
 			}
-			if (treeNode != null) {
-				tree.setSelectionPath(new TreePath(new Object[] { rootNode, featureSetsNode, treeNode }));
-			}
+			if (treeNode != null)
+				treePath = new TreePath(new Object[] { rootNode, featureSetsNode, treeNode });
 		} else if (mapElement instanceof Feature) {
 			FeatureSet fs = (FeatureSet)((Feature)mapElement).getParent();
 			int n = featureSetsNode.getChildCount();
@@ -446,12 +477,13 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 						break;
 					}
 				}
-				if (treeNode != null) {
-					TreePath treePath = new TreePath(new Object[] { rootNode, featureSetsNode, fstnode, treeNode });
-					tree.setSelectionPath(treePath);
-					tree.scrollPathToVisible(treePath);
-				}
+				if (treeNode != null)
+					treePath = new TreePath(new Object[] { rootNode, featureSetsNode, fstnode, treeNode });
 			}
+		}
+		if (treePath != null) {
+			tree.setSelectionPath(treePath);
+			tree.scrollPathToVisible(treePath);
 		}
 	}
 
