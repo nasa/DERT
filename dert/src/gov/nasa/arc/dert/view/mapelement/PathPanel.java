@@ -199,7 +199,7 @@ public class PathPanel extends MapElementBasePanel {
 			colorList.setColor(path.getColor());
 			noteText.setText(waypoint.getState().getAnnotation());
 			typeCombo.setSelectedItem(path.getBodyType());
-			labelCheckBox.setSelected(path.isLabelVisible());
+			labelCheckBox.setSelected(waypoint.isLabelVisible());
 			showWaypoints.setSelected(path.areWaypointsVisible());
 			lineWidthText.setValue(path.getLineWidth());
 
@@ -208,7 +208,7 @@ public class PathPanel extends MapElementBasePanel {
 			pinnedCheckBox.setEnabled(false);
 			colorList.setEnabled(false);
 			noteText.setEnabled(true);
-			labelCheckBox.setEnabled(false);
+			labelCheckBox.setEnabled(true);
 			typeCombo.setEnabled(false);
 			saveAsCSV.setEnabled(false);
 			addPoints.setEnabled(true);
