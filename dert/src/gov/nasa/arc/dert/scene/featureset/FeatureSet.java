@@ -26,7 +26,7 @@ import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.CullHint;
 
 /**
- * Provides a MapElement that consists of a set of lines. Input is from a
+ * Provides a MapElement that consists of a set of lines and/or points. Input is from a
  * GeoJSON file
  *
  */
@@ -48,6 +48,8 @@ public class FeatureSet extends GroupNode implements MapElement {
 	private Vector3 location;
 	
 	private boolean labelVisible;
+	
+	private boolean ground;
 
 	/**
 	 * Constructor
@@ -68,14 +70,15 @@ public class FeatureSet extends GroupNode implements MapElement {
 		super(state.name);
 		location = new Vector3();
 		this.filePath = state.filePath;
+		ground = state.ground;
 		color = state.color;
 		setVisible(state.visible);
 		this.state = state;
 		state.setMapElement(this);
 		// Load the vector file into an Ardor3D object.
-		GeojsonLoader jsonLoader = new GeojsonLoader(srs);
-		GeoJsonObject gjRoot = jsonLoader.load(filePath, state.labelProp);
-		jsonLoader.geoJsonToArdor3D(gjRoot, this, color, elevAttrName, state.isProjected);
+		GeojsonLoader jsonLoader = new GeojsonLoader(srs, elevAttrName, state.labelProp, state.ground);
+		GeoJsonObject gjRoot = jsonLoader.load(filePath);
+		jsonLoader.geoJsonToArdor3D(gjRoot, this, color, state.isProjected);
 		if (getNumberOfChildren() == 0) {
 			throw new IllegalStateException("No vectors found.");
 		}
@@ -162,6 +165,8 @@ public class FeatureSet extends GroupNode implements MapElement {
 	 */
 	@Override
 	public boolean updateElevation(QuadTree quadTree) {
+		if (!ground)
+			return(false);
 		boolean modified = false;
 		for (int i = 0; i < getNumberOfChildren(); ++i) {
 			Spatial child = getChild(i);

@@ -27,6 +27,7 @@ public class FeatureSetDialog
 	private JTextField fileText;
 	private JButton browseButton;
 	private JCheckBox isProjected;
+	private JCheckBox ground;
 	private JTextField labelText;
 
 	/**
@@ -67,13 +68,18 @@ public class FeatureSetDialog
 		isProjected = new JCheckBox();
 		contentArea.add(isProjected, GBCHelper.getGBC(3, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
 		
+		label = new JLabel("Use elevation for Z coordinate: ");
+		contentArea.add(label, GBCHelper.getGBC(0, 2, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
+		ground = new JCheckBox();
+		contentArea.add(ground, GBCHelper.getGBC(3, 2, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
+		
 		label = new JLabel("Property to use as label: ");
-		contentArea.add(label, GBCHelper.getGBC(0, 2, 2, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
+		contentArea.add(label, GBCHelper.getGBC(0, 3, 2, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
 		labelText = new JTextField();
-		contentArea.add(labelText, GBCHelper.getGBC(2, 2, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
+		contentArea.add(labelText, GBCHelper.getGBC(2, 3, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
 		
 		width = 400;
-		height = 200;
+		height = 220;
 	}
 
 	@Override
@@ -102,7 +108,7 @@ public class FeatureSetDialog
 		if (labelProp.isEmpty())
 			labelProp = null;
 		String label = StringUtil.getLabelFromFilePath(filePath);
-		FeatureSetState lsState = new FeatureSetState(label, filePath, FeatureSet.defaultColor, null, isProjected.isSelected(), labelProp);
+		FeatureSetState lsState = new FeatureSetState(label, filePath, FeatureSet.defaultColor, null, isProjected.isSelected(), ground.isSelected(), labelProp);
 		if (ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(lsState, messageText) == null)
 			return(false);
 		return(true);

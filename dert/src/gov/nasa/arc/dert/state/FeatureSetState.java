@@ -16,6 +16,7 @@ public class FeatureSetState extends MapElementState {
 	public String filePath;
 	public boolean isProjected;
 	public String labelProp;
+	public boolean ground;
 
 	/**
 	 * Constructor for LayerFactory.
@@ -24,12 +25,13 @@ public class FeatureSetState extends MapElementState {
 	 * @param filePath
 	 * @param color
 	 */
-	public FeatureSetState(String name, String filePath, Color color, boolean isProjected, String labelProp) {
+	public FeatureSetState(String name, String filePath, Color color, boolean isProjected, boolean ground, String labelProp) {
 		super(0, MapElementState.Type.FeatureSet, "", 1.0, color, false);
 		this.name = name;
 		this.filePath = filePath;
 		this.isProjected = isProjected;
 		this.labelProp = labelProp;
+		this.ground = ground;
 		pinned = true;
 	}
 
@@ -41,7 +43,7 @@ public class FeatureSetState extends MapElementState {
 	 * @param color
 	 * @param notes
 	 */
-	public FeatureSetState(String name, String filePath, Color color, String notes, boolean isProjected, String labelProp) {
+	public FeatureSetState(String name, String filePath, Color color, String notes, boolean isProjected, boolean ground, String labelProp) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.FeatureSet), MapElementState.Type.FeatureSet, "", 1.0, color,
 			false);
@@ -49,6 +51,7 @@ public class FeatureSetState extends MapElementState {
 		this.filePath = filePath;
 		this.isProjected = isProjected;
 		this.labelProp = labelProp;
+		this.ground = ground;
 		this.annotation = notes;
 		pinned = true;
 	}
@@ -61,6 +64,7 @@ public class FeatureSetState extends MapElementState {
 		filePath = StateUtil.getString(map, "FilePath", null);
 		isProjected = StateUtil.getBoolean(map, "IsProjected", false);
 		labelProp = StateUtil.getString(map, "LabelProperty", null);
+		ground = StateUtil.getBoolean(map, "Ground", false);
 	}
 	
 	@Override
@@ -71,6 +75,8 @@ public class FeatureSetState extends MapElementState {
 		if (!super.isEqualTo(that)) 
 			return(false);
 		if (this.isProjected != that.isProjected)
+			return(false);
+		if (this.ground != that.ground)
 			return(false);
 		if (!this.filePath.equals(that.filePath)) 
 			return(false);
@@ -88,6 +94,7 @@ public class FeatureSetState extends MapElementState {
 		}
 		map.put("FilePath", filePath);
 		map.put("IsProjected", new Boolean(isProjected));
+		map.put("Ground", new Boolean(ground));
 		if (labelProp != null)
 			map.put("LabelProperty", labelProp);
 		return(map);

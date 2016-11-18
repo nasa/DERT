@@ -5,7 +5,6 @@ import gov.nasa.arc.dert.io.geojson.json.JsonObject;
 import gov.nasa.arc.dert.io.geojson.json.JsonReader;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.raster.SpatialReferenceSystem;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.featureset.Feature;
 import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
@@ -44,6 +43,8 @@ public class GeojsonLoader {
 	private CoordinateReferenceSystem crs;
 	private SpatialReferenceSystem srs;
 	private double landscapeMinZ;
+	private String elevAttrName;
+	private boolean ground;
 	
 //	private Texture texture;
 
@@ -53,8 +54,11 @@ public class GeojsonLoader {
 	 * @param srs
 	 *            the spatial reference system to be used for coordinates
 	 */
-	public GeojsonLoader(SpatialReferenceSystem srs) {
+	public GeojsonLoader(SpatialReferenceSystem srs, String elevAttrName, String labelProp, boolean ground) {
 		this.srs = srs;
+		this.elevAttrName = elevAttrName;
+		this.ground = ground;
+		this.labelProp = labelProp;
 	}
 
 	/**
@@ -64,11 +68,10 @@ public class GeojsonLoader {
 	 *            path to the file
 	 * @return a GeoJSON object
 	 */
-	public GeoJsonObject load(String filePath, String labelProp) {
+	public GeoJsonObject load(String filePath) {
 //		texture = ImageUtil.createTexture(ImageBoard.defaultImagePath, true);
 //		texture.setApply(ApplyMode.Modulate);
 		this.filePath = filePath;
-		this.labelProp = labelProp;
 		File file = null;
 		try {
 			file = new File(filePath);
@@ -108,23 +111,19 @@ public class GeojsonLoader {
 	 *            the elevation attribute name (from gdaldem)
 	 * @return the FeatureSet
 	 */
-	public FeatureSet geoJsonToArdor3D(GeoJsonObject gjRoot, FeatureSet root, Color color, String elevAttrName, boolean isProjected) {
+	public FeatureSet geoJsonToArdor3D(GeoJsonObject gjRoot, FeatureSet root, Color color, boolean isProjected) {
 		crs = gjRoot.crs;
 		if (!isProjected && (crs == null))
 			crs = new CoordinateReferenceSystem(Landscape.getInstance().getSpatialReferenceSystem().getProjection());
-		// no elevation (Z) values so this will be 2D, make Z the minimum
-		// landscape elevation
+		// Minimum landscape elevation
 		landscapeMinZ = 0;
-		if (elevAttrName == null) {
-			World world = World.getInstance();
-			if (world != null)
-				landscapeMinZ = Landscape.getInstance().getMinimumElevation();
-		}
+		if (elevAttrName == null)
+			landscapeMinZ = Landscape.getInstance().getMinimumElevation();
 
 		int count = 0;
 		if (gjRoot instanceof GeoJsonFeature) {
 			GeoJsonFeature gjFeature = (GeoJsonFeature) gjRoot;
-			Feature feature = geojsonFeatureToArdor3D(gjFeature, color, elevAttrName, count);
+			Feature feature = geojsonFeatureToArdor3D(gjFeature, color, count);
 			if (feature != null) {
 				root.attachChild(feature);
 				count++;
@@ -134,7 +133,7 @@ public class GeojsonLoader {
 			ArrayList<GeoJsonFeature> featureList = collection.getFeatureList();
 			for (int i = 0; i < featureList.size(); ++i) {
 				GeoJsonFeature gjFeature = featureList.get(i);
-				Feature feature = geojsonFeatureToArdor3D(gjFeature, color, elevAttrName, count);
+				Feature feature = geojsonFeatureToArdor3D(gjFeature, color, count);
 				if (feature != null) {
 					root.attachChild(feature);
 					count++;
@@ -158,7 +157,7 @@ public class GeojsonLoader {
 		return (root);
 	}
 
-	private Feature geojsonFeatureToArdor3D(GeoJsonFeature gjFeature, Color color, String elevAttrName, int count) {
+	private Feature geojsonFeatureToArdor3D(GeoJsonFeature gjFeature, Color color, int count) {
 		minZ = Double.MAX_VALUE;
 		maxZ = -Double.MAX_VALUE;
 		Geometry geometry = gjFeature.getGeometry();
@@ -172,13 +171,13 @@ public class GeojsonLoader {
 		if (name == null)
 			name = "Feature"+count;
 		Feature feature = new Feature(name, color, gjFeature.getProperties());
-		if (geojsonGeometryToArdor3D(feature, geometry, color, elevAttrName, count, feature.getProperties())) {
+		if (geojsonGeometryToArdor3D(feature, geometry, color, count, feature.getProperties())) {
 			return (feature);
 		}
 		return(null);
 	}
 
-	private boolean geojsonGeometryToArdor3D(Node parent, Geometry geometry, Color color, String elevAttrName, int count, HashMap<String, Object> properties) {
+	private boolean geojsonGeometryToArdor3D(Node parent, Geometry geometry, Color color, int count, HashMap<String, Object> properties) {
 		// this is a contour map, we have an elevation attribute from gdaldem
 		boolean isContour = (elevAttrName != null);
 		LineStrip lineStrip = null;
@@ -191,7 +190,7 @@ public class GeojsonLoader {
 				return (false);
 			if (pCoord.length == 0)
 				return (false);
-			pos = toWorld(pCoord, false);
+			pos = toWorld(pCoord, ground);
 			if (pos != null) {
 				FigureMarker fm = new FigureMarker(parent.getName(), pos, 0.75, 0, color, false, true, true);
 				fm.setShape(ShapeType.crystal);
@@ -215,10 +214,10 @@ public class GeojsonLoader {
 				if (mpCoord[i].length == 0) {
 					continue;
 				}
-				pos = toWorld(mpCoord[i], false);
+				pos = toWorld(mpCoord[i], ground);
 				if (coord != null) {
 					FigureMarker fm = new FigureMarker(parent.getName()+i, pos, 0.75, 0, color, false, true, true);
-					fm.setShape(ShapeType.sphere);
+					fm.setShape(ShapeType.crystal);
 					parent.attachChild(fm);
 					minZ = Math.min(minZ, pos.getZ());
 					maxZ = Math.max(maxZ, pos.getZ());
@@ -330,7 +329,7 @@ public class GeojsonLoader {
 			GroupNode group = new GroupNode("_geom");
 			for (int i=0; i<geometryList.size(); ++i) {
 				Geometry geom = geometryList.get(i);
-				geojsonGeometryToArdor3D(group, geom, color, elevAttrName, count, properties);
+				geojsonGeometryToArdor3D(group, geom, color, count, properties);
 			}
 			parent.attachChild(group);
 			break;
@@ -368,30 +367,31 @@ public class GeojsonLoader {
 			if (crs != null)
 				crs.translate(coordinate, coord);
 			srs.getProjection().worldToLocal(coord);
-			coord.setZ(coord.getZ() - landscapeMinZ);
-			return (coord);
+			if (getZ)
+				coord.setZ(Landscape.getInstance().getZ(coord.getX(), coord.getY()));
+			else
+				coord.setZ(coord.getZ() - landscapeMinZ);
 		} else if (coordinate.length == 2) {
 			coord.set(coordinate[0], coordinate[1], 0);
 			if (crs != null)
 				crs.translate(coordinate, coord);
 			srs.getProjection().worldToLocal(coord);
-			if (getZ) {
+			if (getZ)
 				coord.setZ(Landscape.getInstance().getZ(coord.getX(), coord.getY()));
-			}
-			if (Double.isNaN(coord.getZ())) {
-				return (null);
-			} else {
-				return (coord);
-			}
 		} else {
 			throw new IllegalArgumentException("GeoJSON Position has < 2 elements.");
+		}
+		if (Double.isNaN(coord.getZ())) {
+			return (null);
+		} else {
+			return (coord);
 		}
 	}
 	
 	private LineStrip createLineStrip(String name, double[][] coord, Color color) {
 		FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(3 * coord.length);
 		for (int i = 0; i < coord.length; ++i) {
-			ReadOnlyVector3 pos = toWorld(coord[i], true);
+			ReadOnlyVector3 pos = toWorld(coord[i], ground);
 			if (pos != null) {
 				vertexBuffer.put(pos.getXf()).put(pos.getYf()).put(pos.getZf());
 				minZ = Math.min(minZ, pos.getZ());

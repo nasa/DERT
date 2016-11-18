@@ -56,7 +56,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	// TODO: Come up with a better way to do this.
 	private int initializingCount;
 	
-	private boolean worldChanged, viewpointChanged;
+	private boolean worldChanged, viewpointChanged, terrainChanged;
 
 	/**
 	 * Constructor
@@ -128,6 +128,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 			}
 		}
 		worldChanged = World.getInstance().getDirtyEventHandler().changed.getAndSet(false);
+		terrainChanged = World.getInstance().getDirtyEventHandler().terrainChanged.getAndSet(false);
 //		System.err.println("WorldScene.update "+viewpointChanged+" "+worldChanged+" "+needsRender.get());
 		needsRender.set(viewpointChanged || worldChanged || needsRender.get());
 	}
@@ -135,7 +136,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	private void preRender(Renderer renderer) {
 		Lighting lighting = ((World)rootNode).getLighting();
 		lighting.prerender(viewpointNode.getCamera(), renderer, worldChanged);
-		if (worldChanged) {
+		if (terrainChanged) {
 			Landscape.getInstance().getLayerManager().renderLayers(renderer);
 		}
 

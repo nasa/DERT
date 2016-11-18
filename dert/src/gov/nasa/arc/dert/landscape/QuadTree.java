@@ -383,6 +383,7 @@ public class QuadTree extends Node {
 				setChildren(qt);
 				for (int i = 0; i < 4; ++i) {
 					World.getInstance().getLandmarks().landscapeChanged(child[i]);
+					World.getInstance().getFeatureSets().landscapeChanged(child[i]);
 				}
 
 				updateGeometricState(0, true);

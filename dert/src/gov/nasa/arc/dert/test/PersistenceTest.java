@@ -128,7 +128,7 @@ public class PersistenceTest {
 		ib.position = new Vector3(13, 14, 15);
 		config.mapElementStateList.add(ib);
 		
-		FeatureSetState ls = new FeatureSetState("Test", testLoc, Color.red, true, null);
+		FeatureSetState ls = new FeatureSetState("Test", testLoc, Color.red, true, false, null);
 		ls.filePath = testLoc+"/lineset";
 		config.mapElementStateList.add(ls);
 		

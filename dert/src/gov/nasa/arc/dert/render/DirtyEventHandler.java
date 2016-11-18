@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.render;
 
+import gov.nasa.arc.dert.landscape.QuadTreeMesh;
 import gov.nasa.arc.dert.scene.Marble;
 import gov.nasa.arc.dert.scenegraph.Billboard;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
@@ -21,7 +22,8 @@ public class DirtyEventHandler implements DirtyEventListener {
 	private GroupNode rootNode;
 
 	// Changed flag
-	public AtomicBoolean changed;
+	public final AtomicBoolean changed;
+	public final AtomicBoolean terrainChanged;
 
 	/**
 	 * Constructor
@@ -31,6 +33,7 @@ public class DirtyEventHandler implements DirtyEventListener {
 	public DirtyEventHandler(GroupNode rootNode) {
 		this.rootNode = rootNode;
 		changed = new AtomicBoolean();
+		terrainChanged = new AtomicBoolean();
 	}
 
 	/**
@@ -45,10 +48,12 @@ public class DirtyEventHandler implements DirtyEventListener {
 		case Attached:
 			rootNode.updateGeometricState(0, true);
 			changed.set(!(spatial instanceof Billboard) || changed.get());
+			terrainChanged.set((spatial instanceof QuadTreeMesh) || terrainChanged.get());
 			break;
 		case Detached:
 			rootNode.updateGeometricState(0, true);
 			changed.set(!(spatial instanceof Billboard) || changed.get());
+			terrainChanged.set((spatial instanceof QuadTreeMesh) || terrainChanged.get());
 			break;
 		case Bounding:
 			rootNode.updateGeometricState(0, true);
@@ -63,6 +68,7 @@ public class DirtyEventHandler implements DirtyEventListener {
 				((Movable) spatial).notifyListeners();
 			}
 			changed.set(!(spatial instanceof Billboard) && !(spatial instanceof Marble) || changed.get());
+			terrainChanged.set((spatial instanceof QuadTreeMesh) || terrainChanged.get());
 			break;
 		case Destroyed:
 			break;
