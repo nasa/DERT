@@ -45,6 +45,7 @@ public class GeojsonLoader {
 	private double landscapeMinZ;
 	private String elevAttrName;
 	private boolean ground;
+	private float size, lineWidth;
 	
 //	private Texture texture;
 
@@ -54,11 +55,13 @@ public class GeojsonLoader {
 	 * @param srs
 	 *            the spatial reference system to be used for coordinates
 	 */
-	public GeojsonLoader(SpatialReferenceSystem srs, String elevAttrName, String labelProp, boolean ground) {
+	public GeojsonLoader(SpatialReferenceSystem srs, String elevAttrName, String labelProp, boolean ground, float size, float lineWidth) {
 		this.srs = srs;
 		this.elevAttrName = elevAttrName;
 		this.ground = ground;
 		this.labelProp = labelProp;
+		this.size = size;
+		this.lineWidth = lineWidth;
 	}
 
 	/**
@@ -192,7 +195,7 @@ public class GeojsonLoader {
 				return (false);
 			pos = toWorld(pCoord, ground);
 			if (pos != null) {
-				FigureMarker fm = new FigureMarker(parent.getName(), pos, 0.75, 0, color, false, true, true);
+				FigureMarker fm = new FigureMarker(parent.getName(), pos, size, 0, color, false, true, true);
 				fm.setShape(ShapeType.crystal);
 				fm.setAutoShowLabel(true);
 				parent.attachChild(fm);
@@ -216,7 +219,7 @@ public class GeojsonLoader {
 				}
 				pos = toWorld(mpCoord[i], ground);
 				if (coord != null) {
-					FigureMarker fm = new FigureMarker(parent.getName()+i, pos, 0.75, 0, color, false, true, true);
+					FigureMarker fm = new FigureMarker(parent.getName()+i, pos, size, 0, color, false, true, true);
 					fm.setShape(ShapeType.crystal);
 					parent.attachChild(fm);
 					minZ = Math.min(minZ, pos.getZ());
@@ -401,7 +404,7 @@ public class GeojsonLoader {
 		vertexBuffer.flip();
 		if (vertexBuffer.limit() > 0) {
 			LineStrip lineStrip = new LineStrip(name, vertexBuffer, null, null, null);
-			lineStrip.setLineWidth(2);
+			lineStrip.setLineWidth(lineWidth);
 			lineStrip.setModelBound(new BoundingBox());
 			lineStrip.updateModelBound();
 			lineStrip.setColor(color);
