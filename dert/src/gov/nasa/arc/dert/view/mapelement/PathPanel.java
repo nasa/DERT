@@ -36,6 +36,7 @@ public class PathPanel extends MapElementBasePanel {
 	private JButton saveAsCSV, addPoints, statistics;
 	private JCheckBox showWaypoints;
 	private DoubleTextField lineWidthText;
+	private DoubleTextField sizeText;
 
 	// Current map element
 	private Path path;
@@ -102,9 +103,9 @@ public class PathPanel extends MapElementBasePanel {
 			}
 		};
 		panel.add(colorList);
+		contents.add(panel);
 
-		panel.add(new JLabel("        "));
-
+		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Line Width", SwingConstants.RIGHT));
 		lineWidthText = new DoubleTextField(8, Path.defaultLineWidth, true, Landscape.format) {
 			@Override
@@ -116,6 +117,18 @@ public class PathPanel extends MapElementBasePanel {
 			}
 		};
 		panel.add(lineWidthText);
+
+		panel.add(new JLabel("       Point Size", SwingConstants.RIGHT));
+		sizeText = new DoubleTextField(8, Path.defaultSize, true, "0.00") {
+			@Override
+			protected void handleChange(double value) {
+				if (Double.isNaN(value)) {
+					return;
+				}
+				path.setPointSize(value);
+			}
+		};
+		panel.add(sizeText);
 		contents.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -172,6 +185,7 @@ public class PathPanel extends MapElementBasePanel {
 			labelCheckBox.setSelected(path.isLabelVisible());
 			showWaypoints.setSelected(path.areWaypointsVisible());
 			lineWidthText.setValue(path.getLineWidth());
+			sizeText.setValue(path.getSize());
 
 			locationText.setEnabled(false);
 			labelCombo.setEnabled(true);
@@ -185,6 +199,7 @@ public class PathPanel extends MapElementBasePanel {
 			statistics.setEnabled(true);
 			showWaypoints.setEnabled(true);
 			lineWidthText.setEnabled(true);
+			sizeText.setEnabled(true);
 			path.setCurrentWaypoint(null);
 		}
 		// map element is a Waypoint
@@ -202,6 +217,7 @@ public class PathPanel extends MapElementBasePanel {
 			labelCheckBox.setSelected(waypoint.isLabelVisible());
 			showWaypoints.setSelected(path.areWaypointsVisible());
 			lineWidthText.setValue(path.getLineWidth());
+			sizeText.setValue(path.getSize());
 
 			locationText.setEnabled(true);
 			labelCombo.setEnabled(false);
@@ -215,6 +231,7 @@ public class PathPanel extends MapElementBasePanel {
 			statistics.setEnabled(false);
 			showWaypoints.setEnabled(false);
 			lineWidthText.setEnabled(false);
+			sizeText.setEnabled(false);
 		}
 	}
 

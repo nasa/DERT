@@ -1,9 +1,11 @@
 package gov.nasa.arc.dert.view.mapelement;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.featureset.Feature;
 import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
+import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.ui.GroupPanel;
 
 import java.awt.BorderLayout;
@@ -16,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
 /**
  * Provides controls for setting options for FeatureSets.
@@ -27,6 +30,8 @@ public class FeatureSetPanel extends MapElementBasePanel {
 	private ColorSelectionPanel colorList;
 	private JLabel fileLabel;
 	private JTextArea propText;
+	private DoubleTextField lineWidthText;
+	private DoubleTextField sizeText;
 
 	// FeatureSet
 	private FeatureSet featureSet;
@@ -65,6 +70,32 @@ public class FeatureSetPanel extends MapElementBasePanel {
 			}
 		};
 		panel.add(colorList);
+		contents.add(panel);
+
+		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		panel.add(new JLabel("Line Width", SwingConstants.RIGHT));
+		lineWidthText = new DoubleTextField(8, FeatureSet.defaultLineWidth, true, Landscape.format) {
+			@Override
+			protected void handleChange(double value) {
+				if (Double.isNaN(value)) {
+					return;
+				}
+				featureSet.setLineWidth((float) value);
+			}
+		};
+		panel.add(lineWidthText);
+
+		panel.add(new JLabel("       Point Size", SwingConstants.RIGHT));
+		sizeText = new DoubleTextField(8, FeatureSet.defaultSize, true, "0.00") {
+			@Override
+			protected void handleChange(double value) {
+				if (Double.isNaN(value)) {
+					return;
+				}
+				featureSet.setPointSize((float)value);
+			}
+		};
+		panel.add(sizeText);
 		contents.add(panel);
 		
 		GroupPanel groupPanel = new GroupPanel("Properties");

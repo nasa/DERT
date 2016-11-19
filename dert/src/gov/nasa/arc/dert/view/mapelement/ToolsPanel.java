@@ -283,8 +283,18 @@ public class ToolsPanel extends JPanel {
 		};
 		gPanel.add(ptlwText);
 
-		gPanel.add(new JLabel("   "));
-		gPanel.add(new JLabel("   "));
+		gPanel.add(new JLabel("Point Size:", SwingConstants.RIGHT));
+		DoubleTextField ptPtSzText = new DoubleTextField(8, Path.defaultSize, true, "0.00") {
+			@Override
+			protected void handleChange(double value) {
+				if (Double.isNaN(value)) {
+					return;
+				}
+				Path.defaultSize = (float)value;
+			}
+		};
+		gPanel.add(ptPtSzText);
+
 		bottomPanel.add(gPanel);
 
 		// Plane Preferences
