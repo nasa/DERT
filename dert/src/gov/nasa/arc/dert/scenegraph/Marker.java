@@ -20,6 +20,7 @@ import com.ardor3d.renderer.state.MaterialState.ColorMaterial;
 import com.ardor3d.renderer.state.TextureState;
 import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.event.DirtyType;
+import com.ardor3d.scenegraph.extension.BillboardNode;
 import com.ardor3d.scenegraph.hint.CullHint;
 
 /**
@@ -46,7 +47,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 	protected RasterText label;
 	// label contents
 	protected String labelStr = "";
-	protected Billboard billboard;
+	protected BillboardNode billboard;
 
 	protected Vector3 worldLoc;
 
@@ -60,7 +61,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 	 */
 	public Marker(String name, ReadOnlyVector3 point, double size, double zOff, Color color, boolean labelVisible, boolean pinned) {
 		super(name);
-		billboard = new Billboard("_billboard");
+		billboard = new BillboardNode("_billboard");
 		this.labelStr = name;
 		this.labelVisible = labelVisible;
 		this.size = size;

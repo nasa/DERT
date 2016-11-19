@@ -1,8 +1,14 @@
 package gov.nasa.arc.dert.scenegraph;
 
+import com.ardor3d.bounding.BoundingBox;
+import com.ardor3d.math.ColorRGBA;
+import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.math.type.ReadOnlyVector3;
+import com.ardor3d.renderer.state.MaterialState;
+import com.ardor3d.renderer.state.MaterialState.ColorMaterial;
 import com.ardor3d.scenegraph.Line;
 import com.ardor3d.scenegraph.event.DirtyType;
+import com.ardor3d.scenegraph.hint.TextureCombineMode;
 import com.ardor3d.util.geom.BufferUtils;
 
 /**
@@ -20,6 +26,7 @@ public class LineSegment extends Line {
 	 */
 	public LineSegment(String name, ReadOnlyVector3 p0, ReadOnlyVector3 p1) {
 		super(name);
+		getSceneHints().setTextureCombineMode(TextureCombineMode.Off);
 		float[] vertex = new float[6];
 		vertex[0] = (float) p0.getX();
 		vertex[1] = (float) p0.getY();
@@ -32,6 +39,8 @@ public class LineSegment extends Line {
 		_meshData.setColorBuffer(null);
 		_meshData.setTextureCoords(null, 0);
 		_meshData.setIndices(null);
+		setModelBound(new BoundingBox());
+		updateModelBound();
 	}
 
 	/**
@@ -50,5 +59,14 @@ public class LineSegment extends Line {
 		vertex[5] = (float) p1.getZ();
 		_meshData.setVertexBuffer(BufferUtils.createFloatBuffer(vertex));
 		markDirty(DirtyType.Bounding);
+	}
+	
+	public void setColor(ReadOnlyColorRGBA color) {
+		MaterialState ms = new MaterialState();
+		ms.setColorMaterial(ColorMaterial.None);
+		ms.setDiffuse(ColorRGBA.BLACK);
+		ms.setAmbient(ColorRGBA.BLACK);
+		ms.setEmissive(MaterialState.MaterialFace.FrontAndBack, color);
+		setRenderState(ms);
 	}
 }

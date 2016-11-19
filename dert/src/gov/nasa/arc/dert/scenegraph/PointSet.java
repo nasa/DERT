@@ -67,13 +67,13 @@ public class PointSet extends Node {
 		return (index);
 	}
 	
-	public void showWaypointsAsSpheres(boolean useSpheres) {
-		int n = getNumberOfChildren();
-		for (int i=0; i<n; ++i) {
-			Waypoint wp = (Waypoint)getChild(i);
-			wp.showAsSphere(useSpheres);
-		}
-	}
+//	public void showWaypointsAsSpheres(boolean useSpheres) {
+//		int n = getNumberOfChildren();
+//		for (int i=0; i<n; ++i) {
+//			Waypoint wp = (Waypoint)getChild(i);
+//			wp.showAsSphere(useSpheres);
+//		}
+//	}
 
 	/**
 	 * Remove a point from the set.
@@ -90,6 +90,13 @@ public class PointSet extends Node {
 			pointList.add(new Vector3(getChild(i).getTranslation()));
 		}
 		return (pointList);
+	}
+	
+	public void setPointSize(double size) {
+		for (int i=0; i<getNumberOfChildren(); ++i) {
+			Waypoint wp = (Waypoint)getChild(i);
+			wp.setSize(size);
+		}
 	}
 	
 	public Vector3[] getPolygonVertices() {

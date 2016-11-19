@@ -64,7 +64,8 @@ public class FigureMarker extends Marker {
 		shape.updateWorldBound(true);
 		SpatialUtil.setPickHost(shape, this);
 		contents.attachChild(shape);
-		label.setTranslation(Shape.SHAPE_TEXT_OFFSET[shapeType.ordinal()]);
+		Vector3 offset = Shape.SHAPE_TEXT_OFFSET[shapeType.ordinal()];
+		label.setTranslation(offset.getX(), offset.getY()*size, offset.getZ());
 		updateWorldTransform(true);
 		updateWorldBound(true);
 		scaleShape(scale);

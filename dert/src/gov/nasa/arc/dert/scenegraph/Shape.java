@@ -35,7 +35,7 @@ public class Shape extends Node {
 
 	public static Vector3[] SHAPE_TEXT_OFFSET = { new Vector3(0, 0, 0), new Vector3(0, 0.3, 0), new Vector3(0, 1.2, 0),
 		new Vector3(0, 1.2, 0), new Vector3(0, 1.2, 0), new Vector3(0, 1.2, 0), new Vector3(0, 1.2, 0),
-		new Vector3(0, 0.3, 0), new Vector3(0, 0.6, 0), new Vector3(0, 2.1, 0), new Vector3(0, 1.2, 0),
+		new Vector3(0, 0.3, 0), new Vector3(0, 0.6, 0), new Vector3(0, 0.6, 0), new Vector3(0, 1.2, 0),
 		new Vector3(0, 0.5, 0), new Vector3(0, 0.5, 0), new Vector3(0, 0.6, 0), new Vector3(0, 1, 0), new Vector3(0, 0.5, 0) };
 
 	protected Spatial geometry;

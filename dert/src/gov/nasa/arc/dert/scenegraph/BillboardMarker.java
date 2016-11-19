@@ -16,6 +16,7 @@ public class BillboardMarker extends Marker {
 
 	protected Texture nominalTexture, highlightTexture;
 	protected ColorRGBA highlightColorRGBA;
+	protected ImageQuad imageQuad;
 
 	/**
 	 * Constructor
@@ -25,7 +26,7 @@ public class BillboardMarker extends Marker {
 		super(name, point, size, zOff, color, labelVisible, pinned);
 		setSize(size);
 		getSceneHints().setCastsShadows(false);
-		label.setTranslation(0, 1.5, 0);
+		label.setTranslation(0, 1.6, 0);
 	}
 
 	/**
@@ -37,13 +38,12 @@ public class BillboardMarker extends Marker {
 	public void setTexture(Texture nominalTexture, Texture highlightTexture) {
 		this.nominalTexture = nominalTexture;
 		this.highlightTexture = highlightTexture;
-		if (billboard != null) {
-			contents.detachChild(billboard);
+		if (imageQuad != null) {
+			billboard.detachChild(imageQuad);
 		}
-		billboard = new Billboard("_billboard", nominalTexture);
-		billboard.attachChild(label);
-		contents.attachChild(billboard);
-		SpatialUtil.setPickHost(billboard, this);
+		imageQuad = new ImageQuad("_billboard", nominalTexture, 1.5);
+		billboard.attachChild(imageQuad);
+		SpatialUtil.setPickHost(imageQuad, this);
 		updateWorldBound(true);
 		scaleShape(scale);
 	}
@@ -60,10 +60,10 @@ public class BillboardMarker extends Marker {
 	@Override
 	protected void enableHighlight(boolean enable) {
 		if (enable) {
-			billboard.setTexture(highlightTexture);
+			imageQuad.setTexture(highlightTexture);
 			materialState.setEmissive(MaterialFace.FrontAndBack, highlightColorRGBA);
 		} else {
-			billboard.setTexture(nominalTexture);
+			imageQuad.setTexture(nominalTexture);
 			materialState.setEmissive(MaterialFace.FrontAndBack, colorRGBA);
 		}
 	}
