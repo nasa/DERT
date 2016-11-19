@@ -62,7 +62,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	// Default map element properties
 	public static BodyType defaultBodyType = BodyType.Line;
 	public static LabelType defaultLabelType = LabelType.Name;
-	public static float defaultSize = 1, defaultLineWidth = 2;
+	public static float defaultSize = 0.5f, defaultLineWidth = 2;
 	public static Color defaultColor = Color.magenta;
 	public static boolean defaultLabelVisible = true;
 	public static boolean defaultWaypointsVisible = true;
@@ -291,7 +291,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		// create the way point and add it
 		int index = (int) state.id;
 		Waypoint currentWaypoint = new Waypoint(state);
-		currentWaypoint.showAsSphere(polyIsEnabled);
 		index = pointSet.addPoint(currentWaypoint, index);
 		state.id = index;
 		currentWaypoint.addMotionListener(this);
@@ -360,6 +359,17 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	 */
 	public float getLineWidth() {
 		return ((float)lineWidth);
+	}
+
+	/**
+	 * Set the line width.
+	 * 
+	 * @param width
+	 */
+	public void setPointSize(double size) {
+		this.size = size;
+		pointSet.setPointSize(size);
+		markDirty(DirtyType.RenderState);
 	}
 
 	/**
@@ -861,7 +871,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			poly.getSceneHints().setPickingHint(PickingHint.Pickable, false);
 			polyIsEnabled = false;
 		}
-		pointSet.showWaypointsAsSpheres(polyIsEnabled);
+//		pointSet.showWaypointsAsSpheres(polyIsEnabled);
 //		updateGeometricState(0, true);
 	}
 	

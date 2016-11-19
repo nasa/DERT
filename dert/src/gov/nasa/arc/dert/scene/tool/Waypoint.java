@@ -2,42 +2,30 @@ package gov.nasa.arc.dert.scene.tool;
 
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.MapElement;
-import gov.nasa.arc.dert.scenegraph.BillboardMarker;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
-import gov.nasa.arc.dert.scenegraph.Shape;
+import gov.nasa.arc.dert.scenegraph.LineSegment;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.state.WaypointState;
-import gov.nasa.arc.dert.util.ImageUtil;
-import gov.nasa.arc.dert.util.SpatialUtil;
 
 import javax.swing.Icon;
 
-import com.ardor3d.image.Texture;
-import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
-import com.ardor3d.renderer.state.MaterialState.MaterialFace;
 import com.ardor3d.scenegraph.Node;
+import com.ardor3d.scenegraph.hint.CullHint;
 
 /**
  * Provides a map element that serves as a waypoint in a path
  *
  */
-public class Waypoint extends BillboardMarker implements MapElement {
+public class Waypoint extends FigureMarker implements MapElement {
 
 	public static final Icon icon = Icons.getImageIcon("waypoint_24.png");
-	public static String defaultIconName = "waypoint.png";
-
-	// Waypoint texture
-	protected static Texture texture;
 
 	// Map element state
 	protected WaypointState state;
-	
-	// Waypoint is represented as sphere on the surface
-	protected boolean useSphere;
-	protected Shape shape;
+	protected LineSegment line;
 
 	/**
 	 * Constructor
@@ -45,12 +33,15 @@ public class Waypoint extends BillboardMarker implements MapElement {
 	 * @param state
 	 */
 	public Waypoint(WaypointState state) {
-		super(state.name, state.location, state.size, state.zOff, state.color, state.labelVisible, state.pinned);
-		if (texture == null) {
-			texture = ImageUtil.createTexture(Icons.getIconURL(defaultIconName), true);
-		}
-		setTexture(texture, texture);
+		super(state.name, state.location, state.size, state.zOff, state.color, state.labelVisible, true, state.pinned);
+		contents.detachChild(surfaceNormalArrow);
+		surfaceNormalArrow = null;
+		setShape(ShapeType.sphere);
 		setVisible(state.visible);
+		label.setTranslation(0, 2*size, 0);
+		line = new LineSegment("_textLine", new Vector3(0,0,0), new Vector3(0, 1.8*size, 0));
+		line.setColor(labelColorRGBA);
+		billboard.attachChild(line);
 		this.state = state;
 		state.setMapElement(this);
 		// Update this node and its children so they will be drawn.
@@ -71,7 +62,8 @@ public class Waypoint extends BillboardMarker implements MapElement {
 	@Override
 	public double getSeekPointAndDistance(Vector3 point) {
 		point.set(getTranslation());
-		return (getRadius() * 1.5);
+//		return (getRadius() * 1.5);
+		return (size*scale*2);
 	}
 
 	/**
@@ -107,76 +99,23 @@ public class Waypoint extends BillboardMarker implements MapElement {
 		return ((Path) parent.getParent());
 	}
 
-	public void showAsSphere(boolean useSphere) {
-		if (this.useSphere == useSphere)
-			return;
-		this.useSphere = useSphere;
-		if (useSphere) {
-			contents.detachChild(billboard);
-			shape = Shape.createShape("_geometry", ShapeType.sphere, (float)(size*0.5));
-			shape.updateWorldBound(true);
-			SpatialUtil.setPickHost(shape, this);
-			contents.attachChild(shape);
-			updateWorldBound(true);
-			scaleShape(scale);
-		}
-		else {
-			contents.detachChild(shape);
-			shape = null;
-			contents.attachChild(billboard);
-			updateWorldBound(true);
-			scaleShape(scale);
-		}
-		setMaterialState();
-	}
-
+	/**
+	 * Set label visibility
+	 * 
+	 * @param labelVisible
+	 */
 	@Override
-	protected void setMaterialState() {
-		if (useSphere) {
-			materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * FigureMarker.AMBIENT_FACTOR,
-					colorRGBA.getGreen() * FigureMarker.AMBIENT_FACTOR, colorRGBA.getBlue() * FigureMarker.AMBIENT_FACTOR, colorRGBA.getAlpha()));
-			materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
-			materialState.setEmissive(MaterialFace.FrontAndBack, ColorRGBA.BLACK);
-		}
-		else
-			super.setMaterialState();
+	public void setLabelVisible(boolean labelVisible) {
+		this.labelVisible = labelVisible;
+		billboard.getSceneHints().setCullHint(labelVisible ? CullHint.Inherit : CullHint.Always);
 	}
-
+	
 	@Override
-	protected void enableHighlight(boolean enable) {
-		if (useSphere) {
-			if (enable) {
-				materialState.setAmbient(MaterialFace.FrontAndBack, new ColorRGBA(colorRGBA.getRed() * FigureMarker.AMBIENT_FACTOR,
-					colorRGBA.getGreen() * FigureMarker.AMBIENT_FACTOR, colorRGBA.getBlue() * FigureMarker.AMBIENT_FACTOR, colorRGBA.getAlpha()));
-				materialState.setDiffuse(MaterialFace.FrontAndBack, colorRGBA);
-				materialState.setEmissive(MaterialFace.FrontAndBack, colorRGBA);
-			} else {
-				setMaterialState();
-			}
-		}
-		else {
-			if (enable) {
-				billboard.setTexture(highlightTexture);
-				materialState.setEmissive(MaterialFace.FrontAndBack, highlightColorRGBA);
-			} else {
-				billboard.setTexture(nominalTexture);
-				materialState.setEmissive(MaterialFace.FrontAndBack, colorRGBA);
-			}
-		}
+	public void setSize(double size) {
+		super.setSize(size);
+		label.setTranslation(0, 2*size, 0);
+		line.setPoints(Vector3.ZERO, new Vector3(0, 1.8*size, 0));
 	}
-
-//	@Override
-//	protected void createLabel(boolean labelVisible) {
-//		if (useSphere)
-//			super.createLabel(labelVisible);
-//		else {
-//			label = new RasterText("_label", labelStr, AlignType.Center, true);
-//			label.setScaleFactor((float) (0.75 * size));
-//			label.setColor(labelColorRGBA);
-//			label.setTranslation(0, 1.5, 0);
-//			label.setVisible(labelVisible);
-//		}
-//	}
 	
 //    @Override
 //    public void draw(final Renderer r) {

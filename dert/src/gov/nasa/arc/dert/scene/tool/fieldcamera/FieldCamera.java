@@ -6,8 +6,8 @@ import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.render.Viewshed;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Tool;
-import gov.nasa.arc.dert.scenegraph.Billboard;
 import gov.nasa.arc.dert.scenegraph.HiddenLine;
+import gov.nasa.arc.dert.scenegraph.ImageQuad;
 import gov.nasa.arc.dert.scenegraph.LineSegment;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.scenegraph.RasterText;
@@ -52,6 +52,7 @@ import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
+import com.ardor3d.scenegraph.extension.BillboardNode;
 import com.ardor3d.scenegraph.extension.CameraNode;
 import com.ardor3d.scenegraph.hint.CullHint;
 import com.ardor3d.scenegraph.hint.PickingHint;
@@ -89,7 +90,8 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	private Mesh box;
 	private CameraNode cameraNode;
 	private Node mountingNode, geomNode, viewDependentNode;
-	private Billboard billboard;
+	private BillboardNode billboard;
+	private ImageQuad imageQuad;
 
 	// Camera
 	private BasicCamera basicCamera;
@@ -142,7 +144,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		base.setModelBound(new BoundingBox());
 		attachChild(base);
 		lineSegment = new LineSegment("_post", p0, p1);
-		lineSegment.setModelBound(new BoundingBox());
 		attachChild(lineSegment);
 
 		// mounting node to set orientation relative to OpenGL default axes
@@ -168,13 +169,15 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 
 		// special billboard for spotting fieldCamera from far away
 		viewDependentNode = new Node("_viewDependent");
-		billboard = new Billboard("_billboard", getIconTexture());
-		SpatialUtil.setPickHost(billboard, this);
+		billboard = new BillboardNode("_billboard");
+		imageQuad = new ImageQuad("_imageQuad", getIconTexture(), 1.25);
+		billboard.attachChild(imageQuad);
+		SpatialUtil.setPickHost(imageQuad, this);
 		viewDependentNode.attachChild(billboard);
 		label = new RasterText("_label", state.name, AlignType.Center, true);
 		label.setScaleFactor(0.75f);
 		label.setColor(ColorRGBA.WHITE);
-		label.setTranslation(0, 1.25, 0);
+		label.setTranslation(0, 1.3, 0);
 		label.setVisible(state.labelVisible);
 		billboard.attachChild(label);
 		viewDependentNode.setTranslation(0.0, 0.25, 0.0);
@@ -672,10 +675,10 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	@Override
 	protected void enableHighlight(boolean enable) {
 		if (enable) {
-			billboard.setTexture(highlightTexture);
+			imageQuad.setTexture(highlightTexture);
 			materialState.setEmissive(MaterialFace.FrontAndBack, highlightColorRGBA);
 		} else {
-			billboard.setTexture(nominalTexture);
+			imageQuad.setTexture(nominalTexture);
 			materialState.setEmissive(MaterialFace.FrontAndBack, colorRGBA);
 		}
 	}
