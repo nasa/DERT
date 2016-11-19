@@ -31,8 +31,8 @@ public class Placemark extends BillboardMarker implements Landmark {
 	public static boolean defaultLabelVisible = true;
 
 	// Icon selections
-	public static final String[] ICON_NAME = { "pushpin", "flag" };
-	public static final String[] ICON_LABEL = { "Pushpin", "Flag" };
+	public static final String[] ICON_NAME = { "pushpin", "flag", "mappin" };
+	public static final String[] ICON_LABEL = { "Pushpin", "Flag", "Map Pin" };
 
 	// Texture selections
 	protected static final Texture[] nominalTexture = new Texture[ICON_NAME.length];
