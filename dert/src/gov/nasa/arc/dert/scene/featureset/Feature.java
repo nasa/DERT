@@ -229,6 +229,40 @@ public class Feature
 	public boolean isLabelVisible() {
 		return (labelVisible);
 	}
+	
+	public void setSize(float size) {
+		setSize(this, size);
+	}
+
+	private void setSize(Node node, float size) {
+		int n = node.getNumberOfChildren();
+		for (int i = 0; i < n; ++i) {
+			Spatial child = node.getChild(i);
+			if (child instanceof FigureMarker) {
+				((FigureMarker) child).setSize(size);
+			}
+			else if (child instanceof Node) {
+				setSize((Node) child, size);
+			}
+		}
+	}
+	
+	public void setLineWidth(float lineWidth) {
+		setLineWidth(this, lineWidth);
+	}
+
+	private void setLineWidth(Node node, float lineWidth) {
+		int n = node.getNumberOfChildren();
+		for (int i = 0; i < n; ++i) {
+			Spatial child = node.getChild(i);
+			if (child instanceof LineStrip) {
+				((LineStrip) child).setLineWidth(lineWidth);
+			}
+			else if (child instanceof Node) {
+				setLineWidth((Node) child, lineWidth);
+			}
+		}
+	}
 
 	/**
 	 * Get the size (returns 1).

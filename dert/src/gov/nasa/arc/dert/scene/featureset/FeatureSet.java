@@ -34,6 +34,7 @@ public class FeatureSet extends GroupNode implements MapElement {
 
 	public static final Icon icon = Icons.getImageIcon("lineset.png");
 	public static Color defaultColor = Color.white;
+	public static float defaultSize = 0.75f, defaultLineWidth = 2;
 
 	// Line color
 	private Color color;
@@ -50,6 +51,8 @@ public class FeatureSet extends GroupNode implements MapElement {
 	private boolean labelVisible;
 	
 	private boolean ground;
+	
+	private float size, lineWidth;
 
 	/**
 	 * Constructor
@@ -72,11 +75,13 @@ public class FeatureSet extends GroupNode implements MapElement {
 		this.filePath = state.filePath;
 		ground = state.ground;
 		color = state.color;
+		size = (float)state.size;
+		lineWidth = state.lineWidth;
 		setVisible(state.visible);
 		this.state = state;
 		state.setMapElement(this);
 		// Load the vector file into an Ardor3D object.
-		GeojsonLoader jsonLoader = new GeojsonLoader(srs, elevAttrName, state.labelProp, state.ground);
+		GeojsonLoader jsonLoader = new GeojsonLoader(srs, elevAttrName, state.labelProp, ground, size, lineWidth);
 		GeoJsonObject gjRoot = jsonLoader.load(filePath);
 		jsonLoader.geoJsonToArdor3D(gjRoot, this, color, state.isProjected);
 		if (getNumberOfChildren() == 0) {
@@ -234,11 +239,39 @@ public class FeatureSet extends GroupNode implements MapElement {
 	}
 
 	/**
+	 * Set the point size.
+	 */
+	public void setPointSize(float size) {
+		this.size = size;
+		for (int i = 0; i < getNumberOfChildren(); ++i) {
+			Spatial child = getChild(i);
+			if (child instanceof Feature) {
+				Feature feature = (Feature) child;
+				feature.setSize(size);
+			}
+		}
+	}
+
+	/**
 	 * Get the size (returns 1).
 	 */
 	@Override
 	public double getSize() {
-		return (1);
+		return (size);
+	}
+
+	/**
+	 * Set the line width.
+	 */
+	public void setLineWidth(float lineWidth) {
+		this.lineWidth = lineWidth;
+		for (int i = 0; i < getNumberOfChildren(); ++i) {
+			Spatial child = getChild(i);
+			if (child instanceof Feature) {
+				Feature feature = (Feature) child;
+				feature.setLineWidth(lineWidth);
+			}
+		}
 	}
 
 	/**
@@ -278,6 +311,8 @@ public class FeatureSet extends GroupNode implements MapElement {
 	 */
 	public static void setDefaultsFromProperties(Properties properties) {
 		defaultColor = StringUtil.getColorValue(properties, "MapElement.FeatureSet.defaultColor", defaultColor, false);
+		defaultSize = (float) StringUtil.getDoubleValue(properties, "MapElement.FeatureSet.defaultSize", true, defaultSize, false);
+		defaultLineWidth = (float) StringUtil.getDoubleValue(properties, "MapElement.FeatureSet.defaultLineWidth", true, defaultLineWidth, false);
 	}
 
 	/**
@@ -287,6 +322,8 @@ public class FeatureSet extends GroupNode implements MapElement {
 	 */
 	public static void saveDefaultsToProperties(Properties properties) {
 		properties.setProperty("MapElement.FeatureSet.defaultColor", StringUtil.colorToString(defaultColor));
+		properties.setProperty("MapElement.FeatureSet.defaultSize", Float.toString(defaultSize));
+		properties.setProperty("MapElement.FeatureSet.defaultLineWidth", Float.toString(defaultLineWidth));
 	}
 
 }
