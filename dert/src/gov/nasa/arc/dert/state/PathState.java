@@ -50,7 +50,7 @@ public class PathState extends ToolState {
 		waypointsVisible = Path.defaultWaypointsVisible;
 		viewData = new ViewData(-1, -1, 600, 250, true);
 		pointList = new ArrayList<WaypointState>();
-		WaypointState wp = new WaypointState(0, position, name + ".", size, color, labelVisible, pinned);
+		WaypointState wp = new WaypointState(0, position, name + ".", Path.defaultSize, color, labelVisible, pinned);
 		pointList.add(wp);
 	}
 	
