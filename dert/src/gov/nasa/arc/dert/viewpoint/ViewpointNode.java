@@ -138,6 +138,14 @@ public class ViewpointNode
 		location.set(Vector3.UNIT_Z);
 		rotate.applyPost(location, location);
 		location.normalizeLocal();
+		Vector3 left = new Vector3(Vector3.NEG_UNIT_X);
+		rotate.applyPost(left, left);
+		left.normalizeLocal();
+		Vector3 up = new Vector3(Vector3.UNIT_Y);
+		rotate.applyPost(up, up);
+		up.normalizeLocal();
+		direction.set(location);
+		direction.negateLocal();
 		// move the location out by the distance from the map element and add the seek point
 		location.multiplyLocal(distance);
 		location.addLocal(seekPoint);
@@ -149,8 +157,9 @@ public class ViewpointNode
 			rotate.multiplyLocal(workRot);
 		}
 		// set the camera location and direction
-		camera.setFrame(location, rotate);
+		camera.setFrame(location, left, up, direction);
 		camera.setLookAt(seekPoint);
+		camera.setFrustum(sceneBounds);
 		// update this node
 		updateFromCamera();
 		updateCrosshair();
@@ -161,6 +170,8 @@ public class ViewpointNode
 	private void updateCrosshair() {
 		tmpVec.set(camera.getLookAt());
 		double scale = camera.getPixelSizeAt(tmpVec, true) * 20;
+		if (scale <= 0)
+			scale = 1;
 		crosshair.setScale(scale);
 		crosshair.setTranslation(tmpVec);
 		crosshair.updateWorldTransform(false);
@@ -237,23 +248,23 @@ public class ViewpointNode
 		tmpVec.set(camera.getLocation());
 		double height = tmpVec.getZ()-Landscape.getInstance().getZ(tmpVec.getX(), tmpVec.getY());
 		Landscape.getInstance().localToWorldCoordinate(tmpVec);
-		altText.setText(String.format("Hgt Abv Grnd: "+Landscape.stringFormat, height));
+		altText.setText(String.format("VP Hgt Abv Grnd: "+Landscape.stringFormat, height));
 		if (World.getInstance().getUseLonLat()) {
 			Landscape.getInstance().worldToSphericalCoordinate(tmpVec);
-			str = String.format("Loc: "+Landscape.stringFormat+"%s, "+Landscape.stringFormat+"%s", Math.abs(tmpVec.getXf()), (tmpVec.getXf() < 0 ? "W" : "E"), Math.abs(tmpVec.getYf()), (tmpVec.getYf() < 0 ? "S" : "N"));
+			str = String.format("VP Loc: "+Landscape.stringFormat+"%s, "+Landscape.stringFormat+"%s", Math.abs(tmpVec.getXf()), (tmpVec.getXf() < 0 ? "W" : "E"), Math.abs(tmpVec.getYf()), (tmpVec.getYf() < 0 ? "S" : "N"));
 		}
 		else
-			str = String.format("Loc: "+Landscape.stringFormat+", "+Landscape.stringFormat, tmpVec.getX(), tmpVec.getY());
+			str = String.format("VP Loc: "+Landscape.stringFormat+", "+Landscape.stringFormat, tmpVec.getX(), tmpVec.getY());
 		str += String.format(", "+Landscape.stringFormat, tmpVec.getZ());
 		locText.setText(str);
 		
 		// Direction
 		tmpVec.set(camera.getDirection());
-		str = String.format("Dir: "+Landscape.stringFormat+", "+Landscape.stringFormat+", "+Landscape.stringFormat, tmpVec.getX(), tmpVec.getY(), tmpVec.getZ());
+		str = String.format("VP Dir: "+Landscape.stringFormat+", "+Landscape.stringFormat+", "+Landscape.stringFormat, tmpVec.getX(), tmpVec.getY(), tmpVec.getZ());
 		dirText.setText(str);
 		
 		// Az/El location
-		str = String.format("Az/El: "+Landscape.stringFormat+", "+Landscape.stringFormat, Math.toDegrees(azimuth), Math.toDegrees(elevation-Math.PI/2));
+		str = String.format("VP Az/El: "+Landscape.stringFormat+", "+Landscape.stringFormat, Math.toDegrees(azimuth), Math.toDegrees(elevation-Math.PI/2));
 		azElText.setText(str);
 		
 		// distance from viewpoint to center of rotation
@@ -265,7 +276,7 @@ public class ViewpointNode
 		
 		// Magnification
 		double mag = camera.getMagnification();
-		str = String.format("Mag: "+Landscape.stringFormat, mag);
+		str = String.format("VP Mag: "+Landscape.stringFormat, mag);
 		magText.setText(str);
 		
 		// Scale
