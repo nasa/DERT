@@ -291,7 +291,7 @@ public class QuadTreeFactory {
 		}
 		if (qtCount == 4) {
 			for (int i = 0; i < 4; ++i) {
-				qt[i].enabled = true;
+				qt[i].inUse = true;
 			}
 			qt[0].setNeighbors(null, null, qt[1], qt[2]);
 			qt[1].setNeighbors(qt[0], null, null, qt[3]);

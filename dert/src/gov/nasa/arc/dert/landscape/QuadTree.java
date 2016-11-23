@@ -30,7 +30,7 @@ public class QuadTree extends Node {
 	}
 
 	// This quad tree is in use
-	protected boolean enabled;
+	protected boolean inUse;
 
 	// Last time this quad tree was pulled from the cache
 	protected long timestamp;
@@ -370,8 +370,8 @@ public class QuadTree extends Node {
 	}
 
 	private void split() {
-		// in use, no children, and not at the highest resolution
-		if (enabled && (child == null) && !highestLevel) {
+		// we are not at the highest resolution
+		if (!highestLevel) {
 			final QuadTree[] qt = new QuadTree[4];
 			QuadTreeFactory factory = Landscape.getInstance().getFactory();
 			// get the children
@@ -413,7 +413,7 @@ public class QuadTree extends Node {
 		for (int i = 0; i < child.length; ++i) {
 			child[i].clearChildren();
 			detachChild(child[i]);
-			child[i].enabled = false;
+			child[i].inUse = false;
 			child[i].leftDirty = false;
 			child[i].rightDirty = false;
 			child[i].bottomDirty = false;
@@ -489,30 +489,29 @@ public class QuadTree extends Node {
 	}
 
 	private void merge() {
-		if (enabled && (child != null)) {
-			clearChildren();
-			World.getInstance().getLandmarks().landscapeChanged(this);
-		}
+		clearChildren();
+		World.getInstance().getLandmarks().landscapeChanged(this);
 	}
 
 	/**
 	 * Determine if this QuadTree needs to be merged or split
 	 * 
 	 * @param camera
+	 * @param return true if changed
 	 */
-	public void update(final BasicCamera camera) {
-		if (!enabled) {
-			return;
+	public boolean update(final BasicCamera camera) {
+		if (!inUse) {
+			return(false);
 		}
 
 		if (camera.isCulled(this)) {
-			return;
+			return(false);
 		}
 
 		Vector3[] tPoint = getTestPoints();
 
 		if (tPoint == null) {
-			return;
+			return(false);
 		}
 
 		// find test point or camera lookAt point that is closest to the camera
@@ -554,11 +553,13 @@ public class QuadTree extends Node {
 		// get the pixel size at the closest point
 		double pixSize = camera.getPixelSizeAt(closest, true);
 		if (pixSize <= 0) {
-			return;
+			return(false);
 		}
 
 		// Mesh cells should be larger than a single pixel.
 		pixSize *= CELL_SIZE;
+		
+		boolean changed = false;
 
 		// greater than the pixel size of this tile, we can go to a coarser
 		// resolution by merging
@@ -566,6 +567,7 @@ public class QuadTree extends Node {
 			// only merge if we have split
 			if (child != null) {
 				merge();
+				changed = true;
 			}
 		}
 
@@ -575,9 +577,10 @@ public class QuadTree extends Node {
 			// only split if we haven't already
 			if (child == null) {
 				split();
+				changed = true;
 			} else {
 				for (int i = 0; i < child.length; ++i) {
-					child[i].update(camera);
+					changed |= child[i].update(camera);
 				}
 			}
 		}
@@ -585,9 +588,10 @@ public class QuadTree extends Node {
 		// let children update
 		else if (child != null) {
 			for (int i = 0; i < child.length; ++i) {
-				child[i].update(camera);
+				changed |= child[i].update(camera);
 			}
 		}
+		return(changed);
 	}
 
 	private int getColumn(double x) {

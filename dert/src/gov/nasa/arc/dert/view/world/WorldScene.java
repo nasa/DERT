@@ -50,11 +50,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	private boolean showNormals = false;
 	private boolean showTextOverlay = true;
 	private boolean showCenterScale = false;
-
-	// Countdown used after new scene is created to ensure the quadtrees for the
-	// viewpoint are loaded.
-	// TODO: Come up with a better way to do this.
-	private int initializingCount;
 	
 	private boolean worldChanged, viewpointChanged, terrainChanged;
 
@@ -94,7 +89,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		textOverlay = viewpointNode.getTextOverlay();
 		centerScale = viewpointNode.getCenterScale();
 		CoordAction.listenerList.add(viewpointNode);
-		initializingCount = Landscape.getInstance().getBaseMapLevel() * 2;
 		viewpointNode.setSceneBounds();
 		spatialDirty(null, DirtyType.Attached); // add the tiles to the
 												// viewdependent list
@@ -114,14 +108,9 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	 */
 	@Override
 	public void update(ReadOnlyTimer timer) {
-		// When first starting up, set the viewpoint changed field until we have
-		// all of the correct
-		// quadtrees loaded for the viewpoint.
-		if (initializingCount > 0) {
-			viewpointNode.changed.set(true);
-			initializingCount--;
-		}
-		viewpointChanged = viewpointNode.changed.getAndSet(false);
+		// If we adjusted the quad tree earlier, check it again.
+		// This makes sure we set the persisted resolution.
+		viewpointChanged = viewpointNode.changed.getAndSet(false) || Landscape.getInstance().quadTreeChanged.getAndSet(false);
 		if (viewpointChanged) {
 			for (int i = 0; i < viewDependentList.size(); ++i) {
 				viewDependentList.get(i).update(viewpointNode.getCamera());
@@ -129,7 +118,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		}
 		worldChanged = World.getInstance().getDirtyEventHandler().changed.getAndSet(false);
 		terrainChanged = World.getInstance().getDirtyEventHandler().terrainChanged.getAndSet(false);
-//		System.err.println("WorldScene.update "+viewpointChanged+" "+worldChanged+" "+needsRender.get());
+//		System.err.println("WorldScene.update "+viewpointChanged+" "+worldChanged+" "+terrainChanged+" "+Landscape.getInstance().quadTreeChanged+" "+initializingCount);
 		needsRender.set(viewpointChanged || worldChanged || needsRender.get());
 	}
 

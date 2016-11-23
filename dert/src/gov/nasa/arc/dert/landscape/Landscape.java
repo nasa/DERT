@@ -14,6 +14,7 @@ import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
 import java.awt.Color;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.ardor3d.intersection.IntersectionRecord;
 import com.ardor3d.intersection.PickData;
@@ -42,6 +43,9 @@ public class Landscape extends Node implements ViewDependent {
 
 	// numeric field formats based on landscape size
 	public static String format, stringFormat;
+
+	// Viewpoint has changed
+	public AtomicBoolean quadTreeChanged = new AtomicBoolean();
 
 	// spatial reference system for base layer
 	private SpatialReferenceSystem srs;
@@ -262,7 +266,7 @@ public class Landscape extends Node implements ViewDependent {
 		if (quadTree == null) {
 			throw new IllegalStateException("Root quadTree is empty or invalid.");
 		}
-		quadTree.enabled = true;
+		quadTree.inUse = true;
 		quadTree.updateWorldBound(true);
 
 		// material state for surface color and shading
@@ -633,7 +637,7 @@ public class Landscape extends Node implements ViewDependent {
 	public void update(BasicCamera camera) {
 		// long t = System.currentTimeMillis();
 		if (quadTree != null) {
-			quadTree.update(camera);
+			quadTreeChanged.set(quadTree.update(camera));
 			for (int i = 0; i <= baseMapLevel; ++i) {
 				quadTree.stitch(i);
 			}

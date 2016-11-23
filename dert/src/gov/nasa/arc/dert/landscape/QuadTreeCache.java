@@ -64,18 +64,18 @@ public class QuadTreeCache {
 		QuadTree oldestItem = quadTreeMap.get(oldestKey);
 		for (int i = 1; i < key.length; ++i) {
 			QuadTree item = quadTreeMap.get(key[i]);
-			if (oldestItem.enabled == item.enabled) {
+			if (oldestItem.inUse == item.inUse) {
 				if (item.timestamp < oldestItem.timestamp) {
 					oldestKey = key[i];
 					oldestItem = item;
 				}
-			} else if (oldestItem.enabled && !item.enabled) {
+			} else if (oldestItem.inUse && !item.inUse) {
 				oldestItem = item;
 				oldestKey = key[i];
 			}
 		}
 		// remove the oldest item if not in use
-		if (!oldestItem.enabled) {
+		if (!oldestItem.inUse) {
 			QuadTree qt = quadTreeMap.remove(oldestKey);
 			qt.dispose();
 			cleanupCount++;
