@@ -242,7 +242,7 @@ public class FigureMarker extends Marker {
 		}
 		if (labelVisible) {
 			if (autoShowLabel) {
-				if (scale <= PIXEL_SIZE) {
+				if (scale <= 2*PIXEL_SIZE) {
 					if (!label.isVisible())
 						label.setVisible(true);
 				}

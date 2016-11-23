@@ -668,7 +668,7 @@ public class BasicCamera extends Camera {
 		switch (getProjectionMode()) {
 		case Parallel:
 			hgt = _frustumTop * 2;
-			if (!applyZoom) {
+			if (applyZoom) {
 				hgt *= magFactor[magIndex];
 			}
 			break;
@@ -677,7 +677,7 @@ public class BasicCamera extends Camera {
 			// to the height at the near plane
 			// multiply by 2 since top is just half of the height
 			hgt = _frustumTop;
-			if (!applyZoom) {
+			if (applyZoom) {
 				hgt *= magFactor[magIndex];
 			}
 			hgt = 2 * depth * hgt / _frustumNear;

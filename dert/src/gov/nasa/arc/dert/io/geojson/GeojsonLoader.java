@@ -197,7 +197,7 @@ public class GeojsonLoader {
 			if (pos != null) {
 				FigureMarker fm = new FigureMarker(parent.getName(), pos, size, 0, color, false, true, true);
 				fm.setShape(ShapeType.crystal);
-				fm.setAutoShowLabel(true);
+//				fm.setAutoShowLabel(false);
 				parent.attachChild(fm);
 				minZ = pos.getZ();
 				maxZ = pos.getZ();
@@ -221,6 +221,7 @@ public class GeojsonLoader {
 				if (coord != null) {
 					FigureMarker fm = new FigureMarker(parent.getName()+i, pos, size, 0, color, false, true, true);
 					fm.setShape(ShapeType.crystal);
+//					fm.setAutoShowLabel(false);
 					parent.attachChild(fm);
 					minZ = Math.min(minZ, pos.getZ());
 					maxZ = Math.max(maxZ, pos.getZ());

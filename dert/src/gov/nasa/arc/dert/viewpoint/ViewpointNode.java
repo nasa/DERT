@@ -423,7 +423,8 @@ public class ViewpointNode
 			workVec.set(-dx, -dy, 0);
 			workRot.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
 			workRot.applyPost(workVec, workVec);
-			workVec.multiplyLocal(camera.getPixelSizeAt(camera.getLookAt(), true));
+			workVec.multiplyLocal(2*camera.getPixelSizeAt(camera.getLookAt(), true));
+//			System.err.println("ViewpointNode.drag "+workVec+" "+camera.getPixelSizeAt(camera.getLookAt(), true)+" "+camera.getLookAt());
 		}
 		translate(workVec);
 	}
