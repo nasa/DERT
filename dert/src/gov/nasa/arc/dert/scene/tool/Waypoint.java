@@ -42,6 +42,7 @@ public class Waypoint extends FigureMarker implements MapElement {
 		line = new LineSegment("_textLine", new Vector3(0,0,0), new Vector3(0, 1.8*size, 0));
 		line.setColor(labelColorRGBA);
 		billboard.attachChild(line);
+		billboard.getSceneHints().setCullHint(state.labelVisible ? CullHint.Inherit : CullHint.Always);
 		this.state = state;
 		state.setMapElement(this);
 		// Update this node and its children so they will be drawn.
@@ -106,7 +107,7 @@ public class Waypoint extends FigureMarker implements MapElement {
 	 */
 	@Override
 	public void setLabelVisible(boolean labelVisible) {
-		this.labelVisible = labelVisible;
+		super.setLabelVisible(labelVisible);
 		billboard.getSceneHints().setCullHint(labelVisible ? CullHint.Inherit : CullHint.Always);
 	}
 	
@@ -116,11 +117,5 @@ public class Waypoint extends FigureMarker implements MapElement {
 		label.setTranslation(0, 2*size, 0);
 		line.setPoints(Vector3.ZERO, new Vector3(0, 1.8*size, 0));
 	}
-	
-//    @Override
-//    public void draw(final Renderer r) {
-//    	System.err.println("Waypoint.draw "+getName());
-//    	super.draw(r);
-//    }
 
 }
