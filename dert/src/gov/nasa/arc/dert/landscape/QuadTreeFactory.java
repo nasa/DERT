@@ -333,14 +333,13 @@ public class QuadTreeFactory {
 		if (mesh == null) {
 			return;
 		}
-		boolean empty = (mesh.getMeshData().getVertexCount() == 4);
 
 		// load the image layers as textures
 		TextureState textureState = new TextureState();
 		for (int i = 0; i < layerList.length; ++i) {
 			if (layerList[i] != null) {
 				Texture texture = null;
-				if (empty) {
+				if (mesh.isEmpty()) {
 					// this is an empty quad tree tile (just for padding)
 					texture = getEmptyTexture();
 				} else if (layerList[i] instanceof DerivativeLayer) {
@@ -496,7 +495,7 @@ public class QuadTreeFactory {
 		return (mesh);
 	}
 
-	private QuadTreeMesh getEmptyMesh(FloatBuffer vertices, double pixelWidth, double pixelLength) {
+	private QuadTreeMesh getEmptyMesh(String key, FloatBuffer vertices, double pixelWidth, double pixelLength) {
 		// vertices
 		FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(4 * 3);
 		vertexBuffer.put(vertices.get(0)).put(vertices.get(1)).put(vertices.get(2));
@@ -536,7 +535,7 @@ public class QuadTreeFactory {
 		texCoordBuffer.put(1).put(1);
 		texCoordBuffer.flip();
 
-		QuadTreeMesh mesh = new QuadTreeMesh("_mesh", tileWidth, tileLength, pixelWidth, pixelLength);
+		QuadTreeMesh mesh = new QuadTreeMesh("_mesh_"+key, tileWidth, tileLength, pixelWidth, pixelLength);
 		mesh.empty = true;
 		mesh.setMeshData(new TileMeshData(vertexBuffer, texCoordBuffer, colorBuffer, indexBuffer, indexLengths,
 			normalBuffer, IndexMode.TriangleStrip));
@@ -564,7 +563,7 @@ public class QuadTreeFactory {
 
 		// all NaNs
 		if (empty) {
-			return (getEmptyMesh(vertexBuffer, pixelWidth, pixelLength));
+			return (getEmptyMesh(key, vertexBuffer, pixelWidth, pixelLength));
 		}
 
 		// vertex indices
@@ -573,13 +572,9 @@ public class QuadTreeFactory {
 		int[] indexLengths = (int[]) result[1];
 		FloatBuffer texCoordBuffer = getTexCoords(key);
 
-		QuadTreeMesh mesh = new QuadTreeMesh("_mesh", tileWidth, tileLength, pixelWidth, pixelLength);
+		QuadTreeMesh mesh = new QuadTreeMesh("_mesh_"+key, tileWidth, tileLength, pixelWidth, pixelLength);
 		mesh.setMeshData(new TileMeshData(vertexBuffer, texCoordBuffer, colorBuffer, indexBuffer, indexLengths,
 			normalBuffer, IndexMode.TriangleStrip));
-		// This version for using indexed triangles (see getIndices below)
-		// mesh.setMeshData(new TileMeshData(vertexBuffer, texCoordBuffer,
-		// colorBuffer, indexBuffer, indexLengths, normalBuffer,
-		// IndexMode.Triangles));
 
 		mesh.getSceneHints().setNormalsMode(NormalsMode.NormalizeIfScaled);
 		CullState cullState = new CullState();
@@ -629,30 +624,6 @@ public class QuadTreeFactory {
 		result[1] = indexLengths;
 		return (result);
 	}
-
-	// version for using indexed triangles
-	// protected Object[] getIndices(FloatBuffer vertices, int tileWidth, int
-	// tileLength) {
-	// int tWidth = tileWidth+1;
-	// IntBuffer indices = BufferUtils.createIntBuffer(tileLength*tileWidth*6);
-	// for (int r=0; r<tileLength; ++r) {
-	// for (int c=0; c<tileWidth; ++c) {
-	// int i = r*tWidth+c;
-	// indices.put(i);
-	// indices.put(i+tWidth);
-	// indices.put(i+1);
-	//
-	// indices.put(i+1);
-	// indices.put(i+tWidth);
-	// indices.put(i+tWidth+1);
-	// }
-	// }
-	// indices.flip();
-	// Object[] result = new Object[2];
-	// result[0] = indices;
-	// result[1] = null;
-	// return(result);
-	// }
 
 	private Object[] getVertices(String key, double width, double pixelWidth, double height, double pixelLength) {
 

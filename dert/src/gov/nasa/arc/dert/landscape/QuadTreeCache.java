@@ -33,6 +33,7 @@ public class QuadTreeCache {
 	 * @return
 	 */
 	public synchronized QuadTree getQuadTree(String key) {
+//		System.err.println("QuadTreeCache.getQuadTree ."+key+".");
 		QuadTree quadTree = quadTreeMap.get(key);
 		if (quadTree != null) {
 			quadTree.timestamp = System.currentTimeMillis();
@@ -47,6 +48,7 @@ public class QuadTreeCache {
 	 * @param quadTree
 	 */
 	public synchronized void putQuadTree(String key, QuadTree quadTree) {
+//		System.err.println("QuadTreeCache.putQuadTree ."+key+".");
 		quadTree.timestamp = System.currentTimeMillis();
 		quadTreeMap.put(key, quadTree);
 		cleanUpCache();
@@ -60,29 +62,38 @@ public class QuadTreeCache {
 		// get the oldest QuadTree not in use
 		Object[] key = new Object[quadTreeMap.size()];
 		key = quadTreeMap.keySet().toArray(key);
-		Object oldestKey = key[0];
-		QuadTree oldestItem = quadTreeMap.get(oldestKey);
-		for (int i = 1; i < key.length; ++i) {
+		Object oldestKey = null;
+		QuadTree oldestItem = null;
+		int k = 1;
+		for (int i=0; i<key.length; ++i) {
+			oldestKey = key[i];
+			oldestItem = quadTreeMap.get(oldestKey);
+			if (!oldestItem.inUse) {
+				k = i+1;
+				break;
+			}
+		}
+		if (oldestItem == null)
+			throw new IllegalStateException("Unable to clean up quad tree cache.  All tiles are in use. Increase maximum cache size.");
+		for (int i = k; i < key.length; ++i) {
 			QuadTree item = quadTreeMap.get(key[i]);
-			if (oldestItem.inUse == item.inUse) {
+			if (!item.inUse) {
 				if (item.timestamp < oldestItem.timestamp) {
 					oldestKey = key[i];
 					oldestItem = item;
 				}
-			} else if (oldestItem.inUse && !item.inUse) {
-				oldestItem = item;
-				oldestKey = key[i];
 			}
 		}
+		if (oldestItem.inUse)
+			throw new IllegalStateException("Unable to clean up quad tree cache.  All tiles are in use. Increase maximum cache size.");
 		// remove the oldest item if not in use
-		if (!oldestItem.inUse) {
-			QuadTree qt = quadTreeMap.remove(oldestKey);
-			qt.dispose();
-			cleanupCount++;
-			if (cleanupCount == 100) {
-				System.gc();
-				cleanupCount = 0;
-			}
+		QuadTree qt = quadTreeMap.remove(oldestKey);
+		qt.dispose();
+		qt = null;
+		cleanupCount++;
+		if (cleanupCount == 100) {
+			System.gc();
+			cleanupCount = 0;
 		}
 	}
 

@@ -106,13 +106,16 @@ public class QuadTreeMesh extends Mesh {
 	 */
 	public float getElevation(int c, int r) {
 		FloatBuffer vertexBuffer = getMeshData().getVertexBuffer();
+		if (vertexBuffer == null)
+			throw new IllegalStateException(getName()+" Column = " + c + ", Row = " + r
+					+ ", vertex buffer is null");
 		if (empty) {
 			return (vertexBuffer.get(2));
 		}
 		int i = r * tWidth + c;
 		// System.err.println("QuadTreeMesh.getElevation "+c+" "+r+" "+i+" "+tWidth+" "+vertexBuffer.limit());
 		if ((i * 3 + 2) >= vertexBuffer.limit()) {
-			throw new IllegalArgumentException("Column = " + c + ", Row = " + r + ", Tile width = " + tWidth
+			throw new IllegalArgumentException(getName()+" Column = " + c + ", Row = " + r + ", Tile width = " + tWidth
 				+ ", Index = " + (i * 3 + 2) + ", Limit = " + vertexBuffer.limit());
 		}
 		return (vertexBuffer.get(i * 3 + 2));

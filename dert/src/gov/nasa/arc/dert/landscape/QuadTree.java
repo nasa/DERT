@@ -504,9 +504,9 @@ public class QuadTree extends Node {
 			return(false);
 		}
 
-		if (camera.isCulled(this)) {
-			return(false);
-		}
+//		if (camera.isCulled(this)) {
+//			return(false);
+//		}
 
 		Vector3[] tPoint = getTestPoints();
 
@@ -552,9 +552,8 @@ public class QuadTree extends Node {
 
 		// get the pixel size at the closest point
 		double pixSize = camera.getPixelSizeAt(closest, true);
-		if (pixSize <= 0) {
+		if (pixSize <= 0)
 			return(false);
-		}
 
 		// Mesh cells should be larger than a single pixel.
 		pixSize *= CELL_SIZE;
@@ -694,8 +693,11 @@ public class QuadTree extends Node {
 	 * Dispose of any resources
 	 */
 	public void dispose() {
+//		System.err.println("QuadTree.dispose "+getName());
+		inUse = false;
 		if (mesh != null)
 			mesh.dispose();
+		mesh = null;
 	}
 
 	/**
