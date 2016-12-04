@@ -25,8 +25,8 @@ public class MathUtilTest {
 			System.err.println("Test of MathUtil.directionToAzEl failed.");
 			return(false);
 		}
-		if (!testAzElToPoint()) {
-			System.err.println("Test of MathUtil.azElToPoint failed.");
+		if (!testAzElToDirection()) {
+			System.err.println("Test of MathUtil.azElToDirection failed.");
 			return(false);
 		}
 		if (!testIsInsidePolygon()) {
@@ -173,7 +173,7 @@ public class MathUtilTest {
 		return(true);
 	}
 	
-	private boolean testAzElToPoint() {
+	private boolean testAzElToDirection() {
 		Vector3 point = new Vector3();
 		double az = 0;
 		double el = 0;
@@ -182,7 +182,7 @@ public class MathUtilTest {
 			az = 0;
 			el = 0;
 			MathUtil.azElToDirection(az, el, point);
-			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			System.err.println("MathUtil.azElToDirection azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(0, 1, 0)))
 				return(false);
 			
@@ -190,7 +190,7 @@ public class MathUtilTest {
 			az = 0.5*Math.PI;
 			el = 0;
 			MathUtil.azElToDirection(az, el, point);
-			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			System.err.println("MathUtil.azElToDirection azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(1, 0, 0)))
 				return(false);
 			
@@ -198,7 +198,7 @@ public class MathUtilTest {
 			az = 1.5*Math.PI;
 			el = 0;
 			MathUtil.azElToDirection(az, el, point);
-			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			System.err.println("MathUtil.azElToDirection azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(-1, 0, 0)))
 				return(false);
 			
@@ -206,7 +206,7 @@ public class MathUtilTest {
 			az = Math.PI;
 			el = 0;
 			MathUtil.azElToDirection(az, el, point);
-			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			System.err.println("MathUtil.azElToDirection azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(0, -1, 0)))
 				return(false);
 			
@@ -214,7 +214,7 @@ public class MathUtilTest {
 			az = 0;
 			el = -0.5*Math.PI;
 			MathUtil.azElToDirection(az, el, point);
-			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			System.err.println("MathUtil.azElToDirection azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(0, 0, -1)))
 				return(false);
 			
@@ -222,7 +222,7 @@ public class MathUtilTest {
 			az = 0.25*Math.PI;
 			el = 0.25*Math.PI;
 			MathUtil.azElToDirection(az, el, point);
-			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			System.err.println("MathUtil.azElToDirection azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(0.5, 0.5, 0.7071067811865475)))
 				return(false);
 			
@@ -230,7 +230,7 @@ public class MathUtilTest {
 			az = 1.75*Math.PI;
 			el = 0.25*Math.PI;
 			MathUtil.azElToDirection(az, el, point);
-			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			System.err.println("MathUtil.azElToDirection azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(-0.5, 0.5, 0.7071067811865475)))
 				return(false);
 			
@@ -238,7 +238,7 @@ public class MathUtilTest {
 			az = 0.75*Math.PI;
 			el = 0.25*Math.PI;
 			MathUtil.azElToDirection(az, el, point);
-			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			System.err.println("MathUtil.azElToDirection azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(0.5, -0.5, 0.7071067811865475)))
 				return(false);
 			
@@ -246,7 +246,7 @@ public class MathUtilTest {
 			az = 1.25*Math.PI;
 			el = 0.25*Math.PI;
 			MathUtil.azElToDirection(az, el, point);
-			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
+			System.err.println("MathUtil.azElToDirection azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(-0.5, -0.5, 0.7071067811865475)))
 				return(false);
 		}
