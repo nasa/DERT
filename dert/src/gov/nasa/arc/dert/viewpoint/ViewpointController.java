@@ -5,9 +5,11 @@ import gov.nasa.arc.dert.render.SceneFramework;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scenegraph.Ray3WithLine;
+import gov.nasa.arc.dert.state.PathState;
 import gov.nasa.arc.dert.view.viewpoint.FlyThroughDialog;
 
 import java.awt.Dialog;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -18,7 +20,6 @@ import javax.swing.Timer;
 import com.ardor3d.math.Ray3;
 import com.ardor3d.math.Vector2;
 import com.ardor3d.math.Vector3;
-import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Spatial;
 
 /**
@@ -64,6 +65,7 @@ public class ViewpointController {
 	private FlyThroughParameters flyParams;
 	private DecimalFormat formatter1 = new DecimalFormat("00");
 	private DecimalFormat formatter2 = new DecimalFormat("00.000");
+	private ViewpointStore oldViewpoint;
 	
 	// Curve for fly through
 //	private CatmullRomSpline spline;
@@ -396,6 +398,8 @@ public class ViewpointController {
 	 * @return
 	 */
 	public FlyThroughParameters getFlyThroughParameters() {
+		if (flyParams == null)
+			flyParams = new FlyThroughParameters();
 		return (flyParams);
 	}
 
@@ -403,35 +407,50 @@ public class ViewpointController {
 	 * Stop flight
 	 */
 	public void stopFlyThrough() {
+		if (flyThroughTimer == null)
+			return;
 		flyThroughTimer.stop();
 		flyIndex = 0;
 		Dert.getWorldView().getScenePanel().enableFrameGrab(null);
+		// start the rendering framework again
 		SceneFramework.getInstance().suspend(false);
+		// put us back where we were
+		if (oldViewpoint != null)
+			viewpointNode.setViewpoint(oldViewpoint, true, false);
+		flyThroughTimer = null;
+		flyThroughDialog.enableParameters(true);
 	}
 
 	/**
 	 * Pause flight
 	 */
 	public void pauseFlyThrough() {
-		flyThroughTimer.stop();
+		if (flyThroughTimer != null)
+			flyThroughTimer.stop();
 	}
 
 	/**
 	 * Start flight
+	 * A timer is used to run the flight. If frames are grabbed, each time a frame is rendered,
+	 * it is saved to a file.
 	 */
 	public void startFlyThrough() {
-		if (flyParams.grab) {
-			Dert.getWorldView().getScenePanel().enableFrameGrab(flyParams.imageSequencePath);
-		}
-		SceneFramework.getInstance().suspend(true);
 		if (flyThroughTimer == null) {
+			if (flyParams.grab) {
+				Dert.getWorldView().getScenePanel().enableFrameGrab(flyParams.imageSequencePath);
+			}
+			// Pause the rendering framework so it won't interfere.
+			SceneFramework.getInstance().suspend(true);
+			// make time step at least 1 second if we are grabbing frames
+			final int millis = (flyParams.grab && (flyParams.millisPerFrame < 1000)) ? 1000 : flyParams.millisPerFrame;
 			flyIndex = 0;
-			flyThroughTimer = new Timer(flyParams.millisPerFrame, new ActionListener() {
+			oldViewpoint = viewpointNode.getViewpoint(oldViewpoint);
+			flyThroughTimer = new Timer(millis, new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					viewpointNode.setViewpoint(flyList.get(flyIndex), true, false);
 					SceneFramework.getInstance().getFrameHandler().updateFrame();
-					double t = (flyIndex * flyParams.millisPerFrame) / 1000.0;
+					double t = (flyIndex * millis) / 1000.0;
 					int hr = (int) (t / 3600);
 					t -= hr * 3600;
 					int min = (int) (t / 60);
@@ -441,28 +460,15 @@ public class ViewpointController {
 								+ formatter2.format(sec) + "    Frame " + flyIndex);
 					flyIndex++;
 					if (flyIndex == flyList.size()) {
-						if (!flyParams.loop) {
-							flyThroughTimer.stop();
-							flyThroughDialog.enableParameters(true);
-							Dert.getWorldView().getScenePanel().enableFrameGrab(null);
-							SceneFramework.getInstance().suspend(false);
-						}
+						if (!flyParams.loop)
+							stopFlyThrough();
 						flyIndex = 0;
 					}
 				}
 			});
+			flyThroughTimer.setDelay(millis);
 		}
-		flyThroughTimer.setDelay(flyParams.millisPerFrame);
 		flyThroughTimer.start();
-	}
-
-	/**
-	 * Determine if in flight
-	 * 
-	 * @return
-	 */
-	public boolean isFlying() {
-		return (flyThroughDialog != null);
 	}
 
 	/**
@@ -471,11 +477,14 @@ public class ViewpointController {
 	 * @param path
 	 */
 	public void flyThrough(Path path, Dialog owner) {
-		if (flyThroughDialog == null) {
-			flyThroughDialog = new FlyThroughDialog(owner, this);
-			flyThroughDialog.pack();
-			flyThroughDialog.setLocationRelativeTo(owner);
+		// We are already doing a fly through - do only one at a time.
+		if (flyThroughDialog != null) {
+			Toolkit.getDefaultToolkit().beep();
+			return;
 		}
+		flyThroughDialog = new FlyThroughDialog(owner, this);
+		flyThroughDialog.pack();
+		flyThroughDialog.setLocationRelativeTo(owner);
 		flyThroughDialog.setPath(path);
 		flyThroughDialog.setVisible(true);
 	}
@@ -484,45 +493,114 @@ public class ViewpointController {
 	 * Close the fly through dialog
 	 */
 	public void closeFlyThrough() {
-		Dert.getWorldView().getScenePanel().enableFrameGrab(null);
-		SceneFramework.getInstance().suspend(false);
-		if (flyThroughDialog != null) {
-			flyThroughDialog.setVisible(false);
-		}
+		// stop the flythrough if it is going
+		stopFlyThrough();
 		flyThroughDialog = null;
 	}
 
 	/**
-	 * Fly through viewpoints
+	 * Fly through a list of viewpoints
 	 * 
-	 * @param numInbetweens
-	 * @param millis
-	 * @param loop
+	 * @param numFrames total number of frames
+	 * @param millis number of milliseconds between frames
+	 * @param loop repeat
+	 * @param grab grab each frame to an image sequence
+	 * @param seqPath the file path for the image sequence
 	 */
-	public void flyViewpoints(int numFrames, int millis, boolean loop, boolean grab, String seqPath) {
-    	if (numFrames <= 1)
+	public void flyViewpoints(FlyThroughParameters flyParams) {
+		// we need more than one frame
+    	if (flyParams.numFrames <= 1)
     		return;
-    	
-		flyParams.numFrames = numFrames;
-		flyParams.millisPerFrame = millis;
-		flyParams.loop = loop;
-		flyParams.grab = grab;
-		flyParams.imageSequencePath = seqPath;
+		
+		// we need more than one viewpoint
+		int vpCount = viewpointList.size();
+		if (vpCount <= 1)
+			return;
 
 		flyList = new Vector<ViewpointStore>();
 		
-		int vpCount = viewpointList.size();
+		fillFlyList(viewpointList, flyList, flyParams.numFrames);
+    }
+
+	/**
+	 * Fly through path waypoints
+	 * 
+	 * @param path the Path mapElement
+	 * @param numFrames the total number of frames (will be a little less)
+	 * @param millis the number of millis per frame
+	 * @param loop repeat
+	 * @param height the height of the viewpoint maintained above each waypoint
+	 * @param grab save each frame to an image sequence
+	 * @param seqPath the image sequence file path
+	 */
+	public void flyPath(Path path) {
+		flyParams = ((PathState)path.getState()).flyParams;
 		
+		// we need more than one frame
+    	if (flyParams.numFrames <= 1)
+    		return;
+		
+		// we need more than one waypoint
+		int ptCount = path.getNumberOfPoints();
+		if (ptCount <= 1)
+			return;
+		
+		// create an interpolated curve from the path
+		Vector3[] curve = path.getCurve(10);
+
+		// create a list of viewpoints from the curve
+		Vector<ViewpointStore> vpList = new Vector<ViewpointStore>();
+		BasicCamera cam = new BasicCamera((BasicCamera)viewpointNode.getCamera());
+		Vector3 loc = null;
+		Vector3 look = null;
+		ViewpointStore vps = null;
+		Vector3 angle = null;
+		for (int i = 0; i < curve.length-1; ++i) {
+
+			// point the camera at the next way point location
+			loc = new Vector3(curve[i].getX(), curve[i].getY(), curve[i].getZ()+flyParams.pathHeight);
+			look = new Vector3(curve[i+1].getX(), curve[i+1].getY(), curve[i+1].getZ()+flyParams.pathHeight);
+			// Set the camera frame.
+			// Drop the tilt a little and rotate it 90 degrees since we are working parallel to the ground.
+			angle = cam.setFrameAndLookAt(loc, look, Math.PI/2-Math.PI/20);
+			// loc and look are the same point, we don't want that
+			if (angle == null)
+				continue;
+			
+			// set frustum and clipping planes
+			cam.setFrustum(viewpointNode.getSceneBounds());
+			vps = new ViewpointStore(Integer.toString(i), cam);
+			vpList.add(vps);
+		}
+		loc = look;
+		look.addLocal(vps.direction);
+		angle = cam.setFrameAndLookAt(loc, look, Math.PI/2-Math.PI/20);
+		cam.setFrustum(viewpointNode.getSceneBounds());
+		vps = new ViewpointStore(Integer.toString(curve.length-1), cam);
+		vpList.add(vps);
+		flyList = new Vector<ViewpointStore>();
+		fillFlyList(vpList, flyList, flyParams.numFrames);
+		// set hike mode to true so we will use the viewpoint location as CoR
+		for (int i=0; i<flyList.size(); ++i)
+			flyList.get(i).hikeMode = true;
+	}
+	
+	private void fillFlyList(Vector<ViewpointStore> vpList, Vector<ViewpointStore> flyList, int numFrames) {
+		
+		// get the total distance along the viewpoint list
 		double dist = 0;
-		ViewpointStore vps1 = viewpointList.get(0);
+		ViewpointStore vps1 = vpList.get(0);
 		ViewpointStore vps2 = null;
-		for (int i=1; i<vpCount; ++i) {
-			vps2 = viewpointList.get(i);
+		for (int i=1; i<vpList.size(); ++i) {
+			vps2 = vpList.get(i);
 			dist += vps1.location.distance(vps2.location);
 			vps1 = vps2;
 		}
+		
+		// add inbetween viewpoints equally spaced along the list
+		// equal spacing maintains a constant velocity
 		double delta = dist/numFrames;
-		vps2 = viewpointList.get(0);
+		vps2 = vpList.get(0);
 		flyList.add(vps2);
 		int k = 0;
 		dist = 0;
@@ -532,9 +610,9 @@ public class ViewpointController {
 				d = d-dist;
 				vps1 = vps2;
 				k ++;
-				if (k >= viewpointList.size())
+				if (k >= vpList.size())
 					break;
-				vps2 = viewpointList.get(k);
+				vps2 = vpList.get(k);
 				dist = vps1.location.distance(vps2.location);
 			}
 			if (dist > 0) {
@@ -542,84 +620,6 @@ public class ViewpointController {
 				d += delta;
 			}
 		}
-		flyList.add(viewpointList.get(viewpointList.size() - 1));
-
-//		// Use spline interpolation
-//		if (spline == null) 
-//			spline = new CatmullRomSpline();
-//        int index = 1;
-//        final int end = vpCount-2;
-//        final int count = (end - index) * numInbetweens;
-//
-//        for (int i = 0; i < count; i++) {
-//            final int is = i % numInbetweens;
-//
-//            if (0 == is && i >= numInbetweens) {
-//                index++;
-//            }
-//
-//            final double t = is / (double)numInbetweens;
-//
-//            final int p0 = index - 1;
-//            final int p1 = index;
-//            final int p2 = index + 1;
-//            final int p3 = index + 2;
-//            ViewpointStore vps = viewpointList.get(p1);
-//			ViewpointStore newVps = vps.getInbetween(viewpointList.get(p2), t);
-//
-//            newVps.location = spline.interpolate(viewpointList.get(p0).location, viewpointList.get(p1).location, viewpointList.get(p2).location,
-//            		viewpointList.get(p3).location, t);
-//            flyList.add(newVps);
-//        }
-    }
-
-	/**
-	 * Fly through path waypoints
-	 * 
-	 * @param path
-	 * @param numInbetweens
-	 * @param millis
-	 * @param loop
-	 * @param height
-	 */
-	public void flyPath(Path path, int numFrames, int millis, boolean loop, double height, boolean grab, String seqPath) {
-		flyParams.numFrames = numFrames;
-		flyParams.millisPerFrame = millis;
-		flyParams.loop = loop;
-		flyParams.pathHeight = height;
-		flyParams.grab = grab;
-		flyParams.imageSequencePath = seqPath;
-		
-		Vector3[] curve = path.getCurve(numFrames);
-
-		flyList = new Vector<ViewpointStore>();
-		BasicCamera cam = new BasicCamera((BasicCamera)viewpointNode.getCamera());
-		for (int i = 0; i < curve.length-1; ++i) {
-			ViewpointStore vps = getViewpoint(Integer.toString(i), curve[i], curve[i+1], height, cam);
-			if (vps.direction.length() != 0)
-				flyList.add(vps);
-		}
-		ViewpointStore lastVps = new ViewpointStore(Integer.toString(curve.length-1), cam);
-		lastVps.location.set(curve[curve.length-1]);
-		lastVps.lookAt.addLocal(lastVps.direction);
-		flyList.add(lastVps);
-	}
-
-	private ViewpointStore getViewpoint(String name, ReadOnlyVector3 p0, ReadOnlyVector3 p1, double height, BasicCamera camera) {
-		// place the camera at the given way point and altitude
-		camera.setLocation(p0.getX(), p0.getY(), p0.getZ() + height);
-
-		// if the way point is not the last one, point the camera at the next
-		// way point location
-		Vector3 direction = new Vector3(p1);
-		direction.subtractLocal(p0);
-		direction.normalizeLocal();
-		camera.setDirection(direction);
-		Vector3 lookAt = new Vector3(p1);
-		lookAt.setZ(lookAt.getZ() + height);
-		camera.setLookAt(lookAt);
-		camera.setFrustum(viewpointNode.getSceneBounds());
-
-		return (new ViewpointStore(name, camera));
+		flyList.add(vpList.get(vpList.size() - 1));
 	}
 }

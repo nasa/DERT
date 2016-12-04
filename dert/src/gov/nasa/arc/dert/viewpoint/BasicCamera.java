@@ -8,6 +8,7 @@ import java.nio.DoubleBuffer;
 import com.ardor3d.bounding.BoundingSphere;
 import com.ardor3d.bounding.BoundingVolume;
 import com.ardor3d.math.MathUtils;
+import com.ardor3d.math.Matrix3;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyMatrix3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -45,7 +46,7 @@ public class BasicCamera extends Camera {
 	private Vector3 lookAt = new Vector3(0, 0, -10);
 	private int[] viewport = new int[4];
 	private double fovX;
-	private boolean onFoot;
+	private double maxNearPlane = Float.MAX_VALUE;
 	private final DoubleBuffer _matrixBuffer = BufferUtils.createDoubleBuffer(16);
 
 	/**
@@ -83,7 +84,6 @@ public class BasicCamera extends Camera {
 		super(that);
 		_fovY = that.getFovY();
 		fovX = that.getFovX();
-		lookAt.set(that.getLookAt());
 		aspect = that.getAspect();
 	}
 
@@ -105,6 +105,10 @@ public class BasicCamera extends Camera {
 		_fovY = source.getFovY();
 		fovX = ((BasicCamera) source).getFovX();
 		aspect = ((BasicCamera) source).getAspect();
+		if (lookAt == null)
+			lookAt = new Vector3(((BasicCamera) source).getLookAt());
+		else
+			lookAt.set(((BasicCamera) source).getLookAt());
 
 		_depthRangeNear = source.getDepthRangeNear();
 		_depthRangeFar = source.getDepthRangeFar();
@@ -575,14 +579,12 @@ public class BasicCamera extends Camera {
 			nearPlane = distance - r + 0.00001;
 			farPlane = nearPlane + 3 * r;
 		}
-		if (onFoot) {
-			if (nearPlane > 1)
-				nearPlane = 1;
-		}
+		if (nearPlane > maxNearPlane)
+			nearPlane = maxNearPlane;
 	}
 	
-	public void setOnFoot(boolean onFoot) {
-		this.onFoot = onFoot;
+	public void setMaxNearPlane(double val) {
+		maxNearPlane = val;
 	}
 
 	/**
@@ -688,5 +690,50 @@ public class BasicCamera extends Camera {
 
 		// return units/pixel
 		return (hgt / getHeight());
+	}
+	
+	/**
+	 * Given a location, a lookat point and an optional change in tilt, set the camera frame.
+	 * @param loc
+	 * @param look
+	 * @param tilt
+	 * @return the az and el angles of the camera
+	 */
+	public Vector3 setFrameAndLookAt(ReadOnlyVector3 loc, ReadOnlyVector3 look, double tilt) {
+		// point the camera at the lookat point location
+		Vector3 direction = new Vector3(look);
+		direction.subtractLocal(loc);
+		
+		// points are colocated, don't use
+		if (direction.length() == 0)
+			return(null);
+		
+		direction.normalizeLocal();
+		
+		// get the az and el angles
+		Vector3 angle = MathUtil.directionToAzEl(direction, null);
+		
+		// adjust with optional tilt and get the new camera direction
+		if (tilt != 0) {
+			angle.setY(angle.getY()+tilt);
+			MathUtil.azElToDirection(angle.getX(), angle.getY(), direction);
+		}
+		
+		// rotate the camera frame
+		Matrix3 rotMat = Matrix3.fetchTempInstance();
+		Matrix3 workMat = Matrix3.fetchTempInstance();
+		rotMat.fromAngleNormalAxis(angle.getX(), Vector3.NEG_UNIT_Z);
+		workMat.fromAngleNormalAxis(angle.getY(), Vector3.UNIT_X);
+		rotMat.multiplyLocal(workMat);		
+		setFrame(loc, rotMat);
+		Matrix3.releaseTempInstance(rotMat);
+		Matrix3.releaseTempInstance(workMat);
+		
+		// update the lookat point
+		double dist = look.distance(loc);
+		lookAt.set(direction);
+		lookAt.scaleAddLocal(dist, loc);
+		
+		return(angle);
 	}
 }

@@ -32,6 +32,8 @@ import com.ardor3d.scenegraph.Node;
 public class ViewpointNode
 	extends Node
 	implements CoordListener {
+	
+	public static final double ELEV_HOME = Math.PI/2;
 
 	// Viewpoint has changed
 	public AtomicBoolean changed = new AtomicBoolean();
@@ -56,7 +58,9 @@ public class ViewpointNode
 	private Vector3 seekPoint = new Vector3();
 
 	// Orientation
+	// Angle of rotation from horizontal plane
 	private double elevation = 0;
+	// Angle of rotation around center of rotation (lookAt or location)
 	private double azimuth = 0;
 
 	private boolean strictFrustum;
@@ -64,7 +68,7 @@ public class ViewpointNode
 	// Cross hair
 	private RGBAxes crosshair;
 	private Node overlay;
-	private RasterText corText, dstText, magText, altText, locText, dirText, azElText;
+	private RasterText corText, dstText, magText, altText, locText, azElText;
 	private double textSize = 14;
 	private CenterScale centerScale;
 	private boolean mapMode, hikeMode;
@@ -127,39 +131,24 @@ public class ViewpointNode
 		if (Double.isNaN(distance)) {
 			return;
 		}
-		// create rotation matrix from azimuth and elevation
-		rotate.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
-		if (!hikeMode) {
-			elevation = Math.PI / 4;
-			workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
-			rotate.multiplyLocal(workRot);
-		}
-		// start the location at (0,0,1) and rotate it
-		location.set(Vector3.UNIT_Z);
-		rotate.applyPost(location, location);
-		location.normalizeLocal();
-		Vector3 left = new Vector3(Vector3.NEG_UNIT_X);
-		rotate.applyPost(left, left);
-		left.normalizeLocal();
-		Vector3 up = new Vector3(Vector3.UNIT_Y);
-		rotate.applyPost(up, up);
-		up.normalizeLocal();
-		direction.set(location);
-		direction.negateLocal();
-		// move the location out by the distance from the map element and add the seek point
-		location.multiplyLocal(distance);
-		location.addLocal(seekPoint);
+		
+		// Calculate a camera location.
+		Vector3 loc = new Vector3(1, 1, 1);
+		loc.scaleAddLocal(distance, seekPoint);
 		if (hikeMode) {
-			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
-			location.setZ(z+zOffset);
-			elevation = Math.PI / 4;
-			workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
-			rotate.multiplyLocal(workRot);
+			double z = Landscape.getInstance().getZ(loc.getX(), loc.getY());
+			loc.setZ(z+zOffset);
 		}
-		// set the camera location and direction
-		camera.setFrame(location, left, up, direction);
-		camera.setLookAt(seekPoint);
+		
+		// Set the camera frame.
+		// Adjust tilt so we are parallel with ground plane.
+		Vector3 angle = camera.setFrameAndLookAt(loc, seekPoint, ELEV_HOME);
+		if (angle == null)
+			throw new IllegalStateException("Camera location and lookat point are the same.");
+		azimuth = angle.getX();
+		elevation = angle.getY();
 		camera.setFrustum(sceneBounds);
+		
 		// update this node
 		updateFromCamera();
 		updateCrosshair();
@@ -204,15 +193,10 @@ public class ViewpointNode
 		azElText.setVisible(true);
 		azElText.setTranslation(0, 4*textSize, 0);
 		overlay.attachChild(azElText);
-		dirText = new RasterText("_dir", "", AlignType.Left, false);
-		dirText.setColor(ColorRGBA.WHITE);
-		dirText.setVisible(true);
-		dirText.setTranslation(0, 5*textSize, 0);
-		overlay.attachChild(dirText);
 		locText = new RasterText("_loc", "", AlignType.Left, false);
 		locText.setColor(ColorRGBA.WHITE);
 		locText.setVisible(true);
-		locText.setTranslation(0, 6*textSize, 0);
+		locText.setTranslation(0, 5*textSize, 0);
 		overlay.attachChild(locText);
 		overlay.setTranslation(textSize, textSize, 0);
 		overlay.updateGeometricState(0);
@@ -258,13 +242,8 @@ public class ViewpointNode
 		str += String.format(", "+Landscape.stringFormat, tmpVec.getZ());
 		locText.setText(str);
 		
-		// Direction
-		tmpVec.set(camera.getDirection());
-		str = String.format("VP Dir: "+Landscape.stringFormat+", "+Landscape.stringFormat+", "+Landscape.stringFormat, tmpVec.getX(), tmpVec.getY(), tmpVec.getZ());
-		dirText.setText(str);
-		
 		// Az/El location
-		str = String.format("VP Az/El: "+Landscape.stringFormat+", "+Landscape.stringFormat, Math.toDegrees(azimuth), Math.toDegrees(elevation-Math.PI/2));
+		str = String.format("VP Dir Az/El: "+Landscape.stringFormat+", "+Landscape.stringFormat, Math.toDegrees(azimuth), Math.toDegrees(elevation-ELEV_HOME));
 		azElText.setText(str);
 		
 		// distance from viewpoint to center of rotation
@@ -386,6 +365,7 @@ public class ViewpointNode
 	 * Reset the viewpoint to the overhead position
 	 */
 	public void reset() {
+		hikeMode = false;
 		setSceneBounds();
 		rotate.setIdentity();
 		azimuth = 0;
@@ -497,14 +477,17 @@ public class ViewpointNode
 		hikeMode = vps.hikeMode;
 		zOffset = vps.zOffset;
 		azimuth = vps.azimuth;
-		elevation = vps.elevation+Math.PI/2;
+		elevation = vps.elevation+ELEV_HOME;
 		camera.setMagnification(vps.magIndex);
 		camera.setLookAt(vps.lookAt);
 		if (strict) {
 			camera.setFrustum(vps.frustumNear, vps.frustumFar, vps.frustumLeft, vps.frustumRight, vps.frustumTop,
 				vps.frustumBottom);
 		}
-		rotateTurntable(vps.lookAt.distance(vps.location));
+		if (hikeMode)
+			rotateCameraAroundLocation(vps.location);
+		else
+			rotateCameraAroundLookAtPoint(vps.lookAt, vps.lookAt.distance(vps.location));
 		updateFromCamera();
 		updateCrosshair();
 		updateGeometricState(0);
@@ -560,8 +543,8 @@ public class ViewpointNode
 		if (store == null) {
 			store = new ViewpointStore();
 		}
-		store.set(camera);
 		store.hikeMode = hikeMode;
+		store.set(camera);
 		store.zOffset = zOffset;
 		if (hikeMode) {
 			store.distance = 0;
@@ -581,9 +564,9 @@ public class ViewpointNode
 			return;
 		setAzAndEl(azimuth + (zRotAngle * 0.5 * Math.PI / 360), elevation + (xRotAngle * 0.5 * Math.PI / 360));
 		if (hikeMode)
-			rotateCamera();
+			rotateCameraAroundLocation(camera.getLocation());
 		else
-			rotateTurntable(camera.getDistanceToCoR());
+			rotateCameraAroundLookAtPoint(camera.getLookAt(), camera.getDistanceToCoR());
 		updateStatus();
 	}
 
@@ -591,7 +574,7 @@ public class ViewpointNode
 	 * Rotate around the center of rotation point (look at point) while facing
 	 * the CoR.
 	 */
-	private void rotateTurntable(double distance) {
+	private void rotateCameraAroundLookAtPoint(ReadOnlyVector3 lookAt, double distance) {
 		// create rotation matrix from azimuth and elevation
 		rotate.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
 		workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
@@ -602,7 +585,7 @@ public class ViewpointNode
 		location.normalizeLocal();
 		// move the location out by the distance from center and add the CoR coordinates to translate
 		location.multiplyLocal(distance);
-		location.addLocal(camera.getLookAt());
+		location.addLocal(lookAt);
 		// set the camera location and direction
 		camera.setFrame(location, rotate);
 		// update this node
@@ -615,13 +598,13 @@ public class ViewpointNode
 	/**
 	 * Rotate around the viewpoint location.
 	 */
-	private void rotateCamera() {
+	private void rotateCameraAroundLocation(ReadOnlyVector3 loc) {
 		// create rotation matrix from azimuth and elevation
-		rotate.fromAngleNormalAxis(azimuth, Vector3.UNIT_Z);
+		rotate.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
 		workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
 		rotate.multiplyLocal(workRot);
 		// set the camera location and direction
-		camera.setFrame(camera.getLocation(), rotate);
+		camera.setFrame(loc, rotate);
 		// update this node
 		updateFromCamera();
 		updateGeometricState(0);
@@ -665,16 +648,8 @@ public class ViewpointNode
 	public void changeDirection(Vector3 dir) {
 		dir.normalizeLocal();
 		Vector3 angle = MathUtil.directionToAzEl(dir, null);
-		// This function returns the az angle around +Z axis from +Y
-		// and the el angle around +X axis from +Y
-		// We want the az angle to rotate around the -Z axis and
-		// the el angle to rotate around +X axis from the -Z axis.
-		setAzAndEl(-angle.getX(), angle.getY() + Math.PI / 2);
-//		lookAt.set(dir);
-//		lookAt.scaleAddLocal(camera.getDistanceToCoR(), camera.getLocation());
-//		camera.setLookAt(lookAt);
-//		rotateTurntable(camera.getDistanceToCoR());
-		rotateCamera();
+		setAzAndEl(angle.getX(), angle.getY() + Math.PI / 2);
+		rotateCameraAroundLocation(camera.getLocation());
 		updateFromCamera();
 		updateCrosshair();
 		updateGeometricState(0);
@@ -737,10 +712,9 @@ public class ViewpointNode
 	 * @param el
 	 */
 	public void changeAzimuthAndElevation(double az, double el) {
-		azimuth = az;
-		elevation = el;
-//		rotateTurntable(camera.getDistanceToCoR());
-		rotateCamera();
+		setAzAndEl(az, el);
+		elevation += ELEV_HOME;
+		rotateCameraAroundLocation(camera.getLocation());
 	}
 
 	private void setAzAndEl(double az, double el) {
@@ -817,7 +791,7 @@ public class ViewpointNode
 			camera.setProjectionMode(ProjectionMode.Parallel);
 			rotate.setIdentity();
 			azimuth = 0;
-			elevation = 0;
+			elevation = ELEV_HOME;
 			location.set(0.0, 0.0, sceneBounds.getRadius());
 			location.addLocal(sceneBounds.getCenter());
 			camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
@@ -838,7 +812,9 @@ public class ViewpointNode
 	}
 	
 	public boolean setHikeMode(boolean hikeMode) {
+		this.hikeMode = hikeMode;
 		if (hikeMode) {
+			camera.setMaxNearPlane(1);
 			ReadOnlyVector3 trans = camera.getLookAt();
 			double z = Landscape.getInstance().getZ(trans.getX(), trans.getY());
 			if (Double.isNaN(z))
@@ -847,7 +823,6 @@ public class ViewpointNode
 				zOffset = 0.02;
 			else
 				zOffset = 2;
-			this.hikeMode = hikeMode;
 			location.set(trans);
 			location.setZ(z + zOffset);
 			camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
@@ -858,7 +833,7 @@ public class ViewpointNode
 			}
 			rotate.setIdentity();
 			azimuth = 0;
-			elevation = Math.PI/2;
+			elevation = ELEV_HOME;
 			rotate(0, 0);
 			camera.setFrame(location, rotate);
 			updateFromCamera();
@@ -868,8 +843,7 @@ public class ViewpointNode
 			updateStatus();
 		}
 		else
-			this.hikeMode = hikeMode;
-		camera.setOnFoot(hikeMode);
+			camera.setMaxNearPlane(Float.MAX_VALUE);
 		Dert.getMainWindow().setViewpointMode(hikeMode);
 		return(true);
 	}

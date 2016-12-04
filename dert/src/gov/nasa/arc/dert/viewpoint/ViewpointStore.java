@@ -187,14 +187,10 @@ public class ViewpointStore {
 		ViewpointStore vps = new ViewpointStore();
 		vps.name = this.name + pct;
 		vps.location = this.location.lerp(that.location, pct, vps.location);
-		if (hikeMode)
+		if (vps.hikeMode)
 			vps.location.setZ(Landscape.getInstance().getZ(location.getX(), location.getY())+zOffset);
-		vps.direction = this.direction.lerp(that.direction, pct, vps.direction);
+//		vps.direction = this.direction.lerp(that.direction, pct, vps.direction);
 		vps.lookAt = this.lookAt.lerp(that.lookAt, pct, vps.lookAt);
-//		System.err.println("ViewpointStore.getInbetween "+vps.location+" "+this.location+" "+that.location);
-//		angle =  MathUtil.directionToAzEl(vps.direction, angle, workVec, workMat);
-//		vps.azimuth = angle[0];
-//		vps.elevation = angle[1];
 		double azDelta = that.azimuth-this.azimuth;
 		// adjust for 0/360 crossover
 		if (azDelta > Math.PI)
@@ -203,6 +199,7 @@ public class ViewpointStore {
 			azDelta += Math.PI*2;			
 		vps.azimuth = azDelta * pct + this.azimuth;
 		vps.elevation = (that.elevation - this.elevation) * pct + this.elevation;
+		vps.direction = MathUtil.azElToDirection(vps.azimuth, vps.elevation, null);
 		vps.distance = vps.location.distance(vps.lookAt);
 		vps.magIndex = this.magIndex;
 		vps.frustumLeft = (that.frustumLeft - this.frustumLeft) * pct + this.frustumLeft;
