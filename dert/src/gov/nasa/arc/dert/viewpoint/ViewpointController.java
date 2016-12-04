@@ -154,6 +154,7 @@ public class ViewpointController {
 			timestamp = now;
 			double delta = Math.sqrt(dx * dx + dy * dy);
 			velocity = (100 * delta / (1 + elapsed)) * 0.8 + 0.2 * velocity;
+//			System.err.println("ViewpointController.mouseMove "+velocity+" "+amplitude+" "+elapsed+" "+dx+" "+dy);
 			viewpointNode.drag(dx, dy);
 			lastDx = dx;
 			lastDy = dy;
@@ -197,6 +198,7 @@ public class ViewpointController {
 		mouseX = x;
 		mouseY = y;
 		timestamp = System.currentTimeMillis();
+//		System.err.println("ViewpointController.mousePress "+mouseX+" "+mouseY);
 		velocity = 0;
 		amplitude = 0;
 	}
@@ -211,9 +213,11 @@ public class ViewpointController {
 	public void mouseRelease(int x, int y, int mouseButton) {
 		mouseX = x;
 		mouseY = y;
-		if (Math.abs(velocity) > 10) {
+		long now = System.currentTimeMillis();
+		// Make sure mouse has not been released after a pause.
+		if ((Math.abs(velocity) > 10) && ((now-timestamp) < 100)) {
 			amplitude = 0.8 * velocity;
-			timestamp = System.currentTimeMillis();
+			timestamp = now;
 			double length = Math.sqrt(lastDx * lastDx + lastDy * lastDy);
 			lastDx /= length;
 			lastDy /= length;
@@ -237,6 +241,7 @@ public class ViewpointController {
 		if (amplitude > 0) {
 			long elapsed = System.currentTimeMillis() - timestamp;
 			double delta = amplitude * Math.exp(-elapsed / timeConstant);
+//			System.err.println("ViewpointController.update "+amplitude+" "+elapsed+" "+delta);
 			if (Math.abs(delta) > 0.5) {
 				viewpointNode.drag(lastDx * delta, lastDy * delta);
 			} else {
