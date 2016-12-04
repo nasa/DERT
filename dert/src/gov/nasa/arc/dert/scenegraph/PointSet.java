@@ -293,10 +293,9 @@ public class PointSet extends Node {
 	 * @param numFrames
 	 * @return
 	 */
-	public Vector3[] getCurve(int numFrames) {
+	public Vector3[] getCurve(int steps) {
 		getPointList();
 		int n = pointList.size();
-		int steps = numFrames/n;
 		if (steps <= 1) {
 			Vector3[] vectors = new Vector3[n];
 			pointList.toArray(vectors);
