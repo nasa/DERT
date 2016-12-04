@@ -8,6 +8,7 @@ import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.View;
 import gov.nasa.arc.dert.view.mapelement.PathView;
+import gov.nasa.arc.dert.viewpoint.FlyThroughParameters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +35,8 @@ public class PathState extends ToolState {
 
 	// Line width
 	public double lineWidth;
+	
+	public FlyThroughParameters flyParams;
 
 	/**
 	 * Constructor
@@ -52,6 +55,7 @@ public class PathState extends ToolState {
 		pointList = new ArrayList<WaypointState>();
 		WaypointState wp = new WaypointState(0, position, name + ".", Path.defaultSize, color, labelVisible, pinned);
 		pointList.add(wp);
+		flyParams = new FlyThroughParameters();
 	}
 	
 	/**
@@ -62,6 +66,8 @@ public class PathState extends ToolState {
 		bodyType = Path.stringToBodyType(StateUtil.getString(map, "BodyType", null));
 		labelType = Path.stringToLabelType(StateUtil.getString(map, "LabelType", null));
 		lineWidth = StateUtil.getDouble(map, "LineWidth", Path.defaultLineWidth);
+		flyParams = FlyThroughParameters.fromArray((double[])map.get("FlyParams"));
+		flyParams.imageSequencePath = StateUtil.getString(map, "ImageSequencePath", null);
 		waypointsVisible = StateUtil.getBoolean(map, "WaypointsVisible", Path.defaultWaypointsVisible);
 		int n = StateUtil.getInteger(map, "WaypointCount", 0);
 		pointList = new ArrayList<WaypointState>();
@@ -107,6 +113,8 @@ public class PathState extends ToolState {
 		map.put("BodyType", bodyType.toString());
 		map.put("LabelType", labelType.toString());
 		map.put("LineWidth", new Double(lineWidth));
+		map.put("FlyParams", flyParams.toArray());
+		map.put("ImageSequencePath", flyParams.imageSequencePath);
 		map.put("WaypointsVisible", new Boolean(waypointsVisible));
 		map.put("WaypointCount", new Integer(pointList.size()));
 		for (int i=0; i<pointList.size(); ++i)

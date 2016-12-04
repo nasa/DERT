@@ -12,6 +12,7 @@ import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.util.FileHelper;
 
 import java.awt.Color;
+import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,7 +34,7 @@ public class PathPanel extends MapElementBasePanel {
 	private ColorSelectionPanel colorList;
 	private JComboBox typeCombo;
 	private JComboBox labelCombo;
-	private JButton saveAsCSV, addPoints, statistics;
+	private JButton saveAsCSV, addPoints, statistics, fly;
 	private JCheckBox showWaypoints;
 	private DoubleTextField lineWidthText;
 	private DoubleTextField sizeText;
@@ -165,6 +166,17 @@ public class PathPanel extends MapElementBasePanel {
 			}
 		});
 		panel.add(statistics);
+		fly = new JButton("Fly");
+		fly.setToolTipText("fly along this path");
+		fly.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				if (path.getNumberOfPoints() < 1)
+					return;
+				Dert.getWorldView().getScenePanel().getViewpointController().flyThrough(path, (Dialog)getTopLevelAncestor());
+			}
+		});
+		panel.add(fly);
 		contents.add(panel);
 	}
 
