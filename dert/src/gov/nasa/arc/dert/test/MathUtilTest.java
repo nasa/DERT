@@ -181,7 +181,7 @@ public class MathUtilTest {
 			// looking straight ahead
 			az = 0;
 			el = 0;
-			MathUtil.azElToPoint(az, el, point);
+			MathUtil.azElToDirection(az, el, point);
 			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(0, 1, 0)))
 				return(false);
@@ -189,7 +189,7 @@ public class MathUtilTest {
 			// look to the right
 			az = 0.5*Math.PI;
 			el = 0;
-			MathUtil.azElToPoint(az, el, point);
+			MathUtil.azElToDirection(az, el, point);
 			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(1, 0, 0)))
 				return(false);
@@ -197,7 +197,7 @@ public class MathUtilTest {
 			// look to the left
 			az = 1.5*Math.PI;
 			el = 0;
-			MathUtil.azElToPoint(az, el, point);
+			MathUtil.azElToDirection(az, el, point);
 			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(-1, 0, 0)))
 				return(false);
@@ -205,7 +205,7 @@ public class MathUtilTest {
 			// look to the back
 			az = Math.PI;
 			el = 0;
-			MathUtil.azElToPoint(az, el, point);
+			MathUtil.azElToDirection(az, el, point);
 			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(0, -1, 0)))
 				return(false);
@@ -213,7 +213,7 @@ public class MathUtilTest {
 			// looking down
 			az = 0;
 			el = -0.5*Math.PI;
-			MathUtil.azElToPoint(az, el, point);
+			MathUtil.azElToDirection(az, el, point);
 			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(0, 0, -1)))
 				return(false);
@@ -221,7 +221,7 @@ public class MathUtilTest {
 			// upper right front
 			az = 0.25*Math.PI;
 			el = 0.25*Math.PI;
-			MathUtil.azElToPoint(az, el, point);
+			MathUtil.azElToDirection(az, el, point);
 			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(0.5, 0.5, 0.7071067811865475)))
 				return(false);
@@ -229,7 +229,7 @@ public class MathUtilTest {
 			// upper left front
 			az = 1.75*Math.PI;
 			el = 0.25*Math.PI;
-			MathUtil.azElToPoint(az, el, point);
+			MathUtil.azElToDirection(az, el, point);
 			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(-0.5, 0.5, 0.7071067811865475)))
 				return(false);
@@ -237,7 +237,7 @@ public class MathUtilTest {
 			// upper right back
 			az = 0.75*Math.PI;
 			el = 0.25*Math.PI;
-			MathUtil.azElToPoint(az, el, point);
+			MathUtil.azElToDirection(az, el, point);
 			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(0.5, -0.5, 0.7071067811865475)))
 				return(false);
@@ -245,7 +245,7 @@ public class MathUtilTest {
 			// upper left back
 			az = 1.25*Math.PI;
 			el = 0.25*Math.PI;
-			MathUtil.azElToPoint(az, el, point);
+			MathUtil.azElToDirection(az, el, point);
 			System.err.println("MathUtil.azElToPoint azimuth:"+Math.toDegrees(az)+" elevation:"+Math.toDegrees(el)+" point:("+point.getX()+","+point.getY()+","+point.getZ()+")");
 			if (!MathUtil.equalsDouble(point, new Vector3(-0.5, -0.5, 0.7071067811865475)))
 				return(false);

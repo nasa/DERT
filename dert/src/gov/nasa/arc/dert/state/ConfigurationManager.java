@@ -271,15 +271,27 @@ public class ConfigurationManager {
 					Dert.getWorldView().setState(currentConfig.worldState);
 					currentConfig.worldState.setView(Dert.getWorldView());
 					currentConfig.worldState.viewData.setViewWindow(Dert.getMainWindow(), true, 20, 20);
-
+				}
+			});
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
 					// set up the console
 					Dert.getConsoleView().setState(currentConfig.consoleState);
 					currentConfig.consoleState.setView(Dert.getConsoleView());
 					currentConfig.consoleState.viewData.setViewWindow(Dert.getConsoleWindow(), true, 20, 600);
-
+				}
+			});
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
 					// add the other views to the current configuration
 					currentConfig.openViews();
-
+				}
+			});
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
 					// Update main window
 					Dert.getMainWindow().setConfiguration(currentConfig);
 

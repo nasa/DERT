@@ -108,8 +108,8 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	 */
 	@Override
 	public void update(ReadOnlyTimer timer) {
-		// If we adjusted the quad tree earlier, check it again.
-		// This makes sure we set the persisted resolution.
+		// If we adjusted the quad tree in the previous step, check it again.
+		// This makes sure we use a tile that may have been loaded asynchronously.
 		viewpointChanged = viewpointNode.changed.getAndSet(false) || Landscape.getInstance().quadTreeChanged.getAndSet(false);
 		if (viewpointChanged) {
 			for (int i = 0; i < viewDependentList.size(); ++i) {

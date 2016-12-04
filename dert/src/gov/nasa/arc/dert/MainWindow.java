@@ -547,6 +547,7 @@ public class MainWindow extends JFrame {
 		setTitle("Desktop Exploration of Remote Terrain - " + Landscape.getInstance().getGlobeName() + ":"
 			+ World.getInstance().getName() + ":" + currentConfig.toString());
 		worldView.getScenePanel().getCanvas().requestFocusInWindow();
+		System.err.println("MainWindow.setConfiguration "+worldView.getScenePanel().getCanvas().getSurfaceWidth()+" "+worldView.getScenePanel().getCanvas().getSurfaceHeight());
 	}
 
 	/**

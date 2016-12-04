@@ -22,7 +22,8 @@ public class MathUtil {
 	public final static float epsilonF = 0.00000001f;
 
 	/**
-	 * Given a direction vector, return the azimuth and elevation angles (radians).
+	 * Given a direction vector, return the azimuth (rotation around -Z axis from +Y axis)
+	 * and elevation (rotation around X axis) angles (radians).
 	 * 
 	 * @param direction	the direction vector
 	 * @param angle	the storage for the azimuth and elevation angles (will be allocated if null)
@@ -52,23 +53,22 @@ public class MathUtil {
 		angle.set(Math.sqrt(direction.getX()*direction.getX()+direction.getY()*direction.getY()), direction.getZ(), 0);
 		angle.normalizeLocal();
 		double tiltAngle = Math.acos(Vector3.UNIT_X.dot(angle));
-		if (angle.getY() < 0) {
+		if (angle.getY() < 0)
 			tiltAngle = -tiltAngle;
-		}
 
 		angle.set(azAngle, tiltAngle, 0);
 		return (angle);
 	}
 
 	/**
-	 * Given azimuth and elevation, return a point in 3D space.
+	 * Given azimuth and elevation, return a direction vector in 3D space.
 	 * 
 	 * @param az	azimuth in radians
 	 * @param el	elevation in radians
-	 * @param result	the resulting point (will be allocated if null)
+	 * @param result	the resulting direction (will be allocated if null)
 	 * @return the result
 	 */
-	public static Vector3 azElToPoint(double az, double el, Vector3 result) {
+	public static Vector3 azElToDirection(double az, double el, Vector3 result) {
 		if (result == null) {
 			result = new Vector3();
 		}
@@ -78,7 +78,7 @@ public class MathUtil {
 		mat2.fromAngleAxis(el, Vector3.UNIT_X);
 		mat.multiplyLocal(mat2);
 		result.set(Vector3.UNIT_Y);
-		mat.applyPost(result, result);
+		mat.applyPost(result, result); // result is normalized vector
 		Matrix3.releaseTempInstance(mat);
 		Matrix3.releaseTempInstance(mat2);
 		return (result);

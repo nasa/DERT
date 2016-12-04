@@ -196,7 +196,7 @@ public class DirectionalLightNode extends Node {
 	 * Set the light location from the current azimuth and elevation
 	 */
 	public void setPositionFromAzEl() {
-		MathUtil.azElToPoint(azimuth, elevation, dirVector);
+		MathUtil.azElToDirection(azimuth, elevation, dirVector);
 		setPositionFromDirection();
 	}
 
