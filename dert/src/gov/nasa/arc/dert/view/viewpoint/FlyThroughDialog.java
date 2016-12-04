@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.view.viewpoint;
 
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.tool.Path;
+import gov.nasa.arc.dert.state.PathState;
 import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.ui.GBCHelper;
 import gov.nasa.arc.dert.ui.GroupPanel;
@@ -46,11 +47,14 @@ public class FlyThroughDialog extends JDialog {
 	// Controls
 	private DoubleTextField heightText;
 	private JButton playButton, pauseButton, stopButton;
-	private JButton closeButton;
 	private JSpinner framesSpinner, millisSpinner;
 	private JCheckBox loop, grab;
 	private JLabel flyStatus;
 	private JTextField fileText;
+	
+	// Parameters for fly through animation
+	private FlyThroughParameters flyParams;
+	private boolean paused;
 
 	/**
 	 * Constructor
@@ -75,8 +79,11 @@ public class FlyThroughDialog extends JDialog {
 		playButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				if (!setParameters())
-					return;
+				if (!paused) {
+					if (!setParameters())
+						return;
+				}
+				paused = false;
 				enableParameters(false);
 				controller.startFlyThrough();
 			}
@@ -87,6 +94,7 @@ public class FlyThroughDialog extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				controller.pauseFlyThrough();
+				paused = !paused;
 			}
 		});
 		controlBar.add(pauseButton);
@@ -95,6 +103,7 @@ public class FlyThroughDialog extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				enableParameters(true);
+				paused = false;
 				controller.stopFlyThrough();
 			}
 		});
@@ -150,36 +159,22 @@ public class FlyThroughDialog extends JDialog {
 		content.add(panel);
 
 		getRootPane().add(content, BorderLayout.CENTER);
-
-		JPanel buttonBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		closeButton = new JButton("Close");
-		closeButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				controller.closeFlyThrough();
-			}
-		});
-		buttonBar.add(closeButton);
-		getRootPane().add(buttonBar, BorderLayout.SOUTH);
 	}
 	
 	public void setPath(Path p) {
-		setTitle("Fly Through" + ((p != null) ? " " + p.getName() : " Viewpoints"));
+		paused = false;
+		setTitle("Fly Through" + ((p != null) ? " " + p.getName() : " Waypoints"));
 		path = p;
-		FlyThroughParameters flyParams = controller.getFlyThroughParameters();
+		if (path != null)
+			flyParams = ((PathState)path.getState()).flyParams;
+		else
+			flyParams = controller.getFlyThroughParameters();
 		framesSpinner.getModel().setValue(flyParams.numFrames);
 		millisSpinner.getModel().setValue(flyParams.millisPerFrame);
 		heightText.setValue(flyParams.pathHeight);
 		loop.setSelected(flyParams.loop);
 		grab.setSelected(flyParams.grab);
 		fileText.setText(flyParams.imageSequencePath);
-
-		if (path == null) {
-			controller.flyViewpoints(flyParams.numFrames, flyParams.millisPerFrame, flyParams.loop, flyParams.grab, fileText.getText());
-		} else {
-			controller.flyPath(path, flyParams.numFrames, flyParams.millisPerFrame, flyParams.loop,
-				flyParams.pathHeight, flyParams.grab, fileText.getText());
-		}
 		pack();
 	}
 
@@ -219,11 +214,17 @@ public class FlyThroughDialog extends JDialog {
 				return(false);
 			}
 		}
-			
+		
+		flyParams.numFrames = numFrames;
+		flyParams.millisPerFrame = millis;
+		flyParams.pathHeight = height;
+		flyParams.grab = grab.isSelected();
+		flyParams.loop = loop.isSelected();
+		flyParams.imageSequencePath = fileText.getText();
 		if (path == null) {
-			controller.flyViewpoints(numFrames, millis, loop.isSelected(), grab.isSelected(), fileText.getText());
+			controller.flyViewpoints(flyParams);
 		} else {
-			controller.flyPath(path, numFrames, millis, loop.isSelected(), height, grab.isSelected(), fileText.getText());
+			controller.flyPath(path);
 		}
 		
 		return(true);

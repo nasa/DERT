@@ -4,8 +4,6 @@ import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.ButtonAction;
 import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.icon.Icons;
-import gov.nasa.arc.dert.scene.World;
-import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.state.ViewpointState;
 import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DoubleArrayTextField;
@@ -19,10 +17,12 @@ import gov.nasa.arc.dert.viewpoint.ViewpointStore;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -38,8 +38,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -52,7 +50,7 @@ public class ViewpointPanel extends JPanel {
 
 	// Controls
 	private JList list;
-	private ButtonAction addButton, deleteButton, flyListButton, flyPathButton;
+	private ButtonAction addButton, deleteButton, flyListButton;
 	private JSplitPane splitPane;
 	private JPanel buttonBar;
 	private CoordTextField locationField;
@@ -78,7 +76,7 @@ public class ViewpointPanel extends JPanel {
 	private Vector<ViewpointStore> viewpointList;
 	
 	private ViewpointState state;
-
+	
 	/**
 	 * Constructor
 	 * 
@@ -102,15 +100,32 @@ public class ViewpointPanel extends JPanel {
 		add(splitPane, BorderLayout.CENTER);
 		list = new JList(viewpointList);
 		list.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		list.addListSelectionListener(new ListSelectionListener() {
+//		list.addListSelectionListener(new ListSelectionListener() {
+//			@Override
+//			public void valueChanged(ListSelectionEvent event) {
+//				System.err.println("ViewpointPanel.valueChanged "+event);
+//				listSelected = true;
+//			}
+//		});
+		list.addMouseListener(new MouseAdapter() {
 			@Override
-			public void valueChanged(ListSelectionEvent event) {
-				currentVPS = (ViewpointStore) list.getSelectedValue();
-				deleteButton.setEnabled(currentVPS != null);
-				if (currentVPS != null)
-					controller.gotoViewpoint(currentVPS);
-				updateData(true);
-				setEditing(false);
+			public void mouseClicked(MouseEvent event) {
+				Point p = new Point(event.getX(), event.getY());
+				int index = list.locationToIndex(p);
+				if (list.getCellBounds(index, index).contains(p)) {
+					currentVPS = (ViewpointStore) list.getSelectedValue();
+					deleteButton.setEnabled(currentVPS != null);
+					if (currentVPS != null)
+						controller.gotoViewpoint(currentVPS);
+					updateData(true);
+					setEditing(false);
+				}
+				else {
+					// User clicked outside of list items -- clear selection.
+					list.clearSelection();
+					list.getSelectionModel().setAnchorSelectionIndex(-1);
+					list.getSelectionModel().setLeadSelectionIndex(-1);
+				}
 			}
 		});
 		cellRenderer = new ViewpointListCellRenderer();
@@ -202,7 +217,7 @@ public class ViewpointPanel extends JPanel {
 		};
 		deleteButton.setEnabled(false);
 		buttonBar.add(deleteButton);
-		flyListButton = new ButtonAction("Fly through the viewpoint list", "Fly List", null) {
+		flyListButton = new ButtonAction("Fly through the viewpoint list", "Fly", null) {
 			@Override
 			public void run() {
 				controller.flyThrough(null, (JDialog)state.getViewData().getViewWindow());
@@ -210,25 +225,6 @@ public class ViewpointPanel extends JPanel {
 		};
 		flyListButton.setEnabled(viewpointList.size() > 1);
 		buttonBar.add(flyListButton);
-		flyPathButton = new ButtonAction("Fly through the waypoints on a path", "Fly Path", null) {
-			@Override
-			public void run() {
-				ArrayList<Path> pathList = World.getInstance().getTools().getFlyablePaths();
-				if (pathList.size() == 0) {
-					JOptionPane.showMessageDialog(state.getViewData().getViewWindow(), "No flyable Paths available.", "Fly Path",
-						JOptionPane.INFORMATION_MESSAGE, Icons.getImageIcon("path.png"));
-					return;
-				}
-				Path[] paths = new Path[pathList.size()];
-				pathList.toArray(paths);
-				Path path = (Path) JOptionPane.showInputDialog(state.getViewData().getViewWindow(), "Select Path", "Fly Path",
-					JOptionPane.QUESTION_MESSAGE, Icons.getImageIcon("path.png"), paths, paths[0]);
-				if (path != null) {
-					controller.flyThrough(path, (JDialog)state.getViewData().getViewWindow());
-				}
-			}
-		};
-		buttonBar.add(flyPathButton);
 		add(buttonBar, BorderLayout.NORTH);
 	}
 
@@ -257,6 +253,7 @@ public class ViewpointPanel extends JPanel {
 				else {
 					setEditing(true);
 					controller.updateLookAt();
+					updateData(list.getSelectedIndex() >= 0);
 				}
 			}
 		});
@@ -286,7 +283,7 @@ public class ViewpointPanel extends JPanel {
 
 		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		tipText = "location of viewpoint";
-		label = new JLabel("Location", SwingConstants.RIGHT);
+		label = new JLabel("VP Location", SwingConstants.RIGHT);
 		label.setToolTipText(tipText);
 		panel.add(label);
 		locationField = new CoordTextField(20, tipText, "0.000", true) {
@@ -313,7 +310,7 @@ public class ViewpointPanel extends JPanel {
 			public void handleChange(Vector3 dir) {
 				controller.getViewpointNode().changeDirection(dir);
 				setEditing(true);
-				updateData(true);
+				updateData(list.getSelectedIndex() >= 0);
 			}
 		};
 		directionField.setToolTipText(tipText);
@@ -332,9 +329,9 @@ public class ViewpointPanel extends JPanel {
 					return;
 				}
 				controller.getViewpointNode().changeAzimuthAndElevation(Math.toRadians(azel[0]),
-					Math.toRadians(90 + azel[1]));
+					Math.toRadians(azel[1]));
 				setEditing(true);
-				updateData(true);
+				updateData(list.getSelectedIndex() >= 0);
 			}
 		};
 		azElField.setToolTipText(tipText);
