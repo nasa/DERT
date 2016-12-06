@@ -149,6 +149,7 @@ public class ViewData {
 				windowWidth = window.getWidth();
 				windowHeight = window.getHeight();
 			} else {
+				System.err.println("ViewData.setViewWindow "+windowWidth+" "+windowHeight);
 				window.setSize(windowWidth, windowHeight);
 			}
 		}
@@ -236,7 +237,7 @@ public class ViewData {
 		dialog.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				view.close();
+				close();
 			}
 		});
 		dialog.setTitle(title);
@@ -254,27 +255,26 @@ public class ViewData {
 	 * Close the view
 	 */
 	public void close() {
+		save();
 		if (view != null)
 			view.close();
-		Window window = getViewWindow();
+		Window window = viewWindow;
 		setView(null);
 		setViewWindow(null, false, 0, 0);
-		if (window == null) {
+		if (window == null)
 			return;
-		}
 		window.setVisible(false);
 		window.dispose();
 	}
 	
 	public void save() {
-		Window window = getViewWindow();
-		if (window == null)
+		if (viewWindow == null)
 			return;
-		windowX = window.getX();
-		windowY = window.getY();
-		windowWidth = window.getWidth();
-		windowHeight = window.getHeight();
-		visible = window.isVisible();
+		windowX = viewWindow.getX();
+		windowY = viewWindow.getY();
+		windowWidth = viewWindow.getWidth();
+		windowHeight = viewWindow.getHeight();
+		visible = viewWindow.isVisible();
 	}
 		
 	public int[] toArray() {

@@ -20,9 +20,6 @@ public class SceneCanvasPanel extends Panel implements Updater {
 
 	// The SceneCanvas for this panel
 	protected SceneCanvas canvas;
-	
-	// Background panel for field camera views
-	protected Panel backgroundPanel;
 
 	// The Ardor3D scene
 	protected BasicScene scene;
@@ -47,7 +44,7 @@ public class SceneCanvasPanel extends Panel implements Updater {
 	 * @param scene
 	 * @param mainCanvas
 	 */
-	public SceneCanvasPanel(int width, int height, BasicScene bscene, boolean mainCanvas, boolean addBackgroundPanel) {
+	public SceneCanvasPanel(int width, int height, BasicScene bscene, boolean mainCanvas) {
 //		setBackground(Color.red);
 
 		// create the CanvasRenderer and SceneCanvas
@@ -61,7 +58,7 @@ public class SceneCanvasPanel extends Panel implements Updater {
 			@Override
 			public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
 //				System.err.println("SceneCanvasPanel.reshape "+x+" "+y+" "+width+" "+height);
-				scene.resize(width, height);
+				resize(x, y, width, height);
 			}
 
 			@Override
@@ -84,13 +81,7 @@ public class SceneCanvasPanel extends Panel implements Updater {
 		};
 		canvas.addGLEventListener(listener);
 		setLayout(new BorderLayout());
-		if (!addBackgroundPanel)
-			add(canvas, BorderLayout.CENTER);
-		else {
-			backgroundPanel = new Panel(new BorderLayout());
-			backgroundPanel.add(canvas, BorderLayout.CENTER);
-			add(backgroundPanel, BorderLayout.CENTER);
-		}
+		add(canvas, BorderLayout.CENTER);
 		scene = bscene;
 		setPreferredSize(new Dimension(width, height));
 	}
@@ -145,5 +136,9 @@ public class SceneCanvasPanel extends Panel implements Updater {
 	
 	public void enableFrameGrab(String grabFilePath) {
 		canvasRenderer.enableFrameGrab(grabFilePath, 0, 0, scene.getWidth(), scene.getHeight());
+	}
+	
+	public void resize(int x, int y, int width, int height) {
+		scene.resize(width, height);
 	}
 }

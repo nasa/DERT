@@ -9,7 +9,6 @@ import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.View;
 
 import java.awt.Color;
-import java.awt.Window;
 import java.util.HashMap;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -256,9 +255,8 @@ public abstract class MapElementState extends State {
 			return(null);
 		
 		// This state element has a view
-		Window window = viewData.getViewWindow();
-		if (window != null) {
-			window.setVisible(true);
+		if (viewData.viewWindow != null) {
+			viewData.viewWindow.setVisible(true);
 			return (viewData.view);
 		}
 		

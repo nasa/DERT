@@ -168,7 +168,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	@Override
 	public void render(Renderer renderer) {
 		preRender(renderer);
-		// renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
 		if (viewpointNode.getCamera() instanceof AnaglyphCamera) {
 			AnaglyphCamera camera = (AnaglyphCamera) viewpointNode.getCamera();
 			camera.setupLeftRightCameras();

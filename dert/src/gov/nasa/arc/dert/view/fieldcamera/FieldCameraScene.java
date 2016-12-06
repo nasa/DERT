@@ -97,10 +97,8 @@ public class FieldCameraScene extends BasicScene implements DirtyEventListener {
 			backgroundColor = bgCol;
 		}
 		
-		renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
+//		renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
 		renderer.draw(rootNode);
-		
-		fieldCamera.uncull();
 
 		if (crosshairVisible) {
 			renderer.setOrtho();
@@ -109,6 +107,8 @@ public class FieldCameraScene extends BasicScene implements DirtyEventListener {
 			crosshair.getSceneHints().setCullHint(CullHint.Always);
 			renderer.unsetOrtho();
 		}
+		
+		fieldCamera.uncull();
 	}
 
 	/**
@@ -148,8 +148,21 @@ public class FieldCameraScene extends BasicScene implements DirtyEventListener {
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
+		
+		double aspect = getCamera().getAspect();
+		double canvasHeight = height;
+		double canvasWidth = (int) (height * aspect);
+		if (canvasWidth > width) {
+			canvasWidth = width;
+			canvasHeight = (width / aspect);
+		}
+		double canvasX = (width-canvasWidth)/2.0;
+		double canvasY = (height-canvasHeight)/2.0;
+
 		fieldCamera.resize(width, height);
-		double s = fieldCamera.getCamera().getPixelSizeAt(crosshair.getWorldTranslation(), true);
+		BasicCamera cam = fieldCamera.getCamera();
+		cam.setViewPort(canvasX/width, (canvasX+canvasWidth)/width, canvasY/height, (canvasY+canvasHeight)/height);
+		double s = cam.getPixelSizeAt(crosshair.getWorldTranslation(), true);
 		crosshair.setScale(s, s, s);
 		spatialDirty(null, DirtyType.RenderState);
 	}

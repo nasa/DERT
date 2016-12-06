@@ -14,15 +14,12 @@ import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -31,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 
+import com.ardor3d.math.Rectangle2;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.util.ReadOnlyTimer;
@@ -65,12 +63,11 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 	 * @param state
 	 */
 	public FieldCameraScenePanel(FieldCameraState state) {
-		super(state.getViewData().getWidth(), state.getViewData().getHeight(), new FieldCameraScene(state), false, true);
+		super(state.getViewData().getWidth(), state.getViewData().getHeight(), new FieldCameraScene(state), false);
 		FieldCameraInfo instInfo = state.getInfo();
 		fieldCamera = (FieldCamera) state.getMapElement();
 		fieldCameraScene = (FieldCameraScene) scene;
 		setState(state);
-		backgroundPanel.setBackground(Color.black);
 
 		JPanel controlPanel = new JPanel(new GridLayout(3, 1));
 
@@ -202,42 +199,11 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 		azSpinner.setValue(fieldCamera.getAzimuth());
 		tiltSpinner.setValue(fieldCamera.getElevation());
 		heightSpinner.setValue(fieldCamera.getHeight());
-		
-		backgroundPanel.addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentResized(ComponentEvent event) {
-				int wid = event.getComponent().getWidth();
-				int hgt = event.getComponent().getHeight();
-				if ((wid == 0) || (hgt == 0))
-					return;
-				setCanvasSize(wid, hgt);
-			}
-		});
 
-	}
-
-	/**
-	 * Set the display window size.
-	 * 
-	 * @param gl2
-	 * @param width
-	 * @param height
-	 */
-	public void setCanvasSize(int width, int height) {
-		double aspect = fieldCameraScene.getCamera().getAspect();
-		int canvasHeight = height;
-		int canvasWidth = (int) (height * aspect);
-		if (canvasWidth > width) {
-			canvasWidth = width;
-			canvasHeight = (int) (width / aspect);
-		}
-		canvas.setBounds((width - canvasWidth) / 2, (height - canvasHeight) / 2, canvasWidth, canvasHeight);
-		canvas.invalidate();
-		scene.resize(width, height);
 	}
 	
 	public void setRange(FieldCameraInfo info) {
-		setCanvasSize(backgroundPanel.getWidth(), backgroundPanel.getHeight());
+		scene.resize(canvas.getWidth(), canvas.getHeight());
 		azSpinner.setMinimum(info.panRange[0]);
 		azSpinner.setMaximum(info.panRange[1]);
 		tiltSpinner.setMinimum(info.tiltRange[0]);
@@ -282,6 +248,14 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 			CoordAction.listenerList.remove(seekText);
 		if (fovLocationText != null)
 			CoordAction.listenerList.remove(fovLocationText);
+	}
+	
+	@Override
+	public void resize(int x, int y, int width, int height) {
+		scene.resize(width, height);
+		BasicCamera cam = fieldCamera.getCamera();
+		int[] vp = cam.getViewport();
+		canvasRenderer.setClipRectangle(new Rectangle2(vp[0], vp[1], vp[2], vp[3]));
 	}
 
 }

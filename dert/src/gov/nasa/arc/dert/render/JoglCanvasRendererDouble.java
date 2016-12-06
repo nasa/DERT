@@ -21,6 +21,7 @@ import com.ardor3d.framework.jogl.CapsUtil;
 import com.ardor3d.framework.jogl.JoglCanvasRenderer;
 import com.ardor3d.image.ImageDataFormat;
 import com.ardor3d.image.PixelDataType;
+import com.ardor3d.math.type.ReadOnlyRectangle2;
 import com.ardor3d.renderer.Camera;
 import com.jogamp.opengl.GLPipelineFactory;
 
@@ -44,6 +45,8 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
 	private boolean _contextDropAndReclaimOnDrawEnabled;
 	private boolean _useDebug;
     private boolean _debugEnabled;
+    
+    private ReadOnlyRectangle2 clipRectangle;
 
 	/**
 	 * Constructor
@@ -91,10 +94,16 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
             }
             _camera.apply(_renderer);
         }
+        if (clipRectangle != null)
+        	_renderer.pushClip(clipRectangle);
         _renderer.clearBuffers(_frameClear);
 
         final boolean drew = _scene.renderUnto(_renderer);
         _renderer.flushFrame(drew && _doSwap);
+        
+        if (clipRectangle != null)
+        	_renderer.popClip();
+        
         if (drew && _doSwap && frameGrab)
         	grabFrame();
 
@@ -160,6 +169,10 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
 			e.printStackTrace();
 		}
 		releaseCurrentContext();
+	}
+	
+	public void setClipRectangle(ReadOnlyRectangle2 clipRect) {
+		clipRectangle = clipRect;
 	}
 
 }
