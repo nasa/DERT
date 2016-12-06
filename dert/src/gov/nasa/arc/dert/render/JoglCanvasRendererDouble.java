@@ -21,6 +21,7 @@ import com.ardor3d.framework.jogl.CapsUtil;
 import com.ardor3d.framework.jogl.JoglCanvasRenderer;
 import com.ardor3d.image.ImageDataFormat;
 import com.ardor3d.image.PixelDataType;
+import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.type.ReadOnlyRectangle2;
 import com.ardor3d.renderer.Camera;
 import com.jogamp.opengl.GLPipelineFactory;
@@ -47,6 +48,7 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
     private boolean _debugEnabled;
     
     private ReadOnlyRectangle2 clipRectangle;
+    private ColorRGBA bgColor = new ColorRGBA();
 
 	/**
 	 * Constructor
@@ -73,6 +75,9 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
     @Override
     @MainThread
     public boolean draw() {
+    	// Check if we really need to draw.
+    	if (!((BasicScene)_scene).needsRender())
+    		return(false);
 
         // set up context for rendering this canvas
         if (_contextDropAndReclaimOnDrawEnabled) {
@@ -94,8 +99,17 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
             }
             _camera.apply(_renderer);
         }
-        if (clipRectangle != null)
+        
+        // Perform any pre-rendering tasks that require the Renderer.
+        ((BasicScene)_scene).preRender(_renderer);
+        
+        if (clipRectangle != null) {
+        	bgColor.set(_renderer.getBackgroundColor());
+        	_renderer.setBackgroundColor(ColorRGBA.BLACK);
+            _renderer.clearBuffers(_frameClear);
         	_renderer.pushClip(clipRectangle);
+        	_renderer.setBackgroundColor(bgColor);
+        }
         _renderer.clearBuffers(_frameClear);
 
         final boolean drew = _scene.renderUnto(_renderer);
@@ -117,6 +131,15 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
         return drew;
     }
 
+    /**
+     * Enable frame grab after swap buffers.
+     * 
+     * @param grabFilePath
+     * @param grabX
+     * @param grabY
+     * @param grabWidth
+     * @param grabHeight
+     */
 	public void enableFrameGrab(String grabFilePath, int grabX, int grabY, int grabWidth, int grabHeight) {
 		this.grabFilePath = grabFilePath;
 		this.frameGrab = (grabFilePath != null);
@@ -133,6 +156,9 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
 		}
 	}
 	
+	/**
+	 * Grab the current frame to a PNG file.
+	 */
 	public void grabFrame() {
 		makeCurrentContext();
 		if (store == null) {
@@ -171,6 +197,10 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
 		releaseCurrentContext();
 	}
 	
+	/**
+	 * Set the clipping rectangle for a letter box.
+	 * @param clipRect
+	 */
 	public void setClipRectangle(ReadOnlyRectangle2 clipRect) {
 		clipRectangle = clipRect;
 	}

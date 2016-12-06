@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.view.fieldcamera;
 
+import gov.nasa.arc.dert.lighting.Lighting;
 import gov.nasa.arc.dert.render.BasicScene;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
@@ -27,7 +28,7 @@ public class FieldCameraScene extends BasicScene implements DirtyEventListener {
 	private boolean crosshairVisible = true;
 
 	// The world background
-	private ReadOnlyColorRGBA backgroundColor;
+	private ReadOnlyColorRGBA backgroundColor = new ColorRGBA(Lighting.defaultBackgroundColor);
 
 	// The FieldCamera map element
 	private FieldCamera fieldCamera;
@@ -67,7 +68,7 @@ public class FieldCameraScene extends BasicScene implements DirtyEventListener {
 	 */
 	public void setCrosshairVisible(boolean visible) {
 		crosshairVisible = visible;
-		needsRender.set(true);
+		sceneChanged.set(true);
 	}
 
 	/**
@@ -87,15 +88,19 @@ public class FieldCameraScene extends BasicScene implements DirtyEventListener {
 	public FieldCamera getFieldCamera() {
 		return (fieldCamera);
 	}
-
+	
 	@Override
-	public void render(Renderer renderer) {
-		fieldCamera.cull();
+	public void preRender(Renderer renderer) {
 		ReadOnlyColorRGBA bgCol = World.getInstance().getLighting().getBackgroundColor();
 		if (!bgCol.equals(backgroundColor)) {
 			renderer.setBackgroundColor(bgCol);
 			backgroundColor = bgCol;
 		}
+	}
+
+	@Override
+	public void render(Renderer renderer) {
+		fieldCamera.cull();
 		
 //		renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
 		renderer.draw(rootNode);
@@ -133,7 +138,7 @@ public class FieldCameraScene extends BasicScene implements DirtyEventListener {
 //		case Destroyed:
 //			break;
 //		}
-		needsRender.set(true);
+		sceneChanged.set(true);
 		return (false);
 	}
 

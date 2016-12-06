@@ -187,7 +187,7 @@ public class ContourScenePanel extends SceneCanvasPanel {
 	 * The viewpoint changed, redraw the scene.
 	 */
 	public void viewpointChanged() {
-		contourScene.needsRender.set(true);
+		contourScene.sceneChanged.set(true);
 	}
 
 	/**

@@ -32,7 +32,7 @@ public abstract class BasicScene implements Scene {
 	public static String imagePath;
 	public static volatile Image dertImage;
 
-	public final AtomicBoolean needsRender;
+	public final AtomicBoolean sceneChanged;
 
 	protected GroupNode rootNode;
 	protected int width, height;
@@ -45,7 +45,7 @@ public abstract class BasicScene implements Scene {
 		if (dertImage == null) {
 			dertImage = ImageUtil.loadImage(imagePath, true);
 		}
-		needsRender = new AtomicBoolean();
+		sceneChanged = new AtomicBoolean(true);
 	}
 
 	/**
@@ -98,16 +98,12 @@ public abstract class BasicScene implements Scene {
 			int y = (height - dertImage.getHeight()) / 2;
 			((JoglRendererDouble) renderer).drawImage(x, y, dertImage.getWidth(), dertImage.getHeight(), 1.0f,
 				GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, dertImage.getData(0));
-			return (true);
+		}
+		else {
+			render(renderer);
 		}
 
-		// render the scene graph if it has changed
-		boolean draw = needsRender.get();
-		if (draw)
-			render(renderer);
-		needsRender.set(false);
-
-		return draw;
+		return (true);
 	}
 
 	/**
@@ -158,6 +154,7 @@ public abstract class BasicScene implements Scene {
 	public void resize(int width, int height) {
 		this.width = width;
 		this.height = height;
+		sceneChanged.set(true);
 	}
 	
 	public int getWidth() {
@@ -166,6 +163,14 @@ public abstract class BasicScene implements Scene {
 	
 	public int getHeight() {
 		return(height);
+	}
+	
+	public boolean needsRender() {
+		return(sceneChanged.getAndSet(false));
+	}
+	
+	public void preRender(Renderer renderer) {
+		// do nothing
 	}
 
 }

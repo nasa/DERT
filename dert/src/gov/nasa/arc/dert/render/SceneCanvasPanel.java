@@ -45,7 +45,6 @@ public class SceneCanvasPanel extends Panel implements Updater {
 	 * @param mainCanvas
 	 */
 	public SceneCanvasPanel(int width, int height, BasicScene bscene, boolean mainCanvas) {
-//		setBackground(Color.red);
 
 		// create the CanvasRenderer and SceneCanvas
 		canvasRenderer = new JoglCanvasRendererDouble(bscene, false);
@@ -76,7 +75,7 @@ public class SceneCanvasPanel extends Panel implements Updater {
 			@Override
 			public void display(GLAutoDrawable glautodrawable) {
 //				System.err.println("SceneCanvasPanel.display ");
-				SceneCanvasPanel.this.scene.needsRender.set(true);
+				SceneCanvasPanel.this.scene.sceneChanged.set(true);
 			}
 		};
 		canvas.addGLEventListener(listener);

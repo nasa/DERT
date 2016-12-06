@@ -119,10 +119,13 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		worldChanged = World.getInstance().getDirtyEventHandler().changed.getAndSet(false);
 		terrainChanged = World.getInstance().getDirtyEventHandler().terrainChanged.getAndSet(false);
 //		System.err.println("WorldScene.update "+viewpointChanged+" "+worldChanged+" "+terrainChanged+" "+Landscape.getInstance().quadTreeChanged+" "+initializingCount);
-		needsRender.set(viewpointChanged || worldChanged || needsRender.get());
+		sceneChanged.set(viewpointChanged || worldChanged || sceneChanged.get());
 	}
 
-	private void preRender(Renderer renderer) {
+	@Override
+	public void preRender(Renderer renderer) {
+		if (rootNode == null)
+			return;
 		Lighting lighting = ((World)rootNode).getLighting();
 		lighting.prerender(viewpointNode.getCamera(), renderer, worldChanged);
 		if (terrainChanged) {
@@ -167,7 +170,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 
 	@Override
 	public void render(Renderer renderer) {
-		preRender(renderer);
 		if (viewpointNode.getCamera() instanceof AnaglyphCamera) {
 			AnaglyphCamera camera = (AnaglyphCamera) viewpointNode.getCamera();
 			camera.setupLeftRightCameras();
@@ -216,7 +218,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		case Destroyed:
 			break;
 		}
-		needsRender.set(true);
+		sceneChanged.set(true);
 		return (false);
 	}
 
@@ -269,7 +271,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	 */
 	public void setShowCrosshair(boolean show) {
 		showCrosshair = show;
-		needsRender.set(true);
+		sceneChanged.set(true);
 	}
 
 	/**
@@ -288,7 +290,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	 */
 	public void setShowTextOverlay(boolean show) {
 		showTextOverlay = show;
-		needsRender.set(true);
+		sceneChanged.set(true);
 	}
 
 	/**
@@ -307,7 +309,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	 */
 	public void setShowCenterScale(boolean show) {
 		showCenterScale = show;
-		needsRender.set(true);
+		sceneChanged.set(true);
 	}
 
 	/**

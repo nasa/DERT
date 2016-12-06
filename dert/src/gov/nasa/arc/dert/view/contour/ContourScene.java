@@ -222,9 +222,9 @@ public class ContourScene extends BasicScene implements ColorMapListener {
 
 	@Override
 	public void render(Renderer renderer) {
-		camera.update();
-		camera.apply(renderer);
-		renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
+//		camera.update();
+//		camera.apply(renderer);
+//		renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
 		renderer.draw(rootNode);
 	}
 
@@ -235,7 +235,7 @@ public class ContourScene extends BasicScene implements ColorMapListener {
 	public void mapChanged(ColorMap cMap) {
 		cMap.getColorTable(lutSize, table);
 		colorTable.setImage(colorTableImage);
-		needsRender.set(true);
+		sceneChanged.set(true);
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class ContourScene extends BasicScene implements ColorMapListener {
 	public void rangeChanged(ColorMap cMap) {
 		cMap.getColorTable(lutSize, table);
 		colorTable.setImage(colorTableImage);
-		needsRender.set(true);
+		sceneChanged.set(true);
 	}
 
 	/**
@@ -255,7 +255,6 @@ public class ContourScene extends BasicScene implements ColorMapListener {
 	public void resize(int width, int height) {
 		super.resize(width, height);
 		camera.resize(width, height);
-		needsRender.set(true);
 	}
 
 	/**
