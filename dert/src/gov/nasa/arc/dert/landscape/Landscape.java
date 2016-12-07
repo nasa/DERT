@@ -10,11 +10,9 @@ import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
-import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
 import java.awt.Color;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.ardor3d.intersection.IntersectionRecord;
 import com.ardor3d.intersection.PickData;
@@ -37,15 +35,12 @@ import com.ardor3d.scenegraph.hint.LightCombineMode;
  * Provides a class for handling the Landscape.
  *
  */
-public class Landscape extends Node implements ViewDependent {
+public class Landscape extends Node {
 
 	public static int MAX_LEVELS = 50;
 
 	// numeric field formats based on landscape size
 	public static String format, stringFormat;
-
-	// Viewpoint has changed
-	public AtomicBoolean quadTreeChanged = new AtomicBoolean();
 
 	// spatial reference system for base layer
 	private SpatialReferenceSystem srs;
@@ -633,16 +628,15 @@ public class Landscape extends Node implements ViewDependent {
 	/**
 	 * Update the resolution of the tiles in the landscape.
 	 */
-	@Override
-	public void update(BasicCamera camera) {
-		// long t = System.currentTimeMillis();
+	public boolean update(BasicCamera camera) {
+		boolean qtChanged = false;
 		if (quadTree != null) {
-			quadTreeChanged.set(quadTree.update(camera));
+			qtChanged = quadTree.update(camera);
 			for (int i = 0; i <= baseMapLevel; ++i) {
 				quadTree.stitch(i);
 			}
 		}
-		// System.err.println("Landscape.update "+(System.currentTimeMillis()-t));
+		return(qtChanged);
 	}
 
 	/**

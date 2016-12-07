@@ -491,6 +491,7 @@ public class QuadTree extends Node {
 	private void merge() {
 		clearChildren();
 		World.getInstance().getLandmarks().landscapeChanged(this);
+		World.getInstance().getFeatureSets().landscapeChanged(this);
 	}
 
 	/**
