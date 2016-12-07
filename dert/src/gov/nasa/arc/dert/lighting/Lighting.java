@@ -393,7 +393,7 @@ public class Lighting {
 	 * @return
 	 */
 	public ReadOnlyColorRGBA getBackgroundColor() {
-		return (backgroundColor);
+		return (background);
 	}
 
 	/**
