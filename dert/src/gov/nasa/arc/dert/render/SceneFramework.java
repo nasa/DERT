@@ -1,5 +1,7 @@
 package gov.nasa.arc.dert.render;
 
+import gov.nasa.arc.dert.scene.World;
+
 import java.awt.EventQueue;
 
 import com.ardor3d.framework.FrameHandler;
@@ -36,6 +38,7 @@ public class SceneFramework {
 		@Override
 		public void run() {
 			frameHandler.updateFrame();
+			World.markClean();
 			count--;
 		}
 	};

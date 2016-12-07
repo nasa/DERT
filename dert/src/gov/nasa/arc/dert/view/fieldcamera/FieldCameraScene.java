@@ -16,6 +16,7 @@ import com.ardor3d.scenegraph.event.DirtyEventListener;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.event.SceneGraphManager;
 import com.ardor3d.scenegraph.hint.CullHint;
+import com.ardor3d.util.ReadOnlyTimer;
 
 /**
  * An Ardor3D Scene for the FieldCameraView.
@@ -58,7 +59,7 @@ public class FieldCameraScene extends BasicScene implements DirtyEventListener {
 	 */
 	@Override
 	public void init(CanvasRenderer canvasRenderer) {
-		canvasRenderer.getRenderer().setBackgroundColor(ColorRGBA.DARK_GRAY);
+		canvasRenderer.getRenderer().setBackgroundColor(backgroundColor);
 	}
 
 	/**
@@ -178,6 +179,16 @@ public class FieldCameraScene extends BasicScene implements DirtyEventListener {
 	@Override
 	public BasicCamera getCamera() {
 		return (fieldCamera.getCamera());
+	}
+
+	/**
+	 * Update method called by framework
+	 */
+	@Override
+	public void update(ReadOnlyTimer timer) {
+		boolean worldChanged = World.getInstance().getDirtyEventHandler().changed.get();
+		boolean terrainChanged = World.getInstance().getDirtyEventHandler().terrainChanged.get();
+		sceneChanged.set(worldChanged || terrainChanged || sceneChanged.get());
 	}
 
 }

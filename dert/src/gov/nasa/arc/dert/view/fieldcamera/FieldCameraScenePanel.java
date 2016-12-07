@@ -152,8 +152,12 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 			@Override
 			public void doChange(ReadOnlyVector3 seekPoint) {
 				Vector3 angle = fieldCamera.seek(seekPoint);
-				azSpinner.setValue(Math.toDegrees(angle.getX()));
-				tiltSpinner.setValue(Math.toDegrees(angle.getY()));				
+				double az = Math.toDegrees(angle.getX());
+				if (az > 180)
+					az -= 360;
+				azSpinner.setValue(az);
+				tiltSpinner.setValue(Math.toDegrees(angle.getY()));	
+				scene.sceneChanged.set(true);
 			}
 		};
 		panel.add(seekText);

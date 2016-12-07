@@ -51,7 +51,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	private boolean showTextOverlay = true;
 	private boolean showCenterScale = false;
 	
-	private boolean worldChanged, viewpointChanged, terrainChanged;
+	private boolean worldChanged, terrainChanged;
 
 	/**
 	 * Constructor
@@ -108,18 +108,19 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	 */
 	@Override
 	public void update(ReadOnlyTimer timer) {
-		// If we adjusted the quad tree in the previous step, check it again.
-		// This makes sure we use a tile that may have been loaded asynchronously.
-		viewpointChanged = viewpointNode.changed.getAndSet(false) || Landscape.getInstance().quadTreeChanged.getAndSet(false);
+		// update the landscape quad tree
+		Landscape.getInstance().update(viewpointNode.getCamera());
+		// has the viewpoint changed?
+		boolean viewpointChanged = viewpointNode.changed.getAndSet(false);
+		// if either the viewpoint or landscape changed, update the other view dependent objects
 		if (viewpointChanged) {
-			for (int i = 0; i < viewDependentList.size(); ++i) {
+			for (int i = 0; i < viewDependentList.size(); ++i)
 				viewDependentList.get(i).update(viewpointNode.getCamera());
-			}
 		}
-		worldChanged = World.getInstance().getDirtyEventHandler().changed.getAndSet(false);
-		terrainChanged = World.getInstance().getDirtyEventHandler().terrainChanged.getAndSet(false);
+		worldChanged = World.getInstance().getDirtyEventHandler().changed.get();
+		terrainChanged = World.getInstance().getDirtyEventHandler().terrainChanged.get();
 //		System.err.println("WorldScene.update "+viewpointChanged+" "+worldChanged+" "+terrainChanged+" "+Landscape.getInstance().quadTreeChanged+" "+initializingCount);
-		sceneChanged.set(viewpointChanged || worldChanged || sceneChanged.get());
+		sceneChanged.set(viewpointChanged || worldChanged || terrainChanged || sceneChanged.get());
 	}
 
 	@Override

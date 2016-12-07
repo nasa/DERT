@@ -149,7 +149,6 @@ public class ViewData {
 				windowWidth = window.getWidth();
 				windowHeight = window.getHeight();
 			} else {
-				System.err.println("ViewData.setViewWindow "+windowWidth+" "+windowHeight);
 				window.setSize(windowWidth, windowHeight);
 			}
 		}

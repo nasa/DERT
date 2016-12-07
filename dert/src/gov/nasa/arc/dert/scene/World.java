@@ -95,12 +95,10 @@ public class World extends GroupNode {
 	 * Create a new world
 	 * 
 	 * @param name
-	 * @param landscape
 	 * @param landmarks
 	 * @param tools
 	 * @param featureSets
 	 * @param lighting
-	 * @param background
 	 * @param timeUTC
 	 * @return
 	 */
@@ -164,7 +162,7 @@ public class World extends GroupNode {
 	 * created.
 	 */
 	public void initialize() {
-		// been here
+		// been here before
 		if (initialized) {
 			return;
 		}
@@ -436,5 +434,12 @@ public class World extends GroupNode {
 	
 	public boolean getUseLonLat() {
 		return(useLonLat);
+	}
+	
+	public static void markClean() {
+		if (INSTANCE == null)
+			return;
+		INSTANCE.dirtyEventHandler.changed.set(false);
+		INSTANCE.dirtyEventHandler.terrainChanged.set(false);
 	}
 }
