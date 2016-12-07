@@ -56,7 +56,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	public static float defaultLineWidth = 2.0f;
 
 	// Endpoint icon texture
-	protected static Texture texture;
+	protected static Texture texture, highlightTexture;
 
 	// Scene graph elements
 	private BillboardMarker endpointA;
@@ -175,9 +175,10 @@ public class Profile extends Node implements ViewDependent, Tool {
 	protected BillboardMarker createMarker(String name, ReadOnlyVector3 point, double zOff, Color color) {
 		if (texture == null) {
 			texture = ImageUtil.createTexture(Icons.getIconURL("paddle.png"), true);
+			highlightTexture = ImageUtil.createTexture(Icons.getIconURL("paddle-highlight.png"), true);
 		}
 		BillboardMarker bm = new BillboardMarker(name, point, size, zOff, color, labelVisible, pinned);
-		bm.setTexture(texture, texture);
+		bm.setTexture(texture, highlightTexture);
 		return (bm);
 	}
 

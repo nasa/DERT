@@ -61,7 +61,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	public static boolean strikeAsCompassBearing = true;
 
 	// Point texture
-	protected static Texture texture;
+	protected static Texture texture, highlightTexture;
 
 	// Scene graph element to draw triangle
 	private HiddenLine triangleLine;
@@ -213,9 +213,10 @@ public class Plane extends Node implements Tool, ViewDependent {
 	private BillboardMarker createMarker(String name, ReadOnlyVector3 point, double zOff, Color color) {
 		if (texture == null) {
 			texture = ImageUtil.createTexture(Icons.getIconURL("paddle.png"), true);
+			highlightTexture = ImageUtil.createTexture(Icons.getIconURL("paddle-highlight.png"), true);
 		}
 		BillboardMarker bm = new BillboardMarker(name, point, 1, zOff, color, labelVisible, pinned);
-		bm.setTexture(texture, texture);
+		bm.setTexture(texture, highlightTexture);
 		return (bm);
 	}
 
