@@ -2,8 +2,6 @@ package gov.nasa.arc.dert.view;
 
 import gov.nasa.arc.dert.render.SceneCanvas;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -12,8 +10,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-
-import javax.swing.Timer;
 
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
@@ -29,7 +25,6 @@ public class InputManager {
 	protected int mouseX, mouseY;
 	protected int width, height;
 	protected KeyListener keyListener;
-	protected Timer stepTimer;
 
 	public InputManager(final SceneCanvas canvas, InputHandler hndler) {
 		handler = hndler;
@@ -125,32 +120,18 @@ public class InputManager {
 		keyListener = new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent event) {
-				// System.err.println("InputManager.keyPressed "+event.getKeyCode()+" "+KeyEvent.VK_ESCAPE);
 				final int keyCode = event.getKeyCode();
 				final boolean shiftDown = event.isShiftDown();
 				handleStep(keyCode, shiftDown);
-				if (stepTimer == null) {
-					stepTimer = new Timer(500, new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent aE) {
-							handleStep(keyCode, shiftDown);
-						}
-					});
-					stepTimer.setInitialDelay(500);
-				}
-				stepTimer.start();
 			}
 
 			@Override
 			public void keyReleased(KeyEvent event) {
-				if (stepTimer != null) {
-					stepTimer.stop();
-				}
+				// nothing here
 			}
 
 			@Override
 			public void keyTyped(KeyEvent event) {
-				// nothing here
 			}
 		};
 		canvas.addKeyListener(keyListener);
