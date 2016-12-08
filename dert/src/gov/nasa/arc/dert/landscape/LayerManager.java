@@ -372,7 +372,7 @@ public class LayerManager {
 						continue;
 					}
 					if (visibleLayers.get(i).name.equals(layers[j].toString()) && (visibleLayers.get(i).type == layers[j].getLayerType())) {
-						layers[j].blendFactor = visibleLayers.get(i).opacity;
+						layers[j].blendFactor = visibleLayers.get(i).opacity*visibleLayers.get(i).show;
 						newList[i] = layers[j];
 						layers[j] = null;
 						found = true;
@@ -382,6 +382,7 @@ public class LayerManager {
 				// if not, create the layer
 				if (!found) {
 					newList[i] = createLayer(visibleLayers.get(i), source, i);
+					newList[i].blendFactor = visibleLayers.get(i).opacity*visibleLayers.get(i).show;
 				}
 			}
 		}
@@ -469,17 +470,8 @@ public class LayerManager {
 	 * @param value
 	 */
 	public void setLayerBlendFactor(int index, float value) {
-		layerEffects.blendFactor[index] = value;
+		layerEffects.blendFactor[index] = value*visibleLayers.get(index).show;
 		visibleLayers.get(index).opacity = value;
-	}
-
-	/**
-	 * Get the blend factors for all layers
-	 * 
-	 * @return
-	 */
-	public float[] getLayerBlendFactors() {
-		return (layerEffects.blendFactor);
 	}
 
 	/**

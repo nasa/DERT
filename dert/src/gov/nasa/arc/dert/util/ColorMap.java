@@ -153,7 +153,11 @@ public class ColorMap {
 		baseMaximum = Math.ceil(baseMax);
 		baseRange = baseMaximum - baseMinimum;
 		loadFromFile();
-		setRange(min, max);
+		// the first time the min/max argument will be NaN (from LayerInfo)
+		if (Double.isNaN(min) || Double.isNaN(max))
+			setRange(minimum, maximum);
+		else
+			setRange(min, max);
 	}
 
 	/**

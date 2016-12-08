@@ -35,9 +35,6 @@ public class FieldLayer extends Layer implements ColorMapListener {
 
 	// The color map
 	private ColorMap colorMap;
-
-	// Information about this layer
-	private LayerInfo layerInfo;
 	
 	// Tile dimensions
 	private int tileWidth, tileLength;
@@ -58,10 +55,14 @@ public class FieldLayer extends Layer implements ColorMapListener {
 		numLevels = dataSource.numLevels;
 		numTiles = dataSource.numTiles;
 		bytesPerTile = (dataSource.tileWidth + 1) * (dataSource.tileLength + 1) * 8;
+		colorMap = layerInfo.colorMap;
 	}
 
 	@Override
 	public void dispose() {
+		super.dispose();
+		if (colorMap != null)
+			colorMap.removeListener(this);
 		dataSource.dispose();
 	}
 
@@ -113,7 +114,6 @@ public class FieldLayer extends Layer implements ColorMapListener {
 	 */
 	@Override
 	public void mapChanged(ColorMap cMap) {
-		layerInfo.colorMapName = cMap.getName();
 		Landscape.getInstance().markDirty(DirtyType.RenderState);
 	}
 

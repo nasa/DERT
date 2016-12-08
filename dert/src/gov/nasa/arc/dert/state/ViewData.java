@@ -267,8 +267,10 @@ public class ViewData {
 	}
 	
 	public void save() {
-		if (viewWindow == null)
+		if (viewWindow == null) {
+			visible = false;
 			return;
+		}
 		windowX = viewWindow.getX();
 		windowY = viewWindow.getY();
 		windowWidth = viewWindow.getWidth();

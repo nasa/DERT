@@ -33,6 +33,7 @@ public class LayerPanel extends JPanel {
 	private JLabel layerLabel;
 	private IntSpinner opacity;
 	private JCheckBox lockBox;
+	private JCheckBox showBox;
 	private int index;
 	
 	private LayersPanel parent;
@@ -47,6 +48,7 @@ public class LayerPanel extends JPanel {
 		this.parent = parent;
 		setLayout(new FlowLayout(FlowLayout.LEFT));
 		add(new JLabel(" " + index + " "));
+		addShowBox();
 		addLockBox();
 		addOpacitySpinner();
 		layerLabel = new JLabel();
@@ -57,16 +59,36 @@ public class LayerPanel extends JPanel {
 		String str = layerInfo.toString();
 		if (layerInfo.type != LayerType.none)
 			str += ", "+layerInfo.type;
-		if (layerInfo.colorMapName != null)
-			str += ", colormap=" + layerInfo.colorMapName;
+		if (layerInfo.colorMap != null)
+			str += ", colormap=" + layerInfo.colorMap.getName();
 		layerLabel.setText(str);
+		showBox.setSelected(layerInfo.show == 1);
+		showBox.setEnabled(layerInfo.type != LayerType.none);
 		lockBox.setSelected(!layerInfo.autoblend);
+		lockBox.setEnabled(layerInfo.type != LayerType.none);
 		opacity.setValueNoChange((int)(layerInfo.opacity*100));
 		opacity.setEnabled(layerInfo.type != LayerType.none);
 	}
 	
 	public void setOpacity(int value) {
 		opacity.setValueNoChange(value);
+	}
+	
+	private void addShowBox() {
+		showBox = new JCheckBox();
+		showBox.setToolTipText("Layer is visible");
+		showBox.setSelected(true);
+		showBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				LayerManager layerManager = Landscape.getInstance().getLayerManager();
+				LayerInfo layerInfo = layerManager.getVisibleLayers().get(index);
+				layerInfo.show = showBox.isSelected() ? 1 : 0;
+				layerManager.setLayerBlendFactor(index, (float)layerInfo.opacity);
+				Landscape.getInstance().markDirty(DirtyType.RenderState);
+			}
+		});
+		add(showBox);
 	}
 	
 	private void addLockBox() {

@@ -39,12 +39,16 @@ public abstract class Layer {
 	// how much this layer contributes to the landscape color
 	protected double blendFactor;
 
+	// Information about this layer
+	protected LayerInfo layerInfo;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param layerInfo
 	 */
 	public Layer(LayerInfo layerInfo) {
+		this.layerInfo = layerInfo;
 		layerName = layerInfo.name;
 		layerType = layerInfo.type;
 		blendFactor = layerInfo.opacity;
@@ -54,7 +58,8 @@ public abstract class Layer {
 	 * Dispose of this layers resources
 	 */
 	public void dispose() {
-		// nothing here
+		if (layerInfo.colorMap != null)
+			layerInfo.colorMapName = layerInfo.colorMap.getName();
 	}
 
 	/**

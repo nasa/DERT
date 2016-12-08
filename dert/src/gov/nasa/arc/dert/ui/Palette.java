@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.ui;
 
 import gov.nasa.arc.dert.util.ColorMap;
+import gov.nasa.arc.dert.view.Console;
 
 import java.awt.Canvas;
 import java.awt.Color;
@@ -69,7 +70,11 @@ public class Palette extends Canvas {
 		for (int i = 1; i < value.length; ++i) {
 			dMin = Math.min(dMin, value[i] - value[i - 1]);
 		}
-		double fracDigits = Math.log10(dMin);
+		double fracDigits = 0;
+		if (dMin != 0)
+			fracDigits = Math.log10(dMin);
+		else
+			Console.getInstance().println("One or more color map intervals is 0. Labels will have no fractional digits.");
 		String str = "0";
 		if (fracDigits > 0) {
 			fracDigits = 0;

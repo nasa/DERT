@@ -35,13 +35,16 @@ public class LayerInfo implements Comparable<LayerInfo> {
 	public boolean gradient;
 
 	// The minimum value of this layer
-	public double minimum;
+	public double minimum = Double.NaN;
 
 	// The maximum value of this layer
-	public double maximum;
+	public double maximum = Double.NaN;
 	
 	// Auto blending enabled for this layer
 	public boolean autoblend;
+	
+	// This layer, when added to the visible list, is showing.
+	public int show = 1;
 
 	// The color map object
 	public transient ColorMap colorMap;
@@ -92,6 +95,7 @@ public class LayerInfo implements Comparable<LayerInfo> {
 		opacity = StateUtil.getDouble(map, "Opacity", opacity);
 		layerNumber = StateUtil.getInteger(map, "LayerNumber", layerNumber);
 		autoblend = StateUtil.getBoolean(map, "Autoblend", autoblend);
+		show = StateUtil.getInteger(map, "Show", show);
 		str = StateUtil.getString(map, "ColorMap.name", null);
 		if (str != null) {
 			colorMapName = str;
@@ -117,6 +121,7 @@ public class LayerInfo implements Comparable<LayerInfo> {
 		this.maximum = that.maximum;
 		this.colorMap = that.colorMap;
 		this.autoblend = that.autoblend;
+		this.show = that.show;
 	}
 
 	/**
@@ -146,6 +151,7 @@ public class LayerInfo implements Comparable<LayerInfo> {
 		map.put("Opacity", new Double(opacity));
 		map.put("LayerNumber", new Integer(layerNumber));
 		map.put("Autoblend", new Boolean(autoblend));
+		map.put("Show", new Integer(show));
 		if (colorMap != null) {
 			map.put("ColorMap.name", colorMap.getName());
 			map.put("ColorMap.gradient", new Boolean(colorMap.isGradient()));

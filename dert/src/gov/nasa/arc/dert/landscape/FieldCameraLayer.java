@@ -60,9 +60,6 @@ public class FieldCameraLayer extends Layer {
 	// Creates the projected texture for the viewshed
 	private Viewshed viewshed;
 
-	// Information about this layer
-	private LayerInfo layerInfo;
-
 	/**
 	 * Constructor
 	 * 
@@ -71,7 +68,6 @@ public class FieldCameraLayer extends Layer {
 	 */
 	public FieldCameraLayer(LayerInfo layerInfo, int textureUnit) {
 		super(layerInfo);
-		this.layerInfo = layerInfo;
 		this.textureUnit = textureUnit;
 		this.viewshedEnabled = layerInfo.type == LayerType.viewshed;
 		color = new Color(0, 0, 0, 0);
@@ -103,6 +99,7 @@ public class FieldCameraLayer extends Layer {
 
 	@Override
 	public void dispose() {
+		super.dispose();
 		Landscape.getInstance().getTextureState().setTexture(null, textureUnit);
 		Landscape.getInstance().markDirty(DirtyType.RenderState);
 	}

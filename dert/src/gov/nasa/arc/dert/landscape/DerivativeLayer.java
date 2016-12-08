@@ -43,9 +43,6 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 	// The color map
 	private ColorMap colorMap;
 
-	// Information about this layer
-	private LayerInfo layerInfo;
-
 	/**
 	 * Constructor
 	 * 
@@ -56,17 +53,11 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 	public DerivativeLayer(DerivativeType type, LayerInfo layerInfo, RasterLayer source) {
 		super(layerInfo);
 		this.type = type;
-		this.layerInfo = layerInfo;
 		colorMap = layerInfo.colorMap;
 		dataSource = source;
 		numLevels = dataSource.numLevels;
 		numTiles = dataSource.numTiles;
 		bytesPerTile = (dataSource.tileWidth + 1) * (dataSource.tileLength + 1) * 8;
-	}
-
-	@Override
-	public void dispose() {
-		// nothing here
 	}
 
 	@Override
@@ -122,7 +113,7 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 				colorMap.addListener(this);
 				break;
 			case Aspect:
-				colorMap = new ColorMap(layerInfo.colorMapName, layerName, 0, 90, layerInfo.minimum, layerInfo.maximum,
+				colorMap = new ColorMap(layerInfo.colorMapName, layerName, 0, 360, layerInfo.minimum, layerInfo.maximum,
 					layerInfo.gradient);
 				colorMap.addListener(this);
 				break;
@@ -140,7 +131,6 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 	 */
 	@Override
 	public void mapChanged(ColorMap cMap) {
-		layerInfo.colorMapName = cMap.getName();
 		Landscape.getInstance().markDirty(DirtyType.RenderState);
 	}
 
@@ -202,6 +192,13 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 		texCoords.limit(k);
 		texCoords.rewind();
 		mesh.getMeshData().setTextureBuffer(texCoords, textureUnit);
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (colorMap != null)
+			colorMap.removeListener(this);
 	}
 
 }
