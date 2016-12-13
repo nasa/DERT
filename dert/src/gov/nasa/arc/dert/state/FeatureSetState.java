@@ -86,7 +86,13 @@ public class FeatureSetState extends MapElementState {
 			return(false);
 		if (!this.filePath.equals(that.filePath)) 
 			return(false);
-		if (!this.labelProp.equals(that.labelProp))
+		if (this.labelProp == null) {
+			if (that.labelProp != null)
+				return(false);
+		}
+		else if (that.labelProp == null)
+			return(false);
+		else if (!this.labelProp.equals(that.labelProp))
 			return(false);
 		return(true);
 	}
