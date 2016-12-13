@@ -40,7 +40,7 @@ public class DertTest {
 	public static final String testLoc = "/tmp/derttest";
 
 	// Paths to DERT executable and user current working directory
-	private static String path, userPath;
+	private static String path, userPath = System.getProperty("user.home");
 
 	// Application properties
 	private static Properties dertProperties;

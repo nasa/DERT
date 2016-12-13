@@ -32,7 +32,7 @@ public class LayerInfo implements Comparable<LayerInfo> {
 	public String colorMapName;
 
 	// Flag to use a gradient with the color map
-	public boolean gradient;
+	public boolean gradient = false;
 
 	// The minimum value of this layer
 	public double minimum = Double.NaN;
@@ -41,7 +41,7 @@ public class LayerInfo implements Comparable<LayerInfo> {
 	public double maximum = Double.NaN;
 	
 	// Auto blending enabled for this layer
-	public boolean autoblend;
+	public boolean autoblend = false;
 	
 	// This layer, when added to the visible list, is showing.
 	public int show = 1;

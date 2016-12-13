@@ -930,6 +930,8 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			break;
 		}
 		
+		if (currentPanel == null)
+			throw new IllegalStateException("No map element panel selected.");
 		currentPanel.setMapElement(mapElement);
 		panelLayout.show(panelPane, card);
 		state.setLastMapElement(mapElement);

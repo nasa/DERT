@@ -163,7 +163,7 @@ public class LandscapeTest {
 		}
 		z /= 100;
 		System.err.println("LandscapeTest.testGetSampledMeanElevationOfRegion 10x10 region = "+elev+" "+z);
-		return(elev == z);
+		return(Math.abs(elev-z) < 0.0000001);
 	}
 	
 	private boolean testGetSampledMeanSlopeOfRegion(Landscape landscape) {

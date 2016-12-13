@@ -123,7 +123,7 @@ public class ConfigFileChooserDialog extends AbstractDialog {
 					File idFile = new File(f, ".landscape");
 					if (idFile.exists()) {
 						configFilePath = new String[] { landscapePath };
-						lastPath = fileChooser.getCurrentDirectory().getParentFile().getAbsolutePath();
+						setLastPath(fileChooser.getCurrentDirectory().getParentFile().getAbsolutePath());
 						close();
 					}
 					return;
@@ -183,7 +183,7 @@ public class ConfigFileChooserDialog extends AbstractDialog {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					configFilePath = new String[] { landscapePath };
-					lastPath = fileChooser.getCurrentDirectory().getParentFile().getAbsolutePath();
+					setLastPath(fileChooser.getCurrentDirectory().getParentFile().getAbsolutePath());
 					close();
 				}
 			});
@@ -217,12 +217,16 @@ public class ConfigFileChooserDialog extends AbstractDialog {
 				configFilePath[i] = fileList[index[i]];
 			}
 		}
-		lastPath = fileChooser.getCurrentDirectory().getParentFile().getAbsolutePath();
+		setLastPath(fileChooser.getCurrentDirectory().getParentFile().getAbsolutePath());
 		return (configFilePath != null);
 	}
 
 	public String[] getFilePaths() {
 		return (configFilePath);
+	}
+	
+	protected static void setLastPath(String lPath) {
+		lastPath = lPath;
 	}
 
 }

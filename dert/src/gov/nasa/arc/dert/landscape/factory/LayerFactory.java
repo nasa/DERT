@@ -100,6 +100,7 @@ public class LayerFactory {
 			}
 		}
 		LayerFactory lf = new LayerFactory(args);
+		VERSION = "LayerFactory " + lf.version;
 		lf.createLayer();
 	}
 
@@ -120,9 +121,6 @@ public class LayerFactory {
 		} else {
 			pathStr += "../";
 		}
-	}
-	
-	public boolean createLayer() {
 
 		// Load properties.
 		dertProperties = new Properties();
@@ -130,7 +128,6 @@ public class LayerFactory {
 			File file = new File(pathStr, "dert.properties");
 			dertProperties.load(new FileInputStream(file));
 			version = dertProperties.getProperty("Dert.Version", "");
-			VERSION = "LayerFactory " + version;
 			String globes = dertProperties.getProperty("Globes", null);
 			if (globes != null) {
 				GLOBE_NAME = globes.split(",");
@@ -139,8 +136,11 @@ public class LayerFactory {
 			defaultGlobe = (String) StringUtil.findString(defaultGlobe, GLOBE_NAME, true);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return(false);
+			System.exit(-1);
 		}
+	}
+	
+	public boolean createLayer() {
 
 		// Do the build if all arguments are present and then exit.
 		if (checkArgs(args)) {

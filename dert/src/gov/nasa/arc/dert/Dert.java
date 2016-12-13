@@ -72,7 +72,7 @@ public class Dert {
 	// Console view
 	protected static ConsoleView consoleView;
 
-	// Paths to DERT executable and user current working directory
+	// Paths to DERT executable and user directory
 	protected static String path, userPath;
 
 	// Application properties
@@ -347,7 +347,7 @@ public class Dert {
 	}
 
 	/**
-	 * Get the path to the user's current working directory.
+	 * Get the path to the user's directory.
 	 * 
 	 * @return the path
 	 */

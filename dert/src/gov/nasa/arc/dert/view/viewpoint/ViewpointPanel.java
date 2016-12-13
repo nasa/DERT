@@ -59,7 +59,7 @@ public class ViewpointPanel extends JPanel {
 	private DoubleArrayTextField azElField;
 //	private DoubleTextField altitudeField;
 	private DoubleTextField magnificationField;
-	private CoordTextField corField;
+//	private CoordTextField corField;
 	private ButtonAction prevAction;
 	private ButtonAction nextAction;
 	private JCheckBox hike;
@@ -439,8 +439,8 @@ public class ViewpointPanel extends JPanel {
 	public void dispose() {
 		if (locationField != null)
 			CoordAction.listenerList.remove(locationField);
-		if (corField != null)
-			CoordAction.listenerList.remove(corField);
+//		if (corField != null)
+//			CoordAction.listenerList.remove(corField);
 	}
 	
 	private void setEditing(boolean isEditing) {

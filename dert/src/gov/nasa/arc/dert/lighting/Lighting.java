@@ -51,7 +51,7 @@ public class Lighting {
 	protected ColorRGBA headlightIntensity = new ColorRGBA(0.85f, 0.85f, 0.85f, 1);
 
 	// Visibility flags
-	protected boolean lightEnabled, isLamp = true, headlightEnabled = false;
+	protected boolean lightEnabled = false, isLamp = true, headlightEnabled = false;
 
 	// Main light position (artificial)
 	protected double azimuth, elevation;
@@ -60,13 +60,13 @@ public class Lighting {
 	protected Vector3 direction = new Vector3();
 	
 	// Main light reference location on surface (used to compute light direction from Sun)
-	protected Vector3 refLoc;
+	protected Vector3 refLoc = null;
 
 	// The epoch for LMST
 	protected Date epoch;
 	
 	// Current time
-	protected long timeUTC;
+	protected long timeUTC = 0;
 
 	// The background color
 	private ColorRGBA backgroundColor;
