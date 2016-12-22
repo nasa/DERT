@@ -365,6 +365,9 @@ public class ViewpointNode
 	 * Reset the viewpoint to the overhead position
 	 */
 	public void reset() {
+//		System.err.println("ViewpointNode.reset A: sceneBounds="+sceneBounds+" closestDistance="+closestDistance+" hikeMode="+hikeMode);
+//		System.err.println("ViewpointNode.reset A: rotate="+rotate+" azimuth="+azimuth+" elevation="+elevation);
+//		System.err.println("ViewpointNode.reset A: lookAt="+camera.getLookAt()+" location="+camera.getLocation()+" magnification="+camera.getMagnification());
 		hikeMode = false;
 		setSceneBounds();
 		rotate.setIdentity();
@@ -383,6 +386,9 @@ public class ViewpointNode
 		Dert.getMainWindow().updateCompass(azimuth);
 		updateOverlay();
 		changed.set(true);
+//		System.err.println("ViewpointNode.reset B: sceneBounds="+sceneBounds+" closestDistance="+closestDistance+" hikeMode="+hikeMode);
+//		System.err.println("ViewpointNode.reset B: rotate="+rotate+" azimuth="+azimuth+" elevation="+elevation);
+//		System.err.println("ViewpointNode.reset B: lookAt="+lookAt+" location="+location+" magnification="+camera.getMagnification());
 	}
 
 	/**

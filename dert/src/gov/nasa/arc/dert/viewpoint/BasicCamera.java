@@ -259,7 +259,7 @@ public class BasicCamera extends Camera {
 	@Override
 	public void setFrustum(final double near, final double far, final double left, final double right,
 		final double top, final double bottom) {
-		// System.err.println("BasicCamera.setFrustum "+viewport+" "+near+" "+far+" "+left+" "+right+" "+top+" "+bottom);
+		//System.err.println("BasicCamera.setFrustum "+near+" "+far+" "+left+" "+right+" "+bottom+" "+top);
 		_frustumNear = near;
 		_frustumFar = far;
 		_frustumLeft = left / magFactor[magIndex];
@@ -570,15 +570,9 @@ public class BasicCamera extends Camera {
 	 * @param bs
 	 */
 	private void setClippingPlanes(BoundingSphere bs) {
-		double r = bs.getRadius();
 		double distance = getDistanceToCoR();
-		if (distance <= r) {
-			farPlane = MathUtil.distanceToSphere(bs, _location, _direction);
-			nearPlane = Math.pow(10, Math.ceil(Math.log10(distance))) / 100;
-		} else {
-			nearPlane = distance - r + 0.00001;
-			farPlane = nearPlane + 3 * r;
-		}
+		nearPlane = Math.pow(10, Math.ceil(Math.log10(distance))) / 100;
+		farPlane = MathUtil.distanceToSphere(bs, _location, _direction);
 		if (nearPlane > maxNearPlane)
 			nearPlane = maxNearPlane;
 	}
