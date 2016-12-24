@@ -7,6 +7,7 @@ import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.ui.TextDialog;
 import gov.nasa.arc.dert.view.world.WorldScenePanel;
 
+import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -29,7 +30,7 @@ public class ActivateTapeMeasureAction extends ButtonAction {
 	@Override
 	protected void run() {
 		if (dialog == null) {
-			dialog = new TextDialog(Dert.getMainWindow(), "Tape Measure", 340, 160, false, false);
+			dialog = new TextDialog((Frame)getTopLevelAncestor(), "Tape Measure", 340, 160, false, false);
 			dialog.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent e) {

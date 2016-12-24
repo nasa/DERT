@@ -126,10 +126,10 @@ public class WorldInputHandler implements InputHandler {
 			this.path.complete();
 		this.path = path;
 		if ((path == null) && (tape == null)) {
-			canvasPanel.getCanvas().setCursor(null);
+			canvasPanel.setCursor(null);
 		} else if (path != null) {
 			Console.getInstance().println("Single-click to add a point to "+path.getName()+". Select \"Path Complete\" from context menu when finished.");
-			canvasPanel.getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+			canvasPanel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		}
 	}
 
@@ -141,9 +141,9 @@ public class WorldInputHandler implements InputHandler {
 	public void setTapeMeasure(TapeMeasure tape) {
 		this.tape = tape;
 		if ((path == null) && (tape == null)) {
-			canvasPanel.getCanvas().setCursor(null);
+			canvasPanel.setCursor(null);
 		} else {
-			canvasPanel.getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+			canvasPanel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		}
 	}
 
@@ -240,9 +240,14 @@ public class WorldInputHandler implements InputHandler {
 						lastPosition = new Vector3(movable.getTranslation());
 						((Spatial) movable).getSceneHints().setAllPickingHints(false);
 						movable.setInMotion(true, pickPosition);
-						canvasPanel.getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));	
+						canvasPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 					}
 				}
+				else
+					// Workaround for cursor changing to default after clicking on tape dialog when it is
+					// entirely inside the main window. Will cursor will be changed back to crosshair on
+					// release.
+					canvasPanel.setCursor(null);
 			}
 			lastSelection = SpatialUtil.getPickHost(spatial);
 		}
@@ -263,9 +268,13 @@ public class WorldInputHandler implements InputHandler {
 					movable.setInMotion(false, null);
 					Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(movable, lastPosition));
 					movable = null;
-					canvasPanel.getCanvas().setCursor(null);
+					canvasPanel.setCursor(null);
 				}
 			}
+			else
+				// Rest of workaround for cursor changing to default after clicking on tape dialog when it is
+				// entirely inside the main window.
+				canvasPanel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));				
 		}
 		controller.mouseRelease(x, y, mouseButton);
 	}

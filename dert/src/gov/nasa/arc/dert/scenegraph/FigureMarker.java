@@ -93,6 +93,7 @@ public class FigureMarker extends Marker {
 		} else {
 			setMaterialState();
 		}
+		markDirty(DirtyType.RenderState);
 	}
 
 	@Override
