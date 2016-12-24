@@ -793,25 +793,9 @@ public class ViewpointNode
 		this.mapMode = mapMode;
 		if (mapMode) {
 			oldVP = getViewpoint(oldVP);
-			hikeMode = false;
-			camera.setProjectionMode(ProjectionMode.Parallel);
-			rotate.setIdentity();
-			azimuth = 0;
-			elevation = ELEV_HOME;
-			location.set(0.0, 0.0, sceneBounds.getRadius());
-			location.addLocal(sceneBounds.getCenter());
-			camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
-			camera.setFrame(location, rotate);
-			camera.setLookAt(sceneBounds.getCenter());
-			camera.setFrustum(sceneBounds);
-			updateFromCamera();
-			updateCrosshair();
-			updateGeometricState(0);
-			Dert.getMainWindow().updateCompass(azimuth);
-			updateOverlay();
+			reset();
 		}
 		else {
-			camera.setProjectionMode(ProjectionMode.Perspective);
 			setViewpoint(oldVP, true, false);
 		}
 		changed.set(true);

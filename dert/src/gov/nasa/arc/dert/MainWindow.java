@@ -32,15 +32,14 @@ import java.awt.Font;
 import java.awt.Menu;
 import java.awt.PopupMenu;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -106,7 +105,8 @@ public class MainWindow extends JFrame {
 	// Indicate that we have a configuration to save
 	private boolean haveConfig;
 	
-	private boolean oldZoom, oldOnTop;
+	// Fields for map view
+	private boolean oldOnTop;
 
 	/**
 	 * Constructor
@@ -409,84 +409,79 @@ public class MainWindow extends JFrame {
 		menu.add(stereoAction);
 
 		CheckboxMenuItem mapViewItem = new CheckboxMenuItem("Map View");
-		mapViewItem.addActionListener(new ActionListener() {
+		mapViewItem.addItemListener(new ItemListener() {
 			@Override
-			public void actionPerformed(ActionEvent event) {
-				boolean doMap = ((JCheckBoxMenuItem) event.getSource()).getState();
+			public void itemStateChanged(ItemEvent event) {
+				boolean doMap = event.getStateChange() == ItemEvent.SELECTED;
+				worldView.getViewpointNode().setMapMode(doMap);
 				if (doMap) {
 					oldOnTop = World.getInstance().isMapElementsOnTop();
-					oldZoom = zoomAction.isChecked();
 					World.getInstance().setMapElementsOnTop(doMap);
-					zoomAction.enableZoom(doMap);
-					zoomAction.setEnabled(false);
 				}
 				else {
 					World.getInstance().setMapElementsOnTop(oldOnTop);
-					zoomAction.enableZoom(oldZoom);
-					zoomAction.setEnabled(true);
 				}
 				Landscape.getInstance().setMapMode(doMap);
-				worldView.getViewpointNode().setMapMode(doMap);
 			}
 		});
 		mapViewItem.setState(worldView.getViewpointNode().isMapMode());
 		menu.add(mapViewItem);
 
 		CheckboxMenuItem corXhair = new CheckboxMenuItem("Show Crosshair at Center of Rotation");
-		corXhair.addActionListener(new ActionListener() {
+		corXhair.addItemListener(new ItemListener() {
 			@Override
-			public void actionPerformed(ActionEvent event) {
-				worldView.getScenePanel().setShowCrosshair(((JCheckBoxMenuItem) event.getSource()).getState());
+			public void itemStateChanged(ItemEvent event) {
+				worldView.getScenePanel().setShowCrosshair(event.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
 		corXhair.setState(worldView.getScenePanel().isShowCrosshair());
 		menu.add(corXhair);
 
 		CheckboxMenuItem marble = new CheckboxMenuItem("Show Marble");
-		marble.addActionListener(new ActionListener() {
+		marble.addItemListener(new ItemListener() {
 			@Override
-			public void actionPerformed(ActionEvent event) {
-				World.getInstance().getMarble().setVisible(((JCheckBoxMenuItem) event.getSource()).getState());
+			public void itemStateChanged(ItemEvent event) {
+				World.getInstance().getMarble().setVisible(event.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
 		marble.setState(World.getInstance().getMarble().isVisible());
 		menu.add(marble);
 
 		CheckboxMenuItem textOverlay = new CheckboxMenuItem("Show Text Overlay");
-		textOverlay.addActionListener(new ActionListener() {
+		textOverlay.addItemListener(new ItemListener() {
 			@Override
-			public void actionPerformed(ActionEvent event) {
-				worldView.getScenePanel().setShowTextOverlay(((JCheckBoxMenuItem) event.getSource()).getState());
+			public void itemStateChanged(ItemEvent event) {
+				worldView.getScenePanel().setShowTextOverlay(event.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
 		textOverlay.setState(worldView.getScenePanel().isShowTextOverlay());
 		menu.add(textOverlay);
 
 		CheckboxMenuItem scaleOverlay = new CheckboxMenuItem("Show Center Scale Overlay");
-		scaleOverlay.addActionListener(new ActionListener() {
+		scaleOverlay.addItemListener(new ItemListener() {
 			@Override
-			public void actionPerformed(ActionEvent event) {
-				worldView.getScenePanel().setShowCenterScale(((JCheckBoxMenuItem) event.getSource()).getState());
+			public void itemStateChanged(ItemEvent event) {
+				worldView.getScenePanel().setShowCenterScale(event.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
 		scaleOverlay.setState(worldView.getScenePanel().isShowCenterScale());
 		menu.add(scaleOverlay);
 
 		CheckboxMenuItem mapElementsOnTopAction = new CheckboxMenuItem("Map Elements On Top");
-		mapElementsOnTopAction.addActionListener(new ActionListener() {
+		mapElementsOnTopAction.addItemListener(new ItemListener() {
 			@Override
-			public void actionPerformed(ActionEvent event) {
-				World.getInstance().setMapElementsOnTop(((JCheckBoxMenuItem) event.getSource()).getState());
+			public void itemStateChanged(ItemEvent event) {
+				World.getInstance().setMapElementsOnTop(event.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
 		mapElementsOnTopAction.setState(World.getInstance().isMapElementsOnTop());
 		menu.add(mapElementsOnTopAction);
 
 		CheckboxMenuItem toolHiddenDashedAction = new CheckboxMenuItem("Show Tool Hidden Lines As Dashes");
-		toolHiddenDashedAction.addActionListener(new ActionListener() {
+		toolHiddenDashedAction.addItemListener(new ItemListener() {
 			@Override
-			public void actionPerformed(ActionEvent event) {
-				World.getInstance().setHiddenDashed(((JCheckBoxMenuItem) event.getSource()).getState());
+			public void itemStateChanged(ItemEvent event) {
+				World.getInstance().setHiddenDashed(event.getStateChange() == ItemEvent.SELECTED);
 			}
 		});
 		toolHiddenDashedAction.setState(World.getInstance().isHiddenDashed());

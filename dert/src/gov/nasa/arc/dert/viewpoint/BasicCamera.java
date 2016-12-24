@@ -591,7 +591,7 @@ public class BasicCamera extends Camera {
 		double xRadius = 1;
 		double yRadius = 1;
 		if (getProjectionMode() == Camera.ProjectionMode.Parallel) {
-			xRadius = bs.getRadius();
+			xRadius = bs.getRadius()*0.7;
 			yRadius = xRadius;
 			if (aspect < 1) {
 				yRadius = xRadius / aspect;
@@ -606,9 +606,9 @@ public class BasicCamera extends Camera {
 			return;
 		}
 		double frustumNear = nearPlane;
-		if (frustumNear < 0.0001) {
-			frustumNear = 0.0001;
-		}
+//		if (frustumNear < 0.0001) {
+//			frustumNear = 0.0001;
+//		}
 		setFrustum(frustumNear, farPlane, -xRadius, xRadius, yRadius, -yRadius);
 	}
 
@@ -664,9 +664,9 @@ public class BasicCamera extends Camera {
 		switch (getProjectionMode()) {
 		case Parallel:
 			hgt = _frustumTop * 2;
-			if (applyZoom) {
-				hgt *= magFactor[magIndex];
-			}
+//			if (applyZoom) {
+//				hgt *= magFactor[magIndex];
+//			}
 			break;
 		case Perspective:
 			// here the height of the frustum at the given point is proportional
