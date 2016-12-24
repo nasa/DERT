@@ -58,7 +58,7 @@ public class UndoHandler {
 	public void updateUndoItems() {
 		undoAction.setText(undoManager.getUndoPresentationName());
 		redoAction.setText(undoManager.getRedoPresentationName());
-		undoAction.validate();
+//		undoAction.validate();
 		undoAction.setEnabled(undoManager.canUndo());
 		redoAction.setEnabled(undoManager.canRedo());
 	}

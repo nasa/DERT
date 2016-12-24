@@ -46,9 +46,7 @@ import gov.nasa.arc.dert.viewpoint.ViewDependent;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
 
 import java.awt.Cursor;
-
-import javax.swing.JMenu;
-import javax.swing.JPopupMenu;
+import java.awt.PopupMenu;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -86,6 +84,8 @@ public class WorldInputHandler implements InputHandler {
 
 	// Tape measure
 	private TapeMeasure tape;
+	
+	private PopupMenu contextMenu;
 
 	/**
 	 * Constructor
@@ -96,6 +96,8 @@ public class WorldInputHandler implements InputHandler {
 	public WorldInputHandler(ViewpointController controller, SceneCanvasPanel canvasPanel) {
 		this.controller = controller;
 		this.canvasPanel = canvasPanel;
+		contextMenu = new PopupMenu("");
+		canvasPanel.add(contextMenu);
 	}
 
 	/**
@@ -335,83 +337,87 @@ public class WorldInputHandler implements InputHandler {
 			// set the new center of rotation
 			setCenterOfRotation();
 		} else if (mouseButton == 3) {
-			if (path != null) {
-				JPopupMenu menu = new JPopupMenu(path.getName());
-				menu.add(new MenuItemAction("Path Complete") {
-					@Override
-					protected void run() {
-						setPath(null);
-					}					
-				});
-				menu.show(canvasPanel, x, canvasPanel.getHeight() - y);
-			}
-			else if (!hasMouse()) {
-				if (lastSelection != null) {
-					// display context menu
-					JPopupMenu menu = new JPopupMenu(lastSelection.getName());
-					menu.add(new CoRAction(this));
-					// clicked in terrain
-					if (lastSelection instanceof World) {
-						JMenu submenu = new JMenu("Add");
-						submenu.add(new AddPlacemarkAction(pickPosition));
-						submenu.add(new AddFigureAction(pickPosition, pickNormal));
-						submenu.add(new AddBillboardAction(pickPosition));
-						submenu.add(new AddScaleAction(pickPosition));
-						submenu.add(new AddRadialGridAction(pickPosition));
-						submenu.add(new AddCartesianGridAction(pickPosition));
-						submenu.add(new AddPathAction(pickPosition));
-						submenu.add(new AddPlaneAction(pickPosition));
-						submenu.add(new AddProfileAction(pickPosition));
-						submenu.add(new AddCameraAction(pickPosition));
-						menu.add(submenu);
-						menu.add(new PlaceHereAction(pickPosition));
-					}
-					// clicked on map element
-					else if (lastSelection instanceof MapElement) {
-						MapElement mapElement = (MapElement) lastSelection;
-						if (mapElement instanceof Waypoint) {
-							menu.add(new HideMapElementAction(((Waypoint) mapElement).getPath()));
-							menu.add(new DeleteMapElementAction(((Waypoint) mapElement).getPath()));
-							menu.add(new RenameAction(((Waypoint) mapElement).getPath()));
-							menu.add(new EditAction(((Waypoint) mapElement).getPath()));
-							menu.add(new PinMapElementAction(((Waypoint) mapElement).getPath()));
-							menu.add(new OnGroundAction((Waypoint) mapElement));
-							menu.add(new OpenAnnotationAction(mapElement));
-						}
-						else if (mapElement instanceof FeatureSet) {
-							menu.add(new HideMapElementAction(mapElement));
-							menu.add(new DeleteMapElementAction(mapElement));
-							menu.add(new RenameAction(mapElement));
-							menu.add(new EditAction(mapElement));
-							menu.add(new OpenAnnotationAction(mapElement));
-						} else if (mapElement instanceof Feature) {
-							menu.add(new HideMapElementAction(mapElement));
-						} else {
-							menu.add(new HideMapElementAction(mapElement));
-							menu.add(new DeleteMapElementAction(mapElement));
-							menu.add(new RenameAction(mapElement));
-							menu.add(new EditAction(mapElement));
-							menu.add(new PinMapElementAction(mapElement));
-							menu.add(new OnGroundAction(mapElement));
-							menu.add(new OpenAnnotationAction(mapElement));
-							if (mapElement instanceof ImageBoard) {
-								menu.add(new OpenBillboardAction((ImageBoard) mapElement));
-							}
-						}
-					} else if (lastSelection instanceof BillboardMarker) {
-						Node parent = ((BillboardMarker) lastSelection).getParent();
-						if (parent instanceof MapElement) {
-							menu.add(new HideMapElementAction((MapElement) parent));
-							menu.add(new DeleteMapElementAction((MapElement) parent));
-							menu.add(new RenameAction((MapElement) parent));
-							menu.add(new EditAction((MapElement) parent));
-							menu.add(new PinMapElementAction((MapElement) parent));
-							menu.add(new OnGroundAction((MapElement) parent));
-							menu.add(new OpenAnnotationAction((MapElement) parent));
-						}
-					}
-					menu.show(canvasPanel, x, canvasPanel.getHeight() - y);
+			doContextMenu(x, y);
+		}
+	}
+	
+	private void doContextMenu(int x, int y) {
+		if (path != null) {
+			contextMenu.removeAll();
+			contextMenu.add(new MenuItemAction("Path Complete") {
+				@Override
+				protected void run() {
+					setPath(null);
+				}					
+			});
+			contextMenu.show(canvasPanel, x, canvasPanel.getHeight() - y);
+		}
+		else if (!hasMouse()) {
+			if (lastSelection != null) {
+				contextMenu.removeAll();
+				// display context menu
+				contextMenu.add(new CoRAction(this));
+				// clicked in terrain
+				if (lastSelection instanceof World) {
+					PopupMenu submenu = new PopupMenu("Add");
+					submenu.add(new AddPlacemarkAction(pickPosition));
+					submenu.add(new AddFigureAction(pickPosition, pickNormal));
+					submenu.add(new AddBillboardAction(pickPosition));
+					submenu.add(new AddScaleAction(pickPosition));
+					submenu.add(new AddRadialGridAction(pickPosition));
+					submenu.add(new AddCartesianGridAction(pickPosition));
+					submenu.add(new AddPathAction(pickPosition));
+					submenu.add(new AddPlaneAction(pickPosition));
+					submenu.add(new AddProfileAction(pickPosition));
+					submenu.add(new AddCameraAction(pickPosition));
+					contextMenu.add(submenu);
+					contextMenu.add(new PlaceHereAction(pickPosition));
 				}
+				// clicked on map element
+				else if (lastSelection instanceof MapElement) {
+					MapElement mapElement = (MapElement) lastSelection;
+					if (mapElement instanceof Waypoint) {
+						contextMenu.add(new HideMapElementAction(((Waypoint) mapElement).getPath()));
+						contextMenu.add(new DeleteMapElementAction(((Waypoint) mapElement).getPath()));
+						contextMenu.add(new RenameAction(((Waypoint) mapElement).getPath()));
+						contextMenu.add(new EditAction(((Waypoint) mapElement).getPath()));
+						contextMenu.add(new PinMapElementAction(((Waypoint) mapElement).getPath()));
+						contextMenu.add(new OnGroundAction((Waypoint) mapElement));
+						contextMenu.add(new OpenAnnotationAction(mapElement));
+					}
+					else if (mapElement instanceof FeatureSet) {
+						contextMenu.add(new HideMapElementAction(mapElement));
+						contextMenu.add(new DeleteMapElementAction(mapElement));
+						contextMenu.add(new RenameAction(mapElement));
+						contextMenu.add(new EditAction(mapElement));
+						contextMenu.add(new OpenAnnotationAction(mapElement));
+					} else if (mapElement instanceof Feature) {
+						contextMenu.add(new HideMapElementAction(mapElement));
+					} else {
+						contextMenu.add(new HideMapElementAction(mapElement));
+						contextMenu.add(new DeleteMapElementAction(mapElement));
+						contextMenu.add(new RenameAction(mapElement));
+						contextMenu.add(new EditAction(mapElement));
+						contextMenu.add(new PinMapElementAction(mapElement));
+						contextMenu.add(new OnGroundAction(mapElement));
+						contextMenu.add(new OpenAnnotationAction(mapElement));
+						if (mapElement instanceof ImageBoard) {
+							contextMenu.add(new OpenBillboardAction((ImageBoard) mapElement));
+						}
+					}
+				} else if (lastSelection instanceof BillboardMarker) {
+					Node parent = ((BillboardMarker) lastSelection).getParent();
+					if (parent instanceof MapElement) {
+						contextMenu.add(new HideMapElementAction((MapElement) parent));
+						contextMenu.add(new DeleteMapElementAction((MapElement) parent));
+						contextMenu.add(new RenameAction((MapElement) parent));
+						contextMenu.add(new EditAction((MapElement) parent));
+						contextMenu.add(new PinMapElementAction((MapElement) parent));
+						contextMenu.add(new OnGroundAction((MapElement) parent));
+						contextMenu.add(new OpenAnnotationAction((MapElement) parent));
+					}
+				}
+				contextMenu.show(canvasPanel, x, canvasPanel.getHeight() - y);
 			}
 		}
 	}

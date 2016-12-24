@@ -25,9 +25,12 @@ import gov.nasa.arc.dert.viewpoint.ActivateZoomAction;
 import gov.nasa.arc.dert.viewpoint.Compass;
 
 import java.awt.BorderLayout;
+import java.awt.CheckboxMenuItem;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Menu;
+import java.awt.PopupMenu;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,10 +43,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
@@ -149,7 +150,7 @@ public class MainWindow extends JFrame {
 		// Menu for file operations (loading configurations, exit).
 		PopupMenuAction fileMenu = new PopupMenuAction("file actions", "File", null) {
 			@Override
-			protected void fillMenu(JPopupMenu menu) {
+			protected void fillMenu(PopupMenu menu) {
 				fillFileMenu(menu);
 			}
 		};
@@ -159,7 +160,7 @@ public class MainWindow extends JFrame {
 		// cross hair visibility).
 		editMenu = new PopupMenuAction("edit actions", "Edit", null) {
 			@Override
-			protected void fillMenu(JPopupMenu menu) {
+			protected void fillMenu(PopupMenu menu) {
 				fillEditMenu(menu);
 			}
 		};
@@ -343,7 +344,7 @@ public class MainWindow extends JFrame {
 //		System.err.println("MainWindow.setCursor "+cursor);
 //	}
 
-	protected void fillFileMenu(JPopupMenu fileMenu) {
+	protected void fillFileMenu(PopupMenu fileMenu) {
 		fileMenu.add(new AboutAction(version));
 		fileMenu.add(new OpenConfigAction());
 		fileMenu.add(getRecentSubmenu());
@@ -384,7 +385,7 @@ public class MainWindow extends JFrame {
 		fileMenu.add(exitItem);
 	}
 
-	protected void fillEditMenu(JPopupMenu menu) {
+	protected void fillEditMenu(PopupMenu menu) {
 		menu.add(undoHandler.getUndoAction());
 		menu.add(undoHandler.getRedoAction());
 		menu.addSeparator();
@@ -407,7 +408,7 @@ public class MainWindow extends JFrame {
 		};
 		menu.add(stereoAction);
 
-		JCheckBoxMenuItem mapViewItem = new JCheckBoxMenuItem("Map View");
+		CheckboxMenuItem mapViewItem = new CheckboxMenuItem("Map View");
 		mapViewItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -431,7 +432,7 @@ public class MainWindow extends JFrame {
 		mapViewItem.setState(worldView.getViewpointNode().isMapMode());
 		menu.add(mapViewItem);
 
-		JCheckBoxMenuItem corXhair = new JCheckBoxMenuItem("Show Crosshair at Center of Rotation");
+		CheckboxMenuItem corXhair = new CheckboxMenuItem("Show Crosshair at Center of Rotation");
 		corXhair.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -441,7 +442,7 @@ public class MainWindow extends JFrame {
 		corXhair.setState(worldView.getScenePanel().isShowCrosshair());
 		menu.add(corXhair);
 
-		JCheckBoxMenuItem marble = new JCheckBoxMenuItem("Show Marble");
+		CheckboxMenuItem marble = new CheckboxMenuItem("Show Marble");
 		marble.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -451,7 +452,7 @@ public class MainWindow extends JFrame {
 		marble.setState(World.getInstance().getMarble().isVisible());
 		menu.add(marble);
 
-		JCheckBoxMenuItem textOverlay = new JCheckBoxMenuItem("Show Text Overlay");
+		CheckboxMenuItem textOverlay = new CheckboxMenuItem("Show Text Overlay");
 		textOverlay.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -461,7 +462,7 @@ public class MainWindow extends JFrame {
 		textOverlay.setState(worldView.getScenePanel().isShowTextOverlay());
 		menu.add(textOverlay);
 
-		JCheckBoxMenuItem scaleOverlay = new JCheckBoxMenuItem("Show Center Scale Overlay");
+		CheckboxMenuItem scaleOverlay = new CheckboxMenuItem("Show Center Scale Overlay");
 		scaleOverlay.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -471,7 +472,7 @@ public class MainWindow extends JFrame {
 		scaleOverlay.setState(worldView.getScenePanel().isShowCenterScale());
 		menu.add(scaleOverlay);
 
-		JCheckBoxMenuItem mapElementsOnTopAction = new JCheckBoxMenuItem("Map Elements On Top");
+		CheckboxMenuItem mapElementsOnTopAction = new CheckboxMenuItem("Map Elements On Top");
 		mapElementsOnTopAction.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -481,7 +482,7 @@ public class MainWindow extends JFrame {
 		mapElementsOnTopAction.setState(World.getInstance().isMapElementsOnTop());
 		menu.add(mapElementsOnTopAction);
 
-		JCheckBoxMenuItem toolHiddenDashedAction = new JCheckBoxMenuItem("Show Tool Hidden Lines As Dashes");
+		CheckboxMenuItem toolHiddenDashedAction = new CheckboxMenuItem("Show Tool Hidden Lines As Dashes");
 		toolHiddenDashedAction.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -494,7 +495,7 @@ public class MainWindow extends JFrame {
 		MenuItemAction canvasSizeAction = new MenuItemAction("Set WorldView Canvas Dimensions") {
 			@Override
 			protected void run() {
-				String result = JOptionPane.showInputDialog(this, "Enter dimensions (width,height).", worldView.getScenePanel().getWidth()+","+worldView.getScenePanel().getHeight());
+				String result = JOptionPane.showInputDialog(MainWindow.this, "Enter dimensions (width,height).", worldView.getScenePanel().getWidth()+","+worldView.getScenePanel().getHeight());
 				if ((result != null) && !result.isEmpty()) {
 					String[] token = result.trim().split(",");
 					if (token.length < 2) {
@@ -617,7 +618,7 @@ public class MainWindow extends JFrame {
 		return (undoHandler);
 	}
 
-	private JMenu getRecentSubmenu() {
+	private Menu getRecentSubmenu() {
 		String[] recent = ConfigurationManager.getInstance().getRecentConfigurations();
 		MenuItemAction[] menuItem = new MenuItemAction[recent.length];
 		for (int i = 0; i < recent.length; ++i) {
@@ -631,7 +632,7 @@ public class MainWindow extends JFrame {
 				}
 			};
 		}
-		JMenu menu = new JMenu("Open Recent Configuration");
+		Menu menu = new Menu("Open Recent Configuration");
 		for (int i = 0; i < menuItem.length; ++i) {
 			menu.add(menuItem[i]);
 		}

@@ -4,12 +4,12 @@ import gov.nasa.arc.dert.icon.Icons;
 
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JPopupMenu;
 
 /**
  * Abstract class for tool bar pop up menus.
@@ -31,8 +31,9 @@ public abstract class PopupMenuAction extends JButton {
 		addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				final JPopupMenu menu = new JPopupMenu();
+				final PopupMenu menu = new PopupMenu();
 				fillMenu(menu);
+				add(menu);
 				EventQueue.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -43,6 +44,6 @@ public abstract class PopupMenuAction extends JButton {
 		});
 	}
 
-	protected abstract void fillMenu(JPopupMenu menu);
+	protected abstract void fillMenu(PopupMenu menu);
 
 }
