@@ -113,12 +113,7 @@ public class ViewpointPanel extends JPanel {
 				Point p = new Point(event.getX(), event.getY());
 				int index = list.locationToIndex(p);
 				if (list.getCellBounds(index, index).contains(p)) {
-					currentVPS = (ViewpointStore) list.getSelectedValue();
-					deleteButton.setEnabled(currentVPS != null);
-					if (currentVPS != null)
-						controller.gotoViewpoint(currentVPS);
-					updateData(true);
-					setEditing(false);
+					viewpointSelected();
 				}
 				else {
 					// User clicked outside of list items -- clear selection.
@@ -149,6 +144,7 @@ public class ViewpointPanel extends JPanel {
 					index--;
 				}
 				list.setSelectedIndex(index);
+				viewpointSelected();
 			}
 		};
 		topPanel.add(prevAction);
@@ -164,6 +160,7 @@ public class ViewpointPanel extends JPanel {
 					index++;
 				}
 				list.setSelectedIndex(index);
+				viewpointSelected();
 			}
 		};
 		topPanel.add(nextAction);
@@ -446,5 +443,14 @@ public class ViewpointPanel extends JPanel {
 	private void setEditing(boolean isEditing) {
 		cellRenderer.setEditing(isEditing);
 		list.repaint();
+	}
+	
+	private void viewpointSelected() {
+		currentVPS = (ViewpointStore) list.getSelectedValue();
+		deleteButton.setEnabled(currentVPS != null);
+		if (currentVPS != null)
+			controller.gotoViewpoint(currentVPS);
+		updateData(true);
+		setEditing(false);
 	}
 }
