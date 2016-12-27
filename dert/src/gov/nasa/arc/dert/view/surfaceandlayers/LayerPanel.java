@@ -47,7 +47,7 @@ public class LayerPanel extends JPanel {
 		this.index = index;
 		this.parent = parent;
 		setLayout(new FlowLayout(FlowLayout.LEFT));
-		add(new JLabel(" " + index + " "));
+		add(new JLabel(" " + (index+1) + " "));
 		addShowBox();
 		addLockBox();
 		addOpacitySpinner();
