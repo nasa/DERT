@@ -132,7 +132,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 			return;
 		Lighting lighting = ((World)rootNode).getLighting();
 		lighting.prerender(viewpointNode.getCamera(), renderer, worldChanged);
-		if (terrainChanged) {
+		if (terrainChanged || worldChanged) {
 			Landscape.getInstance().getLayerManager().renderLayers(renderer);
 		}
 

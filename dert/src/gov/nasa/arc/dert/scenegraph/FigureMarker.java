@@ -1,6 +1,5 @@
 package gov.nasa.arc.dert.scenegraph;
 
-import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
