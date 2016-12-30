@@ -46,24 +46,24 @@ public class DirtyEventHandler implements DirtyEventListener {
 		}
 		switch (type) {
 		case Attached:
-			rootNode.updateGeometricState(0, true);
+//			rootNode.updateGeometricState(0, true);
 			changed.set(true);
 			terrainChanged.set((spatial instanceof QuadTreeMesh) || terrainChanged.get());
 			break;
 		case Detached:
-			rootNode.updateGeometricState(0, true);
+//			rootNode.updateGeometricState(0, true);
 			changed.set(true);
 			terrainChanged.set((spatial instanceof QuadTreeMesh) || terrainChanged.get());
 			break;
 		case Bounding:
-			rootNode.updateGeometricState(0, true);
+//			rootNode.updateGeometricState(0, true);
 			break;
 		case RenderState:
-			rootNode.updateGeometricState(0, true);
+//			rootNode.updateGeometricState(0, true);
 			changed.set(!(spatial instanceof BillboardNode) || changed.get());
 			break;
 		case Transform:
-			rootNode.updateGeometricState(0, true);
+//			rootNode.updateGeometricState(0, true);
 			if (spatial instanceof Movable) {
 				((Movable) spatial).notifyListeners();
 			}

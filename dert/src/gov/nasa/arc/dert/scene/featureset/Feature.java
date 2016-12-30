@@ -9,6 +9,8 @@ import gov.nasa.arc.dert.scenegraph.LineStrip;
 import gov.nasa.arc.dert.scenegraph.Marker;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
+import gov.nasa.arc.dert.viewpoint.BasicCamera;
+import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -25,7 +27,7 @@ import com.ardor3d.scenegraph.hint.CullHint;
 
 public class Feature
 	extends Node
-	implements MapElement {
+	implements MapElement, ViewDependent {
 
 	public static final Icon icon = Icons.getImageIcon("lineset.png");
 
@@ -308,6 +310,16 @@ public class Feature
 	
 	public String toString() {
 		return(getName());
+	}
+	
+	public void update(BasicCamera camera) {
+		if (!isVisible())
+			return;
+		for (int i = 0; i < getNumberOfChildren(); ++i) {
+			Spatial child = getChild(i);
+			if (child instanceof ViewDependent)
+				((ViewDependent)child).update(camera);
+		}
 	}
 
 }

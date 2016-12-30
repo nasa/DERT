@@ -12,6 +12,8 @@ import gov.nasa.arc.dert.state.FeatureSetState;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.util.StringUtil;
+import gov.nasa.arc.dert.viewpoint.BasicCamera;
+import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
 import java.awt.Color;
 import java.util.Properties;
@@ -30,7 +32,7 @@ import com.ardor3d.scenegraph.hint.CullHint;
  * GeoJSON file
  *
  */
-public class FeatureSet extends GroupNode implements MapElement {
+public class FeatureSet extends GroupNode implements MapElement, ViewDependent {
 
 	public static final Icon icon = Icons.getImageIcon("lineset.png");
 	public static Color defaultColor = Color.white;
@@ -302,6 +304,16 @@ public class FeatureSet extends GroupNode implements MapElement {
 	
 	public double getZOffset() {
 		return(0);
+	}
+	
+	public void update(BasicCamera camera) {
+		if (!isVisible())
+			return;
+		for (int i = 0; i < getNumberOfChildren(); ++i) {
+			Feature feature = (Feature)getChild(i);
+			if (feature.isVisible())
+				feature.update(camera);
+		}
 	}
 
 	/**

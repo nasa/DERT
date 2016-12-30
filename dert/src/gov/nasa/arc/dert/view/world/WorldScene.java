@@ -114,13 +114,16 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		boolean viewpointChanged = viewpointNode.changed.getAndSet(false);
 		// if either the viewpoint or landscape changed, update the other view dependent objects
 		if (viewpointChanged) {
-			for (int i = 0; i < viewDependentList.size(); ++i)
+			for (int i = 0; i < viewDependentList.size(); ++i) {
 				viewDependentList.get(i).update(viewpointNode.getCamera());
+			}
 		}
 		worldChanged = World.getInstance().getDirtyEventHandler().changed.get();
 		terrainChanged = World.getInstance().getDirtyEventHandler().terrainChanged.get();
 //		System.err.println("WorldScene.update "+viewpointChanged+" "+worldChanged+" "+terrainChanged+" "+Landscape.getInstance().quadTreeChanged+" "+initializingCount);
 		sceneChanged.set(viewpointChanged || worldChanged || terrainChanged || sceneChanged.get());
+		if (sceneChanged.get())
+			rootNode.updateGeometricState(0);
 	}
 
 	@Override
@@ -240,7 +243,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 			viewDependentList.add((ViewDependent) spatial);
 			((ViewDependent) spatial).update(viewpointNode.getCamera());
 		}
-		if (spatial instanceof Node) {
+		else if (spatial instanceof Node) {
 			Node node = (Node) spatial;
 			for (int i = 0; i < node.getNumberOfChildren(); ++i) {
 				addViewDependents(node.getChild(i));
@@ -252,7 +255,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		if (spatial instanceof ViewDependent) {
 			viewDependentList.remove(spatial);
 		}
-		if (spatial instanceof Node) {
+		else if (spatial instanceof Node) {
 			Node node = (Node) spatial;
 			for (int i = 0; i < node.getNumberOfChildren(); ++i) {
 				removeViewDependents(node.getChild(i));
