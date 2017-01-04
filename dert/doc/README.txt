@@ -5,8 +5,9 @@ Desktop Exploration of Remote Terrain
 
 SYSTEM REQUIREMENTS:
 
-DERT requires 64-bit Java 1.7, or 1.8.  Mac OS X 10.8 and Red Hat Linux 6 have
+DERT requires 64-bit Java 1.7, or 1.8 JRE.  Mac OS X 10.8 and Red Hat Linux 6 have
 been tested successfully.  A 3-button mouse is recommended.
+Mac users may need to install the Java JDK to set the default Java.
 
 
 INSTALLATION:
@@ -38,7 +39,7 @@ MEMORY ALLOCATION:
 The maximum memory allocation for DERT is 2 GB and LayerFactory is set to 8 GB.
 Java will try to allocate this much virtual memory.
 The maximum memory can be modified by changing MAX_MEM in the dert and layerfactory scripts.
-For the Mac app, right-click on dert.app, select "Show Package Contents" from the context menu.
+To change the Mac app, right-click on dert.app, select "Show Package Contents" from the context menu.
 Open the Contents directory and double-click on Info.plist to edit.
 Open JVMOptions and change the -Xmx memory option. Save.
 
@@ -57,7 +58,7 @@ Funding:
     Mars Reconnaissance Orbiter Project (MRO)
 
 Advice, Preliminary Testing, and Feedback:
-    Malin Space Science Systems (MSSS)
+    Mars Reconnaissance Orbiter Context Camera Team
     NASA Intelligent Systems Antares Team
     NASA Intelligent Systems MapMakers Team
 
