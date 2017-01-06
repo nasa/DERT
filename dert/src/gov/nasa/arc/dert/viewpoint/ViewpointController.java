@@ -32,7 +32,7 @@ public class ViewpointController {
 	public static int mouseScrollDirection = -1;
 
 	// Mouse position
-	private int mouseX, mouseY;
+	private double mouseX, mouseY;
 
 	// In magnification mode
 	private boolean isZoom;
@@ -105,7 +105,7 @@ public class ViewpointController {
 	 * @param noQuadTree
 	 * @return
 	 */
-	public Spatial doPick(int x, int y, Vector3 position, Vector3 normal, boolean terrainOnly) {
+	public Spatial doPick(double x, double y, Vector3 position, Vector3 normal, boolean terrainOnly) {
 		mousePos.set(x, y);
 		Ray3 pickRay = new Ray3WithLine();
 		viewpointNode.getCamera().getPickRay(mousePos, false, pickRay);
@@ -132,7 +132,7 @@ public class ViewpointController {
 	 * @param isControlled
 	 *            control key held down for smaller movements
 	 */
-	public void mouseMove(int x, int y, int dx, int dy, int button) {
+	public void mouseMove(double x, double y, double dx, double dy, int button) {
 		if ((mouseX < 0) || (Math.abs(dx) > 100) || (Math.abs(dy) > 100)) {
 			dx = 0;
 			dy = 0;
@@ -165,7 +165,7 @@ public class ViewpointController {
 			break;
 		// rotating the terrain
 		case 3:
-			viewpointNode.rotate(dy, dx);
+			viewpointNode.rotate((float)dy, (float)dx);
 			break;
 		}
 	}
@@ -194,7 +194,7 @@ public class ViewpointController {
 	 * @param y
 	 * @param mouseButton
 	 */
-	public void mousePress(int x, int y, int mouseButton) {
+	public void mousePress(double x, double y, int mouseButton) {
 		mouseX = x;
 		mouseY = y;
 		timestamp = System.currentTimeMillis();

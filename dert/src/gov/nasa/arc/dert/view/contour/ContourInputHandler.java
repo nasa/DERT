@@ -25,6 +25,9 @@ public class ContourInputHandler implements InputHandler {
 
 	// Mouse pressed flag
 	private boolean mouseDown;
+	
+	// Canvas scale
+	private double xCanvasScale = 1, yCanvasScale = 1;
 
 	/**
 	 * Constructor
@@ -62,6 +65,8 @@ public class ContourInputHandler implements InputHandler {
 	@Override
 	public void mouseMove(int x, int y, int dx, int dy, int mouseButton, boolean isControlled, boolean shiftDown) {
 		if (mouseDown) {
+			dx *= xCanvasScale;
+			dy *= yCanvasScale;
 			double s = camera.getPixelSizeAt(camera.getLookAt(), true);
 			workVec.set(-dx * s, -dy * s, 0);
 			workVec.addLocal(camera.getLocation());
@@ -70,13 +75,15 @@ public class ContourInputHandler implements InputHandler {
 			camera.setLookAt(workVec);
 			canvasPanel.viewpointChanged();
 		} else {
+			x *= xCanvasScale;
+			y *= yCanvasScale;
 			canvasPanel.getCoords(x, y);
 		}
 	}
 
 	@Override
 	public void mouseClick(int x, int y, int mouseButton) {
-		canvasPanel.getPickCoords(x, y);
+		canvasPanel.getPickCoords(x*xCanvasScale, y*yCanvasScale);
 	}
 
 	@Override
@@ -125,6 +132,11 @@ public class ContourInputHandler implements InputHandler {
 		workVec.setZ(camera.getLookAt().getZ());
 		camera.setLookAt(workVec);
 		canvasPanel.viewpointChanged();
+	}
+	
+	public void setCanvasScale(double xScale, double yScale) {
+		xCanvasScale = xScale;
+		yCanvasScale = yScale;
 	}
 
 }

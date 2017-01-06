@@ -6,6 +6,9 @@ package gov.nasa.arc.dert.view;
  *
  */
 public interface InputHandler {
+	
+	// Set the canvas scale. This is the ratio of openGL size to component size.
+	public void setCanvasScale(double xCanvasScale, double yCanvasScale);
 
 	// Mouse was scrolled
 	public void mouseScroll(int delta);
