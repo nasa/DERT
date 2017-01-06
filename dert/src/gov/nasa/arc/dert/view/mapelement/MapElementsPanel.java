@@ -30,6 +30,7 @@ import gov.nasa.arc.dert.viewpoint.ViewpointNode;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -754,7 +755,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 				featureSetsPanel = new FeatureSetsPanel() {
 					@Override
 					public void addFeatureSet(MapElementState.Type type) {
-						FeatureSetDialog dialog = new FeatureSetDialog(null);
+						FeatureSetDialog dialog = new FeatureSetDialog((Dialog)getTopLevelAncestor());
 						if (dialog.open())
 							setPanel(type, null);
 					}

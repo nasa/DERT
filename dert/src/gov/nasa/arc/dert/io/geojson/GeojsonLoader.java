@@ -168,7 +168,7 @@ public class GeojsonLoader {
 			return (null);
 		String name = null;
 		if (labelProp != null)
-			name = (String)gjFeature.getProperties().get(labelProp);
+			name = gjFeature.getProperties().get(labelProp).toString();
 		if ((name == null) || name.isEmpty())
 			name = gjFeature.getId();
 		if (name == null)
@@ -244,7 +244,8 @@ public class GeojsonLoader {
 			if (isContour) {
 				Object elevation = properties.get(elevAttrName);
 				if (elevation != null) {
-					parent.attachChild(new ContourLine(lineStrip, (Double) elevation, color));
+					double el = ((Number)elevation).doubleValue();
+					parent.attachChild(new ContourLine(lineStrip, el, color));
 				} else {
 					parent.attachChild(lineStrip);
 				}
@@ -273,7 +274,8 @@ public class GeojsonLoader {
 				if (isContour) {
 					Object elevation = properties.get(elevAttrName);
 					if (elevation != null) {
-						parent.attachChild(new ContourLine(lineStrip, (Double) elevation, color));
+						double el = ((Number)elevation).doubleValue();
+						parent.attachChild(new ContourLine(lineStrip, el, color));
 					} else {
 						parent.attachChild(lineStrip);
 					}

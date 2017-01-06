@@ -215,7 +215,11 @@ public class JsonReader {
 					skipWhitespace();
 					if (sBuffer.length() == 0)
 						return(null);
-					return(new Double(sBuffer.toString()));
+					String nStr = sBuffer.toString();
+					if (nStr.contains("."))
+						return(new Double(nStr));
+					else
+						return(new Integer(nStr));
 				}
 				switch (currentChar) {
 				case ',':
@@ -223,7 +227,11 @@ public class JsonReader {
 				case '}':
 					if (sBuffer.length() == 0)
 						return(null);
-					return(new Double(sBuffer.toString()));
+					String nStr = sBuffer.toString();
+					if (nStr.contains("."))
+						return(new Double(nStr));
+					else
+						return(new Integer(nStr));
 				default:
 					sBuffer.append((char)currentChar);
 				}
