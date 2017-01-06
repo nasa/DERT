@@ -53,7 +53,6 @@ public class ContourScenePanel extends SceneCanvasPanel {
 
 	// Handle input
 	private ContourInputHandler inputHandler;
-	private InputManager inputManager;
 
 	// Display color map
 	private ColorBar colorBar;
@@ -106,10 +105,8 @@ public class ContourScenePanel extends SceneCanvasPanel {
 		inputHandler = new ContourInputHandler(contourScene.getCamera(), this);
 		inputManager = new InputManager(canvas, inputHandler);
 		Dimension size = canvas.getSize();
-		if (inputManager != null) {
-			inputManager.resize(size.width, size.height);
-		}
-		scene.resize(size.width, size.height);
+		inputManager.setComponentSize(size.width, size.height);
+		inputManager.setCanvasSize(canvasWidth, canvasHeight);
 	}
 
 	@Override
@@ -174,7 +171,7 @@ public class ContourScenePanel extends SceneCanvasPanel {
 	 * @param y
 	 * @return
 	 */
-	public Vector3 getPickCoords(int x, int y) {
+	public Vector3 getPickCoords(double x, double y) {
 		Vector3 coord = contourScene.getPickCoords(x, y);
 		if (coord == null) {
 			return (null);

@@ -62,8 +62,8 @@ public class WorldInputHandler implements InputHandler {
 	// Spatial being dragged
 	private Movable movable;
 
-	// Mouse position
-	private int mouseX, mouseY, mouseButton;
+	// Mouse
+	private int mouseButton;
 
 	// Last spatial selected
 	private Spatial lastSelection;
@@ -86,6 +86,9 @@ public class WorldInputHandler implements InputHandler {
 	private TapeMeasure tape;
 	
 	private PopupMenu contextMenu;
+	
+	// Canvas scale
+	private double xCanvasScale = 1, yCanvasScale = 1;
 
 	/**
 	 * Constructor
@@ -230,11 +233,9 @@ public class WorldInputHandler implements InputHandler {
 	 */
 	@Override
 	public void mousePress(int x, int y, int mouseButton, boolean cntlDown, boolean shiftDown) {
-		mouseX = x;
-		mouseY = y;
 		this.mouseButton = mouseButton;
 		controller.mousePress(x, y, mouseButton);
-		Spatial spatial = controller.doPick(mouseX, mouseY, pickPosition, pickNormal, false);
+		Spatial spatial = controller.doPick(x*xCanvasScale, y*yCanvasScale, pickPosition, pickNormal, false);
 		if (spatial != null) {
 			if (mouseButton == 1) {
 				if ((tape == null) && (path == null)) {
@@ -260,8 +261,6 @@ public class WorldInputHandler implements InputHandler {
 	 */
 	@Override
 	public void mouseRelease(int x, int y, int mouseButton) {
-		mouseX = x;
-		mouseY = y;
 		this.mouseButton = mouseButton;
 		if (mouseButton == 1) {
 			if ((tape == null) && (path == null)) {
@@ -286,8 +285,6 @@ public class WorldInputHandler implements InputHandler {
 	 */
 	@Override
 	public void mouseMove(int x, int y, int dx, int dy, int mouseButton, boolean cntlDown, boolean shiftDown) {
-		mouseX = x;
-		mouseY = y;
 		this.mouseButton = mouseButton;
 		if (mouseButton > 1) {
 			controller.mouseMove(x, y, dx, dy, mouseButton);
@@ -295,16 +292,16 @@ public class WorldInputHandler implements InputHandler {
 			controller.mouseMove(x, y, dx, dy, mouseButton);
 		}
 		if (tape != null) {
-			controller.doPick(mouseX, mouseY, pickPosition, pickNormal, false);
+			controller.doPick(x*xCanvasScale, y*yCanvasScale, pickPosition, pickNormal, false);
 			tape.move(pickPosition);
 		}
 		if (hasMouse()) {
 			if (shiftDown) {
 //				controller.getViewpointNode().coordInScreenPlane(dx, dy, tmpVec, pickPosition);
 				double s = controller.getViewpointNode().getCamera().getPixelSizeAt(pickPosition, false);
-				movable.setZOffset(movable.getZOffset()+dy*s, true);
+				movable.setZOffset(movable.getZOffset()+dy*xCanvasScale*s, true);
 			} else {
-				controller.doPick(mouseX, mouseY, pickPosition, pickNormal, true);
+				controller.doPick(x*xCanvasScale, y*yCanvasScale, pickPosition, pickNormal, true);
 				move(pickPosition, pickNormal);
 			}
 		}
@@ -315,8 +312,6 @@ public class WorldInputHandler implements InputHandler {
 	 */
 	@Override
 	public void mouseClick(int x, int y, int mouseButton) {
-		mouseX = x;
-		mouseY = y;
 		this.mouseButton = mouseButton;
 		if (mouseButton == 1) {
 			// tape measure overrides path way point input
@@ -466,6 +461,11 @@ public class WorldInputHandler implements InputHandler {
 
 	public void setLookAt(ReadOnlyVector3 pos) {
 		controller.getViewpointNode().setLookAt(pos);
+	}
+	
+	public void setCanvasScale(double xScale, double yScale) {
+		xCanvasScale = xScale;
+		yCanvasScale = yScale;
 	}
 
 }

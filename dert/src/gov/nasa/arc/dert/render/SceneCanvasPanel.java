@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.render;
 
 import gov.nasa.arc.dert.state.State;
+import gov.nasa.arc.dert.view.InputManager;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -35,6 +36,12 @@ public class SceneCanvasPanel extends Panel implements Updater {
 
 	// The state object associated with this panel
 	protected State state;
+	
+	// The actual size of the GLCanvas
+	protected int canvasWidth, canvasHeight;
+	
+	// Input Management
+	protected InputManager inputManager;
 
 	/**
 	 * Constructor
@@ -138,6 +145,10 @@ public class SceneCanvasPanel extends Panel implements Updater {
 	}
 	
 	public void resize(int x, int y, int width, int height) {
+		canvasWidth = width;
+		canvasHeight = height;
+		if (inputManager != null)
+			inputManager.setCanvasSize(width, height);
 		scene.resize(width, height);
 	}
 }

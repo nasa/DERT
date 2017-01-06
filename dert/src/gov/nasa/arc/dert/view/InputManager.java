@@ -2,6 +2,8 @@ package gov.nasa.arc.dert.view;
 
 import gov.nasa.arc.dert.render.SceneCanvas;
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -10,9 +12,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-
-import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLEventListener;
 
 /**
  * Manages input events on the SceneCanvas and redirects them to an
@@ -23,35 +22,11 @@ public class InputManager {
 
 	protected InputHandler handler;
 	protected int mouseX, mouseY;
-	protected int width, height;
+	protected int width = 1, height = 1, canvasWidth = 1, canvasHeight = 1;
 	protected KeyListener keyListener;
 
 	public InputManager(final SceneCanvas canvas, InputHandler hndler) {
 		handler = hndler;
-
-		// add the GLEventListener to the SceneCanvas
-		canvas.addGLEventListener(new GLEventListener() {
-
-			@Override
-			public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
-				resize(width, height);
-			}
-
-			@Override
-			public void init(GLAutoDrawable glautodrawable) {
-				// nothing here
-			}
-
-			@Override
-			public void dispose(GLAutoDrawable glautodrawable) {
-				// nothing here
-			}
-
-			@Override
-			public void display(GLAutoDrawable glautodrawable) {
-				// nothing here
-			}
-		});
 
 		canvas.addMouseListener(new MouseListener() {
 			@Override
@@ -135,7 +110,13 @@ public class InputManager {
 			}
 		};
 		canvas.addKeyListener(keyListener);
-		resize(canvas.getWidth(), canvas.getHeight());
+		
+		canvas.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent event) {
+				setComponentSize(event.getComponent().getWidth(), event.getComponent().getHeight());
+			}
+		});
 	}
 
 	private void handleStep(int keyCode, boolean shiftDown) {
@@ -175,9 +156,16 @@ public class InputManager {
 		}
 		return (0);
 	}
-
-	public void resize(int width, int height) {
+	
+	public void setComponentSize(int width, int height) {
 		this.width = width;
 		this.height = height;
+		handler.setCanvasScale((double)canvasWidth/width, (double)canvasHeight/height);
+	}
+	
+	public void setCanvasSize(int canvasWidth, int canvasHeight) {
+		this.canvasWidth = canvasWidth;
+		this.canvasHeight = canvasHeight;
+		handler.setCanvasScale((double)canvasWidth/width, (double)canvasHeight/height);
 	}
 }

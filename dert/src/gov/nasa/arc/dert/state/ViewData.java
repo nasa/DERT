@@ -191,12 +191,28 @@ public class ViewData {
 	}
 
 	/**
+	 * Set the window width
+	 */
+	public void setWidth(int width) {
+		windowWidth = width;
+	}
+
+	/**
 	 * Get the window height
 	 * 
 	 * @return
 	 */
 	public int getHeight() {
 		return (windowHeight);
+	}
+
+	/**
+	 * Set the window height
+	 * 
+	 * @return
+	 */
+	public void setHeight(int height) {
+		windowHeight = height;
 	}
 
 	/**

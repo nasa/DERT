@@ -272,7 +272,7 @@ public class ContourScene extends BasicScene implements ColorMapListener {
 	 * @param y
 	 * @return
 	 */
-	public Vector3 getPickCoords(int x, int y) {
+	public Vector3 getPickCoords(double x, double y) {
 		Vector2 mousePos = new Vector2(x, y);
 		Ray3 pickRay = new Ray3();
 		camera.getPickRay(mousePos, false, pickRay);
