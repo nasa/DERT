@@ -87,5 +87,12 @@ public class DirectionArrow extends Line {
 	public ReadOnlyVector3 getDirection() {
 		return (direction);
 	}
+	
+	public void setLength(double length) {
+		axisVertex[5] = (float)length;
+		FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(axisVertex);
+		vertexBuffer.rewind();
+		getMeshData().setVertexBuffer(vertexBuffer);
+	}
 
 }

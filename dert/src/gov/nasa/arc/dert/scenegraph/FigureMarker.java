@@ -45,7 +45,7 @@ public class FigureMarker extends Marker {
 		boolean autoScale, boolean pinned) {
 		super(name, point, (float) size, zOff, color, labelVisible, pinned);
 		this.autoScale = autoScale;
-		surfaceNormalArrow = new DirectionArrow("Surface Normal", 2, ColorRGBA.RED);
+		surfaceNormalArrow = new DirectionArrow("Surface Normal", (float)(size*1.5), ColorRGBA.RED);
 		surfaceNormalArrow.getSceneHints().setCullHint(CullHint.Always);
 		contents.attachChild(surfaceNormalArrow);
 	}
@@ -195,6 +195,7 @@ public class FigureMarker extends Marker {
 			return;
 		}
 		this.size = size;
+		surfaceNormalArrow.setLength(size*1.5);
 		ShapeType newShapeType = shapeType;
 		shapeType = ShapeType.none;
 		setShape(newShapeType);
