@@ -102,7 +102,7 @@ public class SceneCanvasPanel extends Panel implements Updater {
 			SceneFramework.getInstance().getFrameHandler().addUpdater(SceneCanvasPanel.this);
 			initialized = true;
 		}
-//		System.err.println("SceneCanvasPanel.initialize canvas z order = "+getComponentZOrder(canvas)+", realized = "+canvas.isRealized());
+		System.err.println("SceneCanvasPanel.initialize canvas z order = "+getComponentZOrder(canvas)+", realized = "+canvas.isRealized());
 	}
 
 	/**
