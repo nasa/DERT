@@ -2,7 +2,8 @@ package gov.nasa.arc.dert.scenegraph;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
-import gov.nasa.arc.dert.scenegraph.Text.AlignType;
+import gov.nasa.arc.dert.scenegraph.text.RasterText;
+import gov.nasa.arc.dert.scenegraph.text.Text.AlignType;
 import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;

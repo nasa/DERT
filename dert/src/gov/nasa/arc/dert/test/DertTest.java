@@ -17,12 +17,13 @@ import gov.nasa.arc.dert.scene.tool.Profile;
 import gov.nasa.arc.dert.scene.tool.RadialGrid;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
-import gov.nasa.arc.dert.scenegraph.RasterText;
+import gov.nasa.arc.dert.scenegraph.text.BitmapFont;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
 
+import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Date;
@@ -156,7 +157,8 @@ public class DertTest {
 				dertProperties.load(new FileInputStream(file));
 			}
 
-			RasterText.setFont(StringUtil.getIntegerValue(dertProperties, "RasterText.Font", true, 18, false));
+//			RasterText.setFont(StringUtil.getIntegerValue(dertProperties, "RasterText.Font", true, 18, false));
+			BitmapFont.createInstance("Courier New", Font.BOLD, StringUtil.getIntegerValue(dertProperties, "RasterText.Font", true, 24, false));
 			Lighting.loadProperties(dertProperties);
 			QuadTreeCache.MAX_CACHE_MEMORY = StringUtil.getLongValue(dertProperties, "QuadTree.MaxCacheSize", true,
 				QuadTreeCache.MAX_CACHE_MEMORY, false);

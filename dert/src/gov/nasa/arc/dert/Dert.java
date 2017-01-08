@@ -27,7 +27,7 @@ import gov.nasa.arc.dert.scene.tool.RadialGrid;
 import gov.nasa.arc.dert.scene.tool.Tools;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
-import gov.nasa.arc.dert.scenegraph.RasterText;
+import gov.nasa.arc.dert.scenegraph.text.BitmapFont;
 import gov.nasa.arc.dert.state.Configuration;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.util.ColorMap;
@@ -38,6 +38,7 @@ import gov.nasa.arc.dert.view.graph.Axes;
 import gov.nasa.arc.dert.view.world.WorldView;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
 
+import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -270,7 +271,8 @@ public class Dert {
 			SceneFramework.millisBetweenFrames = StringUtil.getIntegerValue(dertProperties, "MillisBetweenFrames", true, 33, false);
 			World.defaultStereoEyeSeparation = StringUtil.getDoubleValue(dertProperties, "Stereo.eyeSeparation", false, World.defaultStereoEyeSeparation, false);
 			World.defaultStereoFocalDistance = StringUtil.getDoubleValue(dertProperties, "Stereo.focalDistance", false, World.defaultStereoFocalDistance, false);
-			RasterText.setFont(StringUtil.getIntegerValue(dertProperties, "RasterText.Font", true, 18, false));
+			//RasterText.setFont(StringUtil.getIntegerValue(dertProperties, "RasterText.Font", true, 18, false));
+			BitmapFont.createInstance(StringUtil.getStringValue(dertProperties, "RasterText.Font", "Courier New", false), Font.BOLD, StringUtil.getIntegerValue(dertProperties, "RasterText.FontSize", true, 24, false));
 			Lighting.loadProperties(dertProperties);
 			QuadTreeCache.MAX_CACHE_MEMORY = (long)(Runtime.getRuntime().maxMemory()*0.75);
 			DerivativeLayer.defaultColorMapName = dertProperties.getProperty("ColorMap.Default", "default0");
@@ -382,9 +384,6 @@ public class Dert {
 			ConfigurationManager.getInstance().saveRecent(properties);
 			f = new File(userPath, "recents.properties");
 			properties.store(new FileOutputStream(f), "DERT Recent Configurations");
-
-			// Close down UI.
-			mainWindow.dispose();
 
 			System.exit(0);
 		} catch (Exception e) {

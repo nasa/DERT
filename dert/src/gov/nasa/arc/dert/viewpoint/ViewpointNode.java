@@ -5,8 +5,8 @@ import gov.nasa.arc.dert.action.edit.CoordListener;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
-import gov.nasa.arc.dert.scenegraph.RasterText;
-import gov.nasa.arc.dert.scenegraph.Text.AlignType;
+import gov.nasa.arc.dert.scenegraph.text.RasterText;
+import gov.nasa.arc.dert.scenegraph.text.Text.AlignType;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.view.world.CenterScale;
 import gov.nasa.arc.dert.view.world.RGBAxes;
@@ -169,8 +169,8 @@ public class ViewpointNode
 	private void createOverlays() {
 		overlay = new Node("_textoverlay");
 		corText = new RasterText("_cor", "", AlignType.Left, false);
+		textSize = corText.getHeight()+2;
 		corText.setTranslation(0, textSize, 0);
-		textSize = corText.getFont()+2;
 		corText.setColor(ColorRGBA.WHITE);
 		corText.setVisible(true);
 		overlay.attachChild(corText);

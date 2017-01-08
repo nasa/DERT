@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.view.world;
 
-import gov.nasa.arc.dert.scenegraph.RasterText;
-import gov.nasa.arc.dert.scenegraph.Text.AlignType;
+import gov.nasa.arc.dert.scenegraph.text.RasterText;
+import gov.nasa.arc.dert.scenegraph.text.Text.AlignType;
 
 import java.nio.FloatBuffer;
 

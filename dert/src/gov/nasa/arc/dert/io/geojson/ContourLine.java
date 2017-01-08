@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.io.geojson;
 
 import gov.nasa.arc.dert.scenegraph.LineStrip;
-import gov.nasa.arc.dert.scenegraph.VectorText;
+import gov.nasa.arc.dert.scenegraph.text.VectorText;
 import gov.nasa.arc.dert.util.UIUtil;
 
 import java.awt.Color;

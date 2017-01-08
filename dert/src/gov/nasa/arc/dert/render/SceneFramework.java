@@ -24,7 +24,7 @@ public class SceneFramework {
 	private FrameHandler frameHandler;
 
 	// Flag to stop running
-	private boolean doit;
+	private volatile boolean doit;
 
 	// Count of queued events
 	private int count = 0;

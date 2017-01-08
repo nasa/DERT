@@ -1,4 +1,4 @@
-package gov.nasa.arc.dert.scenegraph;
+package gov.nasa.arc.dert.scenegraph.text;
 
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
@@ -11,7 +11,6 @@ import com.ardor3d.renderer.Renderer;
 import com.ardor3d.scenegraph.MeshData;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
-import com.jogamp.opengl.util.gl2.GLUT;
 
 /**
  * A class for drawing text strings that uses GLUT bitmap string function.
@@ -19,11 +18,11 @@ import com.jogamp.opengl.util.gl2.GLUT;
  */
 public class RasterText extends Text {
 
-	public static int font = GLUT.BITMAP_HELVETICA_18;
-	public static int fontHeight = 18;
+//	public static int font = GLUT.BITMAP_HELVETICA_18;
+//	public static int fontHeight = 18;
 
 	// A glut instance for rendering
-	protected static GLUT glut;
+//	protected static GLUT glut;
 
 	private final Vector3 look = new Vector3();
 	private final Vector3 left = new Vector3();
@@ -36,9 +35,9 @@ public class RasterText extends Text {
 	
 	protected double glutWidth;
 	
-	static {
-		glut = new GLUT();		
-	}
+//	static {
+//		glut = new GLUT();		
+//	}
 
 	/**
 	 * Constructor that defaults to left alignment
@@ -67,52 +66,54 @@ public class RasterText extends Text {
 	 * 
 	 * @param size
 	 */
-	public static void setFont(int size) {
-		switch (size) {
-		case 8:
-			font = GLUT.BITMAP_8_BY_13;
-			fontHeight = 8;
-			break;
-		case 9:
-			font = GLUT.BITMAP_9_BY_15;
-			fontHeight = 9;
-			break;
-		case 10:
-			font = GLUT.BITMAP_HELVETICA_10;
-			fontHeight = 10;
-			break;
-		case 12:
-			font = GLUT.BITMAP_HELVETICA_12;
-			fontHeight = 12;
-			break;
-		case 18:
-			font = GLUT.BITMAP_HELVETICA_18;
-			fontHeight = 18;
-			break;
-		case 24:
-			font = GLUT.BITMAP_TIMES_ROMAN_24;
-			fontHeight = 24;
-			break;
-		default:
-			font = GLUT.BITMAP_HELVETICA_18;
-			fontHeight = 18;
-			break;
-		}
-	}
+//	public static void setFont(int size) {
+//		switch (size) {
+//		case 8:
+//			font = GLUT.BITMAP_8_BY_13;
+//			fontHeight = 8;
+//			break;
+//		case 9:
+//			font = GLUT.BITMAP_9_BY_15;
+//			fontHeight = 9;
+//			break;
+//		case 10:
+//			font = GLUT.BITMAP_HELVETICA_10;
+//			fontHeight = 10;
+//			break;
+//		case 12:
+//			font = GLUT.BITMAP_HELVETICA_12;
+//			fontHeight = 12;
+//			break;
+//		case 18:
+//			font = GLUT.BITMAP_HELVETICA_18;
+//			fontHeight = 18;
+//			break;
+//		case 24:
+//			font = GLUT.BITMAP_TIMES_ROMAN_24;
+//			fontHeight = 24;
+//			break;
+//		default:
+//			font = GLUT.BITMAP_HELVETICA_18;
+//			fontHeight = 18;
+//			break;
+//		}
+//	}
 	
-	public int getFont() {
-		return(fontHeight);
+	public double getHeight() {
+		return(BitmapFont.getInstance().getHeight());
 	}
 
 	@Override
 	protected double getTextWidth() {
 //		System.err.println("RasterText.getWidth "+str+" "+scaleFactor+" "+glut.glutBitmapLength(font, str)+" "+(scaleFactor * glut.glutBitmapLength(font, str)));
-		return (glut.glutBitmapLength(font, textString));
+//		return (glut.glutBitmapLength(font, textString));
+		return (BitmapFont.getInstance().stringLength(textString));
 	}
 
 	@Override
 	protected double getTextHeight() {
-		return (fontHeight);
+//		return (fontHeight);
+		return (BitmapFont.getInstance().getHeight());
 	}
 
 	@Override
@@ -130,7 +131,8 @@ public class RasterText extends Text {
 		final GL2 gl2 = GLContext.getCurrentGL().getGL2();
 		gl2.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 		gl2.glRasterPos3d(position.getX(), position.getY(), position.getZ());
-		glut.glutBitmapString(font, textString);
+//		glut.glutBitmapString(font, textString);
+		BitmapFont.getInstance().drawString(textString);
 	}
 
 	@Override
@@ -139,7 +141,8 @@ public class RasterText extends Text {
 			final GL2 gl2 = GLContext.getCurrentGL().getGL2();
 			gl2.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 			gl2.glRasterPos3d(position.getX(), position.getY(), position.getZ());
-			glut.glutBitmapString(font, textString);
+//			glut.glutBitmapString(font, textString);
+			BitmapFont.getInstance().drawString(textString);
 		}
 	}
 

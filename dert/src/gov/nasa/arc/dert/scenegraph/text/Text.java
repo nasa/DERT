@@ -1,4 +1,4 @@
-package gov.nasa.arc.dert.scenegraph;
+package gov.nasa.arc.dert.scenegraph.text;
 
 import com.ardor3d.bounding.BoundingBox;
 import com.ardor3d.math.ColorRGBA;

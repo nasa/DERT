@@ -63,13 +63,13 @@ public class SceneCanvasPanel extends Panel implements Updater {
 
 			@Override
 			public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
-//				System.err.println("SceneCanvasPanel.reshape "+x+" "+y+" "+width+" "+height);
+				System.err.println("SceneCanvasPanel.reshape "+x+" "+y+" "+width+" "+height);
 				resize(x, y, width, height);
 			}
 
 			@Override
 			public void init(GLAutoDrawable glautodrawable) {
-//				System.err.println("SceneCanvasPanel.initialize ");
+				System.err.println("SceneCanvasPanel.initialize ");
 				initialize();
 			}
 

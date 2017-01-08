@@ -1,4 +1,4 @@
-package gov.nasa.arc.dert.scenegraph;
+package gov.nasa.arc.dert.scenegraph.text;
 
 import java.awt.Font;
 import java.awt.geom.Rectangle2D;
