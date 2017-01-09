@@ -543,7 +543,7 @@ public class MainWindow extends JFrame {
 		CoordAction.listenerList.add(marbleLocField);
 		setTitle("Desktop Exploration of Remote Terrain - " + Landscape.getInstance().getGlobeName() + ":"
 			+ World.getInstance().getName() + ":" + currentConfig.toString());
-//		worldView.getScenePanel().getCanvas().requestFocusInWindow();
+		worldView.getScenePanel().getCanvas().requestFocusInWindow();
 	}
 
 	/**

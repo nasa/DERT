@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.scenegraph;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
@@ -252,6 +253,17 @@ public class FigureMarker extends Marker {
 					label.setVisible(false);
 			}
 		}
+	}
+	
+	@Override
+	public void setInMotion(boolean inMotion, ReadOnlyVector3 pickPosition) {
+		if (isInMotion() && !inMotion) {
+			if (surfaceNormalArrow.getSceneHints().getCullHint() != CullHint.Never) {
+				Landscape.getInstance().getNormal(getLocation().getX(), getLocation().getY(), surfaceNormal);
+				surfaceNormalArrow.setDirection(surfaceNormal);
+			}
+		}
+		super.setInMotion(inMotion, pickPosition);		
 	}
 
 }
