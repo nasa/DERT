@@ -52,7 +52,7 @@ public class WorldState extends State {
 	 * @param name
 	 */
 	public WorldState(String name) {
-		super(name, StateType.World, new ViewData(-1, -1, 960, 600, false));
+		super(name, StateType.World, new ViewData(20, 20, 960, 600, false));
 		surfaceColor = Color.WHITE;
 		time = System.currentTimeMillis();
 		viewData.setVisible(true);

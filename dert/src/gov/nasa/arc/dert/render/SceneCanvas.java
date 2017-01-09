@@ -118,7 +118,6 @@ public class SceneCanvas extends GLCanvas implements Canvas {
 	 */
 	@Override
 	public void init() {
-		System.err.println("SceneCanvas.init "+initialized+" "+mainCanvas);
 		if (initialized) {
 			return;
 		}
@@ -152,7 +151,6 @@ public class SceneCanvas extends GLCanvas implements Canvas {
 		if (!initialized) {
 			return;
 		}
-
 		if (isShowing()) {
 			canvasRenderer.draw();
 		}

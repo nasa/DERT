@@ -233,7 +233,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	
 	@Override
 	public void resize(int width, int height) {
-		System.err.println("WorldScene.resize "+width+" "+height);
 		super.resize(width, height);
 		if (viewpointNode != null)
 			viewpointNode.resize(width, height);

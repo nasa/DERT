@@ -4,7 +4,6 @@ import gov.nasa.arc.dert.state.State;
 import gov.nasa.arc.dert.view.InputManager;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Panel;
 
 import com.ardor3d.framework.Updater;
@@ -63,13 +62,13 @@ public class SceneCanvasPanel extends Panel implements Updater {
 
 			@Override
 			public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
-				System.err.println("SceneCanvasPanel.reshape "+x+" "+y+" "+width+" "+height);
+//				System.err.println("SceneCanvasPanel.reshape "+x+" "+y+" "+width+" "+height);
 				resize(x, y, width, height);
 			}
 
 			@Override
 			public void init(GLAutoDrawable glautodrawable) {
-				System.err.println("SceneCanvasPanel.initialize ");
+//				System.err.println("SceneCanvasPanel.initialize ");
 				initialize();
 			}
 
@@ -89,7 +88,6 @@ public class SceneCanvasPanel extends Panel implements Updater {
 		setLayout(new BorderLayout());
 		add(canvas, BorderLayout.CENTER);
 		scene = bscene;
-		setPreferredSize(new Dimension(width, height));
 	}
 
 	/**
@@ -102,7 +100,7 @@ public class SceneCanvasPanel extends Panel implements Updater {
 			SceneFramework.getInstance().getFrameHandler().addUpdater(SceneCanvasPanel.this);
 			initialized = true;
 		}
-		System.err.println("SceneCanvasPanel.initialize canvas z order = "+getComponentZOrder(canvas)+", realized = "+canvas.isRealized());
+//		System.err.println("SceneCanvasPanel.initialize canvas z order = "+getComponentZOrder(canvas)+", realized = "+canvas.isRealized());
 	}
 
 	/**

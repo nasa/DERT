@@ -333,8 +333,9 @@ public class MainWindow extends JFrame {
 		worldView = new WorldView();
 		add(worldView, BorderLayout.CENTER);
 
-		pack();
-		setLocation(20, 20);
+		// Do not use preferred size here. It seems to cause the SceneCanvasPanel to randomly cover the SceneCanvas.
+		setSize(currentConfig.worldState.getViewData().getWidth(), currentConfig.worldState.getViewData().getHeight());
+		setLocation(currentConfig.worldState.getViewData().getX(), currentConfig.worldState.getViewData().getY());
 		setVisible(true);
 		requestFocus();
 	}
@@ -542,7 +543,7 @@ public class MainWindow extends JFrame {
 		CoordAction.listenerList.add(marbleLocField);
 		setTitle("Desktop Exploration of Remote Terrain - " + Landscape.getInstance().getGlobeName() + ":"
 			+ World.getInstance().getName() + ":" + currentConfig.toString());
-		worldView.getScenePanel().getCanvas().requestFocusInWindow();
+//		worldView.getScenePanel().getCanvas().requestFocusInWindow();
 	}
 
 	/**
