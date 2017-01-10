@@ -9,6 +9,8 @@ import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
 import gov.nasa.arc.dert.viewpoint.ViewpointNode;
 
+import java.awt.Dimension;
+
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.util.ReadOnlyTimer;
 
@@ -56,10 +58,10 @@ public class WorldScenePanel extends SceneCanvasPanel {
 		worldScene.setState(wState);
 		canvasRenderer.setCamera(worldScene.getCamera());
 		controller.setViewpointNode(worldScene.getViewpointNode());
-//		Dimension size = canvas.getSize();
-//		inputManager.setComponentSize(size.width, size.height);
-//		worldScene.resize(size.width, size.height);
-		worldScene.resize(canvasWidth, canvasHeight);
+		Dimension size = canvas.getSize();
+		inputManager.setComponentSize(size.width, size.height);
+		inputManager.setCanvasScale(canvasWidth/size.width, canvasHeight/size.height);
+		worldScene.resize((int)canvasWidth, (int)canvasHeight);
 		worldScene.spatialDirty(null, DirtyType.RenderState);
 		if (wState.currentViewpoint != null) {
 			worldScene.getViewpointNode().setViewpoint(wState.currentViewpoint, true, false);

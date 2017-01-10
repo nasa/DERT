@@ -6,6 +6,7 @@ import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.state.FigureState;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
+import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 
 import java.awt.Color;
@@ -87,7 +88,7 @@ public class Figure extends FigureMarker implements Landmark {
 	 * @return
 	 */
 	public boolean isSurfaceNormalVisible() {
-		return (surfaceNormalArrow.getSceneHints().getCullHint() != CullHint.Always);
+		return (SpatialUtil.isDisplayed(surfaceNormalArrow));
 	}
 
 	/**

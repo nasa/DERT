@@ -39,6 +39,7 @@ import gov.nasa.arc.dert.view.world.WorldView;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
 
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -233,6 +234,20 @@ public class Dert {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		// Create our own OpenGL bitmap font from a Java font.
+		// First determine font size.
+		int fontSize = StringUtil.getIntegerValue(dertProperties, "RasterText.FontSize", true, 0, false);
+		// Calculate from screen resolution.
+		if (fontSize == 0) {
+			double hgt = mainWindow.getWorldView().getScenePanel().getHeightScale()*Toolkit.getDefaultToolkit().getScreenResolution();
+			fontSize = (int)Math.ceil(hgt/10);
+			if (fontSize%2 == 1)
+				fontSize ++;
+		}
+		String fName = StringUtil.getStringValue(dertProperties, "RasterText.Font", "Courier New", false);
+		Console.getInstance().println("Building font: "+fName+" "+fontSize);
+		BitmapFont.createInstance(fName, Font.BOLD, fontSize);
 	}
 
 	private void installDertProperties() {
@@ -272,7 +287,6 @@ public class Dert {
 			World.defaultStereoEyeSeparation = StringUtil.getDoubleValue(dertProperties, "Stereo.eyeSeparation", false, World.defaultStereoEyeSeparation, false);
 			World.defaultStereoFocalDistance = StringUtil.getDoubleValue(dertProperties, "Stereo.focalDistance", false, World.defaultStereoFocalDistance, false);
 			//RasterText.setFont(StringUtil.getIntegerValue(dertProperties, "RasterText.Font", true, 18, false));
-			BitmapFont.createInstance(StringUtil.getStringValue(dertProperties, "RasterText.Font", "Courier New", false), Font.BOLD, StringUtil.getIntegerValue(dertProperties, "RasterText.FontSize", true, 24, false));
 			Lighting.loadProperties(dertProperties);
 			QuadTreeCache.MAX_CACHE_MEMORY = (long)(Runtime.getRuntime().maxMemory()*0.75);
 			DerivativeLayer.defaultColorMapName = dertProperties.getProperty("ColorMap.Default", "default0");

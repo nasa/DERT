@@ -284,7 +284,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 	 */
 	@Override
 	public boolean isVisible() {
-		return (getSceneHints().getCullHint() != CullHint.Always);
+		return (SpatialUtil.isDisplayed(this));
 	}
 
 	/**

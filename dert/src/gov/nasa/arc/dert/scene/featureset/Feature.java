@@ -9,6 +9,7 @@ import gov.nasa.arc.dert.scenegraph.LineStrip;
 import gov.nasa.arc.dert.scenegraph.Marker;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
+import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
@@ -68,7 +69,7 @@ public class Feature
 	 */
 	@Override
 	public boolean isVisible() {
-		return (getSceneHints().getCullHint() != CullHint.Always);
+		return (SpatialUtil.isDisplayed(this));
 	}
 
 	/**

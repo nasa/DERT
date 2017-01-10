@@ -46,7 +46,7 @@ public class FigureMarker extends Marker {
 		boolean autoScale, boolean pinned) {
 		super(name, point, (float) size, zOff, color, labelVisible, pinned);
 		this.autoScale = autoScale;
-		surfaceNormalArrow = new DirectionArrow("Surface Normal", (float)(size*1.5), ColorRGBA.RED);
+		surfaceNormalArrow = new DirectionArrow("Surface Normal", (float)(size*2), ColorRGBA.RED);
 		surfaceNormalArrow.getSceneHints().setCullHint(CullHint.Always);
 		contents.attachChild(surfaceNormalArrow);
 	}
@@ -258,9 +258,11 @@ public class FigureMarker extends Marker {
 	@Override
 	public void setInMotion(boolean inMotion, ReadOnlyVector3 pickPosition) {
 		if (isInMotion() && !inMotion) {
-			if (surfaceNormalArrow.getSceneHints().getCullHint() != CullHint.Never) {
-				Landscape.getInstance().getNormal(getLocation().getX(), getLocation().getY(), surfaceNormal);
-				surfaceNormalArrow.setDirection(surfaceNormal);
+			if (surfaceNormalArrow != null) {
+				if (SpatialUtil.isDisplayed(surfaceNormalArrow)) {
+					Landscape.getInstance().getNormal(getLocation().getX(), getLocation().getY(), surfaceNormal);
+					surfaceNormalArrow.setDirection(surfaceNormal);
+				}
 			}
 		}
 		super.setInMotion(inMotion, pickPosition);		

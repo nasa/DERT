@@ -12,6 +12,7 @@ import com.ardor3d.math.Ray3;
 import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.Spatial;
+import com.ardor3d.scenegraph.hint.CullHint;
 
 /**
  * Provides helper methods concerned with Ardor3D Spatial classes.
@@ -113,5 +114,9 @@ public class SpatialUtil {
 			pickHost = pickHost.getParent();
 		}
 		return (pickHost);
+	}
+	
+	public final static boolean isDisplayed(Spatial spatial) {
+		return(spatial.getSceneHints().getCullHint() != CullHint.Always);
 	}
 }

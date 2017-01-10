@@ -1,6 +1,8 @@
 package gov.nasa.arc.dert.scene.tool.fieldcamera;
 
 import gov.nasa.arc.dert.util.MathUtil;
+import gov.nasa.arc.dert.util.SpatialUtil;
+import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.nio.FloatBuffer;
 
@@ -29,16 +31,19 @@ import com.ardor3d.util.geom.BufferUtils;
 public class FrustumPyramid extends Node {
 
 	// Dimensions
-	private double height, width, length;
+	private double height, width;
 
 	// Color
 	private ColorRGBA color;
 
 	// Vertices
-	private Vector3 peak, vert0, vert1, vert2, vert3;
+	private Vector3 peak = new Vector3(), vert0 = new Vector3(), vert1 = new Vector3(), vert2 = new Vector3(), vert3 = new Vector3();
 
 	// Components
 	private Mesh sides;
+	
+	// Camera
+	private Vector3 normal = new Vector3();
 
 	/**
 	 * Constructor
@@ -52,21 +57,20 @@ public class FrustumPyramid extends Node {
 	 * 
 	 * @param name
 	 *            the name of the scene element.
-	 * @param width
-	 *            the base width of the pyramid.
-	 * @param height
-	 *            the height of the pyramid from the base to the peak.
+	 * @param camera
+	 *            the camera for which the frustum will be constructed.
+	 * @param color
+	 *            the color of the frustum.
 	 */
-	public FrustumPyramid(final String name, final double width, final double height, final double length,
-		ReadOnlyColorRGBA color) {
+	public FrustumPyramid(final String name, BasicCamera camera, ReadOnlyColorRGBA color) {
 		super(name);
-		this.width = width;
-		this.height = height;
-		this.length = length;
 		this.color = new ColorRGBA(color);
 		sides = new Mesh("_sides");
 
-		setVertexData();
+        height = Math.tan(Math.toRadians(camera.getFovY()) * 0.5);
+        width = height * camera.getAspect(); 
+		
+		setVertexData(camera.getFrustumFar());
 		setNormalData();
 		getSceneHints().setNormalsMode(NormalsMode.NormalizeIfScaled);
 		setColor(this.color);
@@ -75,6 +79,15 @@ public class FrustumPyramid extends Node {
 		sides.updateModelBound();
 		sides.getSceneHints().setAllPickingHints(false);
 		attachChild(sides);
+	}
+	
+	/**
+	 * Change the length of the frustum.
+	 * 
+	 * @param length
+	 */
+	public void updateVertices(double length) {
+		setVertexData(length);
 	}
 
 	/**
@@ -99,7 +112,7 @@ public class FrustumPyramid extends Node {
 	 * @return
 	 */
 	public boolean isVisible() {
-		return (getSceneHints().getCullHint() != CullHint.Always);
+		return (SpatialUtil.isDisplayed(this));
 	}
 
 	/**
@@ -120,14 +133,37 @@ public class FrustumPyramid extends Node {
 	 * Sets the vertices that make the pyramid. Where the center of the box is
 	 * the origin and the base and height are set during construction.
 	 */
-	protected void setVertexData() {
-		peak = new Vector3(0, 0, 0);
-		vert0 = new Vector3(-width / 2, -height / 2, -length);
-		vert1 = new Vector3(width / 2, -height / 2, -length);
-		vert2 = new Vector3(width / 2, height / 2, -length);
-		vert3 = new Vector3(-width / 2, height / 2, -length);
+	protected void setVertexData(double length) {
+        
+        Vector3 left = new Vector3(Vector3.NEG_UNIT_X);
+        left.multiplyLocal(width*length);
+        
+        Vector3 top = new Vector3(Vector3.UNIT_Y);
+        top.multiplyLocal(height*length);
+        
+        Vector3 center = new Vector3(Vector3.NEG_UNIT_Z);
+        center.multiplyLocal(length);
+        
+        vert0.set(center);
+        vert0.addLocal(left);
+        vert0.subtractLocal(top);
+        
+        vert1.set(center);
+        vert1.subtractLocal(left);
+        vert1.subtractLocal(top);
+        
+        vert2.set(center);
+        vert2.subtractLocal(left);
+        vert2.addLocal(top);
+        
+        vert3.set(center);
+        vert3.addLocal(left);
+        vert3.addLocal(top);
 
-		FloatBuffer verts = BufferUtils.createVector3Buffer(12);
+		FloatBuffer verts = sides.getMeshData().getVertexBuffer();
+		if (verts == null)
+			verts = BufferUtils.createVector3Buffer(12);
+		verts.rewind();
 
 		// side 1
 		verts.put((float) vert0.getX()).put((float) vert0.getY()).put((float) vert0.getZ());
@@ -149,7 +185,7 @@ public class FrustumPyramid extends Node {
 		verts.put((float) vert0.getX()).put((float) vert0.getY()).put((float) vert0.getZ());
 		verts.put((float) peak.getX()).put((float) peak.getY()).put((float) peak.getZ());
 
-		verts.rewind();
+		verts.flip();
 		sides.getMeshData().setVertexBuffer(verts);
 	}
 
@@ -158,9 +194,10 @@ public class FrustumPyramid extends Node {
 	 */
 	protected void setNormalData() {
 
-		Vector3 normal = new Vector3();
-
-		FloatBuffer norms = BufferUtils.createVector3Buffer(12);
+		FloatBuffer norms = sides.getMeshData().getNormalBuffer();
+		
+		if (norms == null)
+			norms = BufferUtils.createVector3Buffer(12);
 
 		// side 1
 		MathUtil.createNormal(normal, vert0, vert1, peak);
@@ -186,7 +223,7 @@ public class FrustumPyramid extends Node {
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());
 		norms.put((float) normal.getX()).put((float) normal.getY()).put((float) normal.getZ());
 
-		norms.rewind();
+		norms.flip();
 		sides.getMeshData().setNormalBuffer(norms);
 	}
 }

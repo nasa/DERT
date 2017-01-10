@@ -13,6 +13,7 @@ import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.state.PlaneState;
 import gov.nasa.arc.dert.util.ImageUtil;
 import gov.nasa.arc.dert.util.MathUtil;
+import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
@@ -550,7 +551,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	 */
 	@Override
 	public boolean isVisible() {
-		return (getSceneHints().getCullHint() != CullHint.Always);
+		return (SpatialUtil.isDisplayed(this));
 	}
 
 	/**

@@ -13,6 +13,7 @@ import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.state.PathState;
 import gov.nasa.arc.dert.state.WaypointState;
 import gov.nasa.arc.dert.util.MathUtil;
+import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.view.Console;
@@ -553,7 +554,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	 */
 	@Override
 	public boolean isVisible() {
-		return (getSceneHints().getCullHint() != CullHint.Always);
+		return (SpatialUtil.isDisplayed(this));
 	}
 
 	/**

@@ -95,7 +95,8 @@ public class BitmapFont {
 	
 	private void setBit(int c, int r, byte[] bitmap) {
 		int bit = c%8;
-		int index = (letterHeight-r)*bitmapWidth+c/8;
+		int index = (letterHeight-1-r)*bitmapWidth+c/8;
+//		System.err.println("BitmapFont.setBit "+index+" "+letterHeight+" "+r+" "+bitmapWidth+" "+c);
 		switch (bit) {
 		case 0:
 			bitmap[index] |= 0b10000000;

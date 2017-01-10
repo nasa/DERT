@@ -11,6 +11,7 @@ import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.state.FeatureSetState;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
+import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
@@ -105,7 +106,7 @@ public class FeatureSet extends GroupNode implements MapElement, ViewDependent {
 	 */
 	@Override
 	public boolean isVisible() {
-		return (getSceneHints().getCullHint() != CullHint.Always);
+		return (SpatialUtil.isDisplayed(this));
 	}
 
 	/**

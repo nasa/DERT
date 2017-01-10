@@ -7,6 +7,7 @@ import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.state.MarbleState;
+import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import com.ardor3d.math.ColorRGBA;
@@ -38,7 +39,7 @@ public class Marble extends FigureMarker implements MapElement {
 		setShape(ShapeType.sphere);
 		surfaceNormalArrow.getSceneHints().setCullHint(CullHint.Never);
 		getSceneHints().setAllPickingHints(false);
-		solarDirectionArrow = new DirectionArrow("Direction to Sol", 2, ColorRGBA.YELLOW);
+		solarDirectionArrow = new DirectionArrow("Direction to Sol", (float)(state.size*2), ColorRGBA.YELLOW);
 		contents.attachChild(solarDirectionArrow);
 		contents.detachChild(billboard);
 		billboard = null;
@@ -136,7 +137,7 @@ public class Marble extends FigureMarker implements MapElement {
 	 * @return
 	 */
 	public boolean isSurfaceNormalVisible() {
-		return (surfaceNormalArrow.getSceneHints().getCullHint() != CullHint.Always);
+		return (SpatialUtil.isDisplayed(surfaceNormalArrow));
 	}
 
 }

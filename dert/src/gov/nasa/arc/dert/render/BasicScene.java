@@ -94,8 +94,8 @@ public abstract class BasicScene implements Scene {
 		// the scene graph is empty, show the default image
 		if (rootNode == null) {
 			renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
-			int x = (width - dertImage.getWidth()) / 2;
-			int y = (height - dertImage.getHeight()) / 2;
+			int x = (int)(width - dertImage.getWidth()) / 2;
+			int y = (int)(height - dertImage.getHeight()) / 2;
 			((JoglRendererDouble) renderer).drawImage(x, y, dertImage.getWidth(), dertImage.getHeight(), 1.0f,
 				GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, dertImage.getData(0));
 		}

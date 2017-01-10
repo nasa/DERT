@@ -37,7 +37,7 @@ public class SceneCanvasPanel extends Panel implements Updater {
 	protected State state;
 	
 	// The actual size of the GLCanvas
-	protected int canvasWidth, canvasHeight;
+	protected double canvasWidth, canvasHeight;
 	
 	// Input Management
 	protected InputManager inputManager;
@@ -146,7 +146,15 @@ public class SceneCanvasPanel extends Panel implements Updater {
 		canvasWidth = width;
 		canvasHeight = height;
 		if (inputManager != null)
-			inputManager.setCanvasSize(width, height);
+			inputManager.setCanvasScale(canvasWidth/canvas.getWidth(), canvasHeight/canvas.getHeight());
 		scene.resize(width, height);
+	}
+	
+	public double getHeightScale() {
+		if (canvas == null)
+			return(1);
+		if (canvas.getHeight() == 0)
+			return(1);
+		return(canvasHeight/canvas.getHeight());
 	}
 }

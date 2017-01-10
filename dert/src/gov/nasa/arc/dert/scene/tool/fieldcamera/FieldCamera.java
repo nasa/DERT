@@ -113,7 +113,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	// Frustum and LookAtLine
 	private FrustumPyramid frustum;
 	private HiddenLine lookAtLine;
-	private double fovLength, lineLength;
+	private double lineLength;
 	private boolean fovVisible;
 
 	// Attributes
@@ -157,13 +157,12 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		box.setModelBound(new BoundingBox());
 		geomNode.attachChild(box);
 
-		fovLength = Landscape.getInstance().getWorldBound().getRadius();
 		fovVisible = state.fovVisible;
 
 		// create lookat line
 		lookAtLine = new HiddenLine("_line", Vector3.ZERO, new Vector3(0, 0, -1));
 		lookAtLine.setModelBound(new BoundingBox());
-		setLookAtLineLength(2 * fovLength);
+		setLookAtLineLength(2 * Landscape.getInstance().getWorldBound().getRadius());
 		setLookAtLineVisible(state.lineVisible);
 		geomNode.attachChild(lookAtLine);
 
@@ -188,14 +187,14 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 			@Override
 			public void updateWorldTransform(boolean recurse) {
 				super.updateWorldTransform(recurse);
-				double farPlane = MathUtil.distanceToSphere(sceneBounds, basicCamera.getLocation(),
-					basicCamera.getDirection());
+				double farPlane = MathUtil.distanceToSphere(sceneBounds, basicCamera.getLocation(), basicCamera.getDirection());
 				basicCamera.setFrustumFar(farPlane);
 				changed.set(!(oldTranslation.equals(getWorldTranslation()) && oldRotation.equals(getWorldRotation())));
 				oldTranslation.set(getWorldTranslation());
 				oldRotation.set(getWorldRotation());
 				setLookAtLineLength(0.8 * farPlane);
-				setFovLength(0.8 * farPlane);
+				if (frustum.isVisible())
+					frustum.updateVertices(0.8*farPlane);
 			}
 		};
 		cameraNode.setCamera(basicCamera);
@@ -257,21 +256,24 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		fieldCameraInfo = FieldCameraInfoManager.getInstance().getFieldCameraInfo(fieldCameraDef);
 		fovX = fieldCameraInfo.fovX;
 		aspect = fieldCameraInfo.fovX / fieldCameraInfo.fovY;
+		basicCamera.setFovX(fovX);
+		basicCamera.setAspect(aspect);
+		basicCamera.setFrustumFar(Landscape.getInstance().getWorldBound().getRadius());
 
 		if (frustum != null) {
 			geomNode.detachChild(frustum);
 		}
-		float fovHgt = (float) Math.tan(Math.toRadians(fieldCameraInfo.fovY));
-		frustum = new FrustumPyramid("_frustum", fovHgt * aspect, fovHgt, 1, fieldCameraInfo.color);
+//		double fovWid = Math.sin(Math.toRadians(fieldCameraInfo.fovX));
+//		double fovHgt = fovWid/aspect;
+//		frustum = new FrustumPyramid("_frustum", fovWid, fovHgt, 1, fieldCameraInfo.color);
+		frustum = new FrustumPyramid("_frustum", basicCamera, fieldCameraInfo.color);
 		frustum.getSceneHints().setAllPickingHints(false);
-		setFovLength(fovLength);
+//		setFovLength(fovLength);
 		setFovVisible(fovVisible);
 		geomNode.attachChild(frustum);
 
 		mountingNode.setTranslation(fieldCameraInfo.mountingOffset);
 		
-		basicCamera.setFovX(fovX);
-		basicCamera.setAspect(aspect);
 		if (!Double.isNaN(state.azimuth)) 
 			setAzimuth(state.azimuth);
 		else
@@ -304,11 +306,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		return (basicCamera);
 	}
 
-	private void setFovLength(double length) {
-		fovLength = length;
-		frustum.setScale(fovLength, fovLength, fovLength);
-	}
-
 	private void setLookAtLineLength(double length) {
 		if (lineLength == length) {
 			return;
@@ -323,7 +320,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 * @return
 	 */
 	public boolean isFovVisible() {
-		return (frustum.getSceneHints().getCullHint() != CullHint.Always);
+		return (frustum.isVisible());
 	}
 
 	/**
@@ -353,7 +350,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 * @return
 	 */
 	public boolean isLookAtLineVisible() {
-		return (lookAtLine.getSceneHints().getCullHint() != CullHint.Always);
+		return (SpatialUtil.isDisplayed(lookAtLine));
 	}
 
 	/**
@@ -588,7 +585,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 */
 	@Override
 	public boolean isVisible() {
-		return (getSceneHints().getCullHint() != CullHint.Always);
+		return (SpatialUtil.isDisplayed(this));
 	}
 
 	/**

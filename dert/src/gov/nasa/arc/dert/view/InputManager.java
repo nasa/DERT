@@ -22,7 +22,7 @@ public class InputManager {
 
 	protected InputHandler handler;
 	protected int mouseX, mouseY;
-	protected int width = 1, height = 1, canvasWidth = 1, canvasHeight = 1;
+	protected int width = 1, height = 1;
 	protected KeyListener keyListener;
 
 	public InputManager(final SceneCanvas canvas, InputHandler hndler) {
@@ -111,7 +111,7 @@ public class InputManager {
 		};
 		canvas.addKeyListener(keyListener);
 		
-		canvas.addComponentListener(new ComponentAdapter() {
+		canvas.getParent().addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent event) {
 				setComponentSize(event.getComponent().getWidth(), event.getComponent().getHeight());
@@ -157,15 +157,12 @@ public class InputManager {
 		return (0);
 	}
 	
+	public void setCanvasScale(double xScale, double yScale) {
+		handler.setCanvasScale(xScale, yScale);
+	}
+	
 	public void setComponentSize(int width, int height) {
 		this.width = width;
 		this.height = height;
-		handler.setCanvasScale((double)canvasWidth/width, (double)canvasHeight/height);
-	}
-	
-	public void setCanvasSize(int canvasWidth, int canvasHeight) {
-		this.canvasWidth = canvasWidth;
-		this.canvasHeight = canvasHeight;
-		handler.setCanvasScale((double)canvasWidth/width, (double)canvasHeight/height);
 	}
 }

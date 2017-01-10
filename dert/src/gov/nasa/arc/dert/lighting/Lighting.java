@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.render.ShadowEffects;
 import gov.nasa.arc.dert.render.ShadowMap;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.TimeUtil;
@@ -26,7 +27,6 @@ import com.ardor3d.renderer.Renderer;
 import com.ardor3d.renderer.state.LightState;
 import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
-import com.ardor3d.scenegraph.hint.CullHint;
 
 public class Lighting {
 
@@ -316,7 +316,7 @@ public class Lighting {
 	 * @param worldChanged
 	 */
 	public void postrender(BasicCamera camera, Renderer renderer, boolean worldChanged) {
-		if (light.getSceneHints().getCullHint() != CullHint.Always) {
+		if (SpatialUtil.isDisplayed(light)) {
 			light.updateOrb(camera);
 			light.drawOrb(renderer);
 		}

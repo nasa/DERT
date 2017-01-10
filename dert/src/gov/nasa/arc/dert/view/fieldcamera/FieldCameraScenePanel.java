@@ -14,7 +14,6 @@ import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -203,11 +202,16 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 		azSpinner.setValue(fieldCamera.getAzimuth());
 		tiltSpinner.setValue(fieldCamera.getElevation());
 		heightSpinner.setValue(fieldCamera.getHeight());
-
+	}
+	
+	@Override
+	public void initialize() {
+		super.initialize();
+		canvasRenderer.setCamera(fieldCameraScene.getCamera());
 	}
 	
 	public void setRange(FieldCameraInfo info) {
-		scene.resize(canvas.getWidth(), canvas.getHeight());
+		resize(0, 0, (int)canvasWidth, (int)canvasHeight);
 		azSpinner.setMinimum(info.panRange[0]);
 		azSpinner.setMaximum(info.panRange[1]);
 		tiltSpinner.setMinimum(info.tiltRange[0]);
@@ -219,9 +223,9 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 	@Override
 	public void setState(State state) {
 		super.setState(state);
-		canvasRenderer.setCamera(fieldCameraScene.getCamera());
-		Dimension size = canvas.getSize();
-		scene.resize(size.width, size.height);
+//		canvasRenderer.setCamera(fieldCameraScene.getCamera());
+//		Dimension size = canvas.getSize();
+//		scene.resize(size.width, size.height);
 	}
 
 	@Override
@@ -256,8 +260,8 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 	
 	@Override
 	public void resize(int x, int y, int width, int height) {
-		scene.resize(width, height);
 		BasicCamera cam = fieldCamera.getCamera();
+		super.resize(x, y, width, height);
 		int[] vp = cam.getViewport();
 		canvasRenderer.setClipRectangle(new Rectangle2(vp[0], vp[1], vp[2], vp[3]));
 	}
