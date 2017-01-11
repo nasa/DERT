@@ -26,7 +26,7 @@ import com.ardor3d.renderer.Renderer;
 
 /**
  * Convert a vector layer file in GeoJSON format to a multi-resolution tiled
- * pyramid. Vectors are drawn into an off screen renderer for each tile at each
+ * pyramid. Vectors are drawn into an offscreen renderer for each tile at each
  * resolution level.
  *
  */
@@ -234,7 +234,7 @@ public class VectorPyramidLayerFactory extends PyramidLayerFactory {
 	protected ByteBuffer createRaster(double x, double y, double xScale, double yScale) {
 
 		try {
-			// setup the off screen renderer camera
+			// setup the offscreen renderer camera
 			Camera tCam = offscreenRenderer.getCamera();
 //			tCam.setProjectionMode(ProjectionMode.Parallel);
 			Vector3 camLocation = new Vector3(x, y, cameraZ);

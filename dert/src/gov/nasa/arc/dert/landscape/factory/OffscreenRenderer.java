@@ -27,7 +27,7 @@ import com.jogamp.opengl.GLOffscreenAutoDrawable;
 import com.jogamp.opengl.GLProfile;
 
 /**
- * Provides an off screen renderer using pBuffers. Adapted from Ardor3D example.
+ * Provides an offscreen renderer using pBuffers. Adapted from Ardor3D example.
  *
  */
 public class OffscreenRenderer {
@@ -67,7 +67,7 @@ public class OffscreenRenderer {
 		width = settings.getWidth();
 		height = settings.getHeight();
 		size = width * height * settings.getColorDepth() / 8;
-		System.out.println("Created " + width + "x" + height + " off screen renderer.");
+		System.out.println("Created " + width + "x" + height + " offscreen renderer.");
 
 		camera = new Camera(width, height);
 		camera.setProjectionMode(ProjectionMode.Parallel);
@@ -135,6 +135,7 @@ public class OffscreenRenderer {
 			doDraw(toDrawB);
 
 			renderer.flushFrame(false);
+			renderer.finishGraphics();
 
 			saveRGBABuffer();
 
@@ -226,8 +227,15 @@ public class OffscreenRenderer {
 	 * Dispose of resources
 	 */
 	public void cleanup() {
-		ContextManager.removeContext(offscreenDrawable.getContext());
+		if (offscreenDrawable == null)
+			return;
+		context.makeCurrent();
+		ContextManager.switchContext(context);
+		final GL gl = GLContext.getCurrentGL();
+		gl.glFinish();
+		context.destroy();
 		offscreenDrawable.destroy();
+		ContextManager.removeContext(offscreenDrawable.getContext());
 	}
 
 }
