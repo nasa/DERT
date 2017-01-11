@@ -1,14 +1,10 @@
 #!/bin/tcsh
 
-# This script sets the JAVACMD environment variable for Ant to the Java 1.7 JDK on a Mac.
-# Change the path for your machine.
+# Set the JAVACMD environment variable for Ant to the Java 1.7 JDK on a Mac.
+#setenv JAVACMD /Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/bin/java
+#echo $JAVACMD
 
-# Set the JDK to 1.7 to make DERT compatible
-setenv JAVACMD /Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/bin/java
-
-echo $JAVACMD
-
-set DERT_VERSION = "1.0b9"
+set DERT_VERSION = "1.0b10"
 
 ant -v -buildfile build_linux.xml clean -Ddertversion=$DERT_VERSION
 ant -v -buildfile build_linux.xml main -Ddertversion=$DERT_VERSION
