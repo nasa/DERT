@@ -30,7 +30,7 @@ public class ActivateTapeMeasureAction extends ButtonAction {
 	@Override
 	protected void run() {
 		if (dialog == null) {
-			dialog = new TextDialog((Frame)getTopLevelAncestor(), "Tape Measure", 340, 160, false, false);
+			dialog = new TextDialog((Frame)getTopLevelAncestor(), "DERT Tape Measure", 340, 160, false, false);
 			dialog.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent e) {

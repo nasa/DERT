@@ -148,7 +148,7 @@ public class FieldCameraState extends ToolState {
 	
 	protected void createView() {
 		setView(new FieldCameraView((FieldCameraState) this));
-		viewData.createWindow(Dert.getMainWindow(), name, X_OFFSET, Y_OFFSET);
+		viewData.createWindow(Dert.getMainWindow(), "DERT "+name, X_OFFSET, Y_OFFSET);
 	}
 	
 	@Override

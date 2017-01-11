@@ -47,7 +47,7 @@ public class MarbleState extends MapElementState {
 	@Override
 	public void createView() {
 		setView(new TextView(this, false));
-		viewData.createWindow(Dert.getMainWindow(), "Marble Info", X_OFFSET, Y_OFFSET);
+		viewData.createWindow(Dert.getMainWindow(), "DERT Marble Info", X_OFFSET, Y_OFFSET);
 		updateText();
 	}
 
