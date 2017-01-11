@@ -95,6 +95,7 @@ public class BasicTextureRenderer extends JoglTextureRenderer {
 			return;
 		}
 		((JoglRendererDouble) _parentRenderer).setInShadow(isShadow);
+		_parentRenderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
 		super.render(toDraw, tex, clear);
 		((JoglRendererDouble) _parentRenderer).setInShadow(false);
 	}
