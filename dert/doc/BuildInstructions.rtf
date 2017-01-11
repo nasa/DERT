@@ -1,8 +1,9 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf400
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf760
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
 \margl1440\margr1440\vieww10800\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\b\fs36 \cf0 How to Build DERT
 \b0\fs24 \
@@ -48,10 +49,10 @@ DERT depends on a number of existing libraries.  Each one is open source and fre
 First, create a lib subdirectory under the dert directory.  Then add the following libraries.\
 \
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \i\b \cf0 JNISpice\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \i0\b0 \cf0 \
 The following instructions are derived from the document:\
@@ -91,7 +92,7 @@ ant -buildfile build_native.xml
 \i0 This command will create the jar file containing the dert native libraries for libgeo and spice and place it in dert/lib.\
 \
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \i\b \cf0 JogAmp's Ardor3D Continuation
 \i0\b0 \
@@ -139,38 +140,20 @@ http://code.google.com/p/guava-libraries/\
 and place it in dert/lib.\
 \
 \
-
-\i\b XStream
-\i0\b0 \
 \
-Download xstream-1.4.8.jar from http://xstream.codehaus.org/download.html. Download the binary distribution and unzip it. The jar is located under xstream-1.4.8/lib.  Copy it to dert/lib.\
-\
-\
-\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \b\fs28 \cf0 DERT Java Source
 \b0\fs24 \
 \
-These instructions assume that you are running Java 1.7 as your default.  You can change to a different JDK by set the JAVACMD environment variable.  See the Ant documentation for more information.\
+These instructions assume that you are running Java 1.8 as your default.  You can change to a different JDK by set the JAVACMD environment variable.  See the Ant documentation for more information.\
 \
 You will need to download the Ant task called appbundler.  Put it in the top dert directory. This task requires Java 1.7 or later.\
 \
 Change to the dert directory.\
 \
-If you have Java 1.7 but must also support Java 1.6:\
-\
-	./build.sh\
-\
-If you only need to support Java 1.7 or later:\
+Run ant:\
 \
 	ant -v build.xml\
-\
-If you only have Java 1.6:\
-\
-	Copy build_linux.xml to build_mac.xml and change all of the linux references in it to mac.\
-\
-	ant -v build_mac.xml\
-	ant -v build_linux.xml\
 \
 If successful, you should see the DERT installation directory appear.  Additionally, you now have a complete lib directory that can be used for development. For Eclipse or NetBeans users, add all of the jars in lib to your build path (except, of course, for the the natives that are not for your platform). }

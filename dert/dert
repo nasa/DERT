@@ -11,7 +11,7 @@ endif
 
 if ($PLAT == Darwin) then
 
-# The following paths may be used instead.
+# The following path may be used instead.
 #	set path = ('/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin' $path) 
 
 	java -Xms256m -Xmx${MAX_MEM}m -Xdock:icon=$DERT_PATH/derticon.icns -Xdock:name="DERT" -jar $DERT_PATH/dert.app/Contents/Java/dert.jar $argv

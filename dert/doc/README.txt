@@ -27,7 +27,7 @@ the kernels subdirectory of the dert directory is empty or absent.
 
 EXECUTION:
 
-To execute DERT on a Mac with Java 1.7 or later double-click on the dert application or run the dert script found in the directory.
+To execute DERT on a Mac double-click on the dert application or run the dert script found in the directory.
 To execute DERT on Linux, run the dert script.  See the user guide for instructions.
 
 To execute LayerFactory run the layerfactory script found in the dert directory.
