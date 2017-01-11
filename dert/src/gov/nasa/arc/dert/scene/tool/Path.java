@@ -571,7 +571,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	}
 	
 	public void complete() {
-		Console.getInstance().println("Added "+newPoints+" point"+((newPoints > 1) ? "s" : "")+" to "+getName()+".");
+		Console.println("Added "+newPoints+" point"+((newPoints > 1) ? "s" : "")+" to "+getName()+".");
 		newPoints = 0;
 	}
 
@@ -749,7 +749,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 				csvWriter.writeLine(value);
 			}
 			csvWriter.close();
-			Console.getInstance().println(n + " records saved to " + filename);
+			Console.println(n + " records saved to " + filename);
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (csvWriter != null) {

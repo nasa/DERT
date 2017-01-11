@@ -92,7 +92,7 @@ public class GeojsonLoader {
 			}
 			return (groot);
 		} catch (Exception e) {
-			Console.getInstance().println("Unable to load GeoJSON file " + filePath + ", see log.");
+			Console.println("Unable to load GeoJSON file " + filePath + ", see log.");
 			e.printStackTrace();
 		}
 		return (null);
@@ -152,9 +152,8 @@ public class GeojsonLoader {
 			}
 		});
 		root.setLabelVisible(true);
-		Console console = Console.getInstance();
-		if (console != null)
-			console.println("Found " + count + " features for GeoJSON file " + filePath + ".");
+		if (Console.getInstance() != null)
+			Console.println("Found " + count + " features for GeoJSON file " + filePath + ".");
 		else
 			System.out.println("Found " + count + " features for GeoJSON file " + filePath + ".");
 		return (root);

@@ -103,15 +103,15 @@ public class RasterLayer extends Layer {
 		minimumValue = StringUtil.getDoubleArray(properties, "MinimumValue", null, true);
 		maximumValue = StringUtil.getDoubleArray(properties, "MaximumValue", null, true);
 		fillValue = (float) StringUtil.getDoubleValue(properties, "EdgeFillValue", false, 0.0, false);
-		Console.getInstance().println("\nProperties for " + layerName + ":");
-		Console.getInstance().println("Layer Type = " + layerType);
-		Console.getInstance().println("Number of Levels = " + numLevels);
-		Console.getInstance().println("Tile Width = " + tileWidth);
-		Console.getInstance().println("Tile Length = " + tileLength);
-		Console.getInstance().println("Minimum Value = " + minimumValue[0]);
-		Console.getInstance().println("Maximum Value = " + maximumValue[0]);
-		Console.getInstance().println("Edge Fill Z-Value = " + fillValue);
-		Console.getInstance().println(projInfo.toString());
+		Console.println("\nProperties for " + layerName + ":");
+		Console.println("Layer Type = " + layerType);
+		Console.println("Number of Levels = " + numLevels);
+		Console.println("Tile Width = " + tileWidth);
+		Console.println("Tile Length = " + tileLength);
+		Console.println("Minimum Value = " + minimumValue[0]);
+		Console.println("Maximum Value = " + maximumValue[0]);
+		Console.println("Edge Fill Z-Value = " + fillValue);
+		Console.println(projInfo.toString());
 	}
 
 	/**

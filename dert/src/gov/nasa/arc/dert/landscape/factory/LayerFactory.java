@@ -95,7 +95,9 @@ public class LayerFactory {
 	public static void main(String[] args) {
 		if (args.length > 0) {
 			if (args[0].equals("-usage")) {
-				System.out.println("layerfactory -landscape=landscapePath -file=inputFilePath -tilesize=tileSize -type=layerType [-globe=globename] [-missing=missingValue] [-name=layerName] [-leftmargin=numPixels] [-rightmargin=numPixels] [-bottommargin=numPixels] [-topmargin=numPixels] [-color=R,G,B,A] [-elevattrname=gdal_contour elevation attribute name]");
+				System.out.println("layerfactory -landscape=landscapePath -file=inputFilePath -tilesize=tileSize -type=layerType "+
+						"[-globe=globename] [-missing=missingValue] [-name=layerName] [-leftmargin=numPixels] [-rightmargin=numPixels]"+
+						" [-bottommargin=numPixels] [-topmargin=numPixels] [-color=R,G,B,A] [-elevattrname=elevation attribute name]");
 				System.exit(0);
 			}
 		}

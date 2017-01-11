@@ -503,7 +503,7 @@ public class MainWindow extends JFrame {
 						int height = Integer.parseInt(token[1]);
 						worldView.getScenePanel().setPreferredSize(new Dimension(width, height));
 						pack();
-						Console.getInstance().println("WorldView Canvas Dimensions: "+worldView.getScenePanel().getCanvas().getWidth()+","+worldView.getScenePanel().getCanvas().getHeight());
+						Console.println("WorldView Canvas Dimensions: "+worldView.getScenePanel().getCanvas().getWidth()+","+worldView.getScenePanel().getCanvas().getHeight());
 					}
 					catch (Exception e) {
 						Toolkit.getDefaultToolkit().beep();

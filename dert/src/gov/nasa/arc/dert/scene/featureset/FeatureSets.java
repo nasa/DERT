@@ -106,7 +106,7 @@ public class FeatureSets extends GroupNode {
 			}
 			return (featureSet);
 		} catch (Exception e) {
-			Console.getInstance().println(e.getMessage());
+			Console.println(e.getMessage());
 			if (msgField != null)
 				msgField.setText(e.getMessage());
 			e.printStackTrace();

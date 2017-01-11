@@ -121,12 +121,12 @@ public class LayerManager {
 				break;
 			}
 		if (baseLayerInfo == null) {
-			Console.getInstance().println("Elevation layer not found.");
+			Console.println("Elevation layer not found.");
 			return (false);
 		}
 		Properties properties = source.getProperties("elevation");
 		if (properties == null) {
-			Console.getInstance().println("Elevation layer properties not found.");
+			Console.println("Elevation layer properties not found.");
 			return (false);
 		}
 		// elevation min and max are single values, not arrays
@@ -257,7 +257,7 @@ public class LayerManager {
 		// create the base layer
 		baseLayer = (RasterLayer) createLayer(baseLayerInfo, source, -1);
 		if (baseLayer == null) {
-			Console.getInstance().println("Unable to create base layer");
+			Console.println("Unable to create base layer");
 			return (false);
 		}
 		return (true);
@@ -425,7 +425,7 @@ public class LayerManager {
 				return (new RasterLayer(layerInfo, source));
 			}
 		} catch (Exception e) {
-			Console.getInstance().println("Unable to create layer " + layerInfo.name + ", see log.");
+			Console.println("Unable to create layer " + layerInfo.name + ", see log.");
 			e.printStackTrace();
 			return (null);
 		}

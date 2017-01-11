@@ -177,7 +177,7 @@ public class Landscape extends Node {
 		}
 		ScaleBar.defaultCellSize = Grid.defaultCellSize/10;
 		ScaleBar.defaultRadius = ScaleBar.defaultCellSize*0.1;
-		Console.getInstance().println(
+		Console.println(
 			"Landscape size: East/West range = " + String.format(stringFormat, worldWidth/pixelScale) + ", North/South range = " + String.format(stringFormat, worldLength/pixelScale) + " "
 				+ ", Elevation range = " + String.format(stringFormat, (baseLayer.getMaximumValue()[0] - minZ)) + "\n");
 

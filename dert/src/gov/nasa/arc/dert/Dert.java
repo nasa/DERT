@@ -174,19 +174,19 @@ public class Dert {
 		// Initialize main window and console.
 		createMainWindows(pathStr, args);
 		
-		Console.getInstance().println("OpenGL Vendor: " + SceneCanvas.openGLVendor);
-		Console.getInstance().println("OpenGL Renderer: " + SceneCanvas.openGLRenderer);
-		Console.getInstance().println("OpenGL Version: " + SceneCanvas.openGLVersion);
+		Console.println("OpenGL Vendor: " + SceneCanvas.openGLVendor);
+		Console.println("OpenGL Renderer: " + SceneCanvas.openGLRenderer);
+		Console.println("OpenGL Version: " + SceneCanvas.openGLVersion);
 
-		Console.getInstance().println("Date: " + dateStr);
-		Console.getInstance().println("DERT Version: " + dertProperties.getProperty("Dert.Version"));
-		Console.getInstance().println("Path to executable: " + path);
-		Console.getInstance().println("Path to user files: " + userPath);
-		Console.getInstance().println("OS Name: " + System.getProperty("os.name"));
-		Console.getInstance().println("OS Version: " + System.getProperty("os.version"));
-		Console.getInstance().println("OS Arch: " + System.getProperty("os.arch"));
-		Console.getInstance().println("Java Version: " + System.getProperty("java.version"));
-		Console.getInstance().println();
+		Console.println("Date: " + dateStr);
+		Console.println("DERT Version: " + dertProperties.getProperty("Dert.Version"));
+		Console.println("Path to executable: " + path);
+		Console.println("Path to user files: " + userPath);
+		Console.println("OS Name: " + System.getProperty("os.name"));
+		Console.println("OS Version: " + System.getProperty("os.version"));
+		Console.println("OS Arch: " + System.getProperty("os.arch"));
+		Console.println("Java Version: " + System.getProperty("java.version"));
+		Console.println();
 		
 		// Load SPICE libraries and kernels
 		Ephemeris.createInstance(path, dertProperties);
@@ -246,7 +246,7 @@ public class Dert {
 				fontSize ++;
 		}
 		String fName = StringUtil.getStringValue(dertProperties, "RasterText.Font", "Courier New", false);
-		Console.getInstance().println("Building font: "+fName+" "+fontSize);
+		Console.println("Building font: "+fName+" "+fontSize);
 		BitmapFont.createInstance(fName, Font.BOLD, fontSize);
 	}
 

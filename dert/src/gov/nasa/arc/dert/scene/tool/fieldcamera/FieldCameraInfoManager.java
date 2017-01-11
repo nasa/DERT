@@ -97,7 +97,7 @@ public class FieldCameraInfoManager {
 			return (new FieldCameraInfo(properties));
 		} catch (Exception e) {
 			e.printStackTrace();
-			Console.getInstance().println("Error loading camera " + name + ".  See log.");
+			Console.println("Error loading camera " + name + ".  See log.");
 			return (null);
 		}
 	}

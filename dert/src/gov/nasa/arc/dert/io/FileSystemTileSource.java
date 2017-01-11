@@ -95,7 +95,7 @@ public class FileSystemTileSource implements TileSource {
 			if (file[i].isDirectory()) {
 				Properties prop = loadPropertiesFile(file[i], filename);
 				if (prop == null) {
-					Console.getInstance().println("No properties found for layer "+filename+", skipping.");
+					Console.println("No properties found for layer "+filename+", skipping.");
 					continue;
 				}
 				propertiesMap.put(filename, prop);
@@ -325,12 +325,12 @@ public class FileSystemTileSource implements TileSource {
 		if (depthTree == null) {
 			// assign after filling so tileExists method will work
 			if (tileExists("elevation", "")) {
-				Console.getInstance().print("Filling depth tree. This may take a bit for large landscapes . . .");
+				Console.print("Filling depth tree. This may take a bit for large landscapes . . .");
 				DepthTree dTree = new DepthTree();
 				dTree.id = "";
 				fillDepthTree(dTree, "", "elevation");
 				depthTree = dTree;
-				Console.getInstance().println("complete.");
+				Console.println("complete.");
 				Thread thread = new Thread(new Runnable() {
 					@Override
 					public void run() {
@@ -341,7 +341,7 @@ public class FileSystemTileSource implements TileSource {
 							outStream.close();
 						} catch (Exception e) {
 							e.printStackTrace();
-							Console.getInstance().println("Error writing depth tree file.");
+							Console.println("Error writing depth tree file.");
 							depthTree = null;
 						}
 					}

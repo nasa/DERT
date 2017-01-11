@@ -64,7 +64,7 @@ public class Projection {
 			Proj4 projOld = Proj4.newInstance(projection);
 			// Polar Stereographic
 			if (bounds[1] < -85) {
-				Console.getInstance().println(
+				Console.println(
 					"Found unprojected data ... projecting tie points with Polar Stereographic.");
 				projInfo.coordTransformCode = 15;
 				projInfo.poleLat = -90;
@@ -73,7 +73,7 @@ public class Projection {
 				projInfo.falseNorthing = 0;
 				proj4String = projInfo.getProj4String();
 			} else if (bounds[3] > 85) {
-				Console.getInstance().println(
+				Console.println(
 					"Found unprojected data ... projecting tie points with Polar Stereographic.");
 				projInfo.coordTransformCode = 15;
 				projInfo.poleLat = 90;
@@ -84,7 +84,7 @@ public class Projection {
 			}
 			// Equirectangular
 			else {
-				Console.getInstance().println("Found unprojected data ... projecting tie points with Equirectangular.");
+				Console.println("Found unprojected data ... projecting tie points with Equirectangular.");
 				projInfo.coordTransformCode = 17;
 				projInfo.falseEasting = 0;
 				projInfo.falseNorthing = 0;
@@ -126,7 +126,7 @@ public class Projection {
 		scale = projInfo.scale;
 		physicalWidth = projInfo.rasterWidth * scale[0];
 		physicalLength = projInfo.rasterLength * scale[1];
-		Console.getInstance().println("Projection: "+proj4String);
+		Console.println("Projection: "+proj4String);
 	}
 
 	/**

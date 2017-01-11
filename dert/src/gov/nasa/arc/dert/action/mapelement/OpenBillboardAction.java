@@ -32,7 +32,7 @@ public class OpenBillboardAction extends MenuItemAction {
 			Desktop.getDesktop().open(new File(imageBoard.getImagePath()));
 		} catch (Exception e) {
 			e.printStackTrace();
-			Console.getInstance().println("Unable to open image, see log.");
+			Console.println("Unable to open image, see log.");
 		}
 	}
 

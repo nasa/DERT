@@ -224,7 +224,7 @@ public class RasterLayerPanel extends JPanel {
 		tileSizeMenu.setSelectedIndex(4);
 		container.add(tileSizeMenu, GBCHelper.getGBC(4, 4, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
 
-		autoMargin = new JCheckBox("Automatically add margins");
+		autoMargin = new JCheckBox("automatically add margins");
 		autoMargin.setSelected(true);
 		autoMargin.setToolTipText("automatically extend raster with missing value pixels to make each side a power of 2");
 		autoMargin.addActionListener(new ActionListener() {

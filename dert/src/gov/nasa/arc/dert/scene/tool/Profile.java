@@ -544,7 +544,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 				csvWriter.writeLine(value);
 			}
 			csvWriter.close();
-			Console.getInstance().println(vertexCount + " records saved to " + filename);
+			Console.println(vertexCount + " records saved to " + filename);
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (csvWriter != null) {

@@ -96,7 +96,7 @@ public class ImageBoardPanel extends MapElementBasePanel {
 					Desktop.getDesktop().open(new File(imageBoard.getImagePath()));
 				} catch (Exception e) {
 					e.printStackTrace();
-					Console.getInstance().println("Unable to open image, see log.");
+					Console.println("Unable to open image, see log.");
 					JOptionPane.showMessageDialog(ImageBoardPanel.this, "Unable to open image, see log.", "Error",
 						JOptionPane.ERROR_MESSAGE);
 				}

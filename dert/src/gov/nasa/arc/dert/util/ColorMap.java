@@ -586,7 +586,7 @@ public class ColorMap {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			Console.getInstance().println("Error loading color map. See log. Using default gray scale.");
+			Console.println("Error loading color map. See log. Using default gray scale.");
 			tokenList.clear();
 			for (int i = 0; i < grayScale.length; ++i) {
 				tokenList.add(grayScale[i]);

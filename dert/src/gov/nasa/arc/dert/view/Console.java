@@ -57,9 +57,12 @@ public class Console extends JPanel {
 	 * 
 	 * @param str
 	 */
-	public void print(final String str) {
+	public static void print(final String str) {
 		if ((str != null) && (str.length() > 0)) {
-			_append(str);
+			if (instance == null)
+				System.err.print(str);
+			else
+				instance._append(str);
 		}
 	}
 
@@ -68,17 +71,23 @@ public class Console extends JPanel {
 	 * 
 	 * @param str
 	 */
-	public void println(final String str) {
+	public static void println(final String str) {
 		if ((str != null) && (str.length() > 0)) {
-			_append(str + "\n");
+			if (instance == null)
+				System.err.println(str);
+			else
+				instance._append(str + "\n");
 		}
 	}
 
 	/**
 	 * Add a new line to the console
 	 */
-	public void println() {
-		_append("\n");
+	public static void println() {
+		if (instance == null)
+			System.err.println();
+		else
+			instance._append("\n");
 	}
 
 	/**

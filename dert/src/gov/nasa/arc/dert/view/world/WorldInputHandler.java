@@ -133,7 +133,7 @@ public class WorldInputHandler implements InputHandler {
 		if ((path == null) && (tape == null)) {
 			canvasPanel.setCursor(null);
 		} else if (path != null) {
-			Console.getInstance().println("Single-click to add a point to "+path.getName()+". Select \"Path Complete\" from context menu when finished.");
+			Console.println("Single-click to add a point to "+path.getName()+". Select \"Path Complete\" from context menu when finished.");
 			canvasPanel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		}
 	}

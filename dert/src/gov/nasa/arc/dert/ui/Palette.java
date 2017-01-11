@@ -74,7 +74,7 @@ public class Palette extends Canvas {
 		if (dMin != 0)
 			fracDigits = Math.log10(dMin);
 		else
-			Console.getInstance().println("One or more color map intervals is 0. Labels will have no fractional digits.");
+			Console.println("One or more color map intervals is 0. Labels will have no fractional digits.");
 		String str = "0";
 		if (fracDigits > 0) {
 			fracDigits = 0;

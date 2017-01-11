@@ -107,7 +107,7 @@ public class Ephemeris {
 				// load SPICE kernels
 				String[] fileName = getFileList(properties);
 				for (int i = 0; i < fileName.length; ++i) {
-					Console.getInstance().println("Loading SPICE kernel "+fileName[i]);
+					Console.println("Loading SPICE kernel "+fileName[i]);
 					KernelDatabase.load(path + "kernels/" + fileName[i]);
 				}
 			} catch (Exception e) {

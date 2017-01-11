@@ -34,7 +34,7 @@ public class OpenConfigAction extends MenuItemAction {
 				ConfigurationManager.getInstance().openConfiguration(filePath);
 			}
 		} catch (Exception e) {
-			Console.getInstance().println("Unable to open worldview.  See log.");
+			Console.println("Unable to open worldview.  See log.");
 			e.printStackTrace();
 		}
 	}

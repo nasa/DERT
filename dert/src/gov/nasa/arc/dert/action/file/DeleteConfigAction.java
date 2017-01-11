@@ -44,7 +44,7 @@ public class DeleteConfigAction extends MenuItemAction {
 				}
 			}
 		} catch (Exception e) {
-			Console.getInstance().println("Unable to open new view.  See log.");
+			Console.println("Unable to open new view.  See log.");
 			e.printStackTrace();
 		}
 	}

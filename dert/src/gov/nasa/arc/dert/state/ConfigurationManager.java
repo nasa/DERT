@@ -165,10 +165,10 @@ public class ConfigurationManager {
 			oos.close();
 			addRecent(file.getAbsolutePath());
 		} catch (Exception e) {
-			Console.getInstance().println("Error writing configuration.  See log.");
+			Console.println("Error writing configuration.  See log.");
 			e.printStackTrace();
 		}
-		Console.getInstance().println("Saved configuration to "+dertConfig.label);
+		Console.println("Saved configuration to "+dertConfig.label);
 	}
 
 
@@ -198,7 +198,7 @@ public class ConfigurationManager {
 			String landPath = configPath.substring(0, p);
 			File file = new File(configPath).getCanonicalFile();
 			if (file.exists()) {
-				Console.getInstance().println("Loading configuration from " + file.getAbsolutePath());
+				Console.println("Loading configuration from " + file.getAbsolutePath());
 				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
 				Object obj = ois.readObject();
 				ois.close();
@@ -213,7 +213,7 @@ public class ConfigurationManager {
 				JOptionPane.showMessageDialog(null, "Configuration for " + landPath + " does not exist.");
 			}
 		} catch (Exception e) {
-			Console.getInstance().println("Unable to load configuration " + configPath + ", see log.");
+			Console.println("Unable to load configuration " + configPath + ", see log.");
 			e.printStackTrace();
 		}
 		return (config);
@@ -258,7 +258,7 @@ public class ConfigurationManager {
 		// create the world
 		World world = currentConfig.worldState.createWorld(landscapePath, currentConfig);
 		if (world == null) {
-			Console.getInstance().println("Unable to create world for " + currentConfig);
+			Console.println("Unable to create world for " + currentConfig);
 			return;
 		}
 

@@ -180,7 +180,7 @@ public class Landmarks extends GroupNode {
 				csvWriter.writeLine(value);
 			}
 			csvWriter.close();
-			Console.getInstance().println(n + " records saved to " + filename);
+			Console.println(n + " records saved to " + filename);
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (csvWriter != null) {

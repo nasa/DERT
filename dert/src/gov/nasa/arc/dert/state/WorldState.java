@@ -123,7 +123,7 @@ public class WorldState extends State {
 		String[][] layerInfo = tileSource.getLayerInfo();
 
 		if (layerInfo.length == 0) {
-			Console.getInstance().println("No valid layers.");
+			Console.println("No valid layers.");
 			return (null);
 		}
 		lighting.initialize();

@@ -149,7 +149,7 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
 		this.grabHeight = grabHeight;
 		if (!frameGrab) {
 			if (store != null) {
-				Console.getInstance().println(frameCount+" frames");
+				Console.println(frameCount+" frames");
 				store = null;
 				System.gc();
 			}
@@ -162,7 +162,7 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
 	public void grabFrame() {
 		makeCurrentContext();
 		if (store == null) {
-			Console.getInstance().println("Rendering image sequence to "+grabFilePath);
+			Console.println("Rendering image sequence to "+grabFilePath);
 			frameCount = 0;
 			int n = _renderer.getExpectedBufferSizeToGrabScreenContents(ImageDataFormat.RGBA, PixelDataType.Byte, grabWidth, grabHeight);
 			store = ByteBuffer.allocateDirect(n);

@@ -45,7 +45,7 @@ public abstract class CoordTextField
 		if (Double.isNaN(store.getZ())) {
 			Toolkit.getDefaultToolkit().beep();
 			setError();
-			Console.getInstance().println("Coordinate [" + coord.getXf()+", "+coord.getYf() + "] is outside of landscape.");
+			Console.println("Coordinate [" + coord.getXf()+", "+coord.getYf() + "] is outside of landscape.");
 		}
 		// Add the elevation to the field
 		else {
