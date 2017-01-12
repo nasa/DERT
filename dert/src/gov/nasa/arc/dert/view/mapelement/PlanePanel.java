@@ -151,8 +151,22 @@ public class PlanePanel extends MapElementBasePanel {
 
 		panel = new GroupPanel("Change Scale Along Axis");
 		panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		double step = Landscape.getInstance().getPixelWidth();
+		double min = 1;
+		double max = 10000;
+		double val = Plane.defaultSize;
+		String fmt = "###0.00";
+		if (step < 1) {
+			min *= step;
+			max *= step;
+			val *= step;
+			fmt = Landscape.format;
+		}
+		else
+			step = 1;
+		
 		panel.add(new JLabel("Dip", SwingConstants.RIGHT));
-		lengthSpinner = new DoubleSpinner(Plane.defaultSize, 1, 10000, 1, false) {
+		lengthSpinner = new DoubleSpinner(val, min, max, step, false, fmt) {
 			@Override
 			public void stateChanged(ChangeEvent event) {
 				double lengthScale = ((Double) lengthSpinner.getValue());
@@ -162,7 +176,7 @@ public class PlanePanel extends MapElementBasePanel {
 		panel.add(lengthSpinner);
 
 		panel.add(new JLabel("  Strike", SwingConstants.RIGHT));
-		widthSpinner = new DoubleSpinner(Plane.defaultSize, 1, 10000, 1, false) {
+		widthSpinner = new DoubleSpinner(val, min, max, step, false, fmt) {
 			@Override
 			public void stateChanged(ChangeEvent event) {
 				double widthScale = ((Double) widthSpinner.getValue());
@@ -191,8 +205,11 @@ public class PlanePanel extends MapElementBasePanel {
 
 	@Override
 	public void setMapElement(MapElement mapElement) {
+		if (this.mapElement != null)
+			((Plane)this.mapElement).setPlanePanel(null);
 		this.mapElement = mapElement;
 		plane = (Plane) mapElement;
+		plane.setPlanePanel(this);
 		lengthSpinner.setValue(plane.getLengthScale());
 		widthSpinner.setValue(plane.getWidthScale());
 		pinnedCheckBox.setSelected(plane.isPinned());
@@ -203,6 +220,7 @@ public class PlanePanel extends MapElementBasePanel {
 		triangleCheckBox.setSelected(plane.isTriangleVisible());
 		openButton.setEnabled(true);
 		updateLocation(plane);
+		updateStrikeAndDip(plane.getStrike(), plane.getDip());
 	}
 
 	@Override
@@ -210,19 +228,39 @@ public class PlanePanel extends MapElementBasePanel {
 		setLocation(p0Location, plane.getPoint(0));
 		setLocation(p1Location, plane.getPoint(1));
 		setLocation(p2Location, plane.getPoint(2));
+//		System.err.println("PlanePanel.updateLocation "+plane.getStrike()+" "+plane.getDip());
+//		String str = "Strike: ";
+//		if (Plane.strikeAsCompassBearing) {
+//			str += StringUtil.azimuthToCompassBearing(plane.getStrike());
+//		} else {
+//			str += StringUtil.format(plane.getStrike()) + StringUtil.DEGREE;
+//		}
+//		str += "   Dip: " + StringUtil.format(plane.getDip()) + StringUtil.DEGREE;
+//		strikeAndDip.setText(str);
+	}
+
+	/**
+	 * Method to update strike and dip values. This must be called after values are calculated
+	 * in plane.
+	 * @param strike
+	 * @param dip
+	 */
+	public void updateStrikeAndDip(double strike, double dip) {
 		String str = "Strike: ";
 		if (Plane.strikeAsCompassBearing) {
-			str += StringUtil.azimuthToCompassBearing(plane.getStrike());
+			str += StringUtil.azimuthToCompassBearing(strike);
 		} else {
-			str += StringUtil.format(plane.getStrike()) + StringUtil.DEGREE;
+			str += StringUtil.format(strike) + StringUtil.DEGREE;
 		}
-		str += "   Dip: " + StringUtil.format(plane.getDip()) + StringUtil.DEGREE;
+		str += "   Dip: " + StringUtil.format(dip) + StringUtil.DEGREE;
 		strikeAndDip.setText(str);
 	}
 	
 	@Override
 	public void dispose() {
 		super.dispose();
+		if (mapElement != null)
+			((Plane)mapElement).setPlanePanel(null);
 		if (p0Location != null)
 			CoordAction.listenerList.remove(p0Location);
 		if (p1Location != null)

@@ -16,6 +16,7 @@ import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.UIUtil;
+import gov.nasa.arc.dert.view.mapelement.PlanePanel;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
@@ -87,7 +88,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	protected PlaneState state;
 
 	// For slope, aspect and viewpoint
-	private double strike, dip;
+	private volatile double strike, dip;
 	private Vector3 workVec;
 	private double[] planeEq = new double[4];
 
@@ -96,6 +97,9 @@ public class Plane extends Node implements Tool, ViewDependent {
 	private Vector3 lowerBound, upperBound;
 	private Vector3 tmp0, tmp1;
 	private Matrix3 rotMat;
+	
+	// For display
+	private PlanePanel planePanel;
 
 	/**
 	 * Constructor
@@ -751,6 +755,14 @@ public class Plane extends Node implements Tool, ViewDependent {
 	public double getDip() {
 		return (dip);
 	}
+	
+	/**
+	 * Set the PlanePanel for strike and dip updates.
+	 * @param planePanel
+	 */
+	public void setPlanePanel(PlanePanel planePanel) {
+		this.planePanel = planePanel;
+	}
 
 	private void updatePlane() {
 
@@ -788,6 +800,9 @@ public class Plane extends Node implements Tool, ViewDependent {
 		strikeDir.normalizeLocal();
 		strikeDir.multiplyLocal(widthScale);
 		dipDir.multiplyLocal(lengthScale);
+		
+		if (planePanel != null)
+			planePanel.updateStrikeAndDip(strike, dip);
 	}
 
 	/**

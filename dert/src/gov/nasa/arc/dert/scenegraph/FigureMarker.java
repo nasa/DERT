@@ -28,7 +28,7 @@ public class FigureMarker extends Marker {
 
 	// 3D shape
 	protected Shape shape;
-	protected ShapeType shapeType;
+	protected ShapeType shapeType = ShapeType.none;
 
 	// Arrow to show surface normal
 	protected DirectionArrow surfaceNormalArrow;
@@ -172,7 +172,8 @@ public class FigureMarker extends Marker {
 	public void setNormal(ReadOnlyVector3 normal) {
 		if (normal != null) {
 			surfaceNormal.set(normal);
-			surfaceNormalArrow.setDirection(normal);
+			if (surfaceNormalArrow != null)
+				surfaceNormalArrow.setDirection(normal);
 		}
 	}
 
@@ -196,10 +197,9 @@ public class FigureMarker extends Marker {
 			return;
 		}
 		this.size = size;
-		surfaceNormalArrow.setLength(size*1.5);
-		ShapeType newShapeType = shapeType;
-		shapeType = ShapeType.none;
-		setShape(newShapeType);
+		if (surfaceNormalArrow != null)
+			surfaceNormalArrow.setLength(size*1.5);
+		setShape(shapeType);
 	}
 
 	/**

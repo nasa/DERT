@@ -4,7 +4,6 @@ import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
-import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.state.PanelState.PanelType;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.util.StringUtil;
@@ -287,7 +286,6 @@ public class Configuration {
 				mapElement = World.getInstance().getLandmarks().addLandmark((LandmarkState) state, true);
 			} else if (state instanceof ToolState) {
 				mapElement = World.getInstance().getTools().addTool((ToolState) state, true);
-				System.err.println("Configuration.addMapElementState "+((FieldCamera)mapElement).getCamera().getAspect());
 			} else if (state instanceof FeatureSetState) {
 				mapElement = World.getInstance().getFeatureSets().addFeatureSet((FeatureSetState) state, true, msgField);
 			}

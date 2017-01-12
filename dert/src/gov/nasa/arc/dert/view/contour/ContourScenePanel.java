@@ -121,9 +121,9 @@ public class ContourScenePanel extends SceneCanvasPanel {
 				@Override
 				public void run() {
 					Thread.yield();
+					contourScene.updateContour();
 					double strike = plane.getStrike();
 					double dip = plane.getDip();
-					contourScene.updateContour();
 					updateThread = null;
 					String str = "Strike: ";
 					if (Plane.strikeAsCompassBearing) {

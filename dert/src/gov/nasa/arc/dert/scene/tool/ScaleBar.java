@@ -96,7 +96,11 @@ public class ScaleBar extends FigureMarker implements Tool {
 	protected void scaleShape(double scale) {
 		// do nothing;
 	}
-
+	
+	@Override
+	public void setShape(ShapeType shapeType) {
+		buildRod();
+	}
 	
 	private void buildRod() {
 		if (shape != null)

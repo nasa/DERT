@@ -131,6 +131,9 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 
 	// Map element state
 	private FieldCameraState state;
+	
+	// Scale for sizing camera in relation to landscape
+	private float pixelScale;
 
 	public FieldCamera(FieldCameraState state) {
 		super(state.name);
@@ -138,9 +141,12 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		if (state.location != null)
 			setLocation(state.location, false);
 		basicCamera = new BasicCamera(1, 1);
+		
+		pixelScale = (float)Landscape.getInstance().getPixelWidth();
 
 		// camera stand
-		Sphere base = new Sphere("_base", 50, 50, 0.25f);
+//		Sphere base = new Sphere("_base", 50, 50, 0.25f);
+		Sphere base = new Sphere("_base", 50, 50, pixelScale);
 		base.setModelBound(new BoundingBox());
 		attachChild(base);
 		lineSegment = new LineSegment("_post", p0, p1);
@@ -153,7 +159,8 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 
 		// camera box
 		geomNode = new Node("_geometry");
-		box = new Box("_box", new Vector3(), 0.25, 0.25, 0.25);
+//		box = new Box("_box", new Vector3(), 0.25, 0.25, 0.25);
+		box = new Box("_box", new Vector3(), pixelScale, pixelScale, pixelScale);
 		box.setModelBound(new BoundingBox());
 		geomNode.attachChild(box);
 
@@ -179,7 +186,8 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		label.setTranslation(0, 1.3, 0);
 		label.setVisible(state.labelVisible);
 		billboard.attachChild(label);
-		viewDependentNode.setTranslation(0.0, 0.25, 0.0);
+//		viewDependentNode.setTranslation(0.0, 0.25, 0.0);
+		viewDependentNode.setTranslation(0.0, pixelScale, 0.0);
 		geomNode.attachChild(viewDependentNode);
 
 		// the camera for this fieldCamera
@@ -284,8 +292,10 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 			setElevation(fieldCameraInfo.tripodTilt);
 		if (!Double.isNaN(state.height)) 
 			setHeight(state.height);
-		else
+		else if (pixelScale >= 1)
 			setHeight(fieldCameraInfo.tripodHeight);
+		else
+			setHeight(pixelScale*fieldCameraInfo.tripodHeight);
 		return(true);
 	}
 

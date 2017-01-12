@@ -117,8 +117,20 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 		panel.add(tiltSpinner);
 
 		panel.add(new JLabel("Height", SwingConstants.RIGHT));
-		heightSpinner = new DoubleSpinner(instInfo.tripodHeight, instInfo.heightRange[0], instInfo.heightRange[1], 1,
-			false) {
+		double step = Landscape.getInstance().getPixelWidth();
+		double min = instInfo.heightRange[0];
+		double max = instInfo.heightRange[1];
+		double hgt = instInfo.tripodHeight;
+		String fmt = "###0.00";
+		if (step < 1) {
+			min *= step;
+			max *= step;
+			hgt *= step;
+			fmt = Landscape.format;
+		}
+		else
+			step = 1;
+		heightSpinner = new DoubleSpinner(hgt, min, max, step, false, fmt) {
 			@Override
 			public void stateChanged(ChangeEvent event) {
 				Double val = (Double) getValue();

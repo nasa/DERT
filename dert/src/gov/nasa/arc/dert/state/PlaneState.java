@@ -64,6 +64,11 @@ public class PlaneState extends ToolState {
 		triangleVisible = Plane.defaultTriangleVisible;
 		lengthScale = Plane.defaultSize;
 		widthScale = Plane.defaultSize;
+		double s = Landscape.getInstance().getPixelWidth();
+		if (s < 1) {
+			lengthScale *= s;
+			widthScale *= s;
+		}
 		viewData = new ViewData(-1, -1, 550, 400, false);
 	}
 	
