@@ -21,6 +21,7 @@ import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.view.lighting.LightPositionView;
 import gov.nasa.arc.dert.view.world.WorldView;
+import gov.nasa.arc.dert.viewpoint.ActivateOnFootAction;
 import gov.nasa.arc.dert.viewpoint.ActivateZoomAction;
 import gov.nasa.arc.dert.viewpoint.Compass;
 
@@ -75,11 +76,12 @@ public class MainWindow extends JFrame {
 	// Tool bar buttons for opening views
 	private ButtonAction marbleAction, helpAction, consoleAction, colorbarAction;
 	private ButtonAction surfaceAndLayersAction, lightingAndShadowsAction, mapElementsAction;
-	private ButtonAction viewpointAction, lightAction, resetAction;
+	private ButtonAction lightAction, resetAction;
 	private CoordAction coordAction;
 
 	// Tool bar button for activating magnify mode
 	private ActivateZoomAction zoomAction;
+	private ActivateOnFootAction onFootAction;
 
 	// Tool bar button for activating the tape measure
 	private ActivateTapeMeasureAction measuringAction;
@@ -263,15 +265,9 @@ public class MainWindow extends JFrame {
 		toolBar.add(new JLabel(filler));
 
 		// Open the viewpoint view.
-		viewpointAction = new ButtonAction("show viewpoint properties", null, "viewpoint.png", buttonBorder) {
-			@Override
-			public void run() {
-				currentConfig.viewPtState.getViewData().setVisible(true);
-				currentConfig.viewPtState.open();
-			}
-		};
-		viewpointAction.setEnabled(false);
-		toolBar.add(viewpointAction);
+		onFootAction = new ActivateOnFootAction();
+		onFootAction.setEnabled(false);
+		toolBar.add(onFootAction);
 
 		// Reset the viewpoint to the default overhead view.
 		resetAction = new ButtonAction("reset viewpoint to overhead position", null, "reset.png", buttonBorder) {
@@ -389,6 +385,17 @@ public class MainWindow extends JFrame {
 	protected void fillEditMenu(PopupMenu menu) {
 		menu.add(undoHandler.getUndoAction());
 		menu.add(undoHandler.getRedoAction());
+		menu.addSeparator();
+
+		// Open the viewpoint view.
+		MenuItemAction viewpointListAction = new MenuItemAction("Open Viewpoint List") {
+			@Override
+			public void run() {
+				currentConfig.viewPtState.getViewData().setVisible(true);
+				currentConfig.viewPtState.open();
+			}
+		};
+		menu.add(viewpointListAction);
 		menu.addSeparator();
 
 		MenuItemAction bgColAction = new MenuItemAction("Change Background Color") {
@@ -533,7 +540,7 @@ public class MainWindow extends JFrame {
 		measuringAction.setEnabled(true);
 		coordAction.setEnabled(true);
 		coordAction.setSelected(World.getInstance().getUseLonLat());
-		viewpointAction.setEnabled(true);
+		onFootAction.setEnabled(true);
 		zoomAction.setEnabled(true);
 		gotoMarble.setEnabled(true);
 		resetAction.setEnabled(true);
@@ -565,18 +572,6 @@ public class MainWindow extends JFrame {
 				view.setMode();
 			}
 		}
-	}
-	
-	/**
-	 * Update the viewpoint icon when changing to hike mode.
-	 */
-	public void setViewpointMode(boolean isHike) {
-		if (isHike)
-			viewpointAction.setIcon(Icons.getImageIcon("viewpointonfoot.png"));
-		else
-			viewpointAction.setIcon(Icons.getImageIcon("viewpoint.png"));
-		zoomAction.enableZoom(isHike);
-		zoomAction.setEnabled(!isHike);
 	}
 
 	/**

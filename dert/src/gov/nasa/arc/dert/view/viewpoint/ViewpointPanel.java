@@ -240,20 +240,20 @@ public class ViewpointPanel extends JPanel {
 		panel.add(label);
 		hike = new JCheckBox("");
 		hike.setSelected(controller.getViewpointNode().isHikeMode());
-		hike.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				if (!controller.getViewpointNode().setHikeMode(hike.isSelected())) {
-					Toolkit.getDefaultToolkit().beep();
-					hike.setSelected(!hike.isSelected());
-				}
-				else {
-					setEditing(true);
-					controller.updateLookAt();
-					updateData(list.getSelectedIndex() >= 0);
-				}
-			}
-		});
+//		hike.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent event) {
+//				if (!controller.getViewpointNode().setHikeMode(hike.isSelected())) {
+//					Toolkit.getDefaultToolkit().beep();
+//					hike.setSelected(!hike.isSelected());
+//				}
+//				else {
+//					setEditing(true);
+//					controller.updateLookAt();
+//					updateData(list.getSelectedIndex() >= 0);
+//				}
+//			}
+//		});
 		panel.add(hike);
 		current = new JButton("Current");
 		current.addActionListener(new ActionListener() {

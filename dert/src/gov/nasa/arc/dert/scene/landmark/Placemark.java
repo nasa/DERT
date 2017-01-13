@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.scene.landmark;
 
 import gov.nasa.arc.dert.icon.Icons;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scenegraph.BillboardMarker;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
@@ -96,7 +97,7 @@ public class Placemark extends BillboardMarker implements Landmark {
 	@Override
 	public double getSeekPointAndDistance(Vector3 point) {
 		point.set(getTranslation());
-		return (getRadius() * 1.5);
+		return (getSize()*10*Landscape.getInstance().getPixelWidth());
 	}
 
 	/**

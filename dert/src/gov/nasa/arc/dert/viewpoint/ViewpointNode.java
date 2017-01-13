@@ -11,6 +11,7 @@ import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.view.world.CenterScale;
 import gov.nasa.arc.dert.view.world.RGBAxes;
 
+import java.awt.Toolkit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.ardor3d.bounding.BoundingSphere;
@@ -133,26 +134,24 @@ public class ViewpointNode
 		}
 		azimuth = 0;
 		if (hikeMode) {
-			hikeMode = false;
-			camera.setMaxNearPlane(Float.MAX_VALUE);
-			Dert.getMainWindow().setViewpointMode(hikeMode);
-//			location.set(seekPoint.getX(), seekPoint.getY()-distance, 0);
-//			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
-//			if (Double.isNaN(z))
-//				z = seekPoint.getZ()+distance;
-//			location.setZ(z);
-//			tmpVec.set(seekPoint);
-//			tmpVec.subtractLocal(location);			
-//			tmpVec.normalizeLocal();
-//			Vector3 angle = MathUtil.directionToAzEl(tmpVec, null);
-//			elevation = ELEV_HOME+angle.getY();
-//			System.err.println("ViewpointNode.seek "+elevation);
-//			rotateCameraAroundLocation(location);
+			location.set(seekPoint.getX(), seekPoint.getY()-distance, 0);
+			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
+			if (Double.isNaN(z)) {
+				Toolkit.getDefaultToolkit().beep();
+				return;
+			}
+			location.setZ(z+zOffset);
+			tmpVec.set(seekPoint);
+			tmpVec.subtractLocal(location);			
+			tmpVec.normalizeLocal();
+			Vector3 angle = MathUtil.directionToAzEl(tmpVec, null);
+			elevation = ELEV_HOME+angle.getY();
+			rotateCameraAroundLocation(location);
 		}
-//		else {
+		else {
 			elevation = 1.25;
 			rotateCameraAroundLookAtPoint(seekPoint, distance);
-//		}
+		}
 		
 //		if (hikeMode) {
 //			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
@@ -427,19 +426,14 @@ public class ViewpointNode
 	 * @param dy
 	 */
 	public void drag(double dx, double dy) {
+		workVec.set(-dx, -dy, 0);
+		workRot.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
+		workRot.applyPost(workVec, workVec);
 		if (hikeMode) {
-			workVec.set(-dx, -dy, 0);
-			workRot.fromAngleNormalAxis(azimuth, Vector3.UNIT_Z);
-			workRot.applyPost(workVec, workVec);
-//			workVec.multiplyLocal(camera.getPixelSizeAt(camera.getLookAt(), true));
 			workVec.multiplyLocal(zOffset);
 		}
 		else {
-			workVec.set(-dx, -dy, 0);
-			workRot.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
-			workRot.applyPost(workVec, workVec);
 			workVec.multiplyLocal(2*camera.getPixelSizeAt(camera.getLookAt(), true));
-//			System.err.println("ViewpointNode.drag "+workVec+" "+camera.getPixelSizeAt(camera.getLookAt(), true)+" "+camera.getLookAt());
 		}
 		translate(workVec);
 	}
@@ -450,24 +444,29 @@ public class ViewpointNode
 	 * @param zDelta
 	 */
 	public void dolly(double zDelta) {
-		double distance = camera.getDistanceToCoR();
-		zDelta = zDelta * distance * 0.01;
-		if (((distance + zDelta) < closestDistance) && (zDelta < 0)) {
-			return;
+		if (hikeMode) {
+			drag(0, zDelta);
 		}
-		direction.set(camera.getDirection());
-		location.set(camera.getLocation());
-		location.subtractLocal(direction.multiplyLocal(zDelta));
-		distance = location.distance(sceneBounds.getCenter());
-		if ((distance > sceneBounds.getRadius() * 4) && (zDelta > 0)) {
-			return;
+		else {
+			double distance = camera.getDistanceToCoR();
+			zDelta = zDelta * distance * 0.01;
+			if (((distance + zDelta) < closestDistance) && (zDelta < 0)) {
+				return;
+			}
+			direction.set(camera.getDirection());
+			location.set(camera.getLocation());
+			location.subtractLocal(direction.multiplyLocal(zDelta));
+			distance = location.distance(sceneBounds.getCenter());
+			if ((distance > sceneBounds.getRadius() * 4) && (zDelta > 0)) {
+				return;
+			}
+			camera.setLocation(location);
+			updateFromCamera();
+			updateCrosshair();
+			updateGeometricState(0);
+			changed.set(true);
+			updateStatus();
 		}
-		camera.setLocation(location);
-		updateFromCamera();
-		updateCrosshair();
-		updateGeometricState(0);
-		changed.set(true);
-		updateStatus();
 	}
 
 	/**
@@ -509,7 +508,6 @@ public class ViewpointNode
 	 */
 	public void setViewpoint(ViewpointStore vps, boolean strict, boolean vpSelected) {
 		strictFrustum = strict;
-		hikeMode = vps.hikeMode;
 		zOffset = vps.zOffset;
 		azimuth = vps.azimuth;
 		elevation = vps.elevation+ELEV_HOME;
@@ -519,7 +517,7 @@ public class ViewpointNode
 			camera.setFrustum(vps.frustumNear, vps.frustumFar, vps.frustumLeft, vps.frustumRight, vps.frustumTop,
 				vps.frustumBottom);
 		}
-		if (hikeMode)
+		if (vps.hikeMode)
 			rotateCameraAroundLocation(vps.location);
 		else
 			rotateCameraAroundLookAtPoint(vps.lookAt, vps.lookAt.distance(vps.location));
@@ -528,7 +526,6 @@ public class ViewpointNode
 		updateGeometricState(0);
 		updateOverlay();
 		changed.set(true);
-		Dert.getMainWindow().setViewpointMode(hikeMode);
 	}
 	
 	/**
@@ -832,20 +829,17 @@ public class ViewpointNode
 	}
 	
 	public boolean setHikeMode(boolean hikeMode) {
-		this.hikeMode = hikeMode;
 		if (hikeMode) {
-			camera.setMaxNearPlane(1);
 			ReadOnlyVector3 trans = camera.getLookAt();
 			double z = Landscape.getInstance().getZ(trans.getX(), trans.getY());
 			if (Double.isNaN(z))
 				return(false);
-			if (Landscape.getInstance().getPixelScale() > 1)
-				zOffset = 0.02;
-			else
-				zOffset = 2;
+			this.hikeMode = hikeMode;
+			camera.setMaxNearPlane(1);
+			zOffset = 2*Landscape.getInstance().getPixelWidth();
 			location.set(trans);
 			location.setZ(z + zOffset);
-			camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
+//			camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
 			if (mapMode) {
 				mapMode = false;
 				camera.setProjectionMode(ProjectionMode.Perspective);				
@@ -862,9 +856,10 @@ public class ViewpointNode
 			changed.set(true);			
 			updateStatus();
 		}
-		else
+		else {
 			camera.setMaxNearPlane(Float.MAX_VALUE);
-		Dert.getMainWindow().setViewpointMode(hikeMode);
+			this.hikeMode = hikeMode;
+		}
 		return(true);
 	}
 	

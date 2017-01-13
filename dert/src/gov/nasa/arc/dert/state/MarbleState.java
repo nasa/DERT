@@ -34,7 +34,7 @@ public class MarbleState extends MapElementState {
 		viewData = new ViewData(-1, -1, 400, 200, true);
 		labelVisible = false;
 		color = Color.green;
-		size = 0.5;
+		size = 0.75;
 	}
 	
 	/**

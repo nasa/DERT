@@ -30,6 +30,8 @@ import com.ardor3d.scenegraph.hint.CullHint;
  * label.
  */
 public abstract class Marker extends Movable implements ViewDependent {
+	
+	public static double PIXEL_SIZE;
 
 	// marker size
 	protected double size = 1;

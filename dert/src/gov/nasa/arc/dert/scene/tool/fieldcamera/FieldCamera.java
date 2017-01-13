@@ -9,6 +9,7 @@ import gov.nasa.arc.dert.scene.tool.Tool;
 import gov.nasa.arc.dert.scenegraph.HiddenLine;
 import gov.nasa.arc.dert.scenegraph.ImageQuad;
 import gov.nasa.arc.dert.scenegraph.LineSegment;
+import gov.nasa.arc.dert.scenegraph.Marker;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.scenegraph.text.RasterText;
 import gov.nasa.arc.dert.scenegraph.text.Text.AlignType;
@@ -574,7 +575,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 */
 	@Override
 	public void update(BasicCamera camera) {
-		scale = camera.getPixelSizeAt(getWorldTranslation(), true) * PIXEL_SIZE;
+		scale = camera.getPixelSizeAt(getWorldTranslation(), true) * Marker.PIXEL_SIZE;
 		if (Math.abs(scale - oldScale) > 0.0000001) {
 			oldScale = scale;
 			scaleShape(scale);

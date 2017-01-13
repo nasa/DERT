@@ -116,7 +116,7 @@ public class Marble extends FigureMarker implements MapElement {
 	@Override
 	public double getSeekPointAndDistance(Vector3 point) {
 		point.set(getTranslation());
-		return (getRadius() * 3);
+		return (getSize()*10*Landscape.getInstance().getPixelWidth());
 	}
 
 	/**

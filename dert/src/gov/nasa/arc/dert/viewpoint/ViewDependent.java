@@ -6,8 +6,6 @@ package gov.nasa.arc.dert.viewpoint;
  */
 public interface ViewDependent {
 
-	static public int PIXEL_SIZE = 18;
-
 	/**
 	 * Update this object
 	 * 

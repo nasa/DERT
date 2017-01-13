@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.scene.landmark;
 
 import gov.nasa.arc.dert.icon.Icons;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.state.FigureState;
@@ -69,7 +70,7 @@ public class Figure extends FigureMarker implements Landmark {
 	@Override
 	public double getSeekPointAndDistance(Vector3 point) {
 		point.set(getTranslation());
-		return (getRadius() * 1.5);
+		return (getSize()*10*Landscape.getInstance().getPixelWidth());
 	}
 
 	/**

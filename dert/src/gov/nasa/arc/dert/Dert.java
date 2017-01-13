@@ -27,6 +27,7 @@ import gov.nasa.arc.dert.scene.tool.RadialGrid;
 import gov.nasa.arc.dert.scene.tool.Tools;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
+import gov.nasa.arc.dert.scenegraph.Marker;
 import gov.nasa.arc.dert.scenegraph.text.BitmapFont;
 import gov.nasa.arc.dert.state.Configuration;
 import gov.nasa.arc.dert.state.ConfigurationManager;
@@ -239,12 +240,13 @@ public class Dert {
 		// First determine font size.
 		int fontSize = StringUtil.getIntegerValue(dertProperties, "RasterText.FontSize", true, 0, false);
 		// Calculate from screen resolution.
+		double hgt = mainWindow.getWorldView().getScenePanel().getHeightScale()*Toolkit.getDefaultToolkit().getScreenResolution();
 		if (fontSize == 0) {
-			double hgt = mainWindow.getWorldView().getScenePanel().getHeightScale()*Toolkit.getDefaultToolkit().getScreenResolution();
 			fontSize = (int)Math.ceil(hgt/10);
 			if (fontSize%2 == 1)
 				fontSize ++;
 		}
+		Marker.PIXEL_SIZE = hgt/7.5;
 		String fName = StringUtil.getStringValue(dertProperties, "RasterText.Font", "Courier New", false);
 		Console.println("Building font: "+fName+" "+fontSize);
 		BitmapFont.createInstance(fName, Font.BOLD, fontSize);
