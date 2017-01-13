@@ -131,9 +131,34 @@ public class ViewpointNode
 		if (Double.isNaN(distance)) {
 			return;
 		}
-		azimuth = 6.25;
-		elevation = 1.25;
-		rotateCameraAroundLookAtPoint(seekPoint, distance);
+		azimuth = 0;
+		if (hikeMode) {
+			hikeMode = false;
+			camera.setMaxNearPlane(Float.MAX_VALUE);
+			Dert.getMainWindow().setViewpointMode(hikeMode);
+//			location.set(seekPoint.getX(), seekPoint.getY()-distance, 0);
+//			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
+//			if (Double.isNaN(z))
+//				z = seekPoint.getZ()+distance;
+//			location.setZ(z);
+//			tmpVec.set(seekPoint);
+//			tmpVec.subtractLocal(location);			
+//			tmpVec.normalizeLocal();
+//			Vector3 angle = MathUtil.directionToAzEl(tmpVec, null);
+//			elevation = ELEV_HOME+angle.getY();
+//			System.err.println("ViewpointNode.seek "+elevation);
+//			rotateCameraAroundLocation(location);
+		}
+//		else {
+			elevation = 1.25;
+			rotateCameraAroundLookAtPoint(seekPoint, distance);
+//		}
+		
+//		if (hikeMode) {
+//			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
+//			double zd = 
+//			location.setZ(z+zOffset);
+//		}
 		
 //		// Calculate a camera location.
 //		Vector3 loc = new Vector3(1, -1, 0.707);
@@ -598,6 +623,7 @@ public class ViewpointNode
 		location.addLocal(lookAt);
 		// set the camera location and direction
 		camera.setFrame(location, rotate);
+		camera.setLookAt(lookAt);
 		// update this node
 		updateFromCamera();
 		updateGeometricState(0);

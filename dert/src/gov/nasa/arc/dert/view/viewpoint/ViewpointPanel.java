@@ -217,7 +217,7 @@ public class ViewpointPanel extends JPanel {
 		flyListButton = new ButtonAction("Fly through the viewpoint list", "Fly", null) {
 			@Override
 			public void run() {
-				controller.flyThrough(null, (JDialog)state.getViewData().getViewWindow());
+				controller.flyThrough(null, (JDialog)getTopLevelAncestor());
 			}
 		};
 		flyListButton.setEnabled(viewpointList.size() > 1);

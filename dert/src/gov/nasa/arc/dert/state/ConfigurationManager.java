@@ -103,7 +103,7 @@ public class ConfigurationManager {
 		if (currentConfig.toString() == null) {
 			return (true);
 		}
-		int answer = JOptionPane.showConfirmDialog(null, "Save current configuration?", "Save Configuration",
+		int answer = JOptionPane.showConfirmDialog(Dert.getMainWindow(), "Save current configuration?", "Save Configuration",
 			JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, Icons.getImageIcon("dert_24.png"));
 		// cancelled
 		if (answer == JOptionPane.CANCEL_OPTION) {
