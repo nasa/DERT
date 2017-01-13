@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.scene;
 
 import gov.nasa.arc.dert.landscape.Landscape;
+import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.scenegraph.DirectionArrow;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
@@ -98,10 +99,15 @@ public class Marble extends FigureMarker implements MapElement {
 			setNormal(normal);
 		}
 		setTranslation(pos);
+		location.set(pos);
 		if (camera != null) {
 			update(camera);
 		}
 		state.updateText();
+	}
+	
+	public void landscapeChanged(QuadTree quadTree) {
+		updateElevation(quadTree);
 	}
 
 	/**

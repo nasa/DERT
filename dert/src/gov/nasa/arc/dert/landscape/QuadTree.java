@@ -382,6 +382,7 @@ public class QuadTree extends Node {
 			} else if (count == 4) {
 				setChildren(qt);
 				for (int i = 0; i < 4; ++i) {
+					World.getInstance().getMarble().landscapeChanged(child[i]);
 					World.getInstance().getLandmarks().landscapeChanged(child[i]);
 					World.getInstance().getFeatureSets().landscapeChanged(child[i]);
 				}
@@ -490,6 +491,7 @@ public class QuadTree extends Node {
 
 	private void merge() {
 		clearChildren();
+		World.getInstance().getMarble().landscapeChanged(this);
 		World.getInstance().getLandmarks().landscapeChanged(this);
 		World.getInstance().getFeatureSets().landscapeChanged(this);
 	}
