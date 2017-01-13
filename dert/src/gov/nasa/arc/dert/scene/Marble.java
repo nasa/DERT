@@ -110,7 +110,7 @@ public class Marble extends FigureMarker implements MapElement {
 	@Override
 	public double getSeekPointAndDistance(Vector3 point) {
 		point.set(getTranslation());
-		return (getRadius() * 1.5);
+		return (getRadius() * 3);
 	}
 
 	/**

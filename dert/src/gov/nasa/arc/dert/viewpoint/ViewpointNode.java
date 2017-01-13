@@ -131,26 +131,30 @@ public class ViewpointNode
 		if (Double.isNaN(distance)) {
 			return;
 		}
+		azimuth = 6.25;
+		elevation = 1.25;
+		rotateCameraAroundLookAtPoint(seekPoint, distance);
 		
-		// Calculate a camera location.
-		Vector3 loc = new Vector3(1, 1, 1);
-		loc.scaleAddLocal(distance, seekPoint);
-		if (hikeMode) {
-			double z = Landscape.getInstance().getZ(loc.getX(), loc.getY());
-			loc.setZ(z+zOffset);
-		}
+//		// Calculate a camera location.
+//		Vector3 loc = new Vector3(1, -1, 0.707);
+//		loc.scaleAddLocal(distance, seekPoint);
+//		if (hikeMode) {
+//			double z = Landscape.getInstance().getZ(loc.getX(), loc.getY());
+//			loc.setZ(z+zOffset);
+//		}
 		
 		// Set the camera frame.
 		// Adjust tilt so we are parallel with ground plane.
-		Vector3 angle = camera.setFrameAndLookAt(loc, seekPoint, ELEV_HOME);
-		if (angle == null)
-			throw new IllegalStateException("Camera location and lookat point are the same.");
-		azimuth = angle.getX();
-		elevation = angle.getY();
+//		Vector3 angle = camera.setFrameAndLookAt(loc, seekPoint, ELEV_HOME);
+//		System.err.println("ViewpointNode.seek "+mapElement.getName()+" "+seekPoint+" "+camera.getLookAt()+" "+loc);
+//		if (angle == null)
+//			throw new IllegalStateException("Camera location and lookat point are the same.");
+//		azimuth = angle.getX();
+//		elevation = angle.getY();
 		camera.setFrustum(sceneBounds);
 		
 		// update this node
-		updateFromCamera();
+//		updateFromCamera();
 		updateCrosshair();
 		updateGeometricState(0);
 		changed.set(true);

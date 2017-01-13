@@ -708,10 +708,10 @@ public class BasicCamera extends Camera {
 		Vector3 angle = MathUtil.directionToAzEl(direction, null);
 		
 		// adjust with optional tilt and get the new camera direction
-		if (tilt != 0) {
-			angle.setY(angle.getY()+tilt);
-			MathUtil.azElToDirection(angle.getX(), angle.getY(), direction);
-		}
+//		if (tilt != 0) {
+//			angle.setY(angle.getY()+tilt);
+//			MathUtil.azElToDirection(angle.getX(), angle.getY(), direction);
+//		}
 		
 		// rotate the camera frame
 		Matrix3 rotMat = Matrix3.fetchTempInstance();
@@ -724,9 +724,10 @@ public class BasicCamera extends Camera {
 		Matrix3.releaseTempInstance(workMat);
 		
 		// update the lookat point
-		double dist = look.distance(loc);
-		lookAt.set(direction);
-		lookAt.scaleAddLocal(dist, loc);
+//		double dist = look.distance(loc);
+//		lookAt.set(direction);
+//		lookAt.scaleAddLocal(dist, loc);
+		lookAt.set(look);
 		
 		return(angle);
 	}
