@@ -265,7 +265,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(new JLabel(filler));
 
 		// Open the viewpoint view.
-		onFootAction = new ActivateOnFootAction();
+		onFootAction = ActivateOnFootAction.getInstance();
 		onFootAction.setEnabled(false);
 		toolBar.add(onFootAction);
 

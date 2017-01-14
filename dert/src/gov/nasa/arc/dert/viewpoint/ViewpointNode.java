@@ -5,6 +5,7 @@ import gov.nasa.arc.dert.action.edit.CoordListener;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.scenegraph.Marker;
 import gov.nasa.arc.dert.scenegraph.text.RasterText;
 import gov.nasa.arc.dert.scenegraph.text.Text.AlignType;
 import gov.nasa.arc.dert.util.MathUtil;
@@ -85,7 +86,7 @@ public class ViewpointNode
 	 */
 	public ViewpointNode(String name, ViewpointStore store) {
 		setName(name);
-		setCamera(new BasicCamera(1, 1, 45, 1, 0));
+		setCamera(new BasicCamera(1, 1, 45, 1));
 		crosshair = new RGBAxes();
 		createOverlays();
 		if (store != null) {
@@ -153,44 +154,37 @@ public class ViewpointNode
 			rotateCameraAroundLookAtPoint(seekPoint, distance);
 		}
 		
-//		if (hikeMode) {
-//			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
-//			double zd = 
-//			location.setZ(z+zOffset);
-//		}
-		
-//		// Calculate a camera location.
-//		Vector3 loc = new Vector3(1, -1, 0.707);
-//		loc.scaleAddLocal(distance, seekPoint);
-//		if (hikeMode) {
-//			double z = Landscape.getInstance().getZ(loc.getX(), loc.getY());
-//			loc.setZ(z+zOffset);
-//		}
-		
-		// Set the camera frame.
-		// Adjust tilt so we are parallel with ground plane.
-//		Vector3 angle = camera.setFrameAndLookAt(loc, seekPoint, ELEV_HOME);
-//		System.err.println("ViewpointNode.seek "+mapElement.getName()+" "+seekPoint+" "+camera.getLookAt()+" "+loc);
-//		if (angle == null)
-//			throw new IllegalStateException("Camera location and lookat point are the same.");
-//		azimuth = angle.getX();
-//		elevation = angle.getY();
 		camera.setFrustum(sceneBounds);
 		
 		// update this node
-//		updateFromCamera();
-		updateCrosshair();
+		updateFromCamera();
 		updateGeometricState(0);
+		updateCrosshair();
 		changed.set(true);
 	}
 	
+	/**
+	 * This method uses the localToWorld transform so use it after a call to updateGeometricState.
+	 */
 	private void updateCrosshair() {
-		tmpVec.set(camera.getLookAt());
-		double scale = camera.getPixelSizeAt(tmpVec, true) * 20;
+		// Locate the cursor just outside of the near plane.
+		// Determine the size of the cursor.
+		tmpVec.set(Vector3.UNIT_Z);
+		double d = camera.getFrustumNear()+Landscape.getInstance().getPixelWidth();
+		tmpVec.multiplyLocal(camera.getFrustumNear()+Landscape.getInstance().getPixelWidth());
+		localToWorld(tmpVec, tmpVec);
+		double scale = camera.getPixelSizeAt(tmpVec, true) * Marker.PIXEL_SIZE;
 		if (scale <= 0)
 			scale = 1;
+		
+		// Add the size to the near plane and recalculate the location so the cursor isn't clipped.
+		tmpVec.set(Vector3.UNIT_Z);
+		tmpVec.multiplyLocal(d+2*scale);
+		localToWorld(tmpVec, tmpVec);
+
 		crosshair.setScale(scale);
 		crosshair.setTranslation(tmpVec);
+		
 		crosshair.updateWorldTransform(false);
 	}
 	
@@ -340,8 +334,8 @@ public class ViewpointNode
 		camera.setLocation(location);
 		camera.setLookAt(lookAt);
 		updateFromCamera();
-		updateCrosshair();
 		updateGeometricState(0);
+		updateCrosshair();
 		changed.set(true);
 		updateStatus();
 	}
@@ -350,7 +344,7 @@ public class ViewpointNode
 	 * Update the scene bounds data.
 	 */
 	public void setSceneBounds() {
-		BoundingVolume bounds = World.getInstance().getRoot().getWorldBound();
+		BoundingVolume bounds = World.getInstance().getContents().getWorldBound();
 		sceneBounds.setRadius(bounds.getRadius());
 		sceneBounds.setCenter(bounds.getCenter());
 		closestDistance = 0.0001 * sceneBounds.getRadius();
@@ -397,20 +391,22 @@ public class ViewpointNode
 //		System.err.println("ViewpointNode.reset A: rotate="+rotate+" azimuth="+azimuth+" elevation="+elevation);
 //		System.err.println("ViewpointNode.reset A: lookAt="+camera.getLookAt()+" location="+camera.getLocation()+" magnification="+camera.getMagnification());
 		hikeMode = false;
+		ActivateOnFootAction.getInstance().enableHike(false);
+		World.getInstance().getContents().updateGeometricState(0);
 		setSceneBounds();
 		rotate.setIdentity();
 		azimuth = 0;
 		elevation = 0;
 		lookAt.set(Landscape.getInstance().getCenter());
-		location.set(0.0, 0.0, sceneBounds.getRadius());
+		location.set(0.0, 0.0, Landscape.getInstance().getWorldBound().getRadius());
 		location.addLocal(lookAt);
 		camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
 		camera.setFrame(location, rotate);
 		camera.setLookAt(lookAt);
 		camera.setFrustum(sceneBounds);
 		updateFromCamera();
-		updateCrosshair();
 		updateGeometricState(0);
+		updateCrosshair();
 		Dert.getMainWindow().updateCompass(azimuth);
 		updateOverlay();
 		changed.set(true);
@@ -462,8 +458,8 @@ public class ViewpointNode
 			}
 			camera.setLocation(location);
 			updateFromCamera();
-			updateCrosshair();
 			updateGeometricState(0);
+			updateCrosshair();
 			changed.set(true);
 			updateStatus();
 		}
@@ -508,6 +504,7 @@ public class ViewpointNode
 	 */
 	public void setViewpoint(ViewpointStore vps, boolean strict, boolean vpSelected) {
 		strictFrustum = strict;
+		hikeMode = vps.hikeMode;
 		zOffset = vps.zOffset;
 		azimuth = vps.azimuth;
 		elevation = vps.elevation+ELEV_HOME;
@@ -517,13 +514,14 @@ public class ViewpointNode
 			camera.setFrustum(vps.frustumNear, vps.frustumFar, vps.frustumLeft, vps.frustumRight, vps.frustumTop,
 				vps.frustumBottom);
 		}
-		if (vps.hikeMode)
+		if (hikeMode)
 			rotateCameraAroundLocation(vps.location);
 		else
 			rotateCameraAroundLookAtPoint(vps.lookAt, vps.lookAt.distance(vps.location));
+		ActivateOnFootAction.getInstance().setHikeIcon(hikeMode);
 		updateFromCamera();
-		updateCrosshair();
 		updateGeometricState(0);
+		updateCrosshair();
 		updateOverlay();
 		changed.set(true);
 	}
@@ -578,10 +576,10 @@ public class ViewpointNode
 		store.hikeMode = hikeMode;
 		store.set(camera);
 		store.zOffset = zOffset;
-		if (hikeMode) {
-			store.distance = 0;
-			store.lookAt.set(camera.getLocation());
-		}
+//		if (hikeMode) {
+//			store.distance = 0;
+//			store.lookAt.set(camera.getLocation());
+//		}
 		return (store);
 	}
 
@@ -624,6 +622,7 @@ public class ViewpointNode
 		// update this node
 		updateFromCamera();
 		updateGeometricState(0);
+		updateCrosshair();
 		changed.set(true);
 		Dert.getMainWindow().updateCompass(azimuth);
 	}
@@ -632,15 +631,21 @@ public class ViewpointNode
 	 * Rotate around the viewpoint location.
 	 */
 	private void rotateCameraAroundLocation(ReadOnlyVector3 loc) {
+		double d = camera.getLookAt().distance(camera.getLocation());
 		// create rotation matrix from azimuth and elevation
 		rotate.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
 		workRot.fromAngleNormalAxis(elevation, Vector3.UNIT_X);
 		rotate.multiplyLocal(workRot);
 		// set the camera location and direction
 		camera.setFrame(loc, rotate);
+		tmpVec.set(Vector3.UNIT_Z);
+		tmpVec.multiplyLocal(d);
+		localToWorld(tmpVec, tmpVec);
+		camera.setLookAt(tmpVec);
 		// update this node
 		updateFromCamera();
 		updateGeometricState(0);
+		updateCrosshair();
 		changed.set(true);
 		Dert.getMainWindow().updateCompass(azimuth);
 	}
@@ -659,8 +664,8 @@ public class ViewpointNode
 		camera.setLocation(loc);
 		camera.setLookAt(lookAt);
 		updateFromCamera();
-		updateCrosshair();
 		updateGeometricState(0);
+		updateCrosshair();
 		changed.set(true);
 		return (true);
 	}
@@ -684,8 +689,8 @@ public class ViewpointNode
 		setAzAndEl(angle.getX(), angle.getY() + Math.PI / 2);
 		rotateCameraAroundLocation(camera.getLocation());
 		updateFromCamera();
-		updateCrosshair();
 		updateGeometricState(0);
+		updateCrosshair();
 		changed.set(true);
 	}
 
@@ -705,8 +710,8 @@ public class ViewpointNode
 //		setTranslation(loc);
 		camera.setLocation(location);
 		updateFromCamera();
-		updateCrosshair();
 		updateGeometricState(0);
+		updateCrosshair();
 		changed.set(true);
 		return (true);
 	}
@@ -782,8 +787,8 @@ public class ViewpointNode
 	 */
 	public void magnify(int delta) {
 		camera.magnify(delta);
-		updateCrosshair();
 		updateGeometricState(0);
+		updateCrosshair();
 		changed.set(true);
 		updateStatus();
 	}
@@ -798,8 +803,8 @@ public class ViewpointNode
 		camera.setLookAt(cor);
 		rotate(0, 0);
 		updateFromCamera();
-		updateCrosshair();
 		updateGeometricState(0);
+		updateCrosshair();
 		changed.set(true);
 	}
 
@@ -811,8 +816,8 @@ public class ViewpointNode
 	public void setLookAt(ReadOnlyVector3 lookAt) {
 		camera.setLookAt(lookAt);
 		updateFromCamera();
-		updateCrosshair();
 		updateGeometricState(0);
+		updateCrosshair();
 		changed.set(true);
 	}
 	
@@ -851,8 +856,8 @@ public class ViewpointNode
 			rotate(0, 0);
 			camera.setFrame(location, rotate);
 			updateFromCamera();
-			updateCrosshair();
 			updateGeometricState(0);
+			updateCrosshair();
 			changed.set(true);			
 			updateStatus();
 		}

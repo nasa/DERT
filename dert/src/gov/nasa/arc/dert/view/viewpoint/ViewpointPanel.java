@@ -176,7 +176,7 @@ public class ViewpointPanel extends JPanel {
 		addButton = new ButtonAction("Add the current viewpoint to the list", "Add", null) {
 			@Override
 			public void run() {
-				String answer = JOptionPane.showInputDialog(null, "Please enter a name for this viewpoint.",
+				String answer = JOptionPane.showInputDialog((JDialog)getTopLevelAncestor(), "Please enter a name for this viewpoint.",
 					"Viewpoint" + viewpointList.size());
 				if (answer != null) {
 					int index = list.getSelectedIndex();
@@ -189,6 +189,7 @@ public class ViewpointPanel extends JPanel {
 					list.setListData(viewpointList);
 					list.setSelectedIndex(index);
 					flyListButton.setEnabled(viewpointList.size() > 1);
+					viewpointSelected();
 				}
 			}
 		};
@@ -200,7 +201,7 @@ public class ViewpointPanel extends JPanel {
 				String str = currentVPS.toString();
 				if (vpList.length > 1)
 					str += ". . . ";
-				int answer = JOptionPane.showConfirmDialog(Dert.getMainWindow(), "Delete " + str + "?",
+				int answer = JOptionPane.showConfirmDialog((JDialog)getTopLevelAncestor(), "Delete " + str + "?",
 					"Confirm Delete", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
 					Icons.getImageIcon("delete.png"));
 				if (answer == JOptionPane.OK_OPTION) {

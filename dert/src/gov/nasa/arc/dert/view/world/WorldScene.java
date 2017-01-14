@@ -85,7 +85,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		viewDependentList = new ArrayList<ViewDependent>();
 		world.attachChild(viewpointNode);
 		crosshair = viewpointNode.getCrosshair();
-		world.attachChild(crosshair);
+//		world.attachChild(crosshair);
 		textOverlay = viewpointNode.getTextOverlay();
 		centerScale = viewpointNode.getCenterScale();
 		CoordAction.listenerList.add(viewpointNode);

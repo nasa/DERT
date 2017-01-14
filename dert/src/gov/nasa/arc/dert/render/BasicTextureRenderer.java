@@ -40,7 +40,7 @@ public class BasicTextureRenderer extends JoglTextureRenderer {
 		super(width, height, depthBits, samples, parentRenderer, caps);
 
 		size = _width * _height;
-		basicCamera = new BasicCamera(_width, _height, 90, _width / (double) _height, 0);
+		basicCamera = new BasicCamera(_width, _height, 90, _width / (double) _height);
 		basicCamera.setFrustum(1.0f, 1000.0f, -0.50f, 0.50f, 0.50f, -0.50f);
 		final Vector3 loc = new Vector3(0.0f, 0.0f, 0.0f);
 		final Vector3 left = new Vector3(-1.0f, 0.0f, 0.0f);

@@ -56,7 +56,7 @@ public class BasicCamera extends Camera {
 	 * @param height
 	 */
 	public BasicCamera(int width, int height) {
-		this(width, height, DEFAULT_FOVX, width / (double) height, 0);
+		this(width, height, DEFAULT_FOVX, width / (double) height);
 	}
 
 	/**
@@ -66,9 +66,8 @@ public class BasicCamera extends Camera {
 	 * @param height
 	 * @param fovX
 	 * @param aspect
-	 * @param distance
 	 */
-	public BasicCamera(int width, int height, double fovX, double aspect, double distance) {
+	public BasicCamera(int width, int height, double fovX, double aspect) {
 		super(width, height);
 		this.fovX = fovX;
 		this.aspect = aspect;
@@ -259,7 +258,7 @@ public class BasicCamera extends Camera {
 	@Override
 	public void setFrustum(final double near, final double far, final double left, final double right,
 		final double top, final double bottom) {
-		//System.err.println("BasicCamera.setFrustum "+near+" "+far+" "+left+" "+right+" "+bottom+" "+top);
+//		System.err.println("BasicCamera.setFrustum "+near+" "+far+" "+left+" "+right+" "+bottom+" "+top);
 		_frustumNear = near;
 		_frustumFar = far;
 		_frustumLeft = left / magFactor[magIndex];
