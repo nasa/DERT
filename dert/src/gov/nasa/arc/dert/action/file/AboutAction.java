@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.action.file;
 
+import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.MenuItemAction;
 
 /**
@@ -23,7 +24,7 @@ public class AboutAction extends MenuItemAction {
 
 	@Override
 	public void run() {		
-		AboutBox aboutBox = new AboutBox(version, "DERT");
+		AboutBox aboutBox = new AboutBox(Dert.getMainWindow(), version, "DERT");
 		aboutBox.open();
 	}
 

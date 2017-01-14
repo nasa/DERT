@@ -187,7 +187,7 @@ public class LayerFactory {
 			aboutButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					AboutBox box = new AboutBox(version, "DERT Layer Factory");
+					AboutBox box = new AboutBox(mainFrame, version, "DERT Layer Factory");
 					box.open();
 				}
 			});

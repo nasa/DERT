@@ -1,8 +1,8 @@
 package gov.nasa.arc.dert.action.file;
 
-import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.ui.TextDialog;
 
+import java.awt.Frame;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,8 +20,8 @@ public class AboutBox extends TextDialog {
 	 * @param vrsn
 	 * @param del
 	 */
-	public AboutBox(String version, String title) {
-		super(Dert.getMainWindow(), "About "+title, 650, 450, false, false);
+	public AboutBox(Frame parent, String version, String title) {
+		super(parent, "About "+title, 650, 450, false, false);
 		String aboutStr = "Desktop Exploration of Remote Terrain (DERT), version "+version+"\nIntelligent Systems Division, NASA Ames Research Center\n\n";
 		try {
 			URL url = AboutAction.class.getResource("About.txt");
