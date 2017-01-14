@@ -15,7 +15,7 @@ public class FlyThroughParameters {
 	public String imageSequencePath;
 	
 	public FlyThroughParameters() {
-		numFrames = 10;
+		numFrames = 100;
 		millisPerFrame = 100;
 		pathHeight = 5;
 		loop = false;

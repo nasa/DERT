@@ -118,7 +118,7 @@ public class FlyThroughDialog extends JDialog {
 
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(new JLabel("Number of Frames"));
-		framesSpinner = new JSpinner(new SpinnerNumberModel(100, 0, 10000, 1));
+		framesSpinner = new JSpinner(new SpinnerNumberModel(100, 10, 10000, 1));
 		panel.add(framesSpinner);
 		content.add(panel);
 
