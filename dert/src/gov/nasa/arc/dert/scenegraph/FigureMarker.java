@@ -126,7 +126,7 @@ public class FigureMarker extends Marker {
 		this.azimuth = azimuth;
 		if (shape != null) {
 			rotMat = new Matrix3();
-			shape.setRotation(rotMat.fromAngles(-Math.toRadians(tilt), 0.0, -Math.toRadians(azimuth)));
+			shape.setRotation(rotMat.fromAngles(Math.toRadians(tilt), 0.0, -Math.toRadians(azimuth)));
 		}
 	}
 
