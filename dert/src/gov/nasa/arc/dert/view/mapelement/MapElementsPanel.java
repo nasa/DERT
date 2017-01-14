@@ -166,7 +166,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
 		findButton = new JButton("Find");
 		findButton.setToolTipText("press to search map element list");
-		findButton.addActionListener(new ActionListener() {
+		ActionListener actionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				String str = searchText.getText();
@@ -184,7 +184,9 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 					tree.scrollPathToVisible(searchResult[searchIndex]);
 				}
 			}
-		});
+		};
+		findButton.addActionListener(actionListener);
+		searchText.addActionListener(actionListener);
 		buttonBar.add(findButton,
 			GBCHelper.getGBC(1, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
 		buttonBar.add(new JLabel("    "),
