@@ -36,6 +36,7 @@ public class ViewpointNode
 	implements CoordListener {
 	
 	public static final double ELEV_HOME = Math.PI/2;
+	public enum ViewpointMode {Nominal, Hike, Map}
 
 	// Viewpoint has changed
 	public AtomicBoolean changed = new AtomicBoolean();
@@ -73,7 +74,7 @@ public class ViewpointNode
 	private RasterText corText, magText, altText, locText, azElText;
 	private double textSize = 14;
 	private CenterScale centerScale;
-	private boolean mapMode, hikeMode;
+	private ViewpointMode mode;
 	private ViewpointStore oldVP;
 	private double zOffset;
 	
@@ -130,7 +131,7 @@ public class ViewpointNode
 			return;
 		}
 		azimuth = 0;
-		if (hikeMode) {
+		if (mode == ViewpointMode.Hike) {
 			location.set(seekPoint.getX(), seekPoint.getY()-distance, 0);
 			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
 			if (Double.isNaN(z)) {
@@ -145,8 +146,12 @@ public class ViewpointNode
 			elevation = ELEV_HOME+angle.getY();
 			rotateCameraAroundLocation(location);
 		}
-		else {
+		else if (mode == ViewpointMode.Nominal) {
 			elevation = 1.25;
+			rotateCameraAroundLookAtPoint(seekPoint, distance);
+		}
+		else {
+			elevation = 0;
 			rotateCameraAroundLookAtPoint(seekPoint, distance);
 		}
 		
@@ -228,7 +233,7 @@ public class ViewpointNode
 	
 	private void updateOverlay() {
 		// location of center of rotation
-		if (hikeMode)
+		if (mode == ViewpointMode.Hike)
 			tmpVec.set(camera.getLocation());
 		else
 			tmpVec.set(camera.getLookAt());
@@ -306,7 +311,7 @@ public class ViewpointNode
 		lookAt.addLocal(trans);
 		location.set(camera.getLocation());
 		location.addLocal(trans);
-		if (hikeMode) {
+		if (mode == ViewpointMode.Hike) {
 			if (!sceneBounds.contains(location))
 				return;
 			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
@@ -375,8 +380,9 @@ public class ViewpointNode
 //		System.err.println("ViewpointNode.reset A: sceneBounds="+sceneBounds+" closestDistance="+closestDistance+" hikeMode="+hikeMode);
 //		System.err.println("ViewpointNode.reset A: rotate="+rotate+" azimuth="+azimuth+" elevation="+elevation);
 //		System.err.println("ViewpointNode.reset A: lookAt="+camera.getLookAt()+" location="+camera.getLocation()+" magnification="+camera.getMagnification());
-		hikeMode = false;
-		ActivateOnFootAction.getInstance().enableHike(false);
+		if (mode == ViewpointMode.Hike)
+			mode = ViewpointMode.Nominal;
+		ViewpointMenuAction.getInstance().setModeIcon(mode);
 		World.getInstance().getContents().updateGeometricState(0);
 		setSceneBounds();
 		rotate.setIdentity();
@@ -410,7 +416,7 @@ public class ViewpointNode
 		workVec.set(-dx, -dy, 0);
 		workRot.fromAngleNormalAxis(azimuth, Vector3.NEG_UNIT_Z);
 		workRot.applyPost(workVec, workVec);
-		if (hikeMode) {
+		if (mode == ViewpointMode.Hike) {
 			workVec.multiplyLocal(zOffset);
 		}
 		else {
@@ -425,7 +431,7 @@ public class ViewpointNode
 	 * @param zDelta
 	 */
 	public void dolly(double zDelta) {
-		if (hikeMode) {
+		if (mode == ViewpointMode.Hike) {
 			drag(0, zDelta);
 		}
 		else {
@@ -457,7 +463,7 @@ public class ViewpointNode
 	 * @param dy
 	 */
 	public void translateInScreenPlane(double dx, double dy) {
-		if (hikeMode || mapMode)
+		if (mode != ViewpointMode.Nominal)
 			return;
 		double s = camera.getPixelSizeAt(camera.getLookAt(), false) * 0.5;
 		workVec.set(dx * s, dy * s, 0);
@@ -489,7 +495,7 @@ public class ViewpointNode
 	 */
 	public void setViewpoint(ViewpointStore vps, boolean strict, boolean vpSelected) {
 		strictFrustum = strict;
-		hikeMode = vps.hikeMode;
+		mode = ViewpointMode.valueOf(vps.mode);
 		zOffset = vps.zOffset;
 		azimuth = vps.azimuth;
 		elevation = vps.elevation+ELEV_HOME;
@@ -499,11 +505,11 @@ public class ViewpointNode
 			camera.setFrustum(vps.frustumNear, vps.frustumFar, vps.frustumLeft, vps.frustumRight, vps.frustumTop,
 				vps.frustumBottom);
 		}
-		if (hikeMode)
+		if (mode == ViewpointMode.Hike)
 			rotateCameraAroundLocation(vps.location);
 		else
 			rotateCameraAroundLookAtPoint(vps.lookAt, vps.lookAt.distance(vps.location));
-		ActivateOnFootAction.getInstance().setHikeIcon(hikeMode);
+		ViewpointMenuAction.getInstance().setModeIcon(mode);
 		updateFromCamera();
 		updateGeometricState(0);
 		updateCrosshair();
@@ -536,16 +542,10 @@ public class ViewpointNode
 	 * @return
 	 */
 	public ViewpointStore getViewpoint(String name) {
-		if (mapMode) {
-			ViewpointStore store = new ViewpointStore(name, oldVP);
-			return(store);
-		}
-		else {
-			ViewpointStore store = new ViewpointStore(name, camera);
-			store.zOffset = zOffset;
-			store.hikeMode = hikeMode;
-			return (store);
-		}
+		ViewpointStore store = new ViewpointStore(name, camera);
+		store.zOffset = zOffset;
+		store.mode = mode.toString();
+		return (store);
 	}
 
 	/**
@@ -558,13 +558,9 @@ public class ViewpointNode
 		if (store == null) {
 			store = new ViewpointStore();
 		}
-		store.hikeMode = hikeMode;
+		store.mode = mode.toString();
 		store.set(camera);
 		store.zOffset = zOffset;
-//		if (hikeMode) {
-//			store.distance = 0;
-//			store.lookAt.set(camera.getLocation());
-//		}
 		return (store);
 	}
 
@@ -575,10 +571,10 @@ public class ViewpointNode
 	 * @param zRotAngle
 	 */
 	public void rotate(float xRotAngle, float zRotAngle) {
-		if (mapMode)
+		if (mode == ViewpointMode.Map)
 			return;
 		setAzAndEl(azimuth + (zRotAngle * 0.5 * Math.PI / 360), elevation + (xRotAngle * 0.5 * Math.PI / 360));
-		if (hikeMode)
+		if (mode == ViewpointMode.Hike)
 			rotateCameraAroundLocation(camera.getLocation());
 		else
 			rotateCameraAroundLookAtPoint(camera.getLookAt(), camera.getDistanceToCoR());
@@ -808,35 +804,26 @@ public class ViewpointNode
 		changed.set(true);
 	}
 	
-	public void setMapMode(boolean mapMode) {
-		this.mapMode = mapMode;
-		if (mapMode) {
+	public boolean setMode(ViewpointMode mode) {
+		if (mode == ViewpointMode.Map) {
 			oldVP = getViewpoint(oldVP);
+			this.mode = mode;
 			reset();
 		}
-		else {
-			setViewpoint(oldVP, true, false);
-		}
-		changed.set(true);
-	}
-	
-	public boolean setHikeMode(boolean hikeMode) {
-		if (hikeMode) {
+		else if (mode == ViewpointMode.Hike) {
 			ReadOnlyVector3 trans = camera.getLookAt();
 			double z = Landscape.getInstance().getZ(trans.getX(), trans.getY());
 			if (Double.isNaN(z))
 				return(false);
-			this.hikeMode = hikeMode;
 			camera.setMaxNearPlane(1);
 			zOffset = 2*Landscape.getInstance().getPixelWidth();
 			location.set(trans);
 			location.setZ(z + zOffset);
-//			camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
-			if (mapMode) {
-				mapMode = false;
+			if (mode == ViewpointMode.Map) {
 				camera.setProjectionMode(ProjectionMode.Perspective);				
 				camera.setFrustum(sceneBounds);
 			}
+			this.mode = mode;
 			rotate.setIdentity();
 			azimuth = 0;
 			elevation = ELEV_HOME;
@@ -850,16 +837,16 @@ public class ViewpointNode
 		}
 		else {
 			camera.setMaxNearPlane(Float.MAX_VALUE);
-			this.hikeMode = hikeMode;
+			if (this.mode == ViewpointMode.Map)
+				setViewpoint(oldVP, true, false);
+			else
+				this.mode = mode;
 		}
+		changed.set(true);
 		return(true);
 	}
 	
-	public boolean isMapMode() {
-		return(mapMode);
-	}
-	
-	public boolean isHikeMode() {
-		return(hikeMode);
+	public ViewpointMode getMode() {
+		return(mode);
 	}
 }

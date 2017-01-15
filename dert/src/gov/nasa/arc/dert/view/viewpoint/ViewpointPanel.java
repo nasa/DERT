@@ -11,7 +11,6 @@ import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.ui.Vector3TextField;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
-import gov.nasa.arc.dert.viewpoint.ViewpointNode;
 import gov.nasa.arc.dert.viewpoint.ViewpointStore;
 
 import java.awt.BorderLayout;
@@ -28,7 +27,6 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -54,14 +52,10 @@ public class ViewpointPanel extends JPanel {
 	private JPanel buttonBar;
 	private CoordTextField locationField;
 	private Vector3TextField directionField;
-//	private DoubleTextField distanceField;
 	private DoubleArrayTextField azElField;
-//	private DoubleTextField altitudeField;
 	private DoubleTextField magnificationField;
-//	private CoordTextField corField;
 	private ButtonAction prevAction;
 	private ButtonAction nextAction;
-	private JCheckBox hike;
 	private JButton current, save;
 
 	// Fields
@@ -99,20 +93,13 @@ public class ViewpointPanel extends JPanel {
 		add(splitPane, BorderLayout.CENTER);
 		list = new JList(viewpointList);
 		list.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-//		list.addListSelectionListener(new ListSelectionListener() {
-//			@Override
-//			public void valueChanged(ListSelectionEvent event) {
-//				System.err.println("ViewpointPanel.valueChanged "+event);
-//				listSelected = true;
-//			}
-//		});
 		list.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent event) {
 				Point p = new Point(event.getX(), event.getY());
 				int index = list.locationToIndex(p);
 				if (list.getCellBounds(index, index).contains(p)) {
-					viewpointSelected();
+					viewpointSelected(event.getClickCount());
 				}
 				else {
 					// User clicked outside of list items -- clear selection.
@@ -143,7 +130,7 @@ public class ViewpointPanel extends JPanel {
 					index--;
 				}
 				list.setSelectedIndex(index);
-				viewpointSelected();
+				viewpointSelected(2);
 			}
 		};
 		topPanel.add(prevAction);
@@ -159,7 +146,7 @@ public class ViewpointPanel extends JPanel {
 					index++;
 				}
 				list.setSelectedIndex(index);
-				viewpointSelected();
+				viewpointSelected(2);
 			}
 		};
 		topPanel.add(nextAction);
@@ -175,7 +162,8 @@ public class ViewpointPanel extends JPanel {
 		addButton = new ButtonAction("Add the current viewpoint to the list", "Add", null) {
 			@Override
 			public void run() {
-				String answer = OptionDialog.showSingleInputDialog((JDialog)getTopLevelAncestor(), "Please enter a name for this viewpoint.", "");
+				String answer = OptionDialog.showSingleInputDialog((JDialog)getTopLevelAncestor(), "Please enter a name for this viewpoint.",
+						"Viewpoint"+viewpointList.size());
 				if (answer != null) {
 					int index = list.getSelectedIndex();
 					if (index < 0) {
@@ -187,7 +175,7 @@ public class ViewpointPanel extends JPanel {
 					list.setListData(viewpointList);
 					list.setSelectedIndex(index);
 					flyListButton.setEnabled(viewpointList.size() > 1);
-					viewpointSelected();
+					viewpointSelected(1);
 				}
 			}
 		};
@@ -231,33 +219,13 @@ public class ViewpointPanel extends JPanel {
 		dataPanel.setLayout(boxLayout);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		tipText = "toggle hike mode";
-		label = new JLabel("On Foot", SwingConstants.RIGHT);
-		label.setToolTipText(tipText);
-		panel.add(label);
-		hike = new JCheckBox("");
-		hike.setSelected(controller.getViewpointNode().isHikeMode());
-//		hike.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent event) {
-//				if (!controller.getViewpointNode().setHikeMode(hike.isSelected())) {
-//					Toolkit.getDefaultToolkit().beep();
-//					hike.setSelected(!hike.isSelected());
-//				}
-//				else {
-//					setEditing(true);
-//					controller.updateLookAt();
-//					updateData(list.getSelectedIndex() >= 0);
-//				}
-//			}
-//		});
-		panel.add(hike);
 		current = new JButton("Current");
 		current.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				setEditing(true);
-				updateData(true);
+				controller.getViewpointNode().getViewpoint(tempVPS);
+				updateData(tempVPS);
 			}
 		});
 		panel.add(current);
@@ -267,14 +235,14 @@ public class ViewpointPanel extends JPanel {
 			public void actionPerformed(ActionEvent event) {
 				if (currentVPS != null) {
 					controller.getViewpointNode().getViewpoint(currentVPS);
-					updateData(true);
+					updateData(currentVPS);
 					setEditing(false);
 				}
 			}
 		});
 		panel.add(save);
 		dataPanel.add(panel);
-
+		
 		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		tipText = "location of viewpoint";
 		label = new JLabel("VP Location", SwingConstants.RIGHT);
@@ -286,8 +254,11 @@ public class ViewpointPanel extends JPanel {
 				if (!controller.getViewpointNode().changeLocation(loc)) {
 					Toolkit.getDefaultToolkit().beep();
 				}
-				else
+				else {
 					setEditing(true);
+					controller.getViewpointNode().getViewpoint(tempVPS);
+					updateData(tempVPS);
+				}
 			}
 		};
 		CoordAction.listenerList.add(locationField);
@@ -304,7 +275,8 @@ public class ViewpointPanel extends JPanel {
 			public void handleChange(Vector3 dir) {
 				controller.getViewpointNode().changeDirection(dir);
 				setEditing(true);
-				updateData(list.getSelectedIndex() >= 0);
+				controller.getViewpointNode().getViewpoint(tempVPS);
+				updateData(tempVPS);
 			}
 		};
 		directionField.setToolTipText(tipText);
@@ -325,58 +297,13 @@ public class ViewpointPanel extends JPanel {
 				controller.getViewpointNode().changeAzimuthAndElevation(Math.toRadians(azel[0]),
 					Math.toRadians(azel[1]));
 				setEditing(true);
-				updateData(list.getSelectedIndex() >= 0);
+				controller.getViewpointNode().getViewpoint(tempVPS);
+				updateData(tempVPS);
 			}
 		};
 		azElField.setToolTipText(tipText);
 		panel.add(azElField);
 		dataPanel.add(panel);
-
-//		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-//		tipText = "Distance from viewpoint to center of rotation";
-//		label = new JLabel("Distance to CoR", SwingConstants.RIGHT);
-//		label.setToolTipText(tipText);
-//		panel.add(label);
-//		distanceField = new DoubleTextField(20, 0, false, "0.000") {
-//			@Override
-//			protected void handleChange(double value) {
-//				if (Double.isNaN(value)) {
-//					return;
-//				}
-//				if (!controller.getViewpointNode().changeDistance(value)) {
-//					Toolkit.getDefaultToolkit().beep();
-//				}
-//				else
-//					setEditing(true);
-//			}
-//		};
-//		distanceField.setToolTipText(tipText);
-//		panel.add(distanceField);
-//		dataPanel.add(panel);
-
-//		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-//		tipText = "Viewpoint height above terrain";
-//		label = new JLabel("Height from Ground", SwingConstants.RIGHT);
-//		label.setToolTipText(tipText);
-//		panel.add(label);
-//		altitudeField = new DoubleTextField(20, 0, false, "0.000") {
-//			@Override
-//			protected void handleChange(double value) {
-//				if (Double.isNaN(value)) {
-//					return;
-//				}
-//				if (!controller.getViewpointNode().changeAltitude(value)) {
-//					Toolkit.getDefaultToolkit().beep();
-//				}
-//				else {
-//					setEditing(true);
-//					controller.updateLookAt();
-//				}
-//			}
-//		};
-//		altitudeField.setToolTipText(tipText);
-//		panel.add(altitudeField);
-//		dataPanel.add(panel);
 
 		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		tipText = "Magnification scale factor";
@@ -391,39 +318,30 @@ public class ViewpointPanel extends JPanel {
 				}
 				controller.getViewpointNode().changeMagnification(value);
 				setEditing(true);
+				controller.getViewpointNode().getViewpoint(tempVPS);
+				updateData(tempVPS);
 			}
 		};
 		magnificationField.setToolTipText(tipText);
 		panel.add(magnificationField);
 		dataPanel.add(panel);
 
-		updateData(false);
 		return (dataPanel);
 	}
 
 	/**
 	 * Viewpoint moved. Update the attributes panel.
 	 */
-	public void updateData(boolean vpSelected) {
-		if (!vpSelected && (currentVPS != null))
-			list.clearSelection();
-		ViewpointNode viewpointNode = controller.getViewpointNode();
-		viewpointNode.getViewpoint(tempVPS);
-		coord.set(tempVPS.location);
+	public void updateData(ViewpointStore vps) {
+		if (vps == null)
+			return;
+		coord.set(vps.location);
 		locationField.setLocalValue(coord);
-		directionField.setValue(tempVPS.direction);
-//		distanceField.setValue(tempVPS.distance);
-		azEl[0] = Math.toDegrees(tempVPS.azimuth);
-		azEl[1] = Math.toDegrees(tempVPS.elevation);
+		directionField.setValue(vps.direction);
+		azEl[0] = Math.toDegrees(vps.azimuth);
+		azEl[1] = Math.toDegrees(vps.elevation);
 		azElField.setValue(azEl);
-		magnificationField.setValue(BasicCamera.magFactor[tempVPS.magIndex]);
-//		double alt = viewpointNode.getAltitude();
-//		if (Double.isNaN(alt)) {
-//			altitudeField.setText("N/A");
-//		} else {
-//			altitudeField.setValue(alt);
-//		}
-		hike.setSelected(tempVPS.hikeMode);
+		magnificationField.setValue(BasicCamera.magFactor[vps.magIndex]);
 	}
 	
 	public void clearSelection() {
@@ -433,8 +351,6 @@ public class ViewpointPanel extends JPanel {
 	public void dispose() {
 		if (locationField != null)
 			CoordAction.listenerList.remove(locationField);
-//		if (corField != null)
-//			CoordAction.listenerList.remove(corField);
 	}
 	
 	private void setEditing(boolean isEditing) {
@@ -442,12 +358,12 @@ public class ViewpointPanel extends JPanel {
 		list.repaint();
 	}
 	
-	private void viewpointSelected() {
+	private void viewpointSelected(int clickCount) {
 		currentVPS = (ViewpointStore) list.getSelectedValue();
 		deleteButton.setEnabled(currentVPS != null);
-		if (currentVPS != null)
+		updateData(currentVPS);
+		if ((currentVPS != null) && (clickCount == 2))
 			controller.gotoViewpoint(currentVPS);
-		updateData(true);
 		setEditing(false);
 	}
 }

@@ -23,8 +23,8 @@ public class ViewpointStore {
 	public double distance;
 	public double azimuth, elevation;
 	public int magIndex;
-	public boolean hikeMode;
 	public double zOffset;
+	public String mode; // Nominal, Hike, or Map
 
 	public ViewpointStore() {
 		name = "";
@@ -63,7 +63,7 @@ public class ViewpointStore {
 		store.azimuth = StateUtil.getDouble(map, "Azimuth", 0);
 		store.elevation = StateUtil.getDouble(map, "Elevation", 0);
 		store.magIndex = StateUtil.getInteger(map, "MagnificationIndex", 0);
-		store.hikeMode = StateUtil.getBoolean(map, "HikeMode", false);
+		store.mode = StateUtil.getString(map, "Mode", "Nominal");
 		store.zOffset = StateUtil.getDouble(map, "ZOffset", 0);
 		return(store);
 	}
@@ -73,7 +73,7 @@ public class ViewpointStore {
 			return(false);
 		if (!this.name.equals(that.name)) 
 			return(false);
-		if (this.hikeMode != that.hikeMode) 
+		if (!this.mode.equals(that.mode)) 
 			return(false);
 		if (this.zOffset != that.zOffset) 
 			return(false);
@@ -121,7 +121,7 @@ public class ViewpointStore {
 		this.azimuth = that.azimuth;
 		this.elevation = that.elevation;
 		this.magIndex = that.magIndex;
-		this.hikeMode = that.hikeMode;
+		this.mode = that.mode;
 		this.zOffset = that.zOffset;
 	}
 
@@ -158,7 +158,7 @@ public class ViewpointStore {
 		map.put("Azimuth", new Double(azimuth));
 		map.put("Elevation", new Double(elevation));
 		map.put("MagnificationIndex", new Integer(magIndex));
-		map.put("HikeMode", new Boolean(hikeMode));
+		map.put("Mode", mode);
 		map.put("ZOffset", new Double(zOffset));
 		return(map);
 	}
@@ -179,7 +179,7 @@ public class ViewpointStore {
 			+ frustumTop + "\n";
 		str += "  Azimuth: " + Math.toDegrees(azimuth) + ", Elevation: " + Math.toDegrees(elevation) + "\n";
 		str += "  Scale: " + BasicCamera.magFactor[magIndex] + "\n";
-		str += "  Hiking: "+hikeMode+"\n";
+		str += "  Mode: "+mode+"\n";
 		return (str);
 	}
 
@@ -187,7 +187,7 @@ public class ViewpointStore {
 		ViewpointStore vps = new ViewpointStore();
 		vps.name = this.name + pct;
 		vps.location = this.location.lerp(that.location, pct, vps.location);
-		if (vps.hikeMode)
+		if (vps.mode.equals("Hike"))
 			vps.location.setZ(Landscape.getInstance().getZ(location.getX(), location.getY())+zOffset);
 //		vps.direction = this.direction.lerp(that.direction, pct, vps.direction);
 		vps.lookAt = this.lookAt.lerp(that.lookAt, pct, vps.lookAt);

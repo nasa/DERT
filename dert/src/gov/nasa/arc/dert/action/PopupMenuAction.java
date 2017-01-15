@@ -1,7 +1,5 @@
 package gov.nasa.arc.dert.action;
 
-import gov.nasa.arc.dert.icon.Icons;
-
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.PopupMenu;
@@ -9,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 /**
@@ -17,15 +16,15 @@ import javax.swing.JButton;
  */
 public abstract class PopupMenuAction extends JButton {
 
-	public PopupMenuAction(String toolTipText, String label, String iconFileName) {
+	public PopupMenuAction(String toolTipText, String label, ImageIcon icon) {
 		super();
 		setFont(getFont().deriveFont(Font.BOLD, 14));
 		setBorderPainted(false);
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		if (iconFileName == null) {
+		if (icon == null) {
 			setText(label);
 		} else {
-			setIcon(Icons.getImageIcon(iconFileName));
+			setIcon(icon);
 		}
 		setToolTipText(toolTipText);
 		addActionListener(new ActionListener() {

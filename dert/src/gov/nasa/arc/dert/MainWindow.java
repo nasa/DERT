@@ -22,7 +22,7 @@ import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.view.lighting.LightPositionView;
 import gov.nasa.arc.dert.view.world.WorldView;
-import gov.nasa.arc.dert.viewpoint.ActivateOnFootAction;
+import gov.nasa.arc.dert.viewpoint.ViewpointMenuAction;
 import gov.nasa.arc.dert.viewpoint.ActivateZoomAction;
 import gov.nasa.arc.dert.viewpoint.Compass;
 
@@ -68,6 +68,9 @@ public class MainWindow extends JFrame {
 
 	// Menu for undo/redo and a few general operations
 	private PopupMenuAction editMenu;
+	
+	// Menu for viewpoint modes
+	private ViewpointMenuAction viewpointMenuAction;
 
 	// Tool bar
 	private JPanel toolBar;
@@ -80,7 +83,6 @@ public class MainWindow extends JFrame {
 
 	// Tool bar button for activating magnify mode
 	private ActivateZoomAction zoomAction;
-	private ActivateOnFootAction onFootAction;
 
 	// Tool bar button for activating the tape measure
 	private ActivateTapeMeasureAction measuringAction;
@@ -105,9 +107,6 @@ public class MainWindow extends JFrame {
 
 	// Indicate that we have a configuration to save
 	private boolean haveConfig;
-	
-	// Fields for map view
-	private boolean oldOnTop;
 
 	/**
 	 * Constructor
@@ -264,9 +263,9 @@ public class MainWindow extends JFrame {
 		toolBar.add(new JLabel(filler));
 
 		// Open the viewpoint view.
-		onFootAction = ActivateOnFootAction.getInstance();
-		onFootAction.setEnabled(false);
-		toolBar.add(onFootAction);
+		viewpointMenuAction = ViewpointMenuAction.getInstance();
+		viewpointMenuAction.setEnabled(false);
+		toolBar.add(viewpointMenuAction);
 
 		// Reset the viewpoint to the default overhead view.
 		resetAction = new ButtonAction("reset viewpoint to overhead position", null, "reset.png", buttonBorder) {
@@ -415,25 +414,6 @@ public class MainWindow extends JFrame {
 		};
 		menu.add(stereoAction);
 
-		CheckboxMenuItem mapViewItem = new CheckboxMenuItem("Map View");
-		mapViewItem.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent event) {
-				boolean doMap = event.getStateChange() == ItemEvent.SELECTED;
-				worldView.getViewpointNode().setMapMode(doMap);
-				if (doMap) {
-					oldOnTop = World.getInstance().isMapElementsOnTop();
-					World.getInstance().setMapElementsOnTop(doMap);
-				}
-				else {
-					World.getInstance().setMapElementsOnTop(oldOnTop);
-				}
-				Landscape.getInstance().setMapMode(doMap);
-			}
-		});
-		mapViewItem.setState(worldView.getViewpointNode().isMapMode());
-		menu.add(mapViewItem);
-
 		CheckboxMenuItem corXhair = new CheckboxMenuItem("Show Crosshair at Center of Rotation");
 		corXhair.addItemListener(new ItemListener() {
 			@Override
@@ -540,7 +520,7 @@ public class MainWindow extends JFrame {
 		measuringAction.setEnabled(true);
 		coordAction.setEnabled(true);
 		coordAction.setSelected(World.getInstance().getUseLonLat());
-		onFootAction.setEnabled(true);
+		viewpointMenuAction.setEnabled(true);
 		zoomAction.setEnabled(true);
 		gotoMarble.setEnabled(true);
 		resetAction.setEnabled(true);

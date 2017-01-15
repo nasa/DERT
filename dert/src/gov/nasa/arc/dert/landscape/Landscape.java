@@ -98,9 +98,6 @@ public class Landscape extends Node {
 
 	// scale factor for millimeter scale landscapes
 	private float pixelScale = 1;
-	
-	// flag for map view mode
-	private boolean mapMode;
 
 	// blocks sunlight from underneath landscape while shadows are enabled
 //	private Mesh sunBlock;
@@ -619,14 +616,6 @@ public class Landscape extends Node {
 			return (false);
 		}
 		return (qt.getNormal(x, y, store));
-	}
-	
-	public void setMapMode(boolean mapMode) {
-		this.mapMode = mapMode;
-	}
-	
-	public boolean isMapMode() {
-		return(mapMode);
 	}
 
 	/**

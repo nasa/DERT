@@ -7,6 +7,7 @@ import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scenegraph.Ray3WithLine;
 import gov.nasa.arc.dert.state.PathState;
 import gov.nasa.arc.dert.view.viewpoint.FlyThroughDialog;
+import gov.nasa.arc.dert.viewpoint.ViewpointNode.ViewpointMode;
 
 import java.awt.Dialog;
 import java.awt.Toolkit;
@@ -587,7 +588,7 @@ public class ViewpointController {
 		fillFlyList(vpList, flyList, flyParams.numFrames);
 		// set hike mode to true so we will use the viewpoint location as CoR
 		for (int i=0; i<flyList.size(); ++i)
-			flyList.get(i).hikeMode = true;
+			flyList.get(i).mode = ViewpointMode.Hike.toString();
 	}
 	
 	private void fillFlyList(Vector<ViewpointStore> vpList, Vector<ViewpointStore> flyList, int numFrames) {
