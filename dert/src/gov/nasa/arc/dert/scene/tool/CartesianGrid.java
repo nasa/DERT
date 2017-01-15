@@ -23,9 +23,10 @@ public class CartesianGrid extends Grid {
 	public static final Icon icon = Icons.getImageIcon("cartesiangrid.png");
 
 	// Defaults
+	public static double defaultCellSize = 1;
 	public static Color defaultColor = Color.white;
-	public static int defaultRows = 10;
-	public static int defaultColumns = 10;
+	public static int defaultRows = 5;
+	public static int defaultColumns = 5;
 	public static boolean defaultLabelVisible = false;
 	public static boolean defaultActualCoordinates = false;
 	public static float defaultLineWidth = 2;

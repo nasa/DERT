@@ -38,7 +38,7 @@ public class GridState extends ToolState {
 	 * @return
 	 */
 	public static GridState createCartesianGridState(ReadOnlyVector3 position) {
-		GridState state = new GridState(MapElementState.Type.CartesianGrid, "CartesianGrid", Grid.defaultCellSize,
+		GridState state = new GridState(MapElementState.Type.CartesianGrid, "CartesianGrid", CartesianGrid.defaultCellSize,
 			CartesianGrid.defaultColor, CartesianGrid.defaultLabelVisible, position,
 			CartesianGrid.defaultLineWidth);
 		state.columns = CartesianGrid.defaultColumns;
@@ -53,7 +53,7 @@ public class GridState extends ToolState {
 	 * @return
 	 */
 	public static GridState createRadialGridState(ReadOnlyVector3 position) {
-		GridState state = new GridState(MapElementState.Type.RadialGrid, "RadialGrid", Grid.defaultCellSize,
+		GridState state = new GridState(MapElementState.Type.RadialGrid, "RadialGrid", RadialGrid.defaultCellSize,
 			RadialGrid.defaultColor, RadialGrid.defaultLabelVisible, position,
 			RadialGrid.defaultLineWidth);
 		state.rings = RadialGrid.defaultRings;

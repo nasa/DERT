@@ -4,7 +4,8 @@ import gov.nasa.arc.dert.io.TileSource;
 import gov.nasa.arc.dert.raster.ProjectionInfo;
 import gov.nasa.arc.dert.raster.SpatialReferenceSystem;
 import gov.nasa.arc.dert.render.LayerEffects;
-import gov.nasa.arc.dert.scene.tool.Grid;
+import gov.nasa.arc.dert.scene.tool.CartesianGrid;
+import gov.nasa.arc.dert.scene.tool.RadialGrid;
 import gov.nasa.arc.dert.scene.tool.ScaleBar;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.util.MathUtil;
@@ -41,6 +42,7 @@ public class Landscape extends Node {
 
 	// numeric field formats based on landscape size
 	public static String format, stringFormat;
+	public static double defaultCellSize;
 
 	// spatial reference system for base layer
 	private SpatialReferenceSystem srs;
@@ -164,18 +166,20 @@ public class Landscape extends Node {
 		double extent = Math.max(worldWidth, worldLength);
 		int d = (int) Math.log10(extent);
 		if (d >= 3) {
-			Grid.defaultCellSize = Math.pow(10, d - 1);
+			defaultCellSize = Math.pow(10, d - 1)/2;
 		} else if (d > 1) {
-			Grid.defaultCellSize = 1;
+			defaultCellSize = 1;
 		} else {
-			Grid.defaultCellSize = Math.pow(10, d) / 100;
+			defaultCellSize = Math.pow(10, d) / 100;
 			format = "0.00000";
 			stringFormat = "%7.5f";
 		}
 		if (layerManager.getGridCellSize() == 0) {
-			layerManager.setGridCellSize(Grid.defaultCellSize);
+			layerManager.setGridCellSize(defaultCellSize);
 		}
-		ScaleBar.defaultCellSize = Grid.defaultCellSize/10;
+		CartesianGrid.defaultCellSize = defaultCellSize;
+		RadialGrid.defaultCellSize = defaultCellSize;
+		ScaleBar.defaultCellSize = defaultCellSize/10;
 		ScaleBar.defaultRadius = ScaleBar.defaultCellSize*0.1;
 		Console.println(
 			"Landscape size: East/West range = " + String.format(stringFormat, worldWidth/pixelScale) + ", North/South range = " + String.format(stringFormat, worldLength/pixelScale) + " "

@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.scene.tool.Profile;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.View;
@@ -46,7 +45,7 @@ public class ProfileState extends ToolState {
 		p1 = new Vector3(Landscape.getInstance().getCenter());
 		p1.subtractLocal(p0);
 		p1.normalizeLocal();
-		p1.multiplyLocal(Grid.defaultCellSize / 2);
+		p1.multiplyLocal(Landscape.defaultCellSize / 2);
 		p1.addLocal(p0);
 		p1.setZ(Landscape.getInstance().getZ(p1.getX(), p1.getY()));
 		axesEqualScale = true;

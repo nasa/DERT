@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.scene.tool.Plane;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.StateUtil;
@@ -54,10 +53,10 @@ public class PlaneState extends ToolState {
 		p1.subtractLocal(p0);
 		p1.normalizeLocal();
 		p2 = new Vector3(p1);
-		p1.multiplyLocal(Grid.defaultCellSize / 2);
+		p1.multiplyLocal(Landscape.defaultCellSize / 2);
 		p1.addLocal(p0);
 		p1.setZ(Landscape.getInstance().getZ(p1.getX(), p1.getY()));
-		p2.multiplyLocal(Grid.defaultCellSize / 4);
+		p2.multiplyLocal(Landscape.defaultCellSize / 4);
 		p2.addLocal(p0);
 		p2.setZ(Landscape.getInstance().getZ(p2.getX(), p2.getY()));
 

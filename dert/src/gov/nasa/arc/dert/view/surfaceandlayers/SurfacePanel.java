@@ -4,7 +4,6 @@ import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.LayerManager;
 import gov.nasa.arc.dert.scene.World;
-import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.state.State;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
@@ -176,17 +175,17 @@ public class SurfacePanel extends GroupPanel {
 
 	private String[] createUnits() {
 		units = new double[10];
-		units[0] = 0.1 * Grid.defaultCellSize;
-		units[1] = 0.5 * Grid.defaultCellSize;
-		units[2] = Grid.defaultCellSize;
-		units[3] = 2 * Grid.defaultCellSize;
-		units[4] = 2.5 * Grid.defaultCellSize;
-		units[5] = 5 * Grid.defaultCellSize;
-		units[6] = 10 * Grid.defaultCellSize;
-		units[7] = 20 * Grid.defaultCellSize;
-		units[8] = 25 * Grid.defaultCellSize;
-		units[9] = 50 * Grid.defaultCellSize;
-		if (Grid.defaultCellSize < 1) {
+		units[0] = 0.1 * Landscape.defaultCellSize;
+		units[1] = 0.5 * Landscape.defaultCellSize;
+		units[2] = Landscape.defaultCellSize;
+		units[3] = 2 * Landscape.defaultCellSize;
+		units[4] = 2.5 * Landscape.defaultCellSize;
+		units[5] = 5 * Landscape.defaultCellSize;
+		units[6] = 10 * Landscape.defaultCellSize;
+		units[7] = 20 * Landscape.defaultCellSize;
+		units[8] = 25 * Landscape.defaultCellSize;
+		units[9] = 50 * Landscape.defaultCellSize;
+		if (Landscape.defaultCellSize < 1) {
 			formatter.applyPattern("0.000");
 		}
 		String[] item = new String[units.length];

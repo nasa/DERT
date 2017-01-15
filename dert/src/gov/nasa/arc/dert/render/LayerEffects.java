@@ -1,10 +1,10 @@
 package gov.nasa.arc.dert.render;
 
 import gov.nasa.arc.dert.landscape.FieldCameraLayer;
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.Layer;
 import gov.nasa.arc.dert.landscape.LayerInfo.LayerType;
 import gov.nasa.arc.dert.landscape.QuadTreeMesh;
-import gov.nasa.arc.dert.scene.tool.Grid;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -113,7 +113,7 @@ public class LayerEffects extends GLSLShaderObjectsState {
 	public LayerEffects(Layer[] layers, LayerEffects oldEffects) {
 		blendFactor = new float[] { 0, 0, 0, 0, 0, 0, 0 };
 		gridColor = new float[] { 1, 1, 1, 1 };
-		gridCell = Grid.defaultCellSize;
+		gridCell = Landscape.defaultCellSize;
 		if (oldEffects != null) {
 			layersEnabled = oldEffects.layersEnabled;
 			shadowEnabled = oldEffects.shadowEnabled;

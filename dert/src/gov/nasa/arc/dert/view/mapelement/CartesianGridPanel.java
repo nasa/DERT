@@ -3,7 +3,6 @@ package gov.nasa.arc.dert.view.mapelement;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.CartesianGrid;
-import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.DoubleTextField;
 
@@ -86,7 +85,7 @@ public class CartesianGridPanel extends MapElementBasePanel {
 		});
 
 		panel.add(new JLabel("Cell Size", SwingConstants.RIGHT));
-		sizeText = new DoubleTextField(8, Grid.defaultCellSize, true, Landscape.format) {
+		sizeText = new DoubleTextField(8, CartesianGrid.defaultCellSize, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
 				if (Double.isNaN(value)) {

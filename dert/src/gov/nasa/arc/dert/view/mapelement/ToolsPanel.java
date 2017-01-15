@@ -5,7 +5,6 @@ import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.CartesianGrid;
-import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Path.BodyType;
 import gov.nasa.arc.dert.scene.tool.Plane;
@@ -389,17 +388,17 @@ public class ToolsPanel extends JPanel {
 			}
 		});
 
-		gPanel.add(new JLabel("Cell Size:", SwingConstants.RIGHT));
-		DoubleTextField sizeText = new DoubleTextField(8, Grid.defaultCellSize, true, "0.00") {
-			@Override
-			protected void handleChange(double value) {
-				if (Double.isNaN(value)) {
-					return;
-				}
-				Grid.defaultCellSize = value;
-			}
-		};
-		gPanel.add(sizeText);
+//		gPanel.add(new JLabel("Cell Size:", SwingConstants.RIGHT));
+//		DoubleTextField sizeText = new DoubleTextField(8, CartesianGrid.defaultCellSize, true, "0.00") {
+//			@Override
+//			protected void handleChange(double value) {
+//				if (Double.isNaN(value)) {
+//					return;
+//				}
+//				CartesianGrid.defaultCellSize = value;
+//			}
+//		};
+//		gPanel.add(sizeText);
 
 		gPanel.add(new JLabel("Linewidth:", SwingConstants.RIGHT));
 		DoubleTextField clwText = new DoubleTextField(8, CartesianGrid.defaultLineWidth, true, "0.00") {
@@ -412,7 +411,7 @@ public class ToolsPanel extends JPanel {
 			}
 		};
 		gPanel.add(clwText);
-
+		
 		bottomPanel.add(gPanel);
 
 		// Radial Grid Preferences
@@ -449,17 +448,17 @@ public class ToolsPanel extends JPanel {
 			}
 		});
 
-		gPanel.add(new JLabel("Distance:", SwingConstants.RIGHT));
-		sizeText = new DoubleTextField(8, RadialGrid.defaultRadius, true, "0.00") {
-			@Override
-			protected void handleChange(double value) {
-				if (Double.isNaN(value)) {
-					return;
-				}
-				RadialGrid.defaultRadius = value;
-			}
-		};
-		gPanel.add(sizeText);
+//		gPanel.add(new JLabel("Distance:", SwingConstants.RIGHT));
+//		sizeText = new DoubleTextField(8, RadialGrid.defaultCellSize, true, "0.00") {
+//			@Override
+//			protected void handleChange(double value) {
+//				if (Double.isNaN(value)) {
+//					return;
+//				}
+//				RadialGrid.defaultCellSize = value;
+//			}
+//		};
+//		gPanel.add(sizeText);
 
 		gPanel.add(new JLabel("Linewidth:", SwingConstants.RIGHT));
 		DoubleTextField rlwText = new DoubleTextField(8, RadialGrid.defaultLineWidth, true, "0.00") {

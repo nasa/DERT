@@ -1,7 +1,6 @@
 package gov.nasa.arc.dert.ui;
 
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.view.surfaceandlayers.SurfaceAndLayersView;
@@ -90,7 +89,7 @@ public class ColorMapDialog extends AbstractDialog {
 		});
 		contentArea.add(gradient);
 		contentArea.add(new JLabel("Maximum", SwingConstants.RIGHT));
-		maxSpinner = new DoubleSpinner(defaultMax, defaultMin, upperLimit, Grid.defaultCellSize / 100.0, false,
+		maxSpinner = new DoubleSpinner(defaultMax, defaultMin, upperLimit, Landscape.defaultCellSize / 100.0, false,
 			Landscape.format) {
 			@Override
 			public void stateChanged(ChangeEvent event) {
@@ -103,7 +102,7 @@ public class ColorMapDialog extends AbstractDialog {
 		contentArea.add(maxSpinner);
 
 		contentArea.add(new JLabel("Minimum", SwingConstants.RIGHT));
-		minSpinner = new DoubleSpinner(defaultMin, lowerLimit, defaultMax, Grid.defaultCellSize / 100.0, false,
+		minSpinner = new DoubleSpinner(defaultMin, lowerLimit, defaultMax, Landscape.defaultCellSize / 100.0, false,
 			Landscape.format) {
 			@Override
 			public void stateChanged(ChangeEvent event) {

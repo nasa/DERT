@@ -32,9 +32,6 @@ import com.ardor3d.scenegraph.hint.PickingHint;
  */
 public abstract class Grid extends Movable implements Tool, ViewDependent {
 
-	// Defaults
-	public static double defaultCellSize = 1;
-
 	// Grid parts
 	protected HiddenLine lattice;
 
