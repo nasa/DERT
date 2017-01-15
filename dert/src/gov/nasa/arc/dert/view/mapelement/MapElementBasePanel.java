@@ -50,7 +50,7 @@ public abstract class MapElementBasePanel extends JPanel {
 	// Common controls
 	protected JPanel contents;
 	protected JTextArea noteText;
-	protected JButton saveButton;
+	protected JButton saveButton, groundButton;
 	protected JCheckBox pinnedCheckBox, labelCheckBox;
 	protected JLabel typeLabel, nameLabel;
 	protected CoordTextField locationText;
@@ -151,6 +151,15 @@ public abstract class MapElementBasePanel extends JPanel {
 				}
 			});
 			panel.add(labelCheckBox);
+			groundButton = new JButton("Ground");
+			groundButton.setToolTipText("put map element on terrain surface");
+			groundButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					mapElement.ground();
+				}
+			});
+			panel.add(groundButton);
 
 			container.add(panel);
 		}

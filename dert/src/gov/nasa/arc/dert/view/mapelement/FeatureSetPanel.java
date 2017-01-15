@@ -108,6 +108,7 @@ public class FeatureSetPanel extends MapElementBasePanel {
 		
 		pinnedCheckBox.setSelected(true);
 		pinnedCheckBox.setEnabled(false);
+		groundButton.setEnabled(false);
 	}
 
 	@Override

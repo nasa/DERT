@@ -1047,7 +1047,9 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	}
 	
 	public void ground() {
-		// do nothing
+		for (int i = 0; i < pointSet.getNumberOfChildren(); ++i) {
+			((Waypoint)pointSet.getChild(i)).ground();
+		}
 	}
 	
 	public void setZOffset(double zOff, boolean doTrans) {
