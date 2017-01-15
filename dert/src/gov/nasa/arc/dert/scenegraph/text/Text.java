@@ -18,6 +18,8 @@ import com.ardor3d.scenegraph.hint.PickingHint;
  *
  */
 public abstract class Text extends Mesh {
+	
+	public static double FONT_SIZE = 20;
 
 	// Text alignment options
 	public static enum AlignType {

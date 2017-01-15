@@ -70,7 +70,7 @@ public class ViewpointNode
 	// Cross hair
 	private RGBAxes crosshair;
 	private Node overlay;
-	private RasterText corText, dstText, magText, altText, locText, azElText;
+	private RasterText corText, magText, altText, locText, azElText;
 	private double textSize = 14;
 	private CenterScale centerScale;
 	private boolean mapMode, hikeMode;
@@ -118,10 +118,6 @@ public class ViewpointNode
 		return(camera);
 	}
 
-	public void updateStatus() {
-		updateOverlay();
-	}
-
 	/**
 	 * Point at the given map element.
 	 * 
@@ -160,6 +156,7 @@ public class ViewpointNode
 		updateFromCamera();
 		updateGeometricState(0);
 		updateCrosshair();
+		updateOverlay();
 		changed.set(true);
 	}
 	
@@ -201,10 +198,6 @@ public class ViewpointNode
 		magText.setVisible(true);
 		magText.setTranslation(0, 2*textSize, 0);
 		overlay.attachChild(magText);
-		dstText = new RasterText("_dst", "", AlignType.Left, false);
-		dstText.setColor(ColorRGBA.WHITE);
-		dstText.setVisible(true);
-		overlay.attachChild(dstText);
 		altText = new RasterText("_alt", "", AlignType.Left, false);
 		altText.setColor(ColorRGBA.WHITE);
 		altText.setVisible(true);
@@ -268,13 +261,6 @@ public class ViewpointNode
 		str = String.format("VP Dir Az/El: "+Landscape.stringFormat+", "+Landscape.stringFormat, Math.toDegrees(azimuth), Math.toDegrees(elevation-ELEV_HOME));
 		azElText.setText(str);
 		
-		// distance from viewpoint to center of rotation
-		double dist = 0;
-		if (!hikeMode)
-			dist = camera.getDistanceToCoR();
-		str = String.format("Dist to CoR: "+Landscape.stringFormat, dist);
-		dstText.setText(str);
-		
 		// Magnification
 		double mag = camera.getMagnification();
 		str = String.format("VP Mag: "+Landscape.stringFormat, mag);
@@ -282,8 +268,7 @@ public class ViewpointNode
 		
 		// Scale
 		double s = camera.getPixelSizeAt(camera.getLookAt(), true);
-		str = String.format(Landscape.stringFormat, (s*100));
-		centerScale.setText(str);
+		centerScale.setText(s*100, camera.getLookAt().distance(camera.getLocation()));
 	}
 	
 	public RGBAxes getCrosshair() {
@@ -336,8 +321,8 @@ public class ViewpointNode
 		updateFromCamera();
 		updateGeometricState(0);
 		updateCrosshair();
+		updateOverlay();
 		changed.set(true);
-		updateStatus();
 	}
 
 	/**
@@ -460,8 +445,8 @@ public class ViewpointNode
 			updateFromCamera();
 			updateGeometricState(0);
 			updateCrosshair();
+			updateOverlay();
 			changed.set(true);
-			updateStatus();
 		}
 	}
 
@@ -597,7 +582,6 @@ public class ViewpointNode
 			rotateCameraAroundLocation(camera.getLocation());
 		else
 			rotateCameraAroundLookAtPoint(camera.getLookAt(), camera.getDistanceToCoR());
-		updateStatus();
 	}
 
 	/**
@@ -623,6 +607,7 @@ public class ViewpointNode
 		updateFromCamera();
 		updateGeometricState(0);
 		updateCrosshair();
+		updateOverlay();
 		changed.set(true);
 		Dert.getMainWindow().updateCompass(azimuth);
 	}
@@ -646,6 +631,7 @@ public class ViewpointNode
 		updateFromCamera();
 		updateGeometricState(0);
 		updateCrosshair();
+		updateOverlay();
 		changed.set(true);
 		Dert.getMainWindow().updateCompass(azimuth);
 	}
@@ -776,8 +762,8 @@ public class ViewpointNode
 	public void changeMagnification(double val) {
 		camera.magnify(val);
 		updateGeometricState(0);
+		updateOverlay();
 		changed.set(true);
-		updateStatus();
 	}
 
 	/**
@@ -789,8 +775,8 @@ public class ViewpointNode
 		camera.magnify(delta);
 		updateGeometricState(0);
 		updateCrosshair();
+		updateOverlay();
 		changed.set(true);
-		updateStatus();
 	}
 
 	/**
@@ -818,6 +804,7 @@ public class ViewpointNode
 		updateFromCamera();
 		updateGeometricState(0);
 		updateCrosshair();
+		updateOverlay();
 		changed.set(true);
 	}
 	
@@ -858,8 +845,8 @@ public class ViewpointNode
 			updateFromCamera();
 			updateGeometricState(0);
 			updateCrosshair();
+			updateOverlay();
 			changed.set(true);			
-			updateStatus();
 		}
 		else {
 			camera.setMaxNearPlane(Float.MAX_VALUE);

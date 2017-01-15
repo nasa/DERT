@@ -1,6 +1,8 @@
 package gov.nasa.arc.dert.view.world;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scenegraph.text.RasterText;
+import gov.nasa.arc.dert.scenegraph.text.Text;
 import gov.nasa.arc.dert.scenegraph.text.Text.AlignType;
 
 import java.nio.FloatBuffer;
@@ -26,7 +28,7 @@ public class CenterScale extends Node {
 	private ReadOnlyColorRGBA[] scaleColor;
 	
 	private Line line;
-	private RasterText text;
+	private RasterText sizeText, distText;
 
 	/**
 	 * Constructor
@@ -60,15 +62,22 @@ public class CenterScale extends Node {
 		
 		attachChild(line);
 		
-		text = new RasterText("_ctr", "", AlignType.Center, false);
-		text.setColor(ColorRGBA.WHITE);
-		text.setVisible(true);
-		text.setTranslation(0, -20, 0);
-		attachChild(text);
+		sizeText = new RasterText("_ctr", "", AlignType.Center, false);
+		sizeText.setColor(ColorRGBA.WHITE);
+		sizeText.setVisible(true);
+		sizeText.setTranslation(0, 4, 0);
+		attachChild(sizeText);
+		
+		distText = new RasterText("_ctr", "", AlignType.Center, false);
+		distText.setColor(ColorRGBA.WHITE);
+		distText.setVisible(true);
+		distText.setTranslation(0, -Text.FONT_SIZE, 0);
+		attachChild(distText);
 	}
 	
-	public void setText(String str) {
-		text.setText(str);
+	public void setText(double size, double dist) {
+		sizeText.setText(String.format(Landscape.stringFormat, size));
+		distText.setText(String.format(Landscape.stringFormat, dist));
 	}
 
 }
