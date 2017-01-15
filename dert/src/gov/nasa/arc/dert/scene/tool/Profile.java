@@ -16,6 +16,7 @@ import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.view.Console;
+import gov.nasa.arc.dert.view.world.GroundEdit;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
@@ -483,9 +484,11 @@ public class Profile extends Node implements ViewDependent, Tool {
 		line.setScale(1, 1, vertExag);
 	}
 	
-	public void ground() {
-		endpointA.ground();
-		endpointB.ground();
+	public GroundEdit ground() {
+		GroundEdit[] ge = new GroundEdit[2];
+		ge[0] = endpointA.ground();
+		ge[1] = endpointB.ground();
+		return(new GroundEdit(this, ge));
 	}
 	
 	public void setZOffset(double zOff, boolean doTrans) {

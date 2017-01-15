@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.scenegraph;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.landscape.Landscape;
+import gov.nasa.arc.dert.view.world.GroundEdit;
 import gov.nasa.arc.dert.view.world.MoveEdit;
 
 import java.util.ArrayList;
@@ -156,17 +157,20 @@ public abstract class Movable extends Node {
 	
 	public void setZOffset(double z, boolean doTrans) {
 		zOff = z;
-		if (doTrans)
+		if (doTrans) {
 			setTranslation(location.getX(), location.getY(), location.getZ()+zOff);
+			updateListeners();
+		}
 	}
 	
 	public double getZOffset() {
 		return(zOff);
 	}
 	
-	public void ground() {
+	public GroundEdit ground() {
+		GroundEdit ge = new GroundEdit(this, zOff);
 		setZOffset(0, true);
-		updateListeners();
+		return(ge);
 	}
 
 	/**

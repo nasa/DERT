@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.action.mapelement;
 
+import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.MenuItemAction;
 import gov.nasa.arc.dert.scene.MapElement;
 
@@ -24,7 +25,7 @@ public class OnGroundAction extends MenuItemAction {
 
 	@Override
 	protected void run() {
-		mapElement.ground();
+		Dert.getMainWindow().getUndoHandler().addEdit(mapElement.ground());
 	}
 
 }

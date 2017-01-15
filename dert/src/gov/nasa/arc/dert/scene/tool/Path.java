@@ -17,6 +17,7 @@ import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.view.Console;
+import gov.nasa.arc.dert.view.world.GroundEdit;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
@@ -1046,10 +1047,16 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		}
 	}
 	
-	public void ground() {
-		for (int i = 0; i < pointSet.getNumberOfChildren(); ++i) {
-			((Waypoint)pointSet.getChild(i)).ground();
+	public GroundEdit ground() {
+		int n = pointSet.getNumberOfChildren();
+		GroundEdit[] groundEdit = new GroundEdit[n];
+		for (int i = 0; i < n; ++i) {
+			Waypoint wp = (Waypoint)pointSet.getChild(i);
+			groundEdit[i] = wp.ground();
+			
 		}
+		GroundEdit ge = new GroundEdit(this, groundEdit);
+		return(ge);
 	}
 	
 	public void setZOffset(double zOff, boolean doTrans) {

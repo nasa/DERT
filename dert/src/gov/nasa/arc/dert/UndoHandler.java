@@ -64,6 +64,8 @@ public class UndoHandler {
 	}
 
 	public void addEdit(UndoableEdit edit) {
+		if (edit == null)
+			return;
 		undoManager.addEdit(edit);
 		updateUndoItems();
 	}

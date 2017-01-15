@@ -13,6 +13,7 @@ import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
+import gov.nasa.arc.dert.view.world.GroundEdit;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
@@ -295,8 +296,8 @@ public class FeatureSet extends GroupNode implements MapElement, ViewDependent {
 		return (location);
 	}
 	
-	public void ground() {
-		// do nothing
+	public GroundEdit ground() {
+		return(null);
 	}
 	
 	public void setZOffset(double zOff, boolean doTrans) {

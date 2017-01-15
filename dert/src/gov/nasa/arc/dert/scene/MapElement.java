@@ -3,6 +3,7 @@ package gov.nasa.arc.dert.scene;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
+import gov.nasa.arc.dert.view.world.GroundEdit;
 
 import java.awt.Color;
 
@@ -49,7 +50,7 @@ public interface MapElement {
 
 	public ReadOnlyVector3 getLocationInWorld();
 	
-	public void ground();
+	public GroundEdit ground();
 	
 	public double getZOffset();
 	

@@ -17,6 +17,7 @@ import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.view.mapelement.PlanePanel;
+import gov.nasa.arc.dert.view.world.GroundEdit;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
@@ -141,6 +142,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		point[0].addMotionListener(new MotionListener() {
 			@Override
 			public void move(Movable mo, ReadOnlyVector3 pos) {
+				mo.updateGeometricState(0);
 				updatePlane();
 				updateTriangleLine();
 				updateStrikeDipLines();
@@ -154,6 +156,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		point[1].addMotionListener(new MotionListener() {
 			@Override
 			public void move(Movable mo, ReadOnlyVector3 pos) {
+				mo.updateGeometricState(0);
 				updatePlane();
 				updateTriangleLine();
 				updateStrikeDipLines();
@@ -167,6 +170,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		point[2].addMotionListener(new MotionListener() {
 			@Override
 			public void move(Movable mo, ReadOnlyVector3 pos) {
+				mo.updateGeometricState(0);
 				updatePlane();
 				updateTriangleLine();
 				updateStrikeDipLines();
@@ -814,9 +818,11 @@ public class Plane extends Node implements Tool, ViewDependent {
 		return (workVec);
 	}
 	
-	public void ground() {
+	public GroundEdit ground() {
+		GroundEdit[] ge = new GroundEdit[point.length];
 		for (int i=0; i<point.length; ++i)
-			point[i].ground();
+			ge[i] = point[i].ground();
+		return(new GroundEdit(this, ge));
 	}
 	
 	public void setZOffset(double zOff, boolean doTrans) {

@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.view.mapelement;
 
+import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
@@ -156,7 +157,7 @@ public abstract class MapElementBasePanel extends JPanel {
 			groundButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					mapElement.ground();
+					Dert.getMainWindow().getUndoHandler().addEdit(mapElement.ground());
 				}
 			});
 			panel.add(groundButton);
