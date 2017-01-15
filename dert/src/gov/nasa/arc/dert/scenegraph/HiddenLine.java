@@ -36,6 +36,7 @@ public class HiddenLine
 		line = new Line("_line");
 		line.getMeshData().setIndexMode(indexMode);
 		line.getMeshData().setVertexBuffer(vertexBuffer);
+		line.getMeshData().updateVertexCount();
 		line.getSceneHints().setCastsShadows(false);
 		line.getSceneHints().setTextureCombineMode(TextureCombineMode.Off);
 		line.setModelBound(new BoundingBox());
@@ -48,6 +49,7 @@ public class HiddenLine
 		dashedLine = new Line("_dashedline");
 		dashedLine.getMeshData().setIndexMode(indexMode);
 		dashedLine.getMeshData().setVertexBuffer(vertexBuffer);
+		dashedLine.getMeshData().updateVertexCount();
 		dashedLine.getSceneHints().setCastsShadows(false);
 		dashedLine.getSceneHints().setTextureCombineMode(TextureCombineMode.Off);
 		dashedLine.setModelBound(new BoundingBox());
@@ -124,7 +126,9 @@ public class HiddenLine
 	
 	public void setVertexBuffer(FloatBuffer buffer) {
 		line.getMeshData().setVertexBuffer(buffer);
+		line.getMeshData().updateVertexCount();
 		dashedLine.getMeshData().setVertexBuffer(buffer);
+		dashedLine.getMeshData().updateVertexCount();
 		markDirty(DirtyType.Bounding);
 	}
 	
