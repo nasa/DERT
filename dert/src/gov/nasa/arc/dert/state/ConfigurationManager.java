@@ -5,6 +5,7 @@ import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
+import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.Console;
@@ -103,8 +104,7 @@ public class ConfigurationManager {
 		if (currentConfig.toString() == null) {
 			return (true);
 		}
-		int answer = JOptionPane.showConfirmDialog(Dert.getMainWindow(), "Save current configuration?", "Save Configuration",
-			JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, Icons.getImageIcon("dert_24.png"));
+		int answer = OptionDialog.showConfirmDialog(Dert.getMainWindow(), "Save current configuration?", JOptionPane.YES_NO_CANCEL_OPTION);
 		// cancelled
 		if (answer == JOptionPane.CANCEL_OPTION) {
 			return (false);
@@ -125,16 +125,16 @@ public class ConfigurationManager {
 	public boolean saveCurrentConfigurationAs(boolean force) {
 		if (currentConfig.toString().equals("Untitled") || force) {
 			String[] configName = getConfigList(currentConfig.getLandscapePath());
-			String label = JOptionPane.showInputDialog(null, "Please enter a name for the current configuration.", "");
+			String label = OptionDialog.showSingleInputDialog(Dert.getMainWindow(), "Please enter a name for the current configuration.", "");
 			if (label == null) {
 				return (false);
 			}
 
 			for (int i = 0; i < configName.length; ++i) {
 				if (configName[i].equals(label)) {
-					int answer = JOptionPane.showConfirmDialog(null,
-						"There is already a configuration with the name of " + label + ".  Overwrite?", "Confirm",
-						JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, Icons.getImageIcon("dert_24.png"));
+					int answer = OptionDialog.showConfirmDialog(Dert.getMainWindow(),
+						"There is already a configuration with the name of " + label + ".  Overwrite?", 
+						JOptionPane.OK_CANCEL_OPTION);
 					if (answer == JOptionPane.CANCEL_OPTION) {
 						return (false);
 					}
@@ -207,10 +207,10 @@ public class ConfigurationManager {
 					config.setLandscapePath(landPath);
 					addRecent(configPath);
 				} else {
-					JOptionPane.showMessageDialog(null, "Configuration for " + landPath + " is invalid.");
+					OptionDialog.showErrorMessageDialog(Dert.getMainWindow(), "Configuration for " + landPath + " is invalid.");
 				}
 			} else {
-				JOptionPane.showMessageDialog(null, "Configuration for " + landPath + " does not exist.");
+				OptionDialog.showErrorMessageDialog(Dert.getMainWindow(), "Configuration for " + landPath + " does not exist.");
 			}
 		} catch (Exception e) {
 			Console.println("Unable to load configuration " + configPath + ", see log.");

@@ -18,6 +18,7 @@ import gov.nasa.arc.dert.state.Configuration;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.State;
 import gov.nasa.arc.dert.ui.CoordTextField;
+import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.view.lighting.LightPositionView;
 import gov.nasa.arc.dert.view.world.WorldView;
@@ -32,7 +33,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Menu;
 import java.awt.PopupMenu;
-import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
@@ -43,7 +43,6 @@ import java.util.Properties;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -498,11 +497,12 @@ public class MainWindow extends JFrame {
 		MenuItemAction canvasSizeAction = new MenuItemAction("Set WorldView Canvas Dimensions") {
 			@Override
 			protected void run() {
-				String result = JOptionPane.showInputDialog(MainWindow.this, "Enter dimensions (width,height).", worldView.getScenePanel().getWidth()+","+worldView.getScenePanel().getHeight());
+				String result = OptionDialog.showSingleInputDialog(MainWindow.this, "Enter dimensions (width,height).", 
+						worldView.getScenePanel().getWidth()+","+worldView.getScenePanel().getHeight());
 				if ((result != null) && !result.isEmpty()) {
 					String[] token = result.trim().split(",");
 					if (token.length < 2) {
-						Toolkit.getDefaultToolkit().beep();
+						OptionDialog.showErrorMessageDialog(MainWindow.this, "Invalid entry "+result+".");
 						return;
 					}
 					try {
@@ -513,7 +513,7 @@ public class MainWindow extends JFrame {
 						Console.println("WorldView Canvas Dimensions: "+worldView.getScenePanel().getCanvas().getWidth()+","+worldView.getScenePanel().getCanvas().getHeight());
 					}
 					catch (Exception e) {
-						Toolkit.getDefaultToolkit().beep();
+						OptionDialog.showErrorMessageDialog(MainWindow.this, "Invalid entry "+result+".");
 					}
 				}
 			}

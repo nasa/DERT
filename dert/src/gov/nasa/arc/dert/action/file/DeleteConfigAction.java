@@ -1,12 +1,11 @@
 package gov.nasa.arc.dert.action.file;
 
+import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.MenuItemAction;
-import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.state.ConfigurationManager;
+import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.Console;
-
-import javax.swing.JOptionPane;
 
 /**
  * Provides a File menu item for deleting a configuration.
@@ -36,15 +35,14 @@ public class DeleteConfigAction extends MenuItemAction {
 			}
 
 			// Prompt user to confirm delete.
-			int answer = JOptionPane.showConfirmDialog(null, "Delete " + label + "?", "Confirm Delete",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, Icons.getImageIcon("delete.png"));
-			if (answer == JOptionPane.OK_OPTION) {
+			boolean yes = OptionDialog.showDeleteConfirmDialog(Dert.getMainWindow(), "Delete " + label + "?");
+			if (yes) {
 				for (int i = 0; i < filePath.length; ++i) {
 					ConfigurationManager.getInstance().removeConfiguration(filePath[i]);
 				}
 			}
 		} catch (Exception e) {
-			Console.println("Unable to open new view.  See log.");
+			Console.println("Error deleting configuration.");
 			e.printStackTrace();
 		}
 	}

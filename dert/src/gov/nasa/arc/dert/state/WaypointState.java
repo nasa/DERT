@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.state;
 
+import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.ui.TextDialog;
@@ -79,7 +80,7 @@ public class WaypointState extends MapElementState {
 	@Override
 	public void openAnnotation() {
 		if (annotationDialog == null) {
-			annotationDialog = new TextDialog(null, name, 400, 200, true, false);
+			annotationDialog = new TextDialog(Dert.getMainWindow(), name, 400, 200, true, false);
 		}
 		setAnnotation(null);
 		annotationDialog.open();

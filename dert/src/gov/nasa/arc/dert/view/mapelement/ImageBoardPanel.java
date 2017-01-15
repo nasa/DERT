@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
 import gov.nasa.arc.dert.ui.DoubleTextField;
+import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.util.FileHelper;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.Console;
@@ -12,13 +13,13 @@ import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -97,8 +98,7 @@ public class ImageBoardPanel extends MapElementBasePanel {
 				} catch (Exception e) {
 					e.printStackTrace();
 					Console.println("Unable to open image, see log.");
-					JOptionPane.showMessageDialog(ImageBoardPanel.this, "Unable to open image, see log.", "Error",
-						JOptionPane.ERROR_MESSAGE);
+					OptionDialog.showErrorMessageDialog((Window)ImageBoardPanel.this.getTopLevelAncestor(), "Unable to open image.");
 				}
 			}
 		});

@@ -6,6 +6,7 @@ import gov.nasa.arc.dert.state.PathState;
 import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.ui.GBCHelper;
 import gov.nasa.arc.dert.ui.GroupPanel;
+import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.util.FileHelper;
 import gov.nasa.arc.dert.viewpoint.FlyThroughParameters;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
@@ -16,6 +17,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -26,7 +28,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -210,7 +211,7 @@ public class FlyThroughDialog extends JDialog {
 		}
 		if (grab.isSelected()) {
 			if (fileText.getText().isEmpty()) {
-				JOptionPane.showMessageDialog(FlyThroughDialog.this, "Please enter a directory for the image sequence.");
+				OptionDialog.showErrorMessageDialog((Window)FlyThroughDialog.this, "Please enter a directory for the image sequence.");
 				return(false);
 			}
 		}

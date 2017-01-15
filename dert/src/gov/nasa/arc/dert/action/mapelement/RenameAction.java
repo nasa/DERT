@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.action.mapelement;
 
+import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.MenuItemAction;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
@@ -24,7 +25,7 @@ public class RenameAction extends MenuItemAction {
 
 	@Override
 	protected void run() {
-		String nameStr = NameDialog.getName(mapElement.getName());
+		String nameStr = NameDialog.getName(Dert.getMainWindow(), mapElement.getName());
 		if (nameStr == null) {
 			return;
 		}

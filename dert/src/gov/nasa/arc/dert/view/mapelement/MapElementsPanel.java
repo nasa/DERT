@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.mapelement.NameDialog;
-import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.featureset.Feature;
@@ -17,6 +16,7 @@ import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementsState;
 import gov.nasa.arc.dert.ui.GBCHelper;
+import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.view.world.DeleteEdit;
 import gov.nasa.arc.dert.view.world.DeleteEditMulti;
 import gov.nasa.arc.dert.view.world.HideEdit;
@@ -34,6 +34,7 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -41,7 +42,6 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -229,10 +229,8 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 				} else if (currentMapElements != null) {
 					nameStr = currentMapElements[0].getName() + "...";
 				}
-				int answer = JOptionPane.showConfirmDialog(MapElementsPanel.this, "Delete " + nameStr + "?",
-					"Confirm Delete", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-					Icons.getImageIcon("delete.png"));
-				if (answer == JOptionPane.OK_OPTION) {
+				boolean yes = OptionDialog.showDeleteConfirmDialog((Window)MapElementsPanel.this.getTopLevelAncestor(), "Delete " + nameStr + "?");
+				if (yes) {
 					if (currentMapElement != null) {
 						MapElementState state = currentMapElement.getState();
 						Dert.getMainWindow().getUndoHandler().addEdit(new DeleteEdit(state));
@@ -271,7 +269,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		renameButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				String nameStr = NameDialog.getName(currentMapElement.getName());
+				String nameStr = NameDialog.getName((Dialog)getTopLevelAncestor(), currentMapElement.getName());
 				if (nameStr == null) {
 					return;
 				}

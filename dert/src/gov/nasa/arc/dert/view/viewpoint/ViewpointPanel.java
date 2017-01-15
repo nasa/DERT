@@ -3,11 +3,11 @@ package gov.nasa.arc.dert.view.viewpoint;
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.ButtonAction;
 import gov.nasa.arc.dert.action.edit.CoordAction;
-import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.state.ViewpointState;
 import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DoubleArrayTextField;
 import gov.nasa.arc.dert.ui.DoubleTextField;
+import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.ui.Vector3TextField;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
@@ -32,7 +32,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -176,8 +175,7 @@ public class ViewpointPanel extends JPanel {
 		addButton = new ButtonAction("Add the current viewpoint to the list", "Add", null) {
 			@Override
 			public void run() {
-				String answer = JOptionPane.showInputDialog((JDialog)getTopLevelAncestor(), "Please enter a name for this viewpoint.",
-					"Viewpoint" + viewpointList.size());
+				String answer = OptionDialog.showSingleInputDialog((JDialog)getTopLevelAncestor(), "Please enter a name for this viewpoint.", "");
 				if (answer != null) {
 					int index = list.getSelectedIndex();
 					if (index < 0) {
@@ -201,10 +199,8 @@ public class ViewpointPanel extends JPanel {
 				String str = currentVPS.toString();
 				if (vpList.length > 1)
 					str += ". . . ";
-				int answer = JOptionPane.showConfirmDialog((JDialog)getTopLevelAncestor(), "Delete " + str + "?",
-					"Confirm Delete", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-					Icons.getImageIcon("delete.png"));
-				if (answer == JOptionPane.OK_OPTION) {
+				boolean yes = OptionDialog.showDeleteConfirmDialog((JDialog)getTopLevelAncestor(), "Delete " + str + "?");
+				if (yes) {
 					setEditing(false);
 					int index = controller.removeViewpoints(vpList);
 					list.setListData(viewpointList);

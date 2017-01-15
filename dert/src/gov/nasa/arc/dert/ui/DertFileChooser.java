@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.icon.Icons;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -13,7 +14,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -107,15 +107,26 @@ public class DertFileChooser extends JFileChooser {
 					nd.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent event) {
-							String str = JOptionPane.showInputDialog(null,
-								"Please enter the directory name (no spaces).");
+							String str = OptionDialog.showSingleInputDialog((Window)getTopLevelAncestor(), "Please enter the directory name (no spaces).", "");
 							if (str == null) {
 								return;
 							}
-							File file = new File(getCurrentDirectory(), str);
-							file.mkdirs();
-							rescanCurrentDirectory();
-							setSelectedFiles(new File[] { file });
+							str = str.trim();
+							if (!str.isEmpty()) {
+								try {
+									File file = new File(getCurrentDirectory(), str.trim());
+									file.mkdirs();
+									rescanCurrentDirectory();
+									setSelectedFiles(new File[] { file });
+								}
+								catch (Exception e) {
+									OptionDialog.showErrorMessageDialog((Window)getTopLevelAncestor(), "Error creating directory "+str+".");
+									e.printStackTrace();
+								}
+							}
+							else {
+								OptionDialog.showErrorMessageDialog((Window)getTopLevelAncestor(), "Invalid directory name.");
+							}
 						}
 					});
 					button.getParent().add(nd, 0);

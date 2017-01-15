@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.state;
 
+import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scenegraph.MotionListener;
 import gov.nasa.arc.dert.scenegraph.Movable;
@@ -191,7 +192,7 @@ public abstract class MapElementState extends State {
 	 */
 	public void openAnnotation() {
 		if (annotationDialog == null) {
-			annotationDialog = new TextDialog(null, name, 400, 200, true, false);
+			annotationDialog = new TextDialog(Dert.getMainWindow(), name, 400, 200, true, false);
 		}
 		if (mapElement != null) {
 			annotationDialog.setMessage(StringUtil.format(mapElement.getLocationInWorld()));

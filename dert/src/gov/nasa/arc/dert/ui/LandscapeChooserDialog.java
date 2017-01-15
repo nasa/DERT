@@ -1,8 +1,10 @@
 package gov.nasa.arc.dert.ui;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.view.Console;
 
 import java.awt.BorderLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -13,7 +15,6 @@ import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 /**
  * Provides a dialog for choosing a DERT configuration or a landscape.
@@ -105,15 +106,29 @@ public class LandscapeChooserDialog extends AbstractDialog {
 		nl.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				String str = JOptionPane.showInputDialog(null,
-					"Please enter the landscape name (no spaces).");
+				String str = OptionDialog.showSingleInputDialog((Window)buttonsPanel.getTopLevelAncestor(), "Please enter the landscape name (no spaces).", "");
 				if (str == null) {
 					return;
 				}
-				File file = new File(fileChooser.getCurrentDirectory(), str);
-				file.mkdirs();
-				fileChooser.rescanCurrentDirectory();
-				fileChooser.setSelectedFiles(new File[] { file });
+				str = str.trim();
+				File file = null;
+				if (!str.isEmpty()) {
+					try {
+						file = new File(fileChooser.getCurrentDirectory(), str);
+						file.mkdirs();
+						fileChooser.rescanCurrentDirectory();
+						fileChooser.setSelectedFiles(new File[] { file });
+					}
+					catch (Exception e) {
+						OptionDialog.showErrorMessageDialog((Window)fileChooser.getTopLevelAncestor(), "Error creating landscape "+str+".");
+						e.printStackTrace();
+					}
+				}
+				else {
+					OptionDialog.showErrorMessageDialog((Window)fileChooser.getTopLevelAncestor(), "Invalid landscape name.");
+				}
+				if (file == null)
+					return;
 
 				// add landscape identifier
 				Properties landscapeProperties = new Properties();
@@ -122,6 +137,7 @@ public class LandscapeChooserDialog extends AbstractDialog {
 				try {
 					landscapeProperties.store(new FileOutputStream(propFile), null);
 				} catch (Exception e) {
+					Console.println("Error creating landscape "+file);
 					e.printStackTrace();
 				}
 			}

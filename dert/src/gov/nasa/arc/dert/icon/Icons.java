@@ -12,6 +12,8 @@ import javax.swing.ImageIcon;
  *
  */
 public class Icons {
+	
+	public final static ImageIcon DERT_ICON_24 = getImageIcon("dert_24.png");
 
 	/**
 	 * Get the URL for a specific icon.

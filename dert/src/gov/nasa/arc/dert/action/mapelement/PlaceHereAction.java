@@ -75,7 +75,7 @@ public class PlaceHereAction extends MenuItemAction {
 
 		// ask user to select one
 		Movable movable = (Movable) JOptionPane.showInputDialog(Dert.getMainWindow(), "Select a Map Element",
-			"Place Here", JOptionPane.PLAIN_MESSAGE, Icons.getImageIcon("dert_24.png"), spatials, spatials[0]);
+			"Place Here", JOptionPane.PLAIN_MESSAGE, Icons.DERT_ICON_24, spatials, spatials[0]);
 
 		// move the map element and hand it to the undo handler
 		if (movable != null) {

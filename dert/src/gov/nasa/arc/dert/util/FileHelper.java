@@ -1,7 +1,9 @@
 package gov.nasa.arc.dert.util;
 
 import gov.nasa.arc.dert.ui.DertFileChooser;
+import gov.nasa.arc.dert.ui.OptionDialog;
 
+import java.awt.Window;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -121,9 +123,8 @@ public class FileHelper {
 		if ((file != null) && (state == JFileChooser.APPROVE_OPTION)) {
 			lastPath = chooser.getCurrentDirectory().getAbsolutePath();
 			if (file.exists()) {
-				int answer = JOptionPane.showConfirmDialog(null, file.getName()
-					+ " exists. Would you like to replace it?", "File Exists", JOptionPane.OK_CANCEL_OPTION,
-					JOptionPane.QUESTION_MESSAGE, null);
+				int answer = OptionDialog.showConfirmDialog((Window)chooser.getTopLevelAncestor(), file.getName()
+					+ " exists. Would you like to replace it?", JOptionPane.OK_CANCEL_OPTION);
 				if (answer == JOptionPane.CANCEL_OPTION) {
 					return (null);
 				}

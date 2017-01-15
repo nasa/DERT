@@ -2,13 +2,11 @@ package gov.nasa.arc.dert.action.mapelement;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.MenuItemAction;
-import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.MapElementState;
+import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.view.world.DeleteEdit;
-
-import javax.swing.JOptionPane;
 
 /**
  * Context menu item for deleting a map element.
@@ -31,11 +29,9 @@ public class DeleteMapElementAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		// Get a confirmation from the user
-		int answer = JOptionPane.showConfirmDialog(Dert.getMainWindow(), "Delete " + mapElement.getName() + "?",
-			"Confirm Delete", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-			Icons.getImageIcon("delete.png"));
+		boolean yes = OptionDialog.showDeleteConfirmDialog(Dert.getMainWindow(), "Delete " + mapElement.getName() + "?");
 		// Save the state and give it to the undo handler.
-		if (answer == JOptionPane.OK_OPTION) {
+		if (yes) {
 			MapElementState state = mapElement.getState();
 			state.save();
 			ConfigurationManager.getInstance().getCurrentConfiguration().removeMapElementState(state);
