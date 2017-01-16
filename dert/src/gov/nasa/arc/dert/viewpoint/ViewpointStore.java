@@ -187,7 +187,7 @@ public class ViewpointStore {
 		ViewpointStore vps = new ViewpointStore();
 		vps.name = this.name + pct;
 		vps.location = this.location.lerp(that.location, pct, vps.location);
-		if (vps.mode.equals("Hike"))
+		if ((vps.mode != null) && vps.mode.equals("Hike"))
 			vps.location.setZ(Landscape.getInstance().getZ(location.getX(), location.getY())+zOffset);
 //		vps.direction = this.direction.lerp(that.direction, pct, vps.direction);
 		vps.lookAt = this.lookAt.lerp(that.lookAt, pct, vps.lookAt);

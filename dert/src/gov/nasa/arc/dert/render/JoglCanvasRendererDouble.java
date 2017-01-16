@@ -119,7 +119,7 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
         	_renderer.popClip();
         
         if (drew && _doSwap && frameGrab)
-        	grabFrame();
+        	grabRGBFrame();
 
         // release the context if we're done (swapped and all)
         if (_doSwap) {
@@ -159,7 +159,7 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
 	/**
 	 * Grab the current frame to a PNG file.
 	 */
-	public void grabFrame() {
+	public void grabRGBAFrame() {
 		makeCurrentContext();
 		if (store == null) {
 			Console.println("Rendering image sequence to "+grabFilePath);
@@ -178,6 +178,44 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
 			}
 			ImageUtil.doFlip(store, grabWidth * 4, grabHeight);
 			BufferedImage bImage = new BufferedImage(grabWidth, grabHeight, BufferedImage.TYPE_4BYTE_ABGR);
+			byte[] iData = ((DataBufferByte) bImage.getRaster().getDataBuffer()).getData();
+			store.get(iData, 0, iData.length);
+			String filePath = "frame"+String.format("%07d", frameCount)+".png";
+			File file = new File(grabFilePath);
+			if (!file.exists())
+				file.mkdirs();
+			file = new File(file, filePath);
+			ImageOutputStream oStream = new FileImageOutputStream(file);
+			ImageIO.write(bImage, "PNG", oStream);
+			oStream.flush();
+			oStream.close();
+			frameCount ++;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		releaseCurrentContext();
+	}
+	
+	/**
+	 * Grab the current frame to a PNG file.
+	 */
+	public void grabRGBFrame() {
+		makeCurrentContext();
+		if (store == null) {
+			Console.println("Rendering image sequence to "+grabFilePath);
+			frameCount = 0;
+			int n = _renderer.getExpectedBufferSizeToGrabScreenContents(ImageDataFormat.RGB, PixelDataType.Byte, grabWidth, grabHeight);
+			store = ByteBuffer.allocateDirect(n);
+			store.limit(n);
+		}
+		
+		try {
+			store.position(0);
+			_renderer.finishGraphics();
+			_renderer.grabScreenContents(store, ImageDataFormat.RGB, PixelDataType.UnsignedByte, grabX, grabY, grabWidth, grabHeight);
+			ImageUtil.doFlip(store, grabWidth * 3, grabHeight);
+			BufferedImage bImage = new BufferedImage(grabWidth, grabHeight, BufferedImage.TYPE_3BYTE_BGR);
 			byte[] iData = ((DataBufferByte) bImage.getRaster().getDataBuffer()).getData();
 			store.get(iData, 0, iData.length);
 			String filePath = "frame"+String.format("%07d", frameCount)+".png";

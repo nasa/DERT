@@ -495,6 +495,8 @@ public class ViewpointNode
 	 */
 	public void setViewpoint(ViewpointStore vps, boolean strict, boolean vpSelected) {
 		strictFrustum = strict;
+		if (vps.mode == null)
+			vps.mode = "Nominal";
 		mode = ViewpointMode.valueOf(vps.mode);
 		zOffset = vps.zOffset;
 		azimuth = vps.azimuth;
