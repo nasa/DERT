@@ -28,6 +28,7 @@ public class GdalMetadata {
 				if (q < 0)
 					continue;
 				String value = token[i].substring(p+1, q);
+				value = value.replace("&amp;quot;", "");
 				metadataMap.put(name, value);
 			}
 		}
