@@ -5,15 +5,15 @@ Desktop Exploration of Remote Terrain
 
 SYSTEM REQUIREMENTS:
 
-DERT requires 64-bit Java 1.7, or 1.8 JRE.  Mac OS X 10.8 and Red Hat Linux 6 have
+DERT requires 64-bit Java 1.8 JRE.  Mac OS X 10.11.6 and Red Hat Linux 6 have
 been tested successfully.  A 3-button mouse is recommended.
-Mac users may need to install the Java JDK to set the default Java.
+Mac users may need to install the Java JDK to set the default Java JRE.
 
 
 INSTALLATION:
 
 Install DERT by unzipping the zip file and placing the resulting directory in your desired location.
-The directory can be placed anywhere but should remain intact. 
+The directory may be placed anywhere but should remain intact. Do not move or rearrange any files. 
 You may edit the dert script file to set the Java path and/or change the memory allocation.
 
 DERT may be installed in a central location for multiple users. 
@@ -27,16 +27,17 @@ the kernels subdirectory of the dert directory is empty or absent.
 
 EXECUTION:
 
-To execute DERT on a Mac double-click on the dert application or run the dert script found in the directory.
-To execute DERT on Linux, run the dert script.  See the user guide for instructions.
+To execute DERT on a Mac double-click on the dert application or run the dert script found in the installation directory.
+To execute DERT on Linux, run the dert script found in the installation directory.
+See the user guide for more information.
 
-To execute LayerFactory run the layerfactory script found in the dert directory.
+To execute LayerFactory run the layerfactory script found in the installation directory.
 See the user guide for a description of parameters.
 
 
 MEMORY ALLOCATION:
 
-The maximum memory allocation for DERT is 2 GB and LayerFactory is set to 8 GB.
+The maximum memory allocation for DERT is set to 2 GB and LayerFactory is set to 8 GB.
 Java will try to allocate this much virtual memory.
 The maximum memory can be modified by changing MAX_MEM in the dert and layerfactory scripts.
 To change the Mac app, right-click on dert.app, select "Show Package Contents" from the context menu.
@@ -46,10 +47,11 @@ Open JVMOptions and change the -Xmx memory option. Save.
 
 PREFERENCES:
 
-There are a number of properties (defaults) defined in the dert.properties file.
+There are a number of preferences (defaults) defined in the dert.properties file.
 This file is used by both applications.  Changes to this file require restarting the application.
 The dert.properties file can be found in the installation directory on Linux and in
 the dert.app/Contents/Java directory on the Mac.
+The format of the properties file is “key=value”. To set a preference for a given key, change the associated value.
 
 
 ACKNOWLEDGEMENTS:

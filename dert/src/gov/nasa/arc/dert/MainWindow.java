@@ -158,7 +158,7 @@ public class MainWindow extends JFrame {
 
 		// Menu for edit operations (undo, redo, background color, stereo, CoR
 		// cross hair visibility).
-		editMenu = new PopupMenuAction("edit actions", "Edit", null) {
+		editMenu = new PopupMenuAction("general application actions", "Edit", null) {
 			@Override
 			protected void fillMenu(PopupMenu menu) {
 				fillEditMenu(menu);
@@ -192,7 +192,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(new JLabel(filler));
 
 		// Open the surface and layers view.
-		surfaceAndLayersAction = new ButtonAction("edit landscape surface and layers", null, "surfandlayer.png",
+		surfaceAndLayersAction = new ButtonAction("configure landscape surface and layers", null, "surfandlayer.png",
 			buttonBorder) {
 			@Override
 			public void run() {
@@ -250,7 +250,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(lightingAndShadowsAction);
 
 		// Open the light positioning view.
-		lightAction = new ButtonAction("position artificial light", null, "luxo.png", buttonBorder) {
+		lightAction = new ButtonAction("set light position", null, "luxo.png", buttonBorder) {
 			@Override
 			public void run() {
 				currentConfig.lightPosState.getViewData().setVisible(true);
@@ -268,7 +268,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(viewpointMenuAction);
 
 		// Reset the viewpoint to the default overhead view.
-		resetAction = new ButtonAction("reset viewpoint to overhead position", null, "reset.png", buttonBorder) {
+		resetAction = new ButtonAction("reset viewpoint to nadir position", null, "reset.png", buttonBorder) {
 			@Override
 			public void run() {
 				worldView.getViewpointNode().reset();
@@ -540,10 +540,8 @@ public class MainWindow extends JFrame {
 		Lighting lighting = World.getInstance().getLighting();
 		if (lighting.isLampMode()) {
 			lightAction.setIcon(Icons.getImageIcon("luxo.png"));
-			lightAction.setToolTipText("set position of artificial light");
 		} else {
 			lightAction.setIcon(Icons.getImageIcon("sun.png"));
-			lightAction.setToolTipText("set position of sun");
 		}
 		State state = currentConfig.lightPosState;
 		if (state != null) {

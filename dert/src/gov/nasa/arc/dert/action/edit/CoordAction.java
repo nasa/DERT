@@ -12,7 +12,7 @@ public class CoordAction
 	public static final ArrayList<CoordListener> listenerList = new ArrayList<CoordListener>();
 	
 	public CoordAction() {
-		super("enable/disable longitude and latitude coordinates", null, "graticule.png", false);
+		super("enable/disable lon/lat coordinates", null, "graticule.png", false);
 	}
 	
 	@Override

@@ -16,7 +16,7 @@ public class ActivateZoomAction extends ButtonAction {
 	 * Constructor
 	 */
 	public ActivateZoomAction() {
-		super("activate zoom mode", null, "magnify.png", false);
+		super("activate/deactivate zoom mode", null, "magnify.png", false);
 	}
 
 	@Override

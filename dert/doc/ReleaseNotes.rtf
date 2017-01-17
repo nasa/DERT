@@ -6,11 +6,11 @@
 \deftab720
 \pard\pardeftab720\partightenfactor0
 
-\f0\fs24 \cf0 This release runs on Mac OS 10.8 or greater and on Linux Red Hat 6 both with 64-bit Java 7, or 8.  Due to memory requirements, a 32-bit version is not feasible.\
+\f0\fs24 \cf0 This release runs on Mac OS 10.11.6 or greater and on Linux Red Hat 6 both with 64-bit Java 8.  Due to memory requirements, a 32-bit version is not feasible.\
 \
 WARNING: If you used earlier versions of DERT you may have a .dert or dertstash subdirectory or file in your home directory. Be sure to remove these before starting a new release.\
 \
-Always include the dert.log file from the dertstash directory in your home directory with problem reports.\
+Always include the dert.log file from the dertstash directory in your home directory with problem reports. Problems may be reported at https://github.com/nasa/DERT.\
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 \cf0 \
@@ -39,6 +39,10 @@ January 2017\
 - Replaced GLUT bitmap fonts with homegrown to handle higher resolution screens.\
 - Corrected dimensions of FieldCamera FOV display object.\
 - Updated to JOGL 2.3.2\
+- Refactored viewpoint modes.\
+- Moved display of distance from viewpoint location to CoR to center scale.\
+- Removed alpha from grabbed PNGs.\
+- Made popup dialogs more consistent in presentation.\
 \pard\pardeftab720\partightenfactor0
 \cf0 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0

@@ -6,6 +6,7 @@ import gov.nasa.arc.dert.state.State;
 import gov.nasa.arc.dert.view.JPanelView;
 
 import java.awt.BorderLayout;
+import java.awt.Window;
 
 /**
  * Provides controls for setting light position with modes for Azimuth and
@@ -52,7 +53,11 @@ public class LightPositionView extends JPanelView {
 			}
 			add(timePanel, BorderLayout.CENTER);
 		}
-		revalidate();
+		Window window = (Window)getTopLevelAncestor();
+		if (window != null)
+			window.pack();
+		else
+			revalidate();
 	}
 
 }
