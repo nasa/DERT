@@ -12,8 +12,10 @@ import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.renderer.IndexMode;
 import com.ardor3d.renderer.state.MaterialState;
+import com.ardor3d.renderer.state.ZBufferState;
 import com.ardor3d.scenegraph.Line;
 import com.ardor3d.scenegraph.Node;
+import com.ardor3d.scenegraph.hint.CullHint;
 import com.ardor3d.scenegraph.hint.LightCombineMode;
 import com.ardor3d.util.geom.BufferUtils;
 
@@ -73,11 +75,27 @@ public class CenterScale extends Node {
 		distText.setVisible(true);
 		distText.setTranslation(0, -Text.FONT_SIZE, 0);
 		attachChild(distText);
+
+		ZBufferState zBuf = new ZBufferState();
+		zBuf.setFunction(ZBufferState.TestFunction.Always);
+		zBuf.setEnabled(true);
+		setRenderState(zBuf);
 	}
 	
 	public void setText(double size, double dist) {
 		sizeText.setText(String.format(Landscape.stringFormat, size));
 		distText.setText(String.format(Landscape.stringFormat, dist));
+	}
+	
+	public void showText(boolean show) {
+		if (show) {
+			sizeText.getSceneHints().setCullHint(CullHint.Inherit);
+			distText.getSceneHints().setCullHint(CullHint.Inherit);
+		}
+		else {
+			sizeText.getSceneHints().setCullHint(CullHint.Always);
+			distText.getSceneHints().setCullHint(CullHint.Always);
+		}
 	}
 
 }

@@ -788,6 +788,7 @@ public class ViewpointNode
 		updateFromCamera();
 		updateGeometricState(0);
 		updateCrosshair();
+		updateOverlay();
 		changed.set(true);
 	}
 
@@ -797,10 +798,16 @@ public class ViewpointNode
 	 * @param lookAt
 	 */
 	public void setLookAt(ReadOnlyVector3 lookAt) {
-		camera.setLookAt(lookAt);
-		updateFromCamera();
-		updateGeometricState(0);
-		updateCrosshair();
+		if (lookAt == null) {
+			centerScale.showText(false);
+		}
+		else {
+			camera.setLookAt(lookAt);
+			updateFromCamera();
+			updateGeometricState(0);
+			updateCrosshair();
+			centerScale.showText(true);
+		}
 		updateOverlay();
 		changed.set(true);
 	}

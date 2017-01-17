@@ -458,10 +458,6 @@ public class WorldInputHandler implements InputHandler {
 	public void setCenterOfRotation() {
 		controller.getViewpointNode().setCenterOfRotation(getPickLocation());
 	}
-
-	public void setLookAt(ReadOnlyVector3 pos) {
-		controller.getViewpointNode().setLookAt(pos);
-	}
 	
 	public void setCanvasScale(double xScale, double yScale) {
 		xCanvasScale = xScale;
