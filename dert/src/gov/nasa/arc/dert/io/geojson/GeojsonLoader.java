@@ -120,7 +120,7 @@ public class GeojsonLoader {
 			crs = new CoordinateReferenceSystem(Landscape.getInstance().getSpatialReferenceSystem().getProjection());
 		// Minimum landscape elevation
 		landscapeMinZ = 0;
-		if (elevAttrName == null)
+		if ((elevAttrName == null) && ground)
 			landscapeMinZ = Landscape.getInstance().getMinimumElevation();
 
 		int count = 0;
