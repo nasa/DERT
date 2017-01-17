@@ -163,5 +163,9 @@ public class FileHelper {
 		in.close();
 		out.close();
 	}
+	
+	public static String getLastFilePath() {
+		return(lastPath);
+	}
 
 }

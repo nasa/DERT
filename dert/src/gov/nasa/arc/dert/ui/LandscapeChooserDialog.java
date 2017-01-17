@@ -37,10 +37,16 @@ public class LandscapeChooserDialog extends AbstractDialog {
 	 * @param vrsn
 	 * @param del
 	 */
-	public LandscapeChooserDialog() {
+	public LandscapeChooserDialog(String path) {
 		super(Dert.getMainWindow(), "Select Landscape", true, false);
 		width = 600;
 		height = 400;
+		if (path != null) {
+			File dotFile = new File(path, ".landscape");
+			if (dotFile.exists())
+				path = new File(path).getParent();
+			lastPath = path;
+		}
 	}
 
 	@Override
@@ -160,6 +166,10 @@ public class LandscapeChooserDialog extends AbstractDialog {
 
 	private static void setLastPath(String path) {
 		lastPath = path;
+	}
+	
+	public String getLastFilePath() {
+		return(lastPath);
 	}
 
 }
