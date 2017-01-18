@@ -1,6 +1,5 @@
 package gov.nasa.arc.dert.landscape.factory;
 
-import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.util.ImageUtil;
 
 import java.nio.ByteBuffer;
@@ -154,9 +153,7 @@ public class OffscreenRenderer {
 		rgbaBuffer.rewind();
 		gl.glReadPixels(0, 0, width, height, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, rgbaBuffer);
 		rgbaBuffer.rewind();
-		if (Dert.isMac) {
-			ImageUtil.doSwap(rgbaBuffer);
-		}
+		ImageUtil.doSwap(rgbaBuffer);
 		ImageUtil.doFlip(rgbaBuffer, width * 4, height);
 	}
 
@@ -179,9 +176,12 @@ public class OffscreenRenderer {
 			final GLDrawableFactory fac = GLDrawableFactory.getFactory(profile);
 			final GLCapabilities caps = new GLCapabilities(profile);
 			caps.setHardwareAccelerated(true);
-			caps.setDoubleBuffered(true);
-			caps.setAlphaBits(settings.getAlphaBits());
-			caps.setDepthBits(settings.getDepthBits());
+//			caps.setDoubleBuffered(true);
+			caps.setRedBits(8);
+			caps.setGreenBits(8);
+			caps.setBlueBits(8);
+			caps.setAlphaBits(8);
+			caps.setDepthBits(24);
 			caps.setNumSamples(settings.getSamples());
 			caps.setSampleBuffers(settings.getSamples() != 0);
 			caps.setStencilBits(settings.getStencilBits());

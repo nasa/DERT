@@ -60,7 +60,7 @@ public class RGBAxes extends Line {
 		zBuf.setFunction(ZBufferState.TestFunction.Always);
 		zBuf.setEnabled(true);
 		setRenderState(zBuf);
-		getSceneHints().setRenderBucketType(RenderBucketType.PostBucket);		
+		getSceneHints().setRenderBucketType(RenderBucketType.Skip);		
 		
 		updateGeometricState(0, false);
 	}

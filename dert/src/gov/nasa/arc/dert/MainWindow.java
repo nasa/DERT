@@ -22,9 +22,9 @@ import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.view.lighting.LightPositionView;
 import gov.nasa.arc.dert.view.world.WorldView;
-import gov.nasa.arc.dert.viewpoint.ViewpointMenuAction;
 import gov.nasa.arc.dert.viewpoint.ActivateZoomAction;
 import gov.nasa.arc.dert.viewpoint.Compass;
+import gov.nasa.arc.dert.viewpoint.ViewpointMenuAction;
 
 import java.awt.BorderLayout;
 import java.awt.CheckboxMenuItem;

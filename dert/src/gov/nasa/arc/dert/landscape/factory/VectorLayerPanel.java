@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.landscape.factory;
 
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.GBCHelper;
+import gov.nasa.arc.dert.ui.LandscapeChooserDialog;
 import gov.nasa.arc.dert.util.FileHelper;
 import gov.nasa.arc.dert.util.StringUtil;
 
@@ -48,6 +49,9 @@ public class VectorLayerPanel extends JPanel {
 
 	// Elevation attribute name from gdal_contour
 	private String elevAttrName;
+	
+	// Last path visited
+	private String lastPath;
 
 	/**
 	 * Constructor
@@ -72,8 +76,7 @@ public class VectorLayerPanel extends JPanel {
 
 		JLabel label = new JLabel("Input File:");
 		label.setToolTipText("enter GeoJSON file.");
-		container
-			.add(label, GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
+		container.add(label, GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
 
 		fileText = new JTextField();
 		if (filePath != null) {
@@ -244,6 +247,7 @@ public class VectorLayerPanel extends JPanel {
 		if (fPath != null) {
 			fileText.setText(fPath);
 			nameText.setText(StringUtil.getLabelFromFilePath(fPath));
+			lastPath = FileHelper.getLastFilePath();
 		}
 	}
 
@@ -251,9 +255,13 @@ public class VectorLayerPanel extends JPanel {
 	 * Get the destination landscape directory.
 	 */
 	private void setLandscapeDirectory() {
-		String fPath = FileHelper.getDirectoryPathForOpen("Landscape Selection");
-		if (fPath != null) {
-			landscapeText.setText(fPath);
+//		String fPath = FileHelper.getDirectoryPathForOpen("Landscape Selection");
+		LandscapeChooserDialog chooser = new LandscapeChooserDialog(lastPath);
+		chooser.open();
+		String landscapePath = chooser.getLandscape();
+		if (landscapePath != null) {
+			landscapeText.setText(landscapePath);
+			lastPath = chooser.getLastFilePath();
 		}
 	}
 

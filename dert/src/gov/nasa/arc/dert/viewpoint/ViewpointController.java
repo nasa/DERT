@@ -181,10 +181,7 @@ public class ViewpointController {
 			viewpointNode.magnify(-mouseScrollDirection * delta);
 		} else {
 			viewpointNode.dolly(mouseScrollDirection * 2 * delta);
-			Spatial spat = doPick(viewpointNode.getCenterX(), viewpointNode.getCenterY(), pickPosition, pickNormal, false);
-			if (spat != null) {
-				viewpointNode.setLookAt(pickPosition);
-			}
+			updateLookAt();
 		}
 	}
 
@@ -202,6 +199,9 @@ public class ViewpointController {
 //		System.err.println("ViewpointController.mousePress "+mouseX+" "+mouseY);
 		velocity = 0;
 		amplitude = 0;
+		// turn off center scale text since we won't have an accurate value until mouse release
+		if ((mouseButton == 1) || (viewpointNode.getMode() == ViewpointMode.Hike))
+			viewpointNode.setLookAt(null);
 	}
 
 	/**

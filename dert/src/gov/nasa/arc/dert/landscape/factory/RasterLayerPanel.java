@@ -63,6 +63,9 @@ public class RasterLayerPanel extends JPanel {
 
 	// Properties
 	private Properties dertProperties;
+	
+	// Last directory visited
+	private String lastPath;
 
 	// Command line arguments
 	private String landscapePath;
@@ -376,6 +379,7 @@ public class RasterLayerPanel extends JPanel {
 		if (fPath != null) {
 			fileText.setText(fPath);
 			updateNameText();
+			lastPath = FileHelper.getLastFilePath();
 		}
 	}
 
@@ -383,11 +387,12 @@ public class RasterLayerPanel extends JPanel {
 	 * Get the destination landscape directory.
 	 */
 	protected void setLandscapeText() {
-		LandscapeChooserDialog chooser = new LandscapeChooserDialog();
+		LandscapeChooserDialog chooser = new LandscapeChooserDialog(lastPath);
 		chooser.open();
 		String landscapePath = chooser.getLandscape();
 		if (landscapePath != null) {
 			landscapeText.setText(landscapePath);
+			lastPath = chooser.getLastFilePath();
 		}
 	}
 
