@@ -1,51 +1,53 @@
-#!/bin/csh
+#!/bin/sh
 
 # This script gets the SPICE kernels and puts them in a directory called kernels.
 # Run it from the DERT installation directory.
 
 # Edit dert.properties to add or remove kernel files.
 
-set PLAT = "`uname -s`"
-set DERT_PATH = $0:h
+plat="`uname -s`"
+dert_path=$0
 
-if ($DERT_PATH == dert) then
-	set DERT_PATH = "."
-endif
+if test $dert_path = "dert"
+then
+dert_path="`/usr/bin/which dert`"
+fi
 
-if ($PLAT == Darwin) then
+dert_path=${dert_path%/*}
 
-	set DEST = $DERT_PATH/dert.app/Contents/Java/kernels
+if test $plat = "Darwin"
+then
+dest=${dert_path}/dert.app/Contents/Java/kernels
 else
-
-	set DEST = $DERT_PATH/kernels
-endif
+dest=${dert_path}/kernels
+fi
 
 # Gravitational constant x mass (GM) values
 echo "Retrieving gm_de431.tpc"
-curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/gm_de431.tpc > $DEST/gm_de431.tpc
+curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/gm_de431.tpc > ${dest}/gm_de431.tpc
 
 # Generic orientation data
 echo "Retrieving pck00010.tpc"
-curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00010.tpc > $DEST/pck00010.tpc
+curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00010.tpc > ${dest}/pck00010.tpc
 
 # Leapseconds kernel
 echo "Retrieving naif0011.tls"
-curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0011.tls > $DEST/naif0011.tls
+curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0011.tls > ${dest}/naif0011.tls
 
 # Generic Planet Ephemeris
 echo "Retrieving de430.bsp"
-curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de430.bsp > $DEST/de430.bsp
+curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de430.bsp > ${dest}/de430.bsp
 
 # Mars Planet Ephemeris
 echo "Retrieving mar097.bsp"
-curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/mar097.bsp > $DEST/mar097.bsp
+curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/mar097.bsp > ${dest}/mar097.bsp
 
 # Update to de430 for New Horizons
 #echo "Retrieving de432s.bsp"
-#curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de432s.bsp > $DEST/de432s.bsp
+#curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de432s.bsp > ${dest}/de432s.bsp
 
 # Pluto Planet Ephemeris
 #echo "Retrieving plu055.bsp"
-#curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/plu055.bsp > $DEST/plu055.bsp
+#curl http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/plu055.bsp > ${dest}/plu055.bsp
 
-chmod o+r $DEST/*
+chmod o+r ${dest}/*

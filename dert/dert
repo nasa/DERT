@@ -19,11 +19,11 @@ dert_path=${dert_path%/*}
 if test $plat = "Darwin"
 then
 
-java -Xms256m -Xmx${max_mem}m -Xdock:icon=${dert_path}/derticon.icns -Xdock:name="DERT" -jar ${dert_path}/dert.app/Contents/Java/dert.jar $argv
+java -Xms256m -Xmx${max_mem}m -Xdock:icon=${dert_path}/derticon.icns -Xdock:name="DERT" -jar ${dert_path}/dert.app/Contents/Java/dert.jar $*
 
 else
 
-java -Xms256m -Xmx${max_mem}m -jar ${dert_path}/dert.jar $argv
+java -Xms256m -Xmx${max_mem}m -jar ${dert_path}/dert.jar $*
 
 fi
 	

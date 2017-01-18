@@ -1,33 +1,41 @@
 DERT
 Desktop Exploration of Remote Terrain
-2016
+2017
 
 
 SYSTEM REQUIREMENTS:
 
-DERT requires 64-bit Java 1.8 JRE.  Mac OS X 10.11.6 and Red Hat Linux 6 have
-been tested successfully.  A 3-button mouse is recommended.
-Mac users may need to install the Java JDK to set the default Java JRE.
+DERT requires 64-bit Java 1.7 or later. However, all releases have been built with the Java 1.8 JDK
+so the Java 1.8 JRE is required. Rebuild DERT to use an earlier JRE.
+Mac OS X 10.11.6 and Red Hat Linux 6 have been tested successfully.
+
+A 3-button mouse is recommended.
 
 
 INSTALLATION:
 
 Install DERT by unzipping the zip file and placing the resulting directory in your desired location.
-The directory may be placed anywhere but should remain intact. Do not move or rearrange any files. 
-You may edit the dert script file to set the Java path and/or change the memory allocation.
-
+The directory may be placed anywhere but should remain intact. Do not move or rearrange any files.
 DERT may be installed in a central location for multiple users. 
-Put the dert directory in the user's path.
+Put the dert directory in the user's path. The path to dert should not contain any spaces.
 
-WARNING: The path to dert should not contain any spaces.
+As mentioned above the release requires Java 1.8. The dert command uses the default java.
+Mac users may need to install the Java JDK to set the default Java JRE.
+Mac users may run the command "/usr/libexec/java_home -V" to see what they have installed.
+If you do not have the default java set to 1.8 or later but have it on your system, you may
+edit the dert and layerfactory scripts to put 1.8 in your path.
+ 
+You may also edit the dert script to change the memory allocation (see below).
 
-A script called "get_kernels" is included. Run this script to download SPICE kernels from NAIF if
+A script called "get_kernels" is included in the installation directory.
+Run this script to download the SPICE kernels from NAIF if
 the kernels subdirectory of the dert directory is empty or absent.
 
 
 EXECUTION:
 
-To execute DERT on a Mac double-click on the dert application or run the dert script found in the installation directory.
+To execute DERT on a Mac double-click on the dert application or run the dert script found in the installation directory
+(if you don't have Java 1.8 set as the default).
 To execute DERT on Linux, run the dert script found in the installation directory.
 See the user guide for more information.
 

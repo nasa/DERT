@@ -1,6 +1,5 @@
 package gov.nasa.arc.dert.raster;
 
-import gov.nasa.arc.dert.landscape.factory.LayerFactory;
 import gov.nasa.arc.dert.raster.geotiff.GeoKey;
 import gov.nasa.arc.dert.util.StringUtil;
 
@@ -276,12 +275,12 @@ public class ProjectionInfo {
 	 * 
 	 * @param properties
 	 */
-	public void saveToProperties(Properties properties) {
+	public void saveToProperties(Properties properties, String defaultGlobe) {
 		properties.setProperty("ProjectionInfo.Projected", Boolean.toString(projected));
 		properties.setProperty("ProjectionInfo.TiePoint", StringUtil.doubleArrayToString(tiePoint));
 		properties.setProperty("ProjectionInfo.Scale", StringUtil.doubleArrayToString(scale));
 		if (globe == null) {
-			globe = LayerFactory.defaultGlobe;
+			globe = defaultGlobe;
 		}
 		properties.setProperty("ProjectionInfo.Globe", globe);
 		properties.setProperty("ProjectionInfo.RasterWidth", Integer.toString(rasterWidth));

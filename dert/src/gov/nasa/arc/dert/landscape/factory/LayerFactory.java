@@ -47,9 +47,6 @@ public class LayerFactory {
 	// The layer type selection
 	public static final LayerType[] LAYER_TYPE = { LayerType.elevation, LayerType.grayimage, LayerType.colorimage, LayerType.field };
 
-	// The default globe (from dert.properties)
-	public static String defaultGlobe;
-
 	// GUI components
 	private JButton applyButton, cancelButton;
 	private JTextField messageText;
@@ -130,16 +127,21 @@ public class LayerFactory {
 			File file = new File(pathStr, "dert.properties");
 			dertProperties.load(new FileInputStream(file));
 			version = dertProperties.getProperty("Dert.Version", "");
-			String globes = dertProperties.getProperty("Globes", null);
-			if (globes != null) {
-				GLOBE_NAME = globes.split(",");
-			}
-			defaultGlobe = dertProperties.getProperty("DefaultGlobe", null);
-			defaultGlobe = (String) StringUtil.findString(defaultGlobe, GLOBE_NAME, true);
+			setGlobes(dertProperties);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(-1);
 		}
+	}
+	
+	private static void setGlobes(Properties properties) {
+		String globes = properties.getProperty("Globes", null);
+		if (globes != null) {
+			GLOBE_NAME = globes.split(",");
+		}
+		String defaultGlobe = properties.getProperty("DefaultGlobe", null);
+		defaultGlobe = (String) StringUtil.findString(defaultGlobe, GLOBE_NAME, true);
+		PyramidLayerFactory.defaultGlobe = defaultGlobe;
 	}
 	
 	public boolean createLayer() {
@@ -247,7 +249,7 @@ public class LayerFactory {
 		tileSize = 0;
 		layerType = null;
 		margin = null;
-		globe = defaultGlobe;
+		globe = PyramidLayerFactory.defaultGlobe;
 		color = Color.white;
 		elevAttrName = null;
 		for (int i = 0; i < args.length; ++i) {
@@ -265,7 +267,7 @@ public class LayerFactory {
 					globe = (String) StringUtil.findString(globe, GLOBE_NAME, true);
 				}
 				if (globe == null) {
-					globe = defaultGlobe;
+					globe = PyramidLayerFactory.defaultGlobe;
 				}
 			} else if (args[i].startsWith("-file=")) {
 				filePath = args[i].substring(6);

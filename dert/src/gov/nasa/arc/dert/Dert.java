@@ -225,6 +225,7 @@ public class Dert {
 		Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
 
 		// Create the main and console windows.
+		SceneFramework.createInstance();
 		mainWindow = new MainWindow(MAIN_TITLE, path, args, dertProperties);
 		consoleView = (ConsoleView) currentConfig.consoleState.open();
 		consoleWindow = (JDialog) currentConfig.consoleState.getViewData().getViewWindow();

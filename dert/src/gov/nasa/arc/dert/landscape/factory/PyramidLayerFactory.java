@@ -37,6 +37,8 @@ import javax.imageio.stream.ImageOutputStream;
  *
  */
 public abstract class PyramidLayerFactory {
+	
+	public static String defaultGlobe;
 
 	// Projection information from source file or destination landscape
 	protected ProjectionInfo projInfo;
@@ -77,7 +79,7 @@ public abstract class PyramidLayerFactory {
 		properties.setProperty("MinimumValue", Double.toString(minimumSampleValue[0]));
 		properties.setProperty("MaximumValue", Double.toString(maximumSampleValue[0]));
 		properties.setProperty("TileFormat", "PNG");
-		projInfo.saveToProperties(properties);
+		projInfo.saveToProperties(properties, defaultGlobe);
 		if (layerType == LayerType.elevation) {
 			properties.setProperty("EdgeFillValue", Float.toString(edgeFillValue));
 		}

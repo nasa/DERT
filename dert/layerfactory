@@ -1,25 +1,28 @@
-#!/bin/csh
+#!/bin/sh
 
-set PLAT = "`uname -s`"
-set DERT_PATH = $0:h
-set MAX_MEM = 8192   # megabytes
+plat="`uname -s`"
+dert_path=$0
+max_mem=8192   # megabytes
 
-if ($DERT_PATH == layerfactory) then
-	set DERT_PATH = "."
-endif
+if test $dert_path = "layerfactory"
+then
 
-if ($PLAT == Darwin) then
+dert_path="`/usr/bin/which layerfactory`"
 
-# The following path may be used instead.
-#	set path = ('/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin' $path) 
+fi
 
-	java -Xms256m -Xmx${MAX_MEM}m -classpath $DERT_PATH/dert.app/Contents/Java/dert.jar:$DERT_PATH/dert.app/Contents/Java/natives_macosx.jar gov.nasa.arc.dert.landscape.factory.LayerFactory $argv
+dert_path=${dert_path%/*}
+
+# Change the Java in your path if needed.
+#PATH=:/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/bin:$PATH
+
+if test $plat = "Darwin"
+then
+
+	java -Xms256m -Xmx${max_mem}m -classpath ${dert_path}/dert.app/Contents/Java/dert.jar:${dert_path}/dert.app/Contents/Java/natives_macosx.jar gov.nasa.arc.dert.landscape.factory.LayerFactory $*
 
 else
 
-# The following path may be used instead.
-#	set path = ('/etc/alternatives/java_sdk_1.7.0/bin' $path)
+	java -Xms256m -Xmx${max_mem}m -classpath ${dert_path}/dert.jar:${dert_path}/lib/natives_linux.jar gov.nasa.arc.dert.landscape.factory.LayerFactory $*
 
-	java -Xms256m -Xmx${MAX_MEM}m -classpath $DERT_PATH/dert.jar:$DERT_PATH/lib/natives_linux.jar gov.nasa.arc.dert.landscape.factory.LayerFactory $argv
-
-endif
+fi

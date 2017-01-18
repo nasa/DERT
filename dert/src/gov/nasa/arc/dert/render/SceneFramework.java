@@ -44,14 +44,20 @@ public class SceneFramework {
 	};
 
 	/**
+	 * Create the framework singleton
+	 * 
+	 * @return
+	 */
+	public static void createInstance() {
+		instance = new SceneFramework();
+	}
+
+	/**
 	 * Get the framework singleton
 	 * 
 	 * @return
 	 */
 	public static SceneFramework getInstance() {
-		if (instance == null) {
-			instance = new SceneFramework();
-		}
 		return (instance);
 	}
 
