@@ -223,15 +223,9 @@ public abstract class PyramidLayerFactory {
 				System.arraycopy(bbArray, 0, fData, 0, bbArray.length);
 				break;
 			case colorimage:
-//				bImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-//				byte[] iData = ((DataBufferByte) bImage.getRaster().getDataBuffer()).getData();
-//				System.arraycopy(bbArray, 0, iData, 0, bbArray.length);
-				bImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-				int[] iData = ((DataBufferInt) bImage.getRaster().getDataBuffer()).getData();
-				for (int i=0; i<iData.length; ++i) {
-					int ii = i*4;
-					iData[i] = MathUtil.bytes2Int(bbArray[ii], bbArray[ii+1], bbArray[ii+2], bbArray[ii+3]);
-				}
+				bImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+				byte[] iData = ((DataBufferByte) bImage.getRaster().getDataBuffer()).getData();
+				System.arraycopy(bbArray, 0, iData, 0, bbArray.length);
 				break;
 			case grayimage:
 				bImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
