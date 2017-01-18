@@ -2,11 +2,9 @@ package gov.nasa.arc.dert.landscape.factory;
 
 import gov.nasa.arc.dert.landscape.LayerInfo.LayerType;
 import gov.nasa.arc.dert.raster.ProjectionInfo;
-import gov.nasa.arc.dert.util.MathUtil;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

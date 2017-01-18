@@ -17,7 +17,7 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 public class VectorText extends Text {
 
 	protected final static int FONT_SIZE = 100;
-	protected final static String FONT_NAME = "SansSerif";
+	protected final static String FONT_NAME = "Arial";
 	protected final static int FONT_TYPE = Font.BOLD;
 	protected static TextRenderer textRenderer;
 	

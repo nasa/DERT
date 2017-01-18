@@ -1,6 +1,5 @@
 package gov.nasa.arc.dert.landscape.factory;
 
-import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.util.ImageUtil;
 
 import java.nio.ByteBuffer;
