@@ -139,6 +139,7 @@ public class DertTest {
 		System.err.println("Java Version: " + System.getProperty("java.version"));
 		System.err.println();
 		
+		BitmapFont.createInstance(StringUtil.getStringValue(dertProperties, "RasterText.Font", "Courier New", false), Font.BOLD, StringUtil.getIntegerValue(dertProperties, "RasterText.FontSize", true, 24, false));
 		ConfigurationManager.createInstance(dertProperties);
 		FieldCameraInfoManager.createInstance(path);
 		Console.createInstance();
@@ -158,7 +159,6 @@ public class DertTest {
 			}
 
 //			RasterText.setFont(StringUtil.getIntegerValue(dertProperties, "RasterText.Font", true, 18, false));
-			BitmapFont.createInstance("Courier New", Font.BOLD, StringUtil.getIntegerValue(dertProperties, "RasterText.Font", true, 24, false));
 			Lighting.loadProperties(dertProperties);
 			QuadTreeCache.MAX_CACHE_MEMORY = StringUtil.getLongValue(dertProperties, "QuadTree.MaxCacheSize", true,
 				QuadTreeCache.MAX_CACHE_MEMORY, false);

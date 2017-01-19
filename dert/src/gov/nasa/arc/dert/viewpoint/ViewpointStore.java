@@ -24,7 +24,7 @@ public class ViewpointStore {
 	public double azimuth, elevation;
 	public int magIndex;
 	public double zOffset;
-	public String mode; // Nominal, Hike, or Map
+	public String mode = "Nominal"; // Nominal, Hike, or Map
 
 	public ViewpointStore() {
 		name = "";
