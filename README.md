@@ -8,7 +8,7 @@ DERT was developed by the Autonomous Systems and Robotics Area of the Intelligen
 
 DERT was funded by the Mars Reconnaissance Orbiter (MRO) mission and developed in collaboration with members of the MRO Context Camera (CTX) science team. DERT is licensed under the NASA Open Source Agreement (NOSA).
 
-See an example of DERT [here](https://byss.arc.nasa.gov/dert/dert.m4v).
+See demonstrations of DERT [here](https://github.com/nasa/DERT/wiki/Videos).
 
 [Find out more . . .](https://github.com/nasa/DERT/wiki)
 
