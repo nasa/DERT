@@ -12,7 +12,7 @@ See demonstrations of DERT [here](https://github.com/nasa/DERT/wiki/Videos).
 
 [Find out more . . .](https://github.com/nasa/DERT/wiki)
 
-[Download](https://github.com/nasa/DERT/wiki/Download)
+Prebuilt releases are available on the [releases](https://github.com/nasa/DERT/releases) tab for this site. Additionally, versions that include the JPL SPICE kernels are available [here](https://github.com/nasa/DERT/wiki/Download). These releases are built with the Java 1.8.0_112 JDK so the corresponding JRE is required to run them.
 
 ##Contributions
 
