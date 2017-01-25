@@ -162,7 +162,12 @@ public class LayerFactory {
 					rf.open("r");
 					rf.close();
 
-					RasterPyramidLayerFactory factory = new RasterPyramidLayerFactory(rf);
+					// Get optional temporary file path
+					String tmpPath = dertProperties.getProperty("LayerTemporaryPath", null);
+					if ((tmpPath != null) && tmpPath.startsWith("$"))
+						tmpPath = System.getProperty(tmpPath.substring(1));
+
+					RasterPyramidLayerFactory factory = new RasterPyramidLayerFactory(rf, tmpPath);
 					factory.buildPyramid(landscapePath, globe, layerType, layerName, tileSize, missing, margin, null);
 				}
 			} catch (Exception e) {

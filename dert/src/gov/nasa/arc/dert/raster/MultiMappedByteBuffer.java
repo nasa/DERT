@@ -87,6 +87,7 @@ public class MultiMappedByteBuffer {
 		long position = 0;
 
 		for (int i = 0; i < numBuffers; ++i) {
+			System.err.println("MultiMappedByteBuffer "+i+" "+position+" "+bufSize);
 			mbBuf[i] = fileChannel.map(MapMode.READ_WRITE, position, bufSize);
 			position += bufSize;
 		}

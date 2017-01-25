@@ -49,6 +49,9 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 
 	// Raster file data type
 	protected DataType dataType;
+	
+	// Location of temporary files
+	protected String tmpPath;
 
 	/**
 	 * Constructor
@@ -56,9 +59,10 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 	 * @param rasterFile
 	 *            the raster file to be used for the pyramid
 	 */
-	public RasterPyramidLayerFactory(RasterFile rasterFile) {
+	public RasterPyramidLayerFactory(RasterFile rasterFile, String tmpPath) {
 		super(rasterFile.getFilePath());
 		this.rasterFile = rasterFile;
+		this.tmpPath = tmpPath;
 	}
 
 	/**
@@ -321,8 +325,8 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 
 		// Get the entire raster file contents
 		dataType = rasterFile.getDataType();
-//		String tmpPath = System.getProperty("user.dir");
-		String tmpPath = path;
+		if (tmpPath == null)
+			tmpPath = path;
 		Raster raster = loadRasterFile(tmpPath);
 		minimumSampleValue = rasterFile.getMinimumSampleValue();
 		maximumSampleValue = rasterFile.getMaximumSampleValue();

@@ -337,7 +337,13 @@ public class RasterLayerPanel extends JPanel {
 				messageText.setText("Only NASA PDS and GeoTIFF formats are supported.");
 				return (false);
 			}
-			factory = new RasterPyramidLayerFactory(rf);
+
+			// Get optional temporary file path
+			String tmpPath = dertProperties.getProperty("LayerTemporaryPath", null);
+			if ((tmpPath != null) && tmpPath.startsWith("$"))
+				tmpPath = System.getProperty(tmpPath.substring(1));
+			
+			factory = new RasterPyramidLayerFactory(rf, tmpPath);
 			return (true);
 		}
 		return (false);
