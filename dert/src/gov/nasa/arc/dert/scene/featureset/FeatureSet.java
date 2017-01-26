@@ -91,7 +91,7 @@ public class FeatureSet extends GroupNode implements MapElement, ViewDependent {
 		if (getNumberOfChildren() == 0) {
 			throw new IllegalStateException("No vectors found.");
 		}
-		
+		setLabelVisible(state.labelVisible);
 	}
 
 	/**

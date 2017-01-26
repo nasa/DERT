@@ -58,14 +58,14 @@ public class ImageUtil {
 		WritableRaster raster = bImage.getRaster();
 		ImageDataFormat format = ImageDataFormat.RGBA;
 		if (bImage.getType() == BufferedImage.TYPE_4BYTE_ABGR) {
-			swapBytes(raster.getDataBuffer());
+			swapRGBABytes(raster.getDataBuffer());
 			format = ImageDataFormat.BGRA;
 			// format = ImageDataFormat.RGBA;
 		} else if (bImage.getType() == BufferedImage.TYPE_INT_ARGB_PRE) {
-			swapBytes(raster.getDataBuffer());
+			swapRGBABytes(raster.getDataBuffer());
 			format = ImageDataFormat.RGBA;
 		} else if ((bImage.getType() == BufferedImage.TYPE_INT_RGB) && Dert.isMac) {
-			swapBytes(raster.getDataBuffer());
+			swapRGBABytes(raster.getDataBuffer());
 			format = ImageDataFormat.RGB;
 		} else if (bImage.getType() == BufferedImage.TYPE_3BYTE_BGR) {
 			format = ImageDataFormat.BGR;
@@ -175,7 +175,7 @@ public class ImageUtil {
 		return (theImage);
 	}
 
-	private static void swapBytes(DataBuffer dataBuffer) {
+	public static void swapRGBABytes(DataBuffer dataBuffer) {
 		if (dataBuffer instanceof DataBufferInt) {
 			int[] buffer = ((DataBufferInt) dataBuffer).getData();
 			for (int i = 0; i < buffer.length; ++i) {
@@ -193,6 +193,16 @@ public class ImageUtil {
 				buffer[i + 3] = b;
 			}
 
+		}
+	}
+
+	public static void swapRGBBytes(ByteBuffer buffer) {
+		buffer.rewind();
+		int l = buffer.limit();
+		for (int i = 0; i < l; i += 3) {
+			byte b = buffer.get(i);
+			buffer.put(i, buffer.get(i+2));
+			buffer.put(i+2, b);
 		}
 	}
 

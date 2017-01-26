@@ -166,8 +166,11 @@ public class GeojsonLoader {
 		if (geometry == null)
 			return (null);
 		String name = null;
-		if (labelProp != null)
-			name = gjFeature.getProperties().get(labelProp).toString();
+		if (labelProp != null) {
+			Object obj = gjFeature.getProperties().get(labelProp);
+			if (obj != null)
+				name = obj.toString();
+		}
 		if ((name == null) || name.isEmpty())
 			name = gjFeature.getId();
 		if (name == null)

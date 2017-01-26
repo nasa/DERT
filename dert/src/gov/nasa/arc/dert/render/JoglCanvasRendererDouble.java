@@ -214,6 +214,8 @@ public class JoglCanvasRendererDouble extends JoglCanvasRenderer {
 			store.position(0);
 			_renderer.finishGraphics();
 			_renderer.grabScreenContents(store, ImageDataFormat.RGB, PixelDataType.UnsignedByte, grabX, grabY, grabWidth, grabHeight);
+			if (Dert.isMac)
+				ImageUtil.swapRGBBytes(store);
 			ImageUtil.doFlip(store, grabWidth * 3, grabHeight);
 			BufferedImage bImage = new BufferedImage(grabWidth, grabHeight, BufferedImage.TYPE_3BYTE_BGR);
 			byte[] iData = ((DataBufferByte) bImage.getRaster().getDataBuffer()).getData();
