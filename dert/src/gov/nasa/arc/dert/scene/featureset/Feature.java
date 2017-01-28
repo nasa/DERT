@@ -55,6 +55,7 @@ public class Feature
 		location = new Vector3();
 		this.properties = properties;
 		this.color = color;
+		getSceneHints().setCullHint(CullHint.Dynamic);
 	}
 
 	/**
@@ -323,5 +324,4 @@ public class Feature
 				((ViewDependent)child).update(camera);
 		}
 	}
-
 }

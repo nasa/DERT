@@ -6,6 +6,7 @@ public class QuadTreeCache {
 
 	// The maximum amount of memory for the cache (in bytes)
 	public static long MAX_CACHE_MEMORY = 400000000l;
+	public static int MAX_CLEANUP_COUNT = 100;
 
 	// A hash map to keep track of QuadTree tiles
 	protected HashMap<String, QuadTree> quadTreeMap;
@@ -91,7 +92,7 @@ public class QuadTreeCache {
 		qt.dispose();
 		qt = null;
 		cleanupCount++;
-		if (cleanupCount == 100) {
+		if (cleanupCount == MAX_CLEANUP_COUNT) {
 			System.gc();
 			cleanupCount = 0;
 		}

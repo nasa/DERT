@@ -98,7 +98,7 @@ public class QuadTreeFactory {
 		worldLength = baseLayer.getRasterLength() * projInfo.scale[1] * pixelScale;
 		missingFillValue = baseLayer.getFillValue();
 
-		int bytesPerTile = baseLayer.getBytesPerTile() * 6;
+		int bytesPerTile = baseLayer.getBytesPerTile()*14+(tileLength*4);
 		for (int i = 0; i < layerList.length; ++i) {
 			if (layerList[i] != null) {
 				bytesPerTile += layerList[i].getBytesPerTile();

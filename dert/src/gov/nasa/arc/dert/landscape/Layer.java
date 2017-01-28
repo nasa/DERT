@@ -22,7 +22,7 @@ public abstract class Layer {
 	// NOTE: subclasses must set this field
 	protected int numLevels;
 
-	// the number of bytes of memory used for this tile
+	// the number of bytes of memory used for a tile for this layer
 	// NOTE: subclasses must set this field
 	protected int bytesPerTile;
 

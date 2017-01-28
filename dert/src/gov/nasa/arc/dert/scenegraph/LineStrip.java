@@ -56,6 +56,9 @@ public class LineStrip extends Line {
 				vertex.put(i + 2, (float) z);
 			}
 		}
+		
+		_meshData.setVertexBuffer(vertex);
+		updateModelBound();
 	}
 
 	/**

@@ -17,6 +17,7 @@ import com.ardor3d.renderer.state.TextureState;
 import com.ardor3d.renderer.state.ZBufferState;
 import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
+import com.ardor3d.scenegraph.hint.CullHint;
 
 /**
  * Provides a set of FeatureSet map elements.
@@ -50,6 +51,7 @@ public class FeatureSets extends GroupNode {
 		TextureState ts = new TextureState();
 		ts.setEnabled(false);
 		setRenderState(ts);
+		getSceneHints().setCullHint(CullHint.Dynamic);
 		
 		for (int i = 0; i < featureSetList.size(); ++i) {
 			FeatureSetState state = featureSetList.get(i);
