@@ -103,11 +103,12 @@ public class FeatureSetState extends MapElementState {
 		if (mapElement != null) {
 			FeatureSet featureSet = (FeatureSet) mapElement;
 			filePath = featureSet.getFilePath();
+			lineWidth = featureSet.getLineWidth();			
 		}
 		map.put("FilePath", filePath);
 		map.put("IsProjected", new Boolean(isProjected));
 		map.put("Ground", new Boolean(ground));
-		map.put("LineWidth", new Float(lineWidth));
+		map.put("LineWidth", new Double(lineWidth));
 		if (labelProp != null)
 			map.put("LabelProperty", labelProp);
 		return(map);

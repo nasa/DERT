@@ -125,6 +125,10 @@ public class FeatureSetPanel extends MapElementBasePanel {
 			noteText.setText(featureSet.getState().getAnnotation());
 			labelCheckBox.setSelected(featureSet.isLabelVisible());
 			labelCheckBox.setEnabled(true);
+			lineWidthText.setValue(featureSet.getLineWidth());
+			lineWidthText.setEnabled(true);
+			sizeText.setValue(featureSet.getSize());
+			sizeText.setEnabled(true);
 		}
 		else if (mapElement instanceof Feature) {
 			colorList.setEnabled(false);
@@ -143,6 +147,10 @@ public class FeatureSetPanel extends MapElementBasePanel {
 			}
 			propText.setText(str);
 			propText.setCaretPosition(0);
+			lineWidthText.setValue(fs.getLineWidth());
+			lineWidthText.setEnabled(false);
+			sizeText.setValue(fs.getSize());
+			sizeText.setEnabled(false);
 		}
 	}
 }

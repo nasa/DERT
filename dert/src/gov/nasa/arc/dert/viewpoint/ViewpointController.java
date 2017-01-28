@@ -483,15 +483,13 @@ public class ViewpointController {
 	 * @param path
 	 */
 	public void flyThrough(Path path, Dialog owner) {
-		// We are already doing a fly through - do only one at a time.
-		if (flyThroughDialog != null) {
-			Toolkit.getDefaultToolkit().beep();
-			return;
+		// We are already doing a fly through
+		if (flyThroughDialog == null) {
+			flyThroughDialog = new FlyThroughDialog(owner, this);
+			flyThroughDialog.pack();
+			flyThroughDialog.setLocationRelativeTo(owner);
+			flyThroughDialog.setPath(path);
 		}
-		flyThroughDialog = new FlyThroughDialog(owner, this);
-		flyThroughDialog.pack();
-		flyThroughDialog.setLocationRelativeTo(owner);
-		flyThroughDialog.setPath(path);
 		flyThroughDialog.setVisible(true);
 	}
 

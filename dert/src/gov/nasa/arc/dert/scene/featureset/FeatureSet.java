@@ -278,6 +278,14 @@ public class FeatureSet extends GroupNode implements MapElement, ViewDependent {
 			}
 		}
 	}
+	
+	/**
+	 * Get the line width.
+	 * @return
+	 */
+	public float getLineWidth() {
+		return(lineWidth);
+	}
 
 	/**
 	 * Get the lineset icon

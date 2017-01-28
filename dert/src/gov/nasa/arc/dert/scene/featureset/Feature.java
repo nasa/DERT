@@ -262,6 +262,7 @@ public class Feature
 			Spatial child = node.getChild(i);
 			if (child instanceof LineStrip) {
 				((LineStrip) child).setLineWidth(lineWidth);
+				child.markDirty(DirtyType.RenderState);
 			}
 			else if (child instanceof Node) {
 				setLineWidth((Node) child, lineWidth);
