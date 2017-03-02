@@ -23,7 +23,7 @@ public class LabelParser {
 		}
 	}
 
-	protected static enum PDSType {
+	public static enum PDSType {
 		PDS_Integer, PDS_Float, PDS_Double, PDS_String, PDS_Long, PDS_Integer_Array, PDS_Double_Array, PDS_String_Array, PDS_Object, PDS_Group
 	}
 
@@ -504,5 +504,21 @@ public class LabelParser {
 			return (Math.toDegrees(1));
 		}
 		return (1);
+	}
+	
+	/**
+	 * Set the type for a PDS element.
+	 * 
+	 */
+	public static void setTagType(String tag, PDSType type) {
+		tagMap.put(tag, type);
+	}
+	
+	/**
+	 * Get the type for a PDS element.
+	 * 
+	 */
+	public static PDSType setTagType(String tag) {
+		return(tagMap.get(tag));
 	}
 }
