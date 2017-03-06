@@ -16,16 +16,14 @@
 		<pathelement path="${libdir}/ardor3d-effects-1.0-SNAPSHOT.jar"/>
 		<pathelement path="${libdir}/ardor3d-extras-1.0-SNAPSHOT.jar"/>
 		<pathelement path="${libdir}/ardor3d-jogl-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-jogl-awt-1.0-SNAPSHOT.jar"/>
 		<pathelement path="${libdir}/ardor3d-math-1.0-SNAPSHOT.jar"/>
 		<pathelement path="${libdir}/ardor3d-savable-1.0-SNAPSHOT.jar"/>
 		<pathelement path="${libdir}/ardor3d-ui-1.0-SNAPSHOT.jar"/>
-		<pathelement path="${libdir}/gluegen-rt.jar"/>
-		<pathelement path="${libdir}/jogl-all.jar"/>
-		<pathelement path="${libdir}/guava-18.0.jar"/>
+		<pathelement path="${libdir}/guava-19.0.jar"/>
+		<pathelement path="${libdir}/jogamp-fat.jar"/>
 		<pathelement path="${libdir}/spice.jar"/>
-		<pathelement path="${libdir}/jogl-all-natives-linux-amd64.jar"/>
-		<pathelement path="${libdir}/gluegen-rt-natives-linux-amd64.jar"/>
-		<pathelement path="${libdir}/natives_linux.jar"/>
+		<pathelement path="${libdir}/natives_macosx.jar"/>
 	</path>
 	
 	<path id="macclasspath">
@@ -35,15 +33,13 @@
 		<pathelement path="ardor3d-effects-1.0-SNAPSHOT.jar"/>
 		<pathelement path="ardor3d-extras-1.0-SNAPSHOT.jar"/>
 		<pathelement path="ardor3d-jogl-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-jogl-awt-1.0-SNAPSHOT.jar"/>
 		<pathelement path="ardor3d-math-1.0-SNAPSHOT.jar"/>
 		<pathelement path="ardor3d-savable-1.0-SNAPSHOT.jar"/>
 		<pathelement path="ardor3d-ui-1.0-SNAPSHOT.jar"/>
-		<pathelement path="gluegen-rt.jar"/>
-		<pathelement path="jogl-all.jar"/>
-		<pathelement path="guava-18.0.jar"/>
+		<pathelement path="guava-19.0.jar"/>
+		<pathelement path="jogamp-fat.jar"/>
 		<pathelement path="spice.jar"/>
-		<pathelement path="jogl-all-natives-macosx-universal.jar"/>
-		<pathelement path="gluegen-rt-natives-macosx-universal.jar"/>
 		<pathelement path="natives_macosx.jar"/>
 	</path>
 	
