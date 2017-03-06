@@ -3,7 +3,7 @@ package gov.nasa.arc.dert.raster.pds;
 import gov.nasa.arc.dert.raster.ProjectionInfo;
 import gov.nasa.arc.dert.raster.Raster;
 import gov.nasa.arc.dert.raster.RasterFileImpl;
-import gov.nasa.arc.dert.raster.pds.LabelParser.KeyValue;
+import gov.nasa.arc.dert.raster.pds.PdsLabel.KeyValue;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -17,7 +17,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Properties;
 
 import javax.imageio.stream.FileImageInputStream;
@@ -29,9 +28,6 @@ public class PDS extends RasterFileImpl {
 
 	// Raster file path
 	protected String dataFilePath;
-
-	// Map of metadata elements
-	protected HashMap<String, Object> metadata;
 
 	// Input stream from raster file
 	protected FileImageInputStream iStream;
@@ -50,7 +46,7 @@ public class PDS extends RasterFileImpl {
 	protected DataOutputStream dataStream;
 
 	// Parser for PDS label
-	protected LabelParser parser;
+	protected PdsLabel pdsLabel;
 
 	/**
 	 * Constructor
@@ -77,8 +73,8 @@ public class PDS extends RasterFileImpl {
 			try {
 				iStream = new FileImageInputStream(new File(filePath));
 				// load the metadata from the label
-				parser = new LabelParser();
-				metadata = parser.parseHeader(iStream);
+				pdsLabel = new PdsLabel();
+				pdsLabel.parseHeader(iStream);
 				iStream.close();
 				iStream = null;
 			} catch (IOException e) {
@@ -100,9 +96,9 @@ public class PDS extends RasterFileImpl {
 	@Override
 	protected boolean initialize() {
 
-		Integer ival = (Integer) metadata.get("IMAGE.LINES");
+		Integer ival = pdsLabel.getInteger("IMAGE.LINES");
 		if (ival == null) {
-			ival = (Integer) metadata.get("UNCOMPRESSED_FILE.IMAGE.LINES");
+			ival = pdsLabel.getInteger("UNCOMPRESSED_FILE.IMAGE.LINES");
 		}
 		if (ival == null) {
 			System.err.println("LINES parameter missing.");
@@ -110,9 +106,9 @@ public class PDS extends RasterFileImpl {
 		}
 		rasterLength = ival;
 
-		ival = (Integer) metadata.get("IMAGE.LINE_SAMPLES");
+		ival = pdsLabel.getInteger("IMAGE.LINE_SAMPLES");
 		if (ival == null) {
-			ival = (Integer) metadata.get("UNCOMPRESSED_FILE.IMAGE.LINE_SAMPLES");
+			ival = pdsLabel.getInteger("UNCOMPRESSED_FILE.IMAGE.LINE_SAMPLES");
 		}
 		if (ival == null) {
 			System.err.println("LINE_SAMPLES parameter missing");
@@ -120,40 +116,40 @@ public class PDS extends RasterFileImpl {
 		}
 		rasterWidth = ival;
 
-		ival = (Integer) metadata.get("IMAGE.BANDS");
+		ival = pdsLabel.getInteger("IMAGE.BANDS");
 		if (ival == null) {
-			ival = (Integer) metadata.get("UNCOMPRESSED_FILE.IMAGE.BANDS");
+			ival = pdsLabel.getInteger("UNCOMPRESSED_FILE.IMAGE.BANDS");
 		}
 		if (ival == null)
 			ival = new Integer(1);
 		samplesPerPixel = ival;
 
-		ival = (Integer) metadata.get("IMAGE.SAMPLE_BITS");
+		ival = pdsLabel.getInteger("IMAGE.SAMPLE_BITS");
 		if (ival == null) {
-			ival = (Integer) metadata.get("UNCOMPRESSED_FILE.IMAGE.SAMPLE_BITS");
+			ival = pdsLabel.getInteger("UNCOMPRESSED_FILE.IMAGE.SAMPLE_BITS");
 		}
 		if (ival == null) {
-			System.err.println("SAMPLE_BITS parameter missing.");
+			System.err.println("Unable to determine value of SAMPLE_BITS parameter.");
 			return (false);
 		}
 
 		byteOrder = ByteOrder.nativeOrder();
-		String type = (String) metadata.get("IMAGE.SAMPLE_TYPE");
+		String type = pdsLabel.getSymbol("IMAGE.SAMPLE_TYPE");
 		if (type == null) {
-			type = (String) metadata.get("UNCOMPRESSED_FILE.IMAGE.SAMPLE_TYPE");
+			type = pdsLabel.getSymbol("UNCOMPRESSED_FILE.IMAGE.SAMPLE_TYPE");
 		}
 		if (type == null) {
-			System.err.println("SAMPLE_TYPE parameter missing.");
+			System.err.println("Unable to determine value of SAMPLE_TYPE parameter.");
 			return (false);
 		}
-		if (type.equals("PC_REAL")) {
+		if (type.contains("_REAL")) {
 			dataType = DataType.Float;
 			bytesPerSample = 4;
 		} else {
 			boolean unsigned = type.contains("UNSIGNED");
 			if (type.startsWith("LSB_")) {
 				byteOrder = ByteOrder.LITTLE_ENDIAN;
-			} else if (type.startsWith("MSB_")) {
+			} else if (type.startsWith("MSB_") || type.startsWith("UNSIGNED_")) {
 				byteOrder = ByteOrder.BIG_ENDIAN;
 			}
 			if (ival == 32) {
@@ -184,9 +180,9 @@ public class PDS extends RasterFileImpl {
 			}
 		}
 
-		bandStorageType = (String) metadata.get("IMAGE.BAND_STORAGE_TYPE");
+		bandStorageType = pdsLabel.getSymbol("IMAGE.BAND_STORAGE_TYPE");
 		if (bandStorageType == null) {
-			bandStorageType = (String) metadata.get("UNCOMPRESSED_FILE.IMAGE.BAND_STORAGE_TYPE");
+			bandStorageType = pdsLabel.getSymbol("UNCOMPRESSED_FILE.IMAGE.BAND_STORAGE_TYPE");
 		}
 
 		// get the list of possible minimum value keys from the properties file
@@ -194,16 +190,24 @@ public class PDS extends RasterFileImpl {
 		String[] minList = str.split(",");
 		// find the minimum value
 		for (int i = 0; i < minList.length; ++i) {
-			Float fval = (Float) metadata.get(minList[i]);
-			if ((fval == null) && minList[i].startsWith("IMAGE.")) {
-				fval = (Float) metadata.get("UNCOMPRESSED_FILE." + minList[i]);
-			}
-			if (fval != null) {
-				minimum = new double[samplesPerPixel];
-				for (int j = 0; j < samplesPerPixel; ++j) {
-					minimum[j] = fval;
+			if (dataType == DataType.Float) {
+				Double val = pdsLabel.getDouble(minList[i]);
+				if (val != null) {
+					minimum = new double[samplesPerPixel];
+					for (int j = 0; j < samplesPerPixel; ++j) {
+						minimum[j] = val;
+					}
+					break;
 				}
-				break;
+			}
+			else {
+				Integer val = pdsLabel.getInteger(minList[i]);
+				if (val != null) {
+					minimum = new double[samplesPerPixel];
+					for (int j = 0; j < samplesPerPixel; ++j)
+						minimum[j] = val;
+					break;
+				}
 			}
 		}
 
@@ -212,63 +216,72 @@ public class PDS extends RasterFileImpl {
 		String[] maxList = str.split(",");
 		// find the maximum value
 		for (int i = 0; i < maxList.length; ++i) {
-			Float fval = (Float) metadata.get(maxList[i]);
-			if ((fval == null) && maxList[i].startsWith("IMAGE.")) {
-				fval = (Float) metadata.get("UNCOMPRESSED_FILE." + maxList[i]);
-			}
-			if (fval != null) {
-				maximum = new double[samplesPerPixel];
-				for (int j = 0; j < samplesPerPixel; ++j) {
-					maximum[j] = fval;
+			if (dataType == DataType.Float) {
+				Double val = pdsLabel.getDouble(maxList[i]);
+				if (val != null) {
+					maximum = new double[samplesPerPixel];
+					for (int j = 0; j < samplesPerPixel; ++j) {
+						maximum[j] = val;
+					}
+					break;
 				}
-				break;
+			}
+			else {
+				Integer val = pdsLabel.getInteger(maxList[i]);
+				if (val != null) {
+					maximum = new double[samplesPerPixel];
+					for (int j = 0; j < samplesPerPixel; ++j)
+						maximum[j] = val;
+					break;
+				}
 			}
 		}
 
 		// get the list of possible missing value keys from the properties file
 		str = properties.getProperty("PDS.MissingValueKey", "IMAGE.MISSING_CONSTANT");
 		String[] missList = str.split(",");
-		missing = Float.NaN;
 		// find the missing value
 		for (int i = 0; i < missList.length; ++i) {
-			Float fval = (Float) metadata.get(missList[i]);
-			if ((fval == null) && missList[i].startsWith("IMAGE.")) {
-				fval = (Float) metadata.get("UNCOMPRESSED_FILE." + missList[i]);
+			if (dataType == DataType.Float) {
+				Double val = pdsLabel.getDouble(missList[i]);
+				if (val != null) {
+					missing = val.floatValue();
+					break;
+				}
 			}
-			if (fval != null) {
-				missing = fval;
-				break;
+			else {
+				Integer val = pdsLabel.getInteger(missList[i]);
+				if (val != null) {
+					missing = val;
+					break;
+				}
 			}
 		}
 
 		// find the image start position in the file
-		String imgPtr = (String) metadata.get("^IMAGE");
-		// image is in another file
-		if (imgPtr == null) {
-			imgPtr = (String) metadata.get("UNCOMPRESSED_FILE.^IMAGE");
-			if (imgPtr == null) {
-				System.err.println("^IMAGE parameter missing.");
-				return (false);
-			}
-			imageStart = 0;
-			dataFilePath = new File(new File(filePath).getParent(), imgPtr).getAbsolutePath();
+		Object[] ptr = pdsLabel.getPointer("^IMAGE");
+		if (ptr == null)
+			ptr = pdsLabel.getPointer("UNCOMPRESSED_FILE.^IMAGE");
+		if (ptr == null) {
+			System.err.println("^IMAGE parameter missing.");
+			return (false);
 		}
-		// get the offset in the file
-		else {
-			imageStart = parser.getLong(imgPtr);
-			// if RECORD_BYTES is present, IMAGE is in records, not bytes
-			Long recordBytes = (Long) metadata.get("RECORD_BYTES");
-			if (recordBytes != null) {
-				imageStart = recordBytes * (imageStart - 1);
-			}
+		String imgPtr = (String)ptr[0];
+		imageStart = (Long)ptr[1];
+		if (imgPtr == null)
 			dataFilePath = filePath;
-		}
+		else
+			dataFilePath = new File(new File(filePath).getParent(), imgPtr).getAbsolutePath();
+		// if RECORD_BYTES is present, IMAGE is in records, not bytes
+		Integer recordBytes = pdsLabel.getInteger("RECORD_BYTES");
+		if (recordBytes != null)
+			imageStart = recordBytes * (imageStart - 1);
 
-		Float sF = (Float) metadata.get("IMAGE.SCALING_FACTOR");
+		Double sF = pdsLabel.getDouble("IMAGE.SCALING_FACTOR");
 		if (sF == null)
-			sF = (Float)metadata.get("UNCOMPRESSED_FILE.IMAGE.SCALING_FACTOR");
+			sF = pdsLabel.getDouble("UNCOMPRESSED_FILE.IMAGE.SCALING_FACTOR");
 		if (sF != null)
-			scalingFactor = sF;
+			scalingFactor = sF.floatValue();
 
 		getProjectionInfo();
 
@@ -279,7 +292,9 @@ public class PDS extends RasterFileImpl {
 			.println("Minimum Sample Value = " + (minimum == null ? "Unknown" : minimum[0])
 				+ ", Maximum Sample Value = " + (maximum == null ? "Unknown" : maximum[0]) + ", Missing Value = "
 				+ missing);
-		System.out.println(projInfo);
+		
+		if (projInfo != null)
+			System.out.println(projInfo);
 
 		if (dataType == DataType.Unknown) {
 			System.err.println("Unknown data type.");
@@ -300,11 +315,15 @@ public class PDS extends RasterFileImpl {
 		if (projInfo != null) {
 			return (projInfo);
 		}
+		
+		String projType = pdsLabel.getString("IMAGE_MAP_PROJECTION.MAP_PROJECTION_TYPE");
+		if (projType == null)
+			return(null);
 
 		projInfo = new ProjectionInfo();
 
 		// Coordinate Transform
-		String projType = getMetadataString("IMAGE_MAP_PROJECTION.MAP_PROJECTION_TYPE").toLowerCase();
+		projType = projType.toLowerCase();
 		projType = projType.replace(" ", "");
 		if (projType.equals("simplecylindrical")) {
 			projType = "equirectangular";
@@ -378,7 +397,7 @@ public class PDS extends RasterFileImpl {
 	 * @return the value
 	 */
 	protected final double getMetadataDouble(String key, double defaultValue) {
-		Double d = (Double) metadata.get(key);
+		Double d = pdsLabel.getDouble(key);
 		if (d == null) {
 			return (defaultValue);
 		}
@@ -395,7 +414,7 @@ public class PDS extends RasterFileImpl {
 	 * @return the value
 	 */
 	protected final double getMetadataDouble(String key) {
-		Double d = (Double) metadata.get(key);
+		Double d = pdsLabel.getDouble(key);
 		if (d == null) {
 			throw new IllegalArgumentException("Unable to find " + key + ".");
 		}
@@ -412,7 +431,7 @@ public class PDS extends RasterFileImpl {
 	 * @return the value
 	 */
 	protected final String getMetadataString(String key, String defaultValue) {
-		String d = (String) metadata.get(key);
+		String d = pdsLabel.getString(key);
 		if (d == null) {
 			return (defaultValue);
 		}
@@ -429,7 +448,7 @@ public class PDS extends RasterFileImpl {
 	 * @return the value
 	 */
 	protected final String getMetadataString(String key) {
-		String d = (String) metadata.get(key);
+		String d = pdsLabel.getString(key);
 		if (d == null) {
 			throw new IllegalArgumentException("Unable to find " + key + ".");
 		}
@@ -805,9 +824,9 @@ public class PDS extends RasterFileImpl {
 		}
 
 		// Write header (label)
-		LabelParser parser = new LabelParser();
+		PdsLabel pdsLabel = new PdsLabel();
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-		long size = parser.writeObject(writer, metadata, "");
+		long size = pdsLabel.writeObject(writer, metadata);
 		long pad = imageStart - size;
 		for (int i = 0; i < pad; ++i) {
 			writer.write(' ');
