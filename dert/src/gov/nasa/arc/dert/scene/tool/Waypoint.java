@@ -118,4 +118,9 @@ public class Waypoint extends FigureMarker implements MapElement {
 		line.setPoints(Vector3.ZERO, new Vector3(0, 1.8*size, 0));
 	}
 
+	@Override
+	public Icon getIcon() {
+		return (icon);
+	}
+
 }

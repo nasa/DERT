@@ -179,6 +179,10 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		updateLabels(null);
 		state.pathDirty();
 	}
+	
+	public void pin(Movable m, boolean value) {
+		// nothing
+	}
 
 	/**
 	 * Get the map element state for this Path.

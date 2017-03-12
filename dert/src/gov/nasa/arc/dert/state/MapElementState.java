@@ -4,10 +4,10 @@ import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scenegraph.MotionListener;
 import gov.nasa.arc.dert.scenegraph.Movable;
-import gov.nasa.arc.dert.ui.TextDialog;
 import gov.nasa.arc.dert.util.StateUtil;
-import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.View;
+import gov.nasa.arc.dert.view.mapelement.EditDialog;
+import gov.nasa.arc.dert.view.mapelement.NotesDialog;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -48,7 +48,9 @@ public abstract class MapElementState extends State {
 	// The MapElement associated with this state
 	protected transient MapElement mapElement;
 	// Dialog for viewing the annotation
-	protected transient TextDialog annotationDialog;
+	protected transient NotesDialog annotationDialog;
+	// Dialog for editing the map element
+	protected transient EditDialog editDialog;
 
 	/**
 	 * Constructor
@@ -155,7 +157,19 @@ public abstract class MapElementState extends State {
 				@Override
 				public void move(Movable mo, ReadOnlyVector3 pos) {
 					if (annotationDialog != null) {
-						annotationDialog.setMessage(StringUtil.format(mapElement.getLocationInWorld()));
+						annotationDialog.update();
+					}
+					if (editDialog != null) {
+						editDialog.update();
+					}
+				}
+				@Override
+				public void pin(Movable mo, boolean value) {
+					if (annotationDialog != null) {
+						annotationDialog.update();
+					}
+					if (editDialog != null) {
+						editDialog.update();
 					}
 				}
 			});
@@ -190,14 +204,26 @@ public abstract class MapElementState extends State {
 	/**
 	 * Open the annotation
 	 */
+	public void openEditor() {
+		if (mapElement == null)
+			return;
+		if (editDialog == null)
+			editDialog = new EditDialog(Dert.getMainWindow(), name, mapElement);
+		else
+			editDialog.update();
+		editDialog.open();
+	}
+
+	/**
+	 * Open the annotation
+	 */
 	public void openAnnotation() {
-		if (annotationDialog == null) {
-			annotationDialog = new TextDialog(Dert.getMainWindow(), name, 400, 200, true, false);
-		}
-		if (mapElement != null) {
-			annotationDialog.setMessage(StringUtil.format(mapElement.getLocationInWorld()));
-		}
-		annotationDialog.setText(annotation);
+		if (mapElement == null)
+			return;
+		if (annotationDialog == null)
+			annotationDialog = new NotesDialog(Dert.getMainWindow(), name, 400, 200, mapElement);
+		else
+			annotationDialog.update();
 		annotationDialog.open();
 	}
 
@@ -211,7 +237,10 @@ public abstract class MapElementState extends State {
 			annotation = note;
 		}
 		if (annotationDialog != null) {
-			annotationDialog.setText(note);
+			annotationDialog.update();
+		}
+		if (editDialog != null) {
+			editDialog.update();
 		}
 	}
 
@@ -238,6 +267,11 @@ public abstract class MapElementState extends State {
 			annotationDialog.close();
 		}
 		annotationDialog = null;
+		if (editDialog != null) {
+			editDialog.dispose();
+			editDialog.close();
+		}
+		editDialog = null;
 	}
 
 	/**

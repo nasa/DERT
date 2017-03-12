@@ -3,14 +3,16 @@ package gov.nasa.arc.dert.view.mapelement;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.landmark.Placemark;
-import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.DoubleTextField;
+import gov.nasa.arc.dert.ui.FieldPanel;
 
-import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -27,7 +29,6 @@ public class PlacemarkPanel extends MapElementBasePanel {
 	private JComboBox iconCombo;
 	private JLabel iconLabel;
 	private Icon[] icons;
-	private ColorSelectionPanel colorList;
 	private DoubleTextField sizeText;
 
 	// Placemark
@@ -38,23 +39,26 @@ public class PlacemarkPanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public PlacemarkPanel(MapElementsPanel parent) {
-		super(parent);
+	public PlacemarkPanel() {
+		super();
 		icon = Placemark.icon;
 		type = "Placemark";
 		icons = new Icon[Placemark.ICON_NAME.length];
 		for (int i = 0; i < icons.length; ++i) {
 			icons[i] = Icons.getImageIcon(Placemark.ICON_NAME[i] + "_24.png");
 		}
-		build(true, true, true);
+		build(true, true);
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLocation, boolean addCBs) {
-		super.build(addNotes, addLocation, addCBs);
+	protected void build(boolean addNotes, boolean addLocation) {
+		super.build(addNotes, addLocation);
+		
+		ArrayList<Component> compList = new ArrayList<Component>();
 
+		compList.add(new JLabel("Icon", SwingConstants.RIGHT));
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Icon"));
+		panel.setBorder(BorderFactory.createEmptyBorder());
 		iconCombo = new JComboBox(Placemark.ICON_LABEL);
 		iconCombo.setToolTipText("select placemark icon");
 		iconCombo.setSelectedIndex(0);
@@ -69,21 +73,9 @@ public class PlacemarkPanel extends MapElementBasePanel {
 		panel.add(iconCombo);
 		iconLabel = new JLabel();
 		panel.add(iconLabel);
-		contents.add(panel);
+		compList.add(panel);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Color"));
-		colorList = new ColorSelectionPanel(Placemark.defaultColor) {
-			@Override
-			public void doColor(Color color) {
-				placemark.setColor(color);
-			}
-		};
-		panel.add(colorList);
-		contents.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Size", SwingConstants.RIGHT));
+		compList.add(new JLabel("Size", SwingConstants.RIGHT));
 		sizeText = new DoubleTextField(8, Placemark.defaultSize, true, "0.00") {
 			@Override
 			protected void handleChange(double value) {
@@ -93,8 +85,9 @@ public class PlacemarkPanel extends MapElementBasePanel {
 				placemark.setSize(value);
 			}
 		};
-		panel.add(sizeText);
-		contents.add(panel);
+		compList.add(sizeText);
+		
+		contents.add(new FieldPanel(compList));
 	}
 
 	@Override
@@ -102,12 +95,9 @@ public class PlacemarkPanel extends MapElementBasePanel {
 		this.mapElement = mapElement;
 		placemark = (Placemark) mapElement;
 		setLocation(locationText, placemark.getTranslation());
-		pinnedCheckBox.setSelected(placemark.isPinned());
 		nameLabel.setText(placemark.getName());
-		colorList.setColor(placemark.getColor());
 		sizeText.setValue(placemark.getSize());
 		iconCombo.setSelectedIndex(placemark.getTextureIndex());
-		labelCheckBox.setSelected(placemark.isLabelVisible());
 		noteText.setText(placemark.getState().getAnnotation());
 	}
 

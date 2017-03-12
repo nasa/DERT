@@ -98,7 +98,7 @@ public class SurfacePanel extends GroupPanel {
 		add(surfaceNormalsCheckBox,
 			GBCHelper.getGBC(0, 2, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, 0, 0));
 
-		JLabel label = new JLabel("Vertical Exaggeration", SwingConstants.RIGHT);
+		JLabel label = new JLabel("Vert Exaggeration", SwingConstants.RIGHT);
 		add(label, GBCHelper.getGBC(1, 0, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 1, 0));
 		vertExag = new DoubleSpinner(World.getInstance().getVerticalExaggeration(), 0.01, 10, 0.05, false, "#0.00") {
 			@Override
@@ -170,7 +170,7 @@ public class SurfacePanel extends GroupPanel {
 				Landscape.getInstance().markDirty(DirtyType.RenderState);
 			}
 		};
-		add(gridColor, GBCHelper.getGBC(2, 4, 1, 1, GridBagConstraints.WEST, GridBagConstraints.NONE, 0, 0));
+		add(gridColor, GBCHelper.getGBC(2, 4, 1, 1, GridBagConstraints.EAST, GridBagConstraints.NONE, 0, 0));
 	}
 
 	private String[] createUnits() {

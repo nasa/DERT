@@ -11,7 +11,6 @@ import gov.nasa.arc.dert.state.FigureState;
 import gov.nasa.arc.dert.state.ImageBoardState;
 import gov.nasa.arc.dert.state.LandmarkState;
 import gov.nasa.arc.dert.state.PlacemarkState;
-import gov.nasa.arc.dert.util.FileHelper;
 import gov.nasa.arc.dert.view.Console;
 
 import java.text.DecimalFormat;
@@ -151,15 +150,7 @@ public class Landmarks extends GroupNode {
 		}
 	}
 
-	/**
-	 * Save landmark data to a file
-	 */
-	public void saveToFile() {
-		String filePath = FileHelper.getCSVFile();
-		saveAsCsv(filePath);
-	}
-
-	private void saveAsCsv(String filename) {
+	public void saveAsCsv(String filename) {
 		CsvWriter csvWriter = null;
 		DecimalFormat formatter = new DecimalFormat(Landscape.format);
 		try {

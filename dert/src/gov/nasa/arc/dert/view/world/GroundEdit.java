@@ -38,12 +38,24 @@ public class GroundEdit extends AbstractUndoableEdit {
 		this.ge = ge;
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param spatial
+	 * @param oldPosition
+	 */
+	public GroundEdit(GroundEdit[] ge) {
+		this.ge = ge;
+	}
+
 	@Override
 	public String getPresentationName() {
 		if (movable != null)
 			return ("Ground " + movable.getName());
-		else
+		else if (mapElement != null)
 			return("Ground "+mapElement.getName());
+		else
+			return(ge[0].getPresentationName()+"...");
 	}
 
 	@Override

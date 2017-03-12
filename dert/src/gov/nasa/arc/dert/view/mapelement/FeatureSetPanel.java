@@ -4,20 +4,20 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.featureset.Feature;
 import gov.nasa.arc.dert.scene.featureset.FeatureSet;
-import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.DoubleTextField;
+import gov.nasa.arc.dert.ui.FieldPanel;
 import gov.nasa.arc.dert.ui.GroupPanel;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.Component;
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 /**
@@ -27,8 +27,7 @@ import javax.swing.SwingConstants;
 public class FeatureSetPanel extends MapElementBasePanel {
 
 	// Controls
-	private ColorSelectionPanel colorList;
-	private JLabel fileLabel;
+	private JTextField fileText;
 	private JTextArea propText;
 	private DoubleTextField lineWidthText;
 	private DoubleTextField sizeText;
@@ -41,39 +40,27 @@ public class FeatureSetPanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public FeatureSetPanel(MapElementsPanel parent) {
-		super(parent);
+	public FeatureSetPanel() {
+		super();
 		icon = FeatureSet.icon;
 		type = "FeatureSet";
-		build(true, false, true);
+		build(true, false);
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc, boolean addCBs) {
-		super.build(addNotes, addLoc, addCBs);
-
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		fileLabel = new JLabel("File: ");
-		fileLabel.setToolTipText("path to GeoJSON file");
-		panel.add(fileLabel);
-		panel.setMaximumSize(new Dimension(1000, -1));
-		contents.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Color"));
-		colorList = new ColorSelectionPanel(FeatureSet.defaultColor) {
-			@Override
-			public void doColor(Color color) {
-				if (featureSet != null) {
-					featureSet.setColor(color);
-				}
-			}
-		};
-		panel.add(colorList);
-		contents.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Line Width", SwingConstants.RIGHT));
+	protected void build(boolean addNotes, boolean addLoc) {
+		super.build(addNotes, addLoc);
+		
+		ArrayList<Component> compList = new ArrayList<Component>();
+		
+		compList.add(new JLabel("File", SwingConstants.RIGHT));
+		fileText = new JTextField();
+		fileText.setEditable(false);
+		fileText.setBorder(BorderFactory.createEmptyBorder());
+		fileText.setToolTipText("path to GeoJSON file");
+		compList.add(fileText);
+		
+		compList.add(new JLabel("Line Width", SwingConstants.RIGHT));
 		lineWidthText = new DoubleTextField(8, FeatureSet.defaultLineWidth, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
@@ -83,9 +70,9 @@ public class FeatureSetPanel extends MapElementBasePanel {
 				featureSet.setLineWidth((float) value);
 			}
 		};
-		panel.add(lineWidthText);
+		compList.add(lineWidthText);
 
-		panel.add(new JLabel("       Point Size", SwingConstants.RIGHT));
+		compList.add(new JLabel("Point Size", SwingConstants.RIGHT));
 		sizeText = new DoubleTextField(8, FeatureSet.defaultSize, true, "0.00") {
 			@Override
 			protected void handleChange(double value) {
@@ -95,8 +82,9 @@ public class FeatureSetPanel extends MapElementBasePanel {
 				featureSet.setPointSize((float)value);
 			}
 		};
-		panel.add(sizeText);
-		contents.add(panel);
+		compList.add(sizeText);
+		
+		contents.add(new FieldPanel(compList), BorderLayout.CENTER);
 		
 		GroupPanel groupPanel = new GroupPanel("Properties");
 		groupPanel.setLayout(new BorderLayout());
@@ -104,11 +92,8 @@ public class FeatureSetPanel extends MapElementBasePanel {
 		propText.setEditable(false);
 		propText.setRows(4);
 		groupPanel.add(new JScrollPane(propText), BorderLayout.CENTER);
-		contents.add(groupPanel);
+		contents.add(groupPanel, BorderLayout.SOUTH);
 		
-		pinnedCheckBox.setSelected(true);
-		pinnedCheckBox.setEnabled(false);
-		groundButton.setEnabled(false);
 	}
 
 	@Override
@@ -118,26 +103,19 @@ public class FeatureSetPanel extends MapElementBasePanel {
 		if (mapElement instanceof FeatureSet) {
 			featureSet = (FeatureSet) mapElement;
 			propText.setText("");
-			colorList.setEnabled(true);
 			nameLabel.setText(featureSet.getName());
-			colorList.setColor(featureSet.getColor());
-			fileLabel.setText("File: "+featureSet.getFilePath());
+			fileText.setText("File: "+featureSet.getFilePath());
 			noteText.setText(featureSet.getState().getAnnotation());
-			labelCheckBox.setSelected(featureSet.isLabelVisible());
-			labelCheckBox.setEnabled(true);
 			lineWidthText.setValue(featureSet.getLineWidth());
 			lineWidthText.setEnabled(true);
 			sizeText.setValue(featureSet.getSize());
 			sizeText.setEnabled(true);
 		}
 		else if (mapElement instanceof Feature) {
-			colorList.setEnabled(false);
 			Feature feature = (Feature)mapElement;
 			FeatureSet fs = (FeatureSet)feature.getParent();
 			if (fs != null)
-				fileLabel.setText("File: "+fs.getFilePath());
-			labelCheckBox.setSelected(feature.isLabelVisible());
-			labelCheckBox.setEnabled(true);
+				fileText.setText("File: "+fs.getFilePath());
 			nameLabel.setText(feature.getName());
 			HashMap<String,Object> properties = feature.getProperties();
 			Object[] key = properties.keySet().toArray();

@@ -123,8 +123,7 @@ public class PersistenceTest {
 		g.compassRose = true;
 		config.mapElementStateList.add(g);
 		
-		ImageBoardState ib = new ImageBoardState(new Vector3(10, 11, 12));
-		ib.imagePath = testLoc;
+		ImageBoardState ib = new ImageBoardState(new Vector3(10, 11, 12), testLoc);
 		ib.position = new Vector3(13, 14, 15);
 		config.mapElementStateList.add(ib);
 		

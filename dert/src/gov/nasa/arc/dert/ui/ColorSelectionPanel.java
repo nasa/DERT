@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.icon.Icons;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -37,7 +38,7 @@ public class ColorSelectionPanel extends JPanel {
 		color = col;
 		background = getBackground();
 
-		setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		colorLabel = new JLabel("            ");
 		colorLabel.setOpaque(true);
 		colorLabel.setBackground(color);
@@ -58,6 +59,11 @@ public class ColorSelectionPanel extends JPanel {
 			}
 		});
 		add(colorButton);
+	}
+	
+	@Override
+	public Insets getInsets() {
+		return(new Insets(0, 5, 0, 0));
 	}
 
 	/**

@@ -4,21 +4,18 @@ import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.Profile;
-import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.util.FileHelper;
+import gov.nasa.arc.dert.ui.FieldPanel;
 
-import java.awt.Color;
-import java.awt.FlowLayout;
+import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -31,9 +28,7 @@ import com.ardor3d.scenegraph.event.DirtyType;
 public class ProfilePanel extends MapElementBasePanel {
 
 	// Controls
-	private ColorSelectionPanel colorList;
 	private CoordTextField pALocation, pBLocation;
-	private JButton saveAsCSV, openButton;
 	private DoubleTextField lineWidthText;
 	private JCheckBox endpointsCheckBox;
 
@@ -45,19 +40,20 @@ public class ProfilePanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public ProfilePanel(MapElementsPanel parent) {
-		super(parent);
+	public ProfilePanel() {
+		super();
 		icon = Profile.icon;
 		type = "Profile";
-		build(true, false, true);
+		build(true, false);
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc, boolean addCBs) {
-		super.build(addNotes, addLoc, addCBs);
+	protected void build(boolean addNotes, boolean addLoc) {
+		super.build(addNotes, addLoc);
+		
+		ArrayList<Component> compList = new ArrayList<Component>();
 
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Location A"));
+		compList.add(new JLabel("Point A", SwingConstants.RIGHT));
 		pALocation = new CoordTextField(22, "location of end point A", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 result) {
@@ -76,11 +72,9 @@ public class ProfilePanel extends MapElementBasePanel {
 			}
 		};
 		CoordAction.listenerList.add(pALocation);
-		panel.add(pALocation);
-		contents.add(panel);
+		compList.add(pALocation);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Location B"));
+		compList.add(new JLabel("Point B", SwingConstants.RIGHT));
 		pBLocation = new CoordTextField(22, "location of end point B", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 result) {
@@ -99,20 +93,9 @@ public class ProfilePanel extends MapElementBasePanel {
 			}
 		};
 		CoordAction.listenerList.add(pBLocation);
-		panel.add(pBLocation);
-		contents.add(panel);
+		compList.add(pBLocation);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Color"));
-		colorList = new ColorSelectionPanel(Profile.defaultColor) {
-			@Override
-			public void doColor(Color color) {
-				profile.setColor(color);
-			}
-		};
-		panel.add(colorList);
-
-		panel.add(new JLabel("Line Width", SwingConstants.RIGHT));
+		compList.add(new JLabel("Line Width", SwingConstants.RIGHT));
 		lineWidthText = new DoubleTextField(8, Profile.defaultLineWidth, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
@@ -122,9 +105,10 @@ public class ProfilePanel extends MapElementBasePanel {
 				profile.setLineWidth((float) value);
 			}
 		};
-		panel.add(lineWidthText);
+		compList.add(lineWidthText);
 		
-		endpointsCheckBox = new JCheckBox("Show Endpoints");
+		compList.add(new JLabel("Endpoints", SwingConstants.RIGHT));
+		endpointsCheckBox = new JCheckBox("visible");
 		endpointsCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -132,37 +116,9 @@ public class ProfilePanel extends MapElementBasePanel {
 				profile.markDirty(DirtyType.RenderState);
 			}
 		});
-		panel.add(endpointsCheckBox);
-
-		contents.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		saveAsCSV = new JButton("Save As CSV");
-		saveAsCSV.setToolTipText("save profile data formatted as comma separated values");
-		saveAsCSV.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				String fileName = FileHelper.getCSVFile();
-				if (fileName == null) {
-					return;
-				}
-				profile.saveAsCsv(fileName);
-			}
-		});
-		saveAsCSV.setEnabled(false);
-		panel.add(saveAsCSV);
-		openButton = new JButton("Open Graph");
-		openButton.setToolTipText("show the profile as a graph in a separate window");
-		openButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				profile.getState().getViewData().setVisible(true);
-				profile.getState().open();
-			}
-		});
-		openButton.setEnabled(false);
-		panel.add(openButton);
-		contents.add(panel);
+		compList.add(endpointsCheckBox);
+		
+		contents.add(new FieldPanel(compList));
 	}
 
 	@Override
@@ -171,15 +127,10 @@ public class ProfilePanel extends MapElementBasePanel {
 		profile = (Profile) mapElement;
 		setLocation(pALocation, profile.getEndpointA());
 		setLocation(pBLocation, profile.getEndpointB());
-		pinnedCheckBox.setSelected(profile.isPinned());
 		endpointsCheckBox.setSelected(profile.isEndpointsVisible());
 		lineWidthText.setValue(profile.getLineWidth());
 		nameLabel.setText(profile.getName());
-		colorList.setColor(profile.getColor());
 		noteText.setText(profile.getState().getAnnotation());
-		labelCheckBox.setSelected(profile.isLabelVisible());
-		saveAsCSV.setEnabled(true);
-		openButton.setEnabled(true);
 	}
 
 	@Override

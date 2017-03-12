@@ -149,6 +149,10 @@ public class Plane extends Node implements Tool, ViewDependent {
 				updatePolygon();
 				updateGeometricState(0);
 			}
+			
+			public void pin(Movable m, boolean value) {
+				// nothing
+			}
 		});
 		attachChild(point[0]);
 
@@ -163,6 +167,10 @@ public class Plane extends Node implements Tool, ViewDependent {
 				updatePolygon();
 				updateGeometricState(0);
 			}
+			
+			public void pin(Movable m, boolean value) {
+				// nothing
+			}
 		});
 		attachChild(point[1]);
 
@@ -176,6 +184,10 @@ public class Plane extends Node implements Tool, ViewDependent {
 				updateStrikeDipLines();
 				updatePolygon();
 				updateGeometricState(0);
+			}
+			
+			public void pin(Movable m, boolean value) {
+				// nothing
 			}
 		});
 		attachChild(point[2]);

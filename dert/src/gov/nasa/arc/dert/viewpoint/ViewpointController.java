@@ -10,7 +10,6 @@ import gov.nasa.arc.dert.view.viewpoint.FlyThroughDialog;
 import gov.nasa.arc.dert.viewpoint.ViewpointNode.ViewpointMode;
 
 import java.awt.Dialog;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;

@@ -3,19 +3,19 @@ package gov.nasa.arc.dert.view.mapelement;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
-import gov.nasa.arc.dert.ui.ColorSelectionPanel;
+import gov.nasa.arc.dert.ui.FieldPanel;
 import gov.nasa.arc.dert.view.fieldcamera.FieldCameraView;
 
-import java.awt.Color;
-import java.awt.FlowLayout;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 /**
  * Provides controls for setting options for field cameras.
@@ -24,10 +24,8 @@ import javax.swing.JPanel;
 public class FieldCameraPanel extends MapElementBasePanel {
 
 	// Controls
-	private ColorSelectionPanel colorList;
 	private JCheckBox fovCheckBox, lineCheckBox;
 	private JComboBox defCombo;
-	private JButton openButton;
 
 	// FieldCamera
 	private FieldCamera fieldCamera;
@@ -37,20 +35,21 @@ public class FieldCameraPanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public FieldCameraPanel(MapElementsPanel parent) {
-		super(parent);
+	public FieldCameraPanel() {
+		super();
 		icon = FieldCamera.icon;
 		type = "Camera";
-		build(true, true, true);
+		build(true, true);
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc, boolean addCBs) {
-		super.build(addNotes, addLoc, addCBs);
-
+	protected void build(boolean addNotes, boolean addLoc) {
+		super.build(addNotes, addLoc);
+		
+		ArrayList<Component> compList = new ArrayList<Component>();
+		
+		compList.add(new JLabel("Definition", SwingConstants.RIGHT));
 		String[] names = FieldCameraInfoManager.getInstance().getFieldCameraNames();
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Definition"));
 		defCombo = new JComboBox(names);
 		defCombo.setToolTipText("select camera definition file");
 		defCombo.addActionListener(new ActionListener() {
@@ -64,22 +63,10 @@ public class FieldCameraPanel extends MapElementBasePanel {
 				}
 			}
 		});
-		panel.add(defCombo);
-		contents.add(panel);
+		compList.add(defCombo);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Color"));
-		colorList = new ColorSelectionPanel(FieldCamera.defaultColor) {
-			@Override
-			public void doColor(Color color) {
-				fieldCamera.setColor(color);
-			}
-		};
-		panel.add(colorList);
-		contents.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		fovCheckBox = new JCheckBox("Show FOV");
+		compList.add(new JLabel("Field of View", SwingConstants.RIGHT));
+		fovCheckBox = new JCheckBox("visible");
 		fovCheckBox.setToolTipText("display the field of view frustum");
 		fovCheckBox.addActionListener(new ActionListener() {
 			@Override
@@ -87,11 +74,10 @@ public class FieldCameraPanel extends MapElementBasePanel {
 				fieldCamera.setFovVisible(fovCheckBox.isSelected());
 			}
 		});
-		panel.add(fovCheckBox);
-		contents.add(panel);
+		compList.add(fovCheckBox);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		lineCheckBox = new JCheckBox("Show Line");
+		compList.add(new JLabel("Line to Look At", SwingConstants.RIGHT));
+		lineCheckBox = new JCheckBox("visible");
 		lineCheckBox.setToolTipText("display a line to the lookat point");
 		lineCheckBox.addActionListener(new ActionListener() {
 			@Override
@@ -99,22 +85,9 @@ public class FieldCameraPanel extends MapElementBasePanel {
 				fieldCamera.setLookAtLineVisible(lineCheckBox.isSelected());
 			}
 		});
-		panel.add(lineCheckBox);
-		contents.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		openButton = new JButton("Open View");
-		openButton.setToolTipText("display this camera's view of the landscape in a separate window");
-		openButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				fieldCamera.getState().getViewData().setVisible(true);
-				fieldCamera.getState().open();
-			}
-		});
-		openButton.setEnabled(false);
-		panel.add(openButton);
-		contents.add(panel);
+		compList.add(lineCheckBox);
+		
+		contents.add(new FieldPanel(compList), BorderLayout.CENTER);
 	}
 
 	@Override
@@ -123,14 +96,10 @@ public class FieldCameraPanel extends MapElementBasePanel {
 		fieldCamera = (FieldCamera) mapElement;
 		setLocation(locationText, fieldCamera.getTranslation());
 		defCombo.setSelectedItem(fieldCamera.getFieldCameraDefinition());
-		pinnedCheckBox.setSelected(fieldCamera.isPinned());
 		nameLabel.setText(fieldCamera.getName());
-		colorList.setColor(fieldCamera.getColor());
 		noteText.setText(fieldCamera.getState().getAnnotation());
-		labelCheckBox.setSelected(fieldCamera.isLabelVisible());
 		fovCheckBox.setSelected(fieldCamera.isFovVisible());
 		lineCheckBox.setSelected(fieldCamera.isLookAtLineVisible());
-		openButton.setEnabled(true);
 	}
 
 }

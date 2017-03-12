@@ -4,23 +4,20 @@ import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.Plane;
-import gov.nasa.arc.dert.scene.tool.Profile;
-import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
-import gov.nasa.arc.dert.ui.GroupPanel;
+import gov.nasa.arc.dert.ui.FieldPanel;
 import gov.nasa.arc.dert.util.StringUtil;
 
-import java.awt.Color;
-import java.awt.FlowLayout;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 
@@ -34,9 +31,7 @@ import com.ardor3d.scenegraph.event.DirtyType;
 public class PlanePanel extends MapElementBasePanel {
 
 	// Controls
-	private ColorSelectionPanel colorList;
 	private CoordTextField p0Location, p1Location, p2Location;
-	private JButton openButton;
 	private DoubleSpinner lengthSpinner, widthSpinner;
 	private JCheckBox triangleCheckBox;
 	private JLabel strikeAndDip;
@@ -49,19 +44,20 @@ public class PlanePanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public PlanePanel(MapElementsPanel parent) {
-		super(parent);
+	public PlanePanel() {
+		super();
 		icon = Plane.icon;
 		type = "Plane";
-		build(true, false, true);
+		build(true, false);
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc, boolean addCBs) {
-		super.build(addNotes, addLoc, addCBs);
+	protected void build(boolean addNotes, boolean addLoc) {
+		super.build(addNotes, addLoc);
+		
+		ArrayList<Component> compList = new ArrayList<Component>();
 
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Point 0"));
+		compList.add(new JLabel("Point 0", SwingConstants.RIGHT));
 		p0Location = new CoordTextField(22, "location of first point of triangle", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 result) {
@@ -80,11 +76,9 @@ public class PlanePanel extends MapElementBasePanel {
 			}			
 		};
 		CoordAction.listenerList.add(p0Location);
-		panel.add(p0Location);
-		contents.add(panel);
+		compList.add(p0Location);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Point 1"));
+		compList.add(new JLabel("Point 1", SwingConstants.RIGHT));
 		p1Location = new CoordTextField(22, "location of second point of triangle", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 result) {
@@ -103,11 +97,9 @@ public class PlanePanel extends MapElementBasePanel {
 			}			
 		};
 		CoordAction.listenerList.add(p1Location);
-		panel.add(p1Location);
-		contents.add(panel);
+		compList.add(p1Location);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Point 2"));
+		compList.add(new JLabel("Point 2", SwingConstants.RIGHT));
 		p2Location = new CoordTextField(22, "location of third point of triangle", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 result) {
@@ -126,19 +118,10 @@ public class PlanePanel extends MapElementBasePanel {
 			}			
 		};
 		CoordAction.listenerList.add(p2Location);
-		panel.add(p2Location);
-		contents.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Color"));
-		colorList = new ColorSelectionPanel(Profile.defaultColor) {
-			@Override
-			public void doColor(Color color) {
-				plane.setColor(color);
-			}
-		};
-		panel.add(colorList);
-		triangleCheckBox = new JCheckBox("Show Triangle");
+		compList.add(p2Location);
+		
+		compList.add(new JLabel("Triangle", SwingConstants.RIGHT));
+		triangleCheckBox = new JCheckBox("visible");
 		triangleCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -146,11 +129,8 @@ public class PlanePanel extends MapElementBasePanel {
 				plane.markDirty(DirtyType.RenderState);
 			}
 		});
-		panel.add(triangleCheckBox);
-		contents.add(panel);
+		compList.add(triangleCheckBox);
 
-		panel = new GroupPanel("Change Scale Along Axis");
-		panel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		double step = Landscape.getInstance().getPixelWidth();
 		double min = 1;
 		double max = 10000;
@@ -165,7 +145,7 @@ public class PlanePanel extends MapElementBasePanel {
 		else
 			step = 1;
 		
-		panel.add(new JLabel("Dip", SwingConstants.RIGHT));
+		compList.add(new JLabel("Scale Dip Axis", SwingConstants.RIGHT));
 		lengthSpinner = new DoubleSpinner(val, min, max, step, false, fmt) {
 			@Override
 			public void stateChanged(ChangeEvent event) {
@@ -173,9 +153,9 @@ public class PlanePanel extends MapElementBasePanel {
 				plane.setLengthScale(lengthScale);
 			}
 		};
-		panel.add(lengthSpinner);
+		compList.add(lengthSpinner);
 
-		panel.add(new JLabel("  Strike", SwingConstants.RIGHT));
+		compList.add(new JLabel("Scale Strike Axis", SwingConstants.RIGHT));
 		widthSpinner = new DoubleSpinner(val, min, max, step, false, fmt) {
 			@Override
 			public void stateChanged(ChangeEvent event) {
@@ -183,24 +163,12 @@ public class PlanePanel extends MapElementBasePanel {
 				plane.setWidthScale(widthScale);
 			}
 		};
-		panel.add(widthSpinner);
-		contents.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		openButton = new JButton("Diff Map");
-		openButton.setToolTipText("display map of difference of plane and elevation in separate window");
-		openButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				plane.getState().getViewData().setVisible(true);
-				plane.getState().open();
-			}
-		});
-		openButton.setEnabled(false);
-		panel.add(openButton);
+		compList.add(widthSpinner);
+		
+		contents.add(new FieldPanel(compList), BorderLayout.CENTER);
+		
 		strikeAndDip = new JLabel("                            ");
-		panel.add(strikeAndDip);
-		contents.add(panel);
+		contents.add(strikeAndDip, BorderLayout.SOUTH);
 	}
 
 	@Override
@@ -212,13 +180,9 @@ public class PlanePanel extends MapElementBasePanel {
 		plane.setPlanePanel(this);
 		lengthSpinner.setValue(plane.getLengthScale());
 		widthSpinner.setValue(plane.getWidthScale());
-		pinnedCheckBox.setSelected(plane.isPinned());
 		nameLabel.setText(plane.getName());
-		colorList.setColor(plane.getColor());
 		noteText.setText(plane.getState().getAnnotation());
-		labelCheckBox.setSelected(plane.isLabelVisible());
 		triangleCheckBox.setSelected(plane.isTriangleVisible());
-		openButton.setEnabled(true);
 		updateLocation(plane);
 		updateStrikeAndDip(plane.getStrike(), plane.getDip());
 	}

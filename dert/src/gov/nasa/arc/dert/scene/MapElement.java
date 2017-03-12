@@ -7,6 +7,8 @@ import gov.nasa.arc.dert.view.world.GroundEdit;
 
 import java.awt.Color;
 
+import javax.swing.Icon;
+
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 
@@ -43,6 +45,8 @@ public interface MapElement {
 	public double getSize();
 
 	public Color getColor();
+	
+	public void setColor(Color color);
 
 	public boolean isLabelVisible();
 
@@ -55,5 +59,7 @@ public interface MapElement {
 	public double getZOffset();
 	
 	public void setZOffset(double zOff, boolean doTrans);
+	
+	public Icon getIcon();
 
 }

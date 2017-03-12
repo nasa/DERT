@@ -4,18 +4,17 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.tool.ScaleBar;
-import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
 import gov.nasa.arc.dert.ui.DoubleTextField;
+import gov.nasa.arc.dert.ui.FieldPanel;
 
-import java.awt.Color;
-import java.awt.FlowLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
@@ -29,7 +28,6 @@ import javax.swing.event.ChangeListener;
 public class ScaleBarPanel extends MapElementBasePanel {
 
 	// Controls
-	private ColorSelectionPanel colorList;
 	private DoubleTextField sizeText, radiusText;
 	private DoubleSpinner azSpinner, tiltSpinner;
 	private JSpinner cellsSpinner;
@@ -43,26 +41,26 @@ public class ScaleBarPanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public ScaleBarPanel(MapElementsPanel parent) {
-		super(parent);
+	public ScaleBarPanel() {
+		super();
 		icon = Figure.icon;
 		type = "Figure";
-		build(true, true, true);
+		build(true, true);
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc, boolean addCBs) {
-		super.build(addNotes, addLoc, addCBs);
+	protected void build(boolean addNotes, boolean addLoc) {
+		super.build(addNotes, addLoc);
+		
+		ArrayList<Component> compList = new ArrayList<Component>();
 
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		compList.add(new JLabel("Dimensions", SwingConstants.RIGHT));
 		dimensions = new JLabel();
-		panel.add(dimensions);
-		contents.add(panel);
+		compList.add(dimensions);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Cell Count", SwingConstants.RIGHT));
+		compList.add(new JLabel("Cell Count", SwingConstants.RIGHT));
 		cellsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 1000000, 1));
-		panel.add(cellsSpinner);
+		compList.add(cellsSpinner);
 		cellsSpinner.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent event) {
@@ -72,7 +70,7 @@ public class ScaleBarPanel extends MapElementBasePanel {
 			}
 		});
 
-		panel.add(new JLabel("    Cell Size", SwingConstants.RIGHT));
+		compList.add(new JLabel("Cell Size", SwingConstants.RIGHT));
 		sizeText = new DoubleTextField(8, ScaleBar.defaultCellSize, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
@@ -82,11 +80,9 @@ public class ScaleBarPanel extends MapElementBasePanel {
 				scale.setSize(value);
 			}
 		};
-		panel.add(sizeText);
-		contents.add(panel);
+		compList.add(sizeText);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Radius", SwingConstants.RIGHT));
+		compList.add(new JLabel("Radius", SwingConstants.RIGHT));
 		radiusText = new DoubleTextField(8, ScaleBar.defaultRadius, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
@@ -96,22 +92,10 @@ public class ScaleBarPanel extends MapElementBasePanel {
 				scale.setCellRadius(value);
 			}
 		};
-		panel.add(radiusText);
-		contents.add(panel);
+		compList.add(radiusText);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Color"));
-		colorList = new ColorSelectionPanel(ScaleBar.defaultColor) {
-			@Override
-			public void doColor(Color color) {
-				scale.setColor(color);
-			}
-		};
-		panel.add(colorList);
-
-		panel.add(new JLabel("        "));
-		
-		autoLabelButton = new JCheckBox("AutoLabel");
+		compList.add(new JLabel("AutoLabel", SwingConstants.RIGHT));		
+		autoLabelButton = new JCheckBox("enabled");
 		autoLabelButton.setToolTipText("set label automatically");
 		autoLabelButton.addActionListener(new ActionListener() {
 			@Override
@@ -119,11 +103,9 @@ public class ScaleBarPanel extends MapElementBasePanel {
 				scale.setAutoLabel(autoLabelButton.isSelected());
 			}
 		});
-		panel.add(autoLabelButton);
-		contents.add(panel);
+		compList.add(autoLabelButton);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Azimuth", SwingConstants.RIGHT));
+		compList.add(new JLabel("Azimuth", SwingConstants.RIGHT));
 		azSpinner = new DoubleSpinner(0, 0, 359, 1, true) {
 			@Override
 			public void stateChanged(ChangeEvent event) {
@@ -133,11 +115,9 @@ public class ScaleBarPanel extends MapElementBasePanel {
 			}
 		};
 		azSpinner.setToolTipText("rotate scale around vertical axis");
-		panel.add(azSpinner);
+		compList.add(azSpinner);
 
-		panel.add(new JLabel("        "));
-
-		panel.add(new JLabel("Tilt", SwingConstants.RIGHT));
+		compList.add(new JLabel("Tilt", SwingConstants.RIGHT));
 		tiltSpinner = new DoubleSpinner(0, -90, 90, 1, true) {
 			@Override
 			public void stateChanged(ChangeEvent event) {
@@ -147,8 +127,9 @@ public class ScaleBarPanel extends MapElementBasePanel {
 			}
 		};
 		tiltSpinner.setToolTipText("rotate scale around horizontal axis");
-		panel.add(tiltSpinner);
-		contents.add(panel);
+		compList.add(tiltSpinner);
+		
+		contents.add(new FieldPanel(compList));
 	}
 
 	private void setDimensions() {
@@ -163,16 +144,13 @@ public class ScaleBarPanel extends MapElementBasePanel {
 		this.mapElement = mapElement;
 		scale = (ScaleBar) mapElement;
 		setLocation(locationText, scale.getTranslation());
-		pinnedCheckBox.setSelected(scale.isPinned());
 		nameLabel.setText(scale.getLabel());
-		colorList.setColor(scale.getColor());
 		sizeText.setValue(scale.getSize());
 		radiusText.setValue(scale.getCellRadius());
 		autoLabelButton.setSelected(scale.isAutoLabel());
 		cellsSpinner.setValue(scale.getCellCount());
 		azSpinner.setValue(scale.getAzimuth());
 		tiltSpinner.setValue(scale.getTilt());
-		labelCheckBox.setSelected(scale.isLabelVisible());
 		noteText.setText(scale.getState().getAnnotation());
 	}
 

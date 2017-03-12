@@ -24,7 +24,7 @@ public class MapElementsState extends PanelState {
 	 * Constructor
 	 */
 	public MapElementsState() {
-		super(PanelType.MapElements, "DERT Map Elements", new ViewData(-1, -1, 580, ViewData.DEFAULT_WINDOW_HEIGHT, false));
+		super(PanelType.MapElements, "DERT Map Elements", new ViewData(-1, -1, 400, ViewData.DEFAULT_WINDOW_HEIGHT, false));
 	}
 	
 	/**

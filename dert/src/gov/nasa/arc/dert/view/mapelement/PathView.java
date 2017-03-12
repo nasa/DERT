@@ -28,7 +28,7 @@ import javax.swing.JTextArea;
 import com.ardor3d.math.Vector3;
 
 /**
- * Lightweight view for test displays.
+ * View for Path statistics.
  *
  */
 public class PathView extends JPanelView {

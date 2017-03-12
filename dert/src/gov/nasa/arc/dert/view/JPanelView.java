@@ -3,6 +3,7 @@ package gov.nasa.arc.dert.view;
 import gov.nasa.arc.dert.state.State;
 
 import java.awt.BorderLayout;
+import java.awt.Insets;
 
 import javax.swing.JPanel;
 
@@ -13,6 +14,7 @@ import javax.swing.JPanel;
 public abstract class JPanelView extends JPanel implements View {
 
 	protected State state;
+	private Insets insets = new Insets(5, 5, 5, 5);
 
 	/**
 	 * Constructor
@@ -23,6 +25,11 @@ public abstract class JPanelView extends JPanel implements View {
 		super();
 		this.state = state;
 		setLayout(new BorderLayout());
+	}
+	
+	@Override
+	public Insets getInsets() {
+		return(insets);
 	}
 
 	/**

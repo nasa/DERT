@@ -1,8 +1,6 @@
 package gov.nasa.arc.dert.view.mapelement;
 
-import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.edit.CoordAction;
-import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
@@ -14,18 +12,15 @@ import gov.nasa.arc.dert.ui.GroupPanel;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -36,7 +31,6 @@ import javax.swing.event.DocumentListener;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Spatial;
-import com.ardor3d.scenegraph.event.DirtyType;
 
 /**
  * Provides an abstract base class for all map element panels.
@@ -44,15 +38,10 @@ import com.ardor3d.scenegraph.event.DirtyType;
  */
 public abstract class MapElementBasePanel extends JPanel {
 	
-	// Lock icon
-	private ImageIcon lockedIcon = Icons.getImageIcon("locked.png");
-	private ImageIcon unlockedIcon = Icons.getImageIcon("unlocked.png");
-
 	// Common controls
 	protected JPanel contents;
 	protected JTextArea noteText;
-	protected JButton saveButton, groundButton;
-	protected JCheckBox pinnedCheckBox, labelCheckBox;
+	protected JButton saveButton;
 	protected JLabel typeLabel, nameLabel;
 	protected CoordTextField locationText;
 	protected JPanel container;
@@ -65,9 +54,6 @@ public abstract class MapElementBasePanel extends JPanel {
 	protected NumberFormat formatter;
 	protected Vector3 coord;
 
-	// Parent panel
-	protected MapElementsPanel parent;
-
 	// MapElement being edited
 	protected MapElement mapElement;
 
@@ -76,15 +62,13 @@ public abstract class MapElementBasePanel extends JPanel {
 	 * 
 	 * @param parent
 	 */
-	public MapElementBasePanel(MapElementsPanel parent) {
-		this.parent = parent;
+	public MapElementBasePanel() {
 		setLayout(new BorderLayout());
 		coord = new Vector3();
 		formatter = new DecimalFormat(Landscape.format);
-		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 	}
 
-	protected void build(boolean addNotes, boolean addLoc, boolean addCBs) {
+	protected void build(boolean addNotes, boolean addLoc) {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		typeLabel = new JLabel(icon);
 		panel.add(typeLabel);
@@ -95,11 +79,10 @@ public abstract class MapElementBasePanel extends JPanel {
 		panel.add(nameLabel);
 		add(panel, BorderLayout.NORTH);
 
-		container = new JPanel();
-		container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+		contents = new JPanel(new BorderLayout());
 		if (addLoc) {
-			panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-			panel.add(new JLabel("Location"));
+			panel = new JPanel(new BorderLayout());
+			panel.add(new JLabel("Location"), BorderLayout.WEST);
 			locationText = new CoordTextField(22, "location of map element", Landscape.format, true) {
 				@Override
 				public void handleChange(Vector3 store) {
@@ -125,57 +108,18 @@ public abstract class MapElementBasePanel extends JPanel {
 				}
 			};
 			CoordAction.listenerList.add(locationText);
-			panel.add(locationText);
-			container.add(panel);
+			panel.add(locationText, BorderLayout.CENTER);
+			contents.add(panel, BorderLayout.NORTH);
 		}
-
-		if (addCBs) {
-			panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-			pinnedCheckBox = new JCheckBox("Lock in Place");
-			pinnedCheckBox.setIcon(unlockedIcon);
-			pinnedCheckBox.setSelectedIcon(lockedIcon);
-			pinnedCheckBox.setToolTipText("lock map element at current location");
-			pinnedCheckBox.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent event) {
-					mapElement.setPinned(pinnedCheckBox.isSelected());
-				}
-			});
-			panel.add(pinnedCheckBox);
-			labelCheckBox = new JCheckBox("Show Label");
-			labelCheckBox.setToolTipText("display map element label");
-			labelCheckBox.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent event) {
-					mapElement.setLabelVisible(labelCheckBox.isSelected());
-					((Spatial) mapElement).markDirty(DirtyType.RenderState);
-				}
-			});
-			panel.add(labelCheckBox);
-			groundButton = new JButton("Ground");
-			groundButton.setToolTipText("put map element on terrain surface");
-			groundButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent event) {
-					Dert.getMainWindow().getUndoHandler().addEdit(mapElement.ground());
-				}
-			});
-			panel.add(groundButton);
-
-			container.add(panel);
-		}
-
-		container.add(new JLabel("  "));
-
-		contents = new JPanel();
-		contents.setLayout(new BoxLayout(contents, BoxLayout.Y_AXIS));
-		container.add(contents);
+		
+		add(contents, BorderLayout.CENTER);
 
 		if (addNotes) {
 			GroupPanel notePanel = new GroupPanel("Notes");
 			notePanel.setLayout(new BorderLayout());
 			noteText = new JTextArea();
 			noteText.setEditable(true);
+			noteText.setRows(4);
 			noteText.getDocument().addDocumentListener(new DocumentListener() {
 				@Override
 				public void changedUpdate(DocumentEvent event) {
@@ -204,10 +148,8 @@ public abstract class MapElementBasePanel extends JPanel {
 			JPanel buttonBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 			buttonBar.add(saveButton);
 			notePanel.add(buttonBar, BorderLayout.SOUTH);
-			container.add(notePanel);
+			add(notePanel, BorderLayout.SOUTH);
 		}
-
-		add(container, BorderLayout.CENTER);
 	}
 
 	protected void setLocation(CoordTextField locationText, ReadOnlyVector3 position) {
@@ -215,6 +157,11 @@ public abstract class MapElementBasePanel extends JPanel {
 			position = World.getInstance().getMarble().getTranslation();
 		}
 		locationText.setLocalValue(position);
+	}
+	
+	@Override
+	public Insets getInsets() {
+		return(new Insets(5, 5, 5, 5));
 	}
 
 	/**
@@ -238,8 +185,8 @@ public abstract class MapElementBasePanel extends JPanel {
 	 */
 	public void updateData(MapElement mapElement) {
 		nameLabel.setText(mapElement.getName());
-		if (pinnedCheckBox != null)
-			pinnedCheckBox.setSelected(mapElement.isPinned());
+//		if (pinnedCheckBox != null)
+//			pinnedCheckBox.setSelected(mapElement.isPinned());
 	}
 
 	/**
@@ -252,5 +199,9 @@ public abstract class MapElementBasePanel extends JPanel {
 	public void dispose() {
 		if (locationText != null)
 			CoordAction.listenerList.remove(locationText);
+	}
+	
+	public void update() {
+		updateLocation(mapElement);
 	}
 }
