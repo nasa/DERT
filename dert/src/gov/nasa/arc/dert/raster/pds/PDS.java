@@ -243,7 +243,7 @@ public class PDS extends RasterFileImpl {
 		// find the missing value
 		for (int i = 0; i < missList.length; ++i) {
 			if (dataType == DataType.Float) {
-				Double val = pdsLabel.getDouble(missList[i]);
+				Float val = pdsLabel.getFloat(missList[i]);
 				if (val != null) {
 					missing = val.floatValue();
 					break;

@@ -20,7 +20,7 @@ import javax.imageio.stream.ImageInputStream;
 public class PdsLabel {
 
 	public static enum PDSType {
-		PDS_Double, PDS_Integer, PDS_String, PDS_Long, PDS_Double_Array, PDS_Int_Array, PDS_String_Array, PDS_Long_Array, PDS_Symbol, PDS_Symbol_Array, PDS_Pointer, PDS_Time, PDS_Time_Array, PDS_Object, PDS_Group
+		PDS_Double, PDS_Integer, PDS_String, PDS_Long, PDS_Double_Array, PDS_Integer_Array, PDS_String_Array, PDS_Long_Array, PDS_Symbol, PDS_Symbol_Array, PDS_Pointer, PDS_Time, PDS_Time_Array, PDS_Object, PDS_Group
 	}
 	
 	public static String NULL_VALUE = "\"NULL\"", NA_VALUE = "\"N/A\"", UNK_VALUE = "\"UNK\"";
@@ -105,7 +105,7 @@ public class PdsLabel {
 		Object v = getPDSValue(kv, true);
 		if (v == null)
 			return(null);
-		if (kv.type == PDSType.PDS_Int_Array)
+		if (kv.type == PDSType.PDS_Integer_Array)
 			return((Integer[])v);
 		else if (kv.type == PDSType.PDS_Long_Array) {
 			Long[] l = (Long[])v;
@@ -167,6 +167,56 @@ public class PdsLabel {
 			return((String)v);
 		else if (kv.type == PDSType.PDS_String)
 			return((String)v);
+		return(null);
+	}
+	
+	/**
+	 * Get an integer value for a given key.
+	 */
+	public Float getFloat(String key) {
+		KeyValue kv = getKeyValue(key);
+		Object v = getPDSValue(kv, true);
+		if (v == null)
+			return(null);
+		if (kv.type == PDSType.PDS_Double)
+			return(new Float(((Double)v).floatValue()));
+		else if (kv.type == PDSType.PDS_Integer)
+			return(new Float(((Integer)v).floatValue()));
+		else if (kv.type == PDSType.PDS_Long) {
+			return(longToFloat((Long)v));
+		}
+		return(null);
+	}
+	
+	/**
+	 * Get an integer value for a given key.
+	 */
+	public Float[] getFloatArray(String key) {
+		KeyValue kv = getKeyValue(key);
+		Object v = getPDSValue(kv, true);
+		if (v == null)
+			return(null);
+		if (kv.type == PDSType.PDS_Double_Array) {
+			Double[] d = (Double[])v;
+			Float[] fA = new Float[d.length];
+			for (int i=0; i<d.length; ++i)
+				fA[i] = new Float(d[i].floatValue());
+			return(fA);
+		}
+		if (kv.type == PDSType.PDS_Integer_Array) {
+			Integer[] iv = (Integer[])v;
+			Float[] fA = new Float[iv.length];
+			for (int i=0; i<iv.length; ++i)
+				fA[i] = new Float(iv[i].floatValue());
+			return(fA);
+		}
+		else if (kv.type == PDSType.PDS_Long_Array) {
+			Long[] l = (Long[])v;
+			Float[] fA = new Float[l.length];
+			for (int i=0; i<l.length; ++i)
+				fA[i] = longToFloat(l[i]);
+			return(fA);
+		}
 		return(null);
 	}
 	
@@ -419,7 +469,7 @@ public class PdsLabel {
 			case PDS_Long:
 				value = new Long(getPDSLong(tagValue));
 				break;
-			case PDS_Int_Array:
+			case PDS_Integer_Array:
 				value = getPDSIntegerArray(tagValue, normalize);
 				break;
 			case PDS_Long_Array:
@@ -529,6 +579,12 @@ public class PdsLabel {
 		if (lval == null)
 			return(null);
 		return(new Double(Double.longBitsToDouble(lval)));
+	}
+	
+	protected Float longToFloat(Long lval) {
+		if (lval == null)
+			return(null);
+		return(new Float(Float.intBitsToFloat(lval.intValue())));
 	}
 
 	/**
@@ -752,7 +808,7 @@ public class PdsLabel {
 			case PDS_Double:
 				return(PDSType.PDS_Double_Array);
 			case PDS_Integer:
-				return(PDSType.PDS_Int_Array);
+				return(PDSType.PDS_Integer_Array);
 			case PDS_String:
 				return(PDSType.PDS_String_Array);
 			case PDS_Long:
