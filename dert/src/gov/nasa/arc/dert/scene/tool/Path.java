@@ -1046,7 +1046,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			Landscape.getInstance().localToWorldCoordinate(location);
 			return (location);
 		} else {
-			Waypoint wp = (Waypoint) getChild(0);
+			Waypoint wp = (Waypoint) pointSet.getChild(0);
 			return (wp.getLocationInWorld());
 		}
 	}

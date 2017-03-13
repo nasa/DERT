@@ -5,10 +5,7 @@ import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.featureset.Feature;
 import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.ui.FieldPanel;
-import gov.nasa.arc.dert.ui.GroupPanel;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,14 +41,11 @@ public class FeatureSetPanel extends MapElementBasePanel {
 		super();
 		icon = FeatureSet.icon;
 		type = "FeatureSet";
-		build(true, false);
+		build();
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc) {
-		super.build(addNotes, addLoc);
-		
-		ArrayList<Component> compList = new ArrayList<Component>();
+	protected void addFields(ArrayList<Component> compList) {
 		
 		compList.add(new JLabel("File", SwingConstants.RIGHT));
 		fileText = new JTextField();
@@ -84,15 +78,11 @@ public class FeatureSetPanel extends MapElementBasePanel {
 		};
 		compList.add(sizeText);
 		
-		contents.add(new FieldPanel(compList), BorderLayout.CENTER);
-		
-		GroupPanel groupPanel = new GroupPanel("Properties");
-		groupPanel.setLayout(new BorderLayout());
+		compList.add(new JLabel("Properties", SwingConstants.RIGHT));
 		propText = new JTextArea();
 		propText.setEditable(false);
 		propText.setRows(4);
-		groupPanel.add(new JScrollPane(propText), BorderLayout.CENTER);
-		contents.add(groupPanel, BorderLayout.SOUTH);
+		compList.add(new JScrollPane(propText));
 		
 	}
 
@@ -103,7 +93,6 @@ public class FeatureSetPanel extends MapElementBasePanel {
 		if (mapElement instanceof FeatureSet) {
 			featureSet = (FeatureSet) mapElement;
 			propText.setText("");
-			nameLabel.setText(featureSet.getName());
 			fileText.setText("File: "+featureSet.getFilePath());
 			noteText.setText(featureSet.getState().getAnnotation());
 			lineWidthText.setValue(featureSet.getLineWidth());
@@ -116,7 +105,6 @@ public class FeatureSetPanel extends MapElementBasePanel {
 			FeatureSet fs = (FeatureSet)feature.getParent();
 			if (fs != null)
 				fileText.setText("File: "+fs.getFilePath());
-			nameLabel.setText(feature.getName());
 			HashMap<String,Object> properties = feature.getProperties();
 			Object[] key = properties.keySet().toArray();
 			String str = "";

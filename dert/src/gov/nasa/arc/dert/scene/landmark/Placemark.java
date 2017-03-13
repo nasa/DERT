@@ -24,6 +24,16 @@ import com.ardor3d.math.Vector3;
 public class Placemark extends BillboardMarker implements Landmark {
 
 	public static final Icon icon = Icons.getImageIcon("placemark.png");
+	
+	public static enum IconId { pushpin, flag, mappin }	
+	public static final String[] ICON_LABEL = { "Pushpin", "Flag", "Map Pin" };
+	public static final Icon[] icons;	
+	static {
+		icons = new Icon[Placemark.IconId.values().length];
+		for (int i = 0; i < icons.length; ++i) {
+			icons[i] = Icons.getImageIcon(Placemark.IconId.values()[i] + "_24.png");
+		}
+	}
 
 	// Defaults
 	public static Color defaultColor = Color.yellow;
@@ -32,12 +42,11 @@ public class Placemark extends BillboardMarker implements Landmark {
 	public static boolean defaultLabelVisible = true;
 
 	// Icon selections
-	public static final String[] ICON_NAME = { "pushpin", "flag", "mappin" };
-	public static final String[] ICON_LABEL = { "Pushpin", "Flag", "Map Pin" };
+//	public static final String[] ICON_NAME = { "pushpin", "flag", "mappin" };
 
 	// Texture selections
-	protected static final Texture[] nominalTexture = new Texture[ICON_NAME.length];
-	protected static final Texture[] highlightTexture = new Texture[ICON_NAME.length];
+	protected static final Texture[] nominalTexture = new Texture[IconId.values().length];
+	protected static final Texture[] highlightTexture = new Texture[IconId.values().length];
 
 	protected int textureIndex = -1;
 	protected PlacemarkState state;
@@ -74,10 +83,10 @@ public class Placemark extends BillboardMarker implements Landmark {
 		}
 		this.textureIndex = textureIndex;
 		if (nominalTexture[textureIndex] == null) {
-			nominalTexture[textureIndex] = ImageUtil.createTexture(Icons.getIconURL(ICON_NAME[textureIndex] + ".png"),
+			nominalTexture[textureIndex] = ImageUtil.createTexture(Icons.getIconURL(IconId.values()[textureIndex] + ".png"),
 				true);
 			highlightTexture[textureIndex] = ImageUtil.createTexture(
-				Icons.getIconURL(ICON_NAME[textureIndex] + "-highlight.png"), true);
+				Icons.getIconURL(IconId.values()[textureIndex] + "-highlight.png"), true);
 		}
 		setTexture(nominalTexture[textureIndex], highlightTexture[textureIndex]);
 	}

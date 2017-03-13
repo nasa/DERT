@@ -6,12 +6,14 @@ import gov.nasa.arc.dert.util.StringUtil;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
 public class NotesPanel
 	extends JPanel {
@@ -41,20 +43,41 @@ public class NotesPanel
 		}
 		else
 			contents = this;
-		topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		if (!title)
-			topPanel.add(new JLabel(mapElement.getIcon()));
-		topPanel.add(new JLabel("Location"));
-		location = new JLabel();
-		topPanel.add(location);
+		topPanel = new JPanel();
+		buildLocation(topPanel);
 		contents.add(topPanel, BorderLayout.NORTH);
+		JPanel notesPanel = new JPanel(new BorderLayout());
+		notesPanel.add(new JLabel("Notes", SwingConstants.LEFT), BorderLayout.NORTH);
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		textArea = new JTextArea();
 		textArea.setEditable(false);
 		textArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		scrollPane.getViewport().setView(textArea);
-		contents.add(scrollPane, BorderLayout.CENTER);
+		notesPanel.add(scrollPane, BorderLayout.CENTER);
+		contents.add(notesPanel, BorderLayout.CENTER);
 		update();
+	}
+	
+	protected void buildLocation(JPanel panel) {
+		panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		if (iconLabel == null)
+			panel.add(new JLabel(mapElement.getIcon()));
+		panel.add(new JLabel("Location", SwingConstants.LEFT));
+		location = new JLabel();
+		panel.add(location);
+	}
+	
+	protected void updateLocation() {
+		if (mapElement.isPinned()) {
+			if (locked.getParent() == null)
+				topPanel.add(locked);
+		}
+		else {
+			if (locked.getParent() != null)
+				topPanel.remove(locked);
+		}
+		location.setText(StringUtil.format(mapElement.getLocationInWorld()));
 	}
 	
 	public void setMapElement(MapElement mapElement) {
@@ -69,18 +92,14 @@ public class NotesPanel
 	public void update() {
 		if (mapElement == null)
 			return;
-		if (mapElement.isPinned()) {
-			if (locked.getParent() == null)
-				topPanel.add(locked);
-		}
-		else {
-			if (locked.getParent() != null)
-				topPanel.remove(locked);
-		}
-		location.setText(StringUtil.format(mapElement.getLocationInWorld()));
+		updateLocation();
 		textArea.setText(mapElement.getState().getAnnotation());
 		textArea.setCaretPosition(0);
 		revalidate();
+	}
+	
+	public Insets getInsets() {
+		return(new Insets(5, 5, 5, 5));
 	}
 
 }

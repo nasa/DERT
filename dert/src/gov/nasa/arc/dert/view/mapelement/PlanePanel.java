@@ -6,10 +6,8 @@ import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.Plane;
 import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
-import gov.nasa.arc.dert.ui.FieldPanel;
 import gov.nasa.arc.dert.util.StringUtil;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -48,14 +46,11 @@ public class PlanePanel extends MapElementBasePanel {
 		super();
 		icon = Plane.icon;
 		type = "Plane";
-		build(true, false);
+		build();
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc) {
-		super.build(addNotes, addLoc);
-		
-		ArrayList<Component> compList = new ArrayList<Component>();
+	protected void addFields(ArrayList<Component> compList) {
 
 		compList.add(new JLabel("Point 0", SwingConstants.RIGHT));
 		p0Location = new CoordTextField(22, "location of first point of triangle", Landscape.format, true) {
@@ -165,10 +160,7 @@ public class PlanePanel extends MapElementBasePanel {
 		};
 		compList.add(widthSpinner);
 		
-		contents.add(new FieldPanel(compList), BorderLayout.CENTER);
-		
 		strikeAndDip = new JLabel("                            ");
-		contents.add(strikeAndDip, BorderLayout.SOUTH);
 	}
 
 	@Override
@@ -180,7 +172,6 @@ public class PlanePanel extends MapElementBasePanel {
 		plane.setPlanePanel(this);
 		lengthSpinner.setValue(plane.getLengthScale());
 		widthSpinner.setValue(plane.getWidthScale());
-		nameLabel.setText(plane.getName());
 		noteText.setText(plane.getState().getAnnotation());
 		triangleCheckBox.setSelected(plane.isTriangleVisible());
 		updateLocation(plane);

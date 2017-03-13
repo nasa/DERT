@@ -6,9 +6,7 @@ import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.ui.FieldPanel;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,14 +46,12 @@ public class FigurePanel extends MapElementBasePanel {
 		super();
 		icon = Figure.icon;
 		type = "Figure";
-		build(true, true);
+		build();
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc) {
-		super.build(addNotes, addLoc);
-		
-		ArrayList<Component> compList = new ArrayList<Component>();
+	protected void addFields(ArrayList<Component> compList) {
+		super.addFields(compList);
 
 		compList.add(new JLabel("Shape", SwingConstants.RIGHT));
 		shapeCombo = new JComboBox(ShapeType.values());
@@ -126,8 +122,6 @@ public class FigurePanel extends MapElementBasePanel {
 			}
 		});
 		compList.add(surfaceButton);
-		
-		contents.add(new FieldPanel(compList), BorderLayout.CENTER);
 	}
 
 	@Override
@@ -135,7 +129,6 @@ public class FigurePanel extends MapElementBasePanel {
 		this.mapElement = mapElement;
 		figure = (Figure) mapElement;
 		setLocation(locationText, figure.getTranslation());
-		nameLabel.setText(figure.getLabel());
 		sizeText.setValue(figure.getSize());
 		shapeCombo.setSelectedItem(figure.getShapeType());
 		autoScaleButton.setSelected(figure.isAutoScale());

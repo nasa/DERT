@@ -6,7 +6,6 @@ import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.Profile;
 import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.ui.FieldPanel;
 
 import java.awt.Component;
 import java.awt.Toolkit;
@@ -44,14 +43,11 @@ public class ProfilePanel extends MapElementBasePanel {
 		super();
 		icon = Profile.icon;
 		type = "Profile";
-		build(true, false);
+		build();
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc) {
-		super.build(addNotes, addLoc);
-		
-		ArrayList<Component> compList = new ArrayList<Component>();
+	protected void addFields(ArrayList<Component> compList) {
 
 		compList.add(new JLabel("Point A", SwingConstants.RIGHT));
 		pALocation = new CoordTextField(22, "location of end point A", Landscape.format, true) {
@@ -117,8 +113,6 @@ public class ProfilePanel extends MapElementBasePanel {
 			}
 		});
 		compList.add(endpointsCheckBox);
-		
-		contents.add(new FieldPanel(compList));
 	}
 
 	@Override
@@ -129,7 +123,6 @@ public class ProfilePanel extends MapElementBasePanel {
 		setLocation(pBLocation, profile.getEndpointB());
 		endpointsCheckBox.setSelected(profile.isEndpointsVisible());
 		lineWidthText.setValue(profile.getLineWidth());
-		nameLabel.setText(profile.getName());
 		noteText.setText(profile.getState().getAnnotation());
 	}
 

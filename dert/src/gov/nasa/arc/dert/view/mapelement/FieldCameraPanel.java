@@ -3,10 +3,8 @@ package gov.nasa.arc.dert.view.mapelement;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
-import gov.nasa.arc.dert.ui.FieldPanel;
 import gov.nasa.arc.dert.view.fieldcamera.FieldCameraView;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,14 +37,12 @@ public class FieldCameraPanel extends MapElementBasePanel {
 		super();
 		icon = FieldCamera.icon;
 		type = "Camera";
-		build(true, true);
+		build();
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc) {
-		super.build(addNotes, addLoc);
-		
-		ArrayList<Component> compList = new ArrayList<Component>();
+	protected void addFields(ArrayList<Component> compList) {
+		super.addFields(compList);
 		
 		compList.add(new JLabel("Definition", SwingConstants.RIGHT));
 		String[] names = FieldCameraInfoManager.getInstance().getFieldCameraNames();
@@ -86,8 +82,6 @@ public class FieldCameraPanel extends MapElementBasePanel {
 			}
 		});
 		compList.add(lineCheckBox);
-		
-		contents.add(new FieldPanel(compList), BorderLayout.CENTER);
 	}
 
 	@Override
@@ -96,7 +90,6 @@ public class FieldCameraPanel extends MapElementBasePanel {
 		fieldCamera = (FieldCamera) mapElement;
 		setLocation(locationText, fieldCamera.getTranslation());
 		defCombo.setSelectedItem(fieldCamera.getFieldCameraDefinition());
-		nameLabel.setText(fieldCamera.getName());
 		noteText.setText(fieldCamera.getState().getAnnotation());
 		fovCheckBox.setSelected(fieldCamera.isFovVisible());
 		lineCheckBox.setSelected(fieldCamera.isLookAtLineVisible());

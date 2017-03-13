@@ -4,7 +4,6 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.RadialGrid;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.ui.FieldPanel;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -45,14 +44,12 @@ public class RadialGridPanel extends MapElementBasePanel {
 		super();
 		icon = RadialGrid.icon;
 		type = "Radial Grid";
-		build(true, true);
+		build();
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc) {
-		super.build(addNotes, addLoc);
-		
-		ArrayList<Component> compList = new ArrayList<Component>();
+	protected void addFields(ArrayList<Component> compList) {
+		super.addFields(compList);
 
 		compList.add(new JLabel("Radius", SwingConstants.RIGHT));
 		radius = new JLabel();
@@ -118,15 +115,12 @@ public class RadialGridPanel extends MapElementBasePanel {
 				grid.setCompassRose(compassRoseCheckBox.isSelected());
 			}
 		});
-
-		contents.add(new FieldPanel(compList));
 	}
 
 	@Override
 	public void setMapElement(MapElement mapElement) {
 		this.mapElement = mapElement;
 		grid = (RadialGrid) mapElement;
-		nameLabel.setText(grid.getName());
 		sizeText.setValue(grid.getSize());
 		lineWidthText.setValue(grid.getLineWidth());
 

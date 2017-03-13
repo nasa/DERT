@@ -34,10 +34,10 @@ import gov.nasa.arc.dert.view.world.WorldView;
 import gov.nasa.arc.dert.viewpoint.ViewpointNode;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Window;
@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
@@ -75,19 +74,13 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	private DefaultMutableTreeNode rootNode, landmarksNode, toolsNode, featureSetsNode;
 
 	// Buttons for actions applying to all map elements
-	private JButton showButton, deleteButton, seekButton, renameButton, addButton, editButton;
+	private JButton showButton, deleteButton, seekButton, renameButton, editButton;
 	private JButton findButton, hideButton, labelButton, unlabelButton, lockButton, unlockButton;
 	private JButton csvButton, groundButton, openButton;
 	private ColorSelectionPanel colorList;
 
 	// Controls
-//	private MapElementBasePanel currentPanel;
-	private JPanel emptyPanel;
-	private JPanel panelPane;
 	private AddElementPanel addElementPanel;
-	private NotesPanel notesPanel;
-	private CardLayout panelLayout;
-	private JSplitPane splitPane;
 
 	// Map elements
 	private MapElement[] currentMapElements;
@@ -109,8 +102,6 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		this.state = state;
 
 		setLayout(new BorderLayout());
-		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		add(splitPane, BorderLayout.CENTER);
 
 		// Map Elements list tree
 		loadTreeModel();
@@ -141,24 +132,16 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		JPanel tPanel = new JPanel(new BorderLayout());
 		tPanel.add(scrollPane, BorderLayout.CENTER);
 		
-		JPanel buttonPanel = new JPanel(new GridLayout(15, 1, 0, 0));
+		JPanel buttonPanel = new JPanel(new GridLayout(14, 1, 0, 0));
 		fillButtonPanel(buttonPanel);
-		tPanel.add(buttonPanel, BorderLayout.EAST);
-		splitPane.setTopComponent(tPanel);
+		JPanel panel = new JPanel(new FlowLayout());
+		panel.add(buttonPanel);
+		tPanel.add(panel, BorderLayout.EAST);
+		add(tPanel, BorderLayout.CENTER);
 		
-		// Pane for panels
-		panelLayout = new CardLayout();
-		panelPane = new JPanel(panelLayout);
-		splitPane.setBottomComponent(panelPane);
-		emptyPanel = new JPanel();
-		panelLayout.addLayoutComponent(emptyPanel, "Empty");
-		panelPane.add(emptyPanel, "Empty");
+		// Add buttons
 		addElementPanel = new AddElementPanel();
-		panelLayout.addLayoutComponent(addElementPanel, "Add");
-		panelPane.add(addElementPanel, "Add");
-		notesPanel = new NotesPanel(null, true);
-		panelLayout.addLayoutComponent(notesPanel, "Notes");
-		panelPane.add(notesPanel, "Notes");
+		add(addElementPanel, BorderLayout.SOUTH);
 
 		// Search function
 		JPanel sPanel = new JPanel(new BorderLayout(0, 0));
@@ -611,14 +594,13 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			currentMapElements = new MapElement[treeNode.getChildCount()];
 			for (int i=0; i<currentMapElements.length; ++i)
 				currentMapElements[i] = (MapElement)((DefaultMutableTreeNode)treeNode.getChildAt(i)).getUserObject();			
-			panelLayout.show(panelPane, "Empty");
+//			panelLayout.show(panelPane, "Empty");
 			state.setLastMapElement(null);
+//			currentPanel = emptyPanel;
 		}
 		else {
 			currentMapElements = new MapElement[] {(MapElement)treeNode.getUserObject()};
 			enableButtons(treeNode == featureSetsNode, treeNode == landmarksNode, currentMapElements[0]);
-			notesPanel.setMapElement(currentMapElements[0]);
-			panelLayout.show(panelPane, "Notes");
 			state.setLastMapElement(currentMapElements[0]);
 		}
 	}
@@ -643,14 +625,16 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		meList.toArray(currentMapElements);
 		enableButtons(hasFeature, false, null);
 		
-		panelLayout.show(panelPane, "Empty");
+//		panelLayout.show(panelPane, "Empty");
 		state.setLastMapElement(null);
+//		currentPanel = emptyPanel;
 	}
 	
 	private void enableButtons(boolean hasFeature, boolean allLandmark, MapElement currentMapElement) {
 		if (currentMapElements == null) {
 			editButton.setEnabled(false);
 			openButton.setEnabled(false);
+			colorList.setColor(Color.white);
 			colorList.setEnabled(false);
 			showButton.setEnabled(false);
 			hideButton.setEnabled(false);
@@ -667,6 +651,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		else if (currentMapElement == null) {
 			editButton.setEnabled(false);
 			openButton.setEnabled(false);
+			colorList.setColor(Color.white);
 			colorList.setEnabled(true);
 			showButton.setEnabled(true);
 			hideButton.setEnabled(true);
@@ -684,6 +669,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			editButton.setEnabled(true);
 			openButton.setEnabled((currentMapElements[0] instanceof ImageBoard) || (currentMapElements[0] instanceof FieldCamera) ||
 					(currentMapElements[0] instanceof Path) || (currentMapElements[0] instanceof Profile) || (currentMapElements[0] instanceof Plane));
+			colorList.setColor(currentMapElements[0].getColor());
 			colorList.setEnabled(!(currentMapElement instanceof ImageBoard));
 			showButton.setEnabled(!currentMapElement.isVisible());
 			hideButton.setEnabled(currentMapElement.isVisible());
@@ -723,18 +709,12 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			if (spatial instanceof MapElement) {
 				updateMapElement((MapElement) spatial);
 			}
-//			if ((currentPanel != null) && (spatial == currentMapElements[0])) {
-//				currentPanel.updateData((MapElement) spatial);
-//			}
+//			if ((currentPanel == notesPanel) && (spatial == currentMapElements[0]))
+//				notesPanel.update();
 			break;
 		case Transform:
-//			if (currentPanel != null) {
-//				if (spatial == currentMapElements[0]) {
-//					currentPanel.updateLocation((MapElement) spatial);
-//				} else if (spatial.getParent() == currentMapElements[0]) {
-//					currentPanel.updateLocation((MapElement) spatial.getParent());
-//				}
-//			}
+//			if (currentPanel == notesPanel)
+//				notesPanel.update();
 			break;
 		case Destroyed:
 			break;
@@ -748,17 +728,6 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	}
 	
 	private void fillButtonPanel(JPanel buttonPanel) {
-		// Add
-		addButton = new JButton("Add");
-		addButton.setToolTipText("add a map element");
-		addButton.setEnabled(true);
-		addButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				add();
-			}
-		});
-		buttonPanel.add(addButton);
 		
 		// edit
 		editButton = new JButton("Edit");
@@ -994,10 +963,6 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		});
 		buttonPanel.add(csvButton);		
 
-	}
-	
-	private void add() {
-		panelLayout.show(panelPane, "Add");
 	}
 	
 	private void edit() {

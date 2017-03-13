@@ -4,9 +4,7 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.ui.FieldPanel;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.ArrayList;
 
@@ -37,14 +35,12 @@ public class ImageBoardPanel extends MapElementBasePanel {
 		super();
 		icon = ImageBoard.icon;
 		type = "ImageBoard";
-		build(true, true);
+		build();
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc) {
-		super.build(addNotes, addLoc);
-		
-		ArrayList<Component> compList = new ArrayList<Component>();
+	protected void addFields(ArrayList<Component> compList) {
+		super.addFields(compList);
 
 		compList.add(new JLabel("File", SwingConstants.RIGHT));
 		imageText = new JTextField();
@@ -64,8 +60,6 @@ public class ImageBoardPanel extends MapElementBasePanel {
 			}
 		};
 		compList.add(sizeText);
-		
-		contents.add(new FieldPanel(compList), BorderLayout.CENTER);
 	}
 
 	@Override
@@ -73,7 +67,6 @@ public class ImageBoardPanel extends MapElementBasePanel {
 		this.mapElement = mapElement;
 		imageBoard = (ImageBoard) mapElement;
 		setLocation(locationText, imageBoard.getTranslation());
-		nameLabel.setText(imageBoard.getName());
 		sizeText.setValue(imageBoard.getSize());
 		imageText.setText(imageBoard.getImagePath());
 		noteText.setText(imageBoard.getState().getAnnotation());

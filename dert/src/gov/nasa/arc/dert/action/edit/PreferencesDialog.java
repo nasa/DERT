@@ -20,6 +20,7 @@ import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.ui.FieldPanel;
 import gov.nasa.arc.dert.ui.GroupPanel;
+import gov.nasa.arc.dert.ui.IconComboBox;
 import gov.nasa.arc.dert.util.ColorMap;
 
 import java.awt.BorderLayout;
@@ -101,7 +102,7 @@ public class PreferencesDialog extends AbstractDialog {
 		compList.add(checkBox);
 
 		compList.add(new JLabel("Icon", SwingConstants.RIGHT));
-		JComboBox comboBox = new JComboBox(Placemark.ICON_LABEL);
+		JComboBox comboBox = new IconComboBox(Placemark.ICON_LABEL, Placemark.icons);
 		comboBox.setSelectedIndex(Placemark.defaultTextureIndex);
 		comboBox.addActionListener(new ActionListener() {
 			@Override

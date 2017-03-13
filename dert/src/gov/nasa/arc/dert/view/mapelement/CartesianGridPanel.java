@@ -4,9 +4,7 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.CartesianGrid;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.ui.FieldPanel;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,14 +44,12 @@ public class CartesianGridPanel extends MapElementBasePanel {
 		super();
 		icon = CartesianGrid.icon;
 		type = "Cartesian Grid";
-		build(true, true);
+		build();
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc) {
-		super.build(addNotes, addLoc);
-		
-		ArrayList<Component> compList = new ArrayList<Component>();
+	protected void addFields(ArrayList<Component> compList) {
+		super.addFields(compList);
 		
 		compList.add(new JLabel("Dimensions", SwingConstants.RIGHT));
 		dimensions = new JLabel(" ");
@@ -118,16 +114,12 @@ public class CartesianGridPanel extends MapElementBasePanel {
 			}
 		});
 		compList.add(actualCoordButton);
-		
-		FieldPanel fieldPanel = new FieldPanel(compList);
-		contents.add(fieldPanel, BorderLayout.CENTER);
 	}
 
 	@Override
 	public void setMapElement(MapElement mapElement) {
 		this.mapElement = mapElement;
 		grid = (CartesianGrid) mapElement;
-		nameLabel.setText(grid.getName());
 		sizeText.setValue(grid.getSize());
 		lineWidthText.setValue(grid.getLineWidth());
 		setLocation(locationText, grid.getTranslation());

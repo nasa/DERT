@@ -13,21 +13,14 @@ import gov.nasa.arc.dert.state.PlacemarkState;
 import gov.nasa.arc.dert.state.PlaneState;
 import gov.nasa.arc.dert.state.ProfileState;
 import gov.nasa.arc.dert.state.ScaleBarState;
-import gov.nasa.arc.dert.ui.VerticalPanel;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dialog;
-import java.awt.FlowLayout;
-import java.awt.Insets;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
 
@@ -42,13 +35,8 @@ public class AddElementPanel extends JPanel {
 	 */
 	public AddElementPanel() {
 		super();
-		setLayout(new BorderLayout());
-		add(new JLabel("Add a Map Element"), BorderLayout.NORTH);
-		ArrayList<Component> compList = new ArrayList<Component>();
-
+		setLayout(new GridLayout(2, 6));
 		
-		compList.add(new JLabel("Landmarks"));
-		JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		JButton newButton = new JButton(Icons.getImageIcon("placemark.png"));
 		newButton.setToolTipText("Placemark");
 		newButton.addActionListener(new ActionListener() {
@@ -59,7 +47,7 @@ public class AddElementPanel extends JPanel {
 				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(pState, null);
 			}
 		});
-		buttonRow.add(newButton);
+		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("figure.png"));
 		newButton.setToolTipText("3D Figure");
@@ -72,7 +60,7 @@ public class AddElementPanel extends JPanel {
 				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(fState, null);
 			}
 		});
-		buttonRow.add(newButton);
+		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("billboard.png"));
 		newButton.setToolTipText("Image Billboard");
@@ -84,12 +72,8 @@ public class AddElementPanel extends JPanel {
 				dialog.open();
 			}
 		});
-		buttonRow.add(newButton);
-		
-		compList.add(buttonRow);
+		add(newButton);
 
-		compList.add(new JLabel("Tools"));
-		buttonRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		newButton = new JButton(Icons.getImageIcon("path.png"));
 		newButton.setToolTipText("Path");
 		newButton.addActionListener(new ActionListener() {
@@ -101,7 +85,7 @@ public class AddElementPanel extends JPanel {
 				Dert.getWorldView().getScenePanel().getInputHandler().setPath(path);
 			}
 		});
-		buttonRow.add(newButton);
+		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("plane.png"));
 		newButton.setToolTipText("Plane");
@@ -113,7 +97,7 @@ public class AddElementPanel extends JPanel {
 				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 			}
 		});
-		buttonRow.add(newButton);
+		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("cartesiangrid.png"));
 		newButton.setToolTipText("Cartesian Grid");
@@ -125,7 +109,7 @@ public class AddElementPanel extends JPanel {
 				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 			}
 		});
-		buttonRow.add(newButton);
+		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("radialgrid.png"));
 		newButton.setToolTipText("Radial Grid");
@@ -137,7 +121,7 @@ public class AddElementPanel extends JPanel {
 				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 			}
 		});
-		buttonRow.add(newButton);
+		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("fieldcamera.png"));
 		newButton.setToolTipText("Camera");
@@ -149,7 +133,7 @@ public class AddElementPanel extends JPanel {
 				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 			}
 		});
-		buttonRow.add(newButton);
+		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("profile.png"));
 		newButton.setToolTipText("Profile");
@@ -161,7 +145,7 @@ public class AddElementPanel extends JPanel {
 				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 			}
 		});
-		buttonRow.add(newButton);
+		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("scale.png"));
 		newButton.setToolTipText("Scale");
@@ -173,12 +157,8 @@ public class AddElementPanel extends JPanel {
 				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
 			}
 		});
-		buttonRow.add(newButton);
-		
-		compList.add(buttonRow);
+		add(newButton);
 
-		compList.add(new JLabel("Feature Sets"));
-		buttonRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		newButton = new JButton(Icons.getImageIcon("lineset.png"));
 		newButton.setToolTipText("FeatureSet");
 		newButton.addActionListener(new ActionListener() {
@@ -188,16 +168,6 @@ public class AddElementPanel extends JPanel {
 				dialog.open();
 			}
 		});
-		buttonRow.add(newButton);
-		
-		compList.add(buttonRow);
-
-		VerticalPanel vertPanel = new VerticalPanel(compList);
-		add(new JScrollPane(vertPanel), BorderLayout.CENTER);
-	}
-	
-	@Override
-	public Insets getInsets() {
-		return(new Insets(5, 5, 5, 5));
+		add(newButton);
 	}
 }

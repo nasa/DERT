@@ -8,9 +8,7 @@ import gov.nasa.arc.dert.scene.tool.Path.BodyType;
 import gov.nasa.arc.dert.scene.tool.Path.LabelType;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.ui.FieldPanel;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
@@ -50,14 +48,12 @@ public class PathPanel extends MapElementBasePanel {
 		super();
 		icon = Path.icon;
 		type = "Path";
-		build(true, true);
+		build();
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc) {
-		super.build(addNotes, addLoc);
-		
-		ArrayList<Component> compList = new ArrayList<Component>();
+	protected void addFields(ArrayList<Component> compList) {
+		super.addFields(compList);
 
 		compList.add(new JLabel("Type", SwingConstants.RIGHT));
 		typeCombo = new JComboBox(Path.BodyType.values());
@@ -137,8 +133,6 @@ public class PathPanel extends MapElementBasePanel {
 			}
 		});
 		compList.add(fly);
-		
-		contents.add(new FieldPanel(compList), BorderLayout.CENTER);
 	}
 
 	@Override
@@ -150,7 +144,6 @@ public class PathPanel extends MapElementBasePanel {
 			path = (Path) mapElement;
 			waypoint = null;
 			labelCombo.setSelectedItem(path.getLabelType());
-			nameLabel.setText(path.getName());
 			noteText.setText(path.getState().getAnnotation());
 			typeCombo.setSelectedItem(path.getBodyType());
 			showWaypoints.setSelected(path.areWaypointsVisible());
@@ -172,7 +165,6 @@ public class PathPanel extends MapElementBasePanel {
 			typeLabel.setIcon(Waypoint.icon);
 			waypoint = (Waypoint) mapElement;
 			path = waypoint.getPath();
-			nameLabel.setText(waypoint.getName());
 			setLocation(locationText, waypoint.getTranslation());
 			labelCombo.setSelectedItem(path.getLabelType());
 			noteText.setText(waypoint.getState().getAnnotation());

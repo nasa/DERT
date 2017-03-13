@@ -6,7 +6,6 @@ import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.tool.ScaleBar;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.ui.FieldPanel;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -45,14 +44,12 @@ public class ScaleBarPanel extends MapElementBasePanel {
 		super();
 		icon = Figure.icon;
 		type = "Figure";
-		build(true, true);
+		build();
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc) {
-		super.build(addNotes, addLoc);
-		
-		ArrayList<Component> compList = new ArrayList<Component>();
+	protected void addFields(ArrayList<Component> compList) {
+		super.addFields(compList);
 
 		compList.add(new JLabel("Dimensions", SwingConstants.RIGHT));
 		dimensions = new JLabel();
@@ -128,8 +125,6 @@ public class ScaleBarPanel extends MapElementBasePanel {
 		};
 		tiltSpinner.setToolTipText("rotate scale around horizontal axis");
 		compList.add(tiltSpinner);
-		
-		contents.add(new FieldPanel(compList));
 	}
 
 	private void setDimensions() {
@@ -144,7 +139,6 @@ public class ScaleBarPanel extends MapElementBasePanel {
 		this.mapElement = mapElement;
 		scale = (ScaleBar) mapElement;
 		setLocation(locationText, scale.getTranslation());
-		nameLabel.setText(scale.getLabel());
 		sizeText.setValue(scale.getSize());
 		radiusText.setValue(scale.getCellRadius());
 		autoLabelButton.setSelected(scale.isAutoLabel());
