@@ -1,8 +1,8 @@
 package gov.nasa.arc.dert.action.mapelement;
 
+import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.MenuItemAction;
-import gov.nasa.arc.dert.state.ConfigurationManager;
-import gov.nasa.arc.dert.state.ImageBoardState;
+import gov.nasa.arc.dert.view.mapelement.ImageBoardDialog;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -27,8 +27,8 @@ public class AddBillboardAction extends MenuItemAction {
 
 	@Override
 	protected void run() {
-		ImageBoardState iState = new ImageBoardState(position);
-		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(iState, null);
+		ImageBoardDialog dialog = new ImageBoardDialog(Dert.getMainWindow(), position);
+		dialog.open();
 	}
 
 }

@@ -7,18 +7,23 @@ import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.featureset.Feature;
 import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.scene.featureset.FeatureSets;
+import gov.nasa.arc.dert.scene.landmark.ImageBoard;
 import gov.nasa.arc.dert.scene.landmark.Landmark;
 import gov.nasa.arc.dert.scene.landmark.Landmarks;
 import gov.nasa.arc.dert.scene.tool.Path;
+import gov.nasa.arc.dert.scene.tool.Plane;
+import gov.nasa.arc.dert.scene.tool.Profile;
 import gov.nasa.arc.dert.scene.tool.Tool;
 import gov.nasa.arc.dert.scene.tool.Tools;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
+import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementsState;
-import gov.nasa.arc.dert.ui.GBCHelper;
+import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.OptionDialog;
-import gov.nasa.arc.dert.view.world.DeleteEdit;
+import gov.nasa.arc.dert.util.FileHelper;
 import gov.nasa.arc.dert.view.world.DeleteEditMulti;
+import gov.nasa.arc.dert.view.world.GroundEdit;
 import gov.nasa.arc.dert.view.world.HideEdit;
 import gov.nasa.arc.dert.view.world.HideEditMulti;
 import gov.nasa.arc.dert.view.world.SeekEdit;
@@ -30,18 +35,17 @@ import gov.nasa.arc.dert.viewpoint.ViewpointNode;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -71,35 +75,21 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	private DefaultMutableTreeNode rootNode, landmarksNode, toolsNode, featureSetsNode;
 
 	// Buttons for actions applying to all map elements
-	private JButton showButton, deleteButton, seekButton, renameButton, findButton;
-
-	// MapElement panels
-	private PlacemarkPanel placemarkPanel;
-	private FigurePanel figurePanel;
-	private ImageBoardPanel imageBoardPanel;
-	private FeatureSetPanel featureSetPanel;
-	private PathPanel pathPanel;
-	private PlanePanel planePanel;
-	private CartesianGridPanel cartesianGridPanel;
-	private RadialGridPanel radialGridPanel;
-	private FieldCameraPanel fieldCameraPanel;
-	private ProfilePanel profilePanel;
-	private ScaleBarPanel scalePanel;
-
-	// MapElement category panels
-	private LandmarksPanel landmarksPanel;
-	private ToolsPanel toolsPanel;
-	private FeatureSetsPanel featureSetsPanel;
+	private JButton showButton, deleteButton, seekButton, renameButton, addButton, editButton;
+	private JButton findButton, hideButton, labelButton, unlabelButton, lockButton, unlockButton;
+	private JButton csvButton, groundButton, openButton;
+	private ColorSelectionPanel colorList;
 
 	// Controls
-	private MapElementBasePanel currentPanel;
+//	private MapElementBasePanel currentPanel;
 	private JPanel emptyPanel;
 	private JPanel panelPane;
+	private AddElementPanel addElementPanel;
+	private NotesPanel notesPanel;
 	private CardLayout panelLayout;
 	private JSplitPane splitPane;
 
 	// Map elements
-	private MapElement currentMapElement;
 	private MapElement[] currentMapElements;
 	private MapElementsState state;
 
@@ -117,10 +107,9 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	public MapElementsPanel(MapElementsState state) {
 		super();
 		this.state = state;
-		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		setLayout(new BorderLayout());
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		add(splitPane, BorderLayout.CENTER);
 
 		// Map Elements list tree
@@ -149,21 +138,33 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		});
 		JScrollPane scrollPane = new JScrollPane(tree);
 		scrollPane.setMinimumSize(new Dimension(128, 128));
-		splitPane.setLeftComponent(scrollPane);
+		JPanel tPanel = new JPanel(new BorderLayout());
+		tPanel.add(scrollPane, BorderLayout.CENTER);
+		
+		JPanel buttonPanel = new JPanel(new GridLayout(15, 1, 0, 0));
+		fillButtonPanel(buttonPanel);
+		tPanel.add(buttonPanel, BorderLayout.EAST);
+		splitPane.setTopComponent(tPanel);
 		
 		// Pane for panels
 		panelLayout = new CardLayout();
 		panelPane = new JPanel(panelLayout);
-		splitPane.setRightComponent(panelPane);
+		splitPane.setBottomComponent(panelPane);
 		emptyPanel = new JPanel();
 		panelLayout.addLayoutComponent(emptyPanel, "Empty");
+		panelPane.add(emptyPanel, "Empty");
+		addElementPanel = new AddElementPanel();
+		panelLayout.addLayoutComponent(addElementPanel, "Add");
+		panelPane.add(addElementPanel, "Add");
+		notesPanel = new NotesPanel(null, true);
+		panelLayout.addLayoutComponent(notesPanel, "Notes");
+		panelPane.add(notesPanel, "Notes");
 
-		// Common functions
-		JPanel buttonBar = new JPanel(new GridBagLayout());
+		// Search function
+		JPanel sPanel = new JPanel(new BorderLayout(0, 0));
 		searchText = new JTextField();
 		searchText.setToolTipText("enter text for search");
-		buttonBar.add(searchText,
-			GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
+		sPanel.add(searchText, BorderLayout.CENTER);
 		findButton = new JButton("Find");
 		findButton.setToolTipText("press to search map element list");
 		ActionListener actionListener = new ActionListener() {
@@ -187,107 +188,17 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		};
 		findButton.addActionListener(actionListener);
 		searchText.addActionListener(actionListener);
-		buttonBar.add(findButton,
-			GBCHelper.getGBC(1, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
-		buttonBar.add(new JLabel("    "),
-			GBCHelper.getGBC(2, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
-		showButton = new JButton("Hide");
-		showButton.setToolTipText("hide/show selected map element");
-		showButton.setEnabled(false);
-		showButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				JButton button = (JButton) event.getSource();
-				if (button.getText().equals("Hide")) {
-					if (currentMapElement != null) {
-						Dert.getMainWindow().getUndoHandler().addEdit(new HideEdit(currentMapElement));
-					} else if (currentMapElements != null) {
-						Dert.getMainWindow().getUndoHandler().addEdit(new HideEditMulti(currentMapElements));
-					}
-					showButton.setText("Show");
-				} else {
-					if (currentMapElement != null) {
-						Dert.getMainWindow().getUndoHandler().addEdit(new ShowEdit(currentMapElement));
-					} else if (currentMapElements != null) {
-						Dert.getMainWindow().getUndoHandler().addEdit(new ShowEditMulti(currentMapElements));
-					}
-					showButton.setText("Hide");
-				}
-			}
-		});
-		buttonBar.add(showButton,
-			GBCHelper.getGBC(3, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
-		deleteButton = new JButton("Delete");
-		deleteButton.setToolTipText("remove selected map element");
-		deleteButton.setEnabled(false);
-		deleteButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				String nameStr = "";
-				if (currentMapElement != null) {
-					nameStr = currentMapElement.getName();
-				} else if (currentMapElements != null) {
-					nameStr = currentMapElements[0].getName() + "...";
-				}
-				boolean yes = OptionDialog.showDeleteConfirmDialog((Window)MapElementsPanel.this.getTopLevelAncestor(), "Delete " + nameStr + "?");
-				if (yes) {
-					if (currentMapElement != null) {
-						MapElementState state = currentMapElement.getState();
-						Dert.getMainWindow().getUndoHandler().addEdit(new DeleteEdit(state));
-						currentMapElement = null;
-					} else if (currentMapElements != null) {
-						MapElementState[] state = new MapElementState[currentMapElements.length];
-						for (int i = 0; i < currentMapElements.length; ++i) {
-							state[i] = currentMapElements[i].getState();
-						}
-						Dert.getMainWindow().getUndoHandler().addEdit(new DeleteEditMulti(state));
-						currentMapElements = null;
-					}
-				}
-			}
-		});
-		deleteButton.setEnabled(false);
-		buttonBar.add(deleteButton,
-			GBCHelper.getGBC(4, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
-		seekButton = new JButton("Seek");
-		seekButton.setToolTipText("move viewpoint close to selected map element");
-		seekButton.setEnabled(false);
-		seekButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				WorldView wv = Dert.getWorldView();
-				ViewpointNode cameraControl = ((WorldScene) wv.getScenePanel().getScene()).getViewpointNode();
-				cameraControl.seek(currentMapElement);
-				Dert.getMainWindow().getUndoHandler().addEdit(new SeekEdit(currentMapElement));
-			}
-		});
-		buttonBar.add(seekButton,
-			GBCHelper.getGBC(5, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
-		renameButton = new JButton("Rename");
-		renameButton.setToolTipText("rename selected map element");
-		renameButton.setEnabled(false);
-		renameButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				String nameStr = NameDialog.getName((Dialog)getTopLevelAncestor(), currentMapElement.getName());
-				if (nameStr == null) {
-					return;
-				}
-				if (currentMapElement instanceof Waypoint) {
-					currentMapElement.getState().setAnnotation(nameStr);
-				} else {
-					currentMapElement.setName(nameStr);
-				}
-			}
-		});
-		buttonBar.add(renameButton,
-			GBCHelper.getGBC(6, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 0, 0));
-		add(buttonBar, BorderLayout.NORTH);
+		sPanel.add(findButton, BorderLayout.EAST);
+		add(sPanel, BorderLayout.NORTH);
 		SceneGraphManager.getSceneGraphManager().addDirtyEventListener(this);
 		tree.expandPath(new TreePath(new Object[] { rootNode, landmarksNode }));
 		tree.expandPath(new TreePath(new Object[] { rootNode, toolsNode }));
 		tree.expandPath(new TreePath(new Object[] { rootNode, featureSetsNode }));
 		selectMapElement(state.getLastMapElement());
+	}
+	
+	public Insets getInsets() {
+		return(new Insets(5, 5, 5, 5));
 	}
 
 	private void addMapElement(MapElement mapElement) {
@@ -562,11 +473,11 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		if (treeNode != null) {
 			treeModel.nodeChanged(treeNode);
 			if (treeNode == selectedNode) {
-				if (mapElement.isVisible()) {
-					showButton.setText("Hide");
-				} else {
-					showButton.setText("Show");
-				}
+//				if (mapElement.isVisible()) {
+//					showButton.setText("Hide");
+//				} else {
+//					showButton.setText("Show");
+//				}
 			}
 		}
 	}
@@ -695,247 +606,98 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	}
 
 	private void doSelection(DefaultMutableTreeNode treeNode) {
-		currentMapElement = null;
 		currentMapElements = null;
-		if (treeNode == landmarksNode) {
-			showButton.setEnabled(false);
-			deleteButton.setEnabled(false);
-			seekButton.setEnabled(false);
-			renameButton.setEnabled(false);
-			tree.clearSelection();
-			if (landmarksPanel == null) {
-				landmarksPanel = new LandmarksPanel() {
-					@Override
-					public void newMapElement(MapElementState.Type type, MapElement mapElement) {
-						setPanel(type, mapElement);
-					}
-
-					@Override
-					public void setAllVisible(boolean visible) {
-						Landmarks landmarks = World.getInstance().getLandmarks();
-						landmarks.setAllVisible(visible);
-						treeModel.nodeChanged(rootNode);
-					}
-				};
-				landmarksPanel.setMinimumSize(new Dimension(100, 100));
-				panelPane.add(landmarksPanel, "Landmarks");
-			}
-			panelLayout.show(panelPane, "Landmarks");
-		} else if (treeNode == toolsNode) {
-			showButton.setEnabled(false);
-			deleteButton.setEnabled(false);
-			seekButton.setEnabled(false);
-			renameButton.setEnabled(false);
-			tree.clearSelection();
-			if (toolsPanel == null) {
-				toolsPanel = new ToolsPanel() {
-					@Override
-					public void newMapElement(MapElementState.Type type, MapElement mapElement) {
-						setPanel(type, mapElement);
-					}
-
-					@Override
-					public void setAllVisible(boolean visible) {
-						Tools tools = World.getInstance().getTools();
-						tools.setAllVisible(visible);
-						treeModel.nodeChanged(rootNode);
-					}
-				};
-				toolsPanel.setMinimumSize(new Dimension(100, 100));
-				panelPane.add(toolsPanel, "Tools");
-			}
-			panelLayout.show(panelPane, "Tools");
-		} else if (treeNode == featureSetsNode) {
-			showButton.setEnabled(false);
-			deleteButton.setEnabled(false);
-			seekButton.setEnabled(false);
-			renameButton.setEnabled(false);
-			tree.clearSelection();
-			if (featureSetsPanel == null) {
-				featureSetsPanel = new FeatureSetsPanel() {
-					@Override
-					public void addFeatureSet(MapElementState.Type type) {
-						FeatureSetDialog dialog = new FeatureSetDialog((Dialog)getTopLevelAncestor());
-						if (dialog.open())
-							setPanel(type, null);
-					}
-
-					@Override
-					public void setAllVisible(boolean visible) {
-						FeatureSets groups = World.getInstance().getFeatureSets();
-						groups.setAllVisible(visible);
-						treeModel.nodeChanged(rootNode);
-					}
-				};
-				featureSetsPanel.setMinimumSize(new Dimension(100, 100));
-				panelPane.add(featureSetsPanel, "FeatureSets");
-			}
-			panelLayout.show(panelPane, "FeatureSets");
-		} else {
-			currentMapElement = (MapElement) treeNode.getUserObject();
-			showButton.setEnabled(true);
-			if (currentMapElement.isVisible()) {
-				showButton.setText("Hide");
-			} else {
-				showButton.setText("Show");
-			}
-			if (currentMapElement instanceof Feature)
-				deleteButton.setEnabled(false);
-			else
-				deleteButton.setEnabled(true);
-			seekButton.setEnabled(true);
-			if ((currentMapElement instanceof Feature) || (currentMapElement instanceof Waypoint)) {
-				renameButton.setEnabled(false);
-			} else {
-				renameButton.setEnabled(true);
-			}
-			setPanel(currentMapElement.getType(), currentMapElement);
+		if ((treeNode == landmarksNode) || (treeNode == toolsNode) || (treeNode == featureSetsNode)) {
+			currentMapElements = new MapElement[treeNode.getChildCount()];
+			for (int i=0; i<currentMapElements.length; ++i)
+				currentMapElements[i] = (MapElement)((DefaultMutableTreeNode)treeNode.getChildAt(i)).getUserObject();			
+			panelLayout.show(panelPane, "Empty");
+			state.setLastMapElement(null);
 		}
-		state.setLastMapElement(currentMapElement);
+		else {
+			currentMapElements = new MapElement[] {(MapElement)treeNode.getUserObject()};
+			enableButtons(treeNode == featureSetsNode, treeNode == landmarksNode, currentMapElements[0]);
+			notesPanel.setMapElement(currentMapElements[0]);
+			panelLayout.show(panelPane, "Notes");
+			state.setLastMapElement(currentMapElements[0]);
+		}
 	}
 
 	private void doSelection(DefaultMutableTreeNode[] treeNode) {
-		currentMapElement = null;
+		ArrayList<MapElement> meList = new ArrayList<MapElement>();
 		currentMapElements = null;
+		boolean hasFeature = false;
 		for (int i = 0; i < treeNode.length; ++i) {
 			if ((treeNode[i] == landmarksNode) || (treeNode[i] == toolsNode) || (treeNode[i] == featureSetsNode)) {
-				showButton.setEnabled(false);
-				deleteButton.setEnabled(false);
-				seekButton.setEnabled(false);
-				renameButton.setEnabled(false);
-				return;
+				hasFeature |= (treeNode[i] == featureSetsNode);
+				for (int j=0; j<treeNode[i].getChildCount(); ++j)
+					meList.add((MapElement)((DefaultMutableTreeNode)treeNode[i].getChildAt(i)).getUserObject());
 			}
-			for (int j = i + 1; j < treeNode.length; ++j) {
-				if (treeNode[i].isNodeChild(treeNode[j])) {
-					showButton.setEnabled(false);
-					deleteButton.setEnabled(false);
-					seekButton.setEnabled(false);
-					renameButton.setEnabled(false);
-					return;
-				}
+			else {
+				MapElement me = (MapElement)((DefaultMutableTreeNode)treeNode[i]).getUserObject();
+				hasFeature |= (me instanceof Feature) || (me instanceof FeatureSet);
+				meList.add(me);
 			}
 		}
-		currentMapElements = new MapElement[treeNode.length];
-		for (int i = 0; i < treeNode.length; ++i) {
-			currentMapElements[i] = (MapElement) treeNode[i].getUserObject();
-		}
-		showButton.setEnabled(true);
-		if (currentMapElements[0].isVisible()) {
-			showButton.setText("Hide");
-		} else {
-			showButton.setText("Show");
-		}
-		deleteButton.setEnabled(true);
-		seekButton.setEnabled(false);
-		renameButton.setEnabled(false);
-		currentPanel = null;
-	}
-
-	private void setPanel(MapElementState.Type type, MapElement mapElement) {
-		currentPanel = null;
-		String card = type.toString();
-		switch (type) {
-		case Placemark:
-			if (placemarkPanel == null) {
-				placemarkPanel = new PlacemarkPanel(this);
-				placemarkPanel.setMinimumSize(new Dimension(100,100));
-				panelPane.add(placemarkPanel, "Placemark");
-			}
-			currentPanel = placemarkPanel;
-			break;
-		case Figure:
-			if (figurePanel == null) {
-				figurePanel = new FigurePanel(this);
-				figurePanel.setMinimumSize(new Dimension(100,100));
-				panelPane.add(figurePanel, "Figure");
-			}
-			currentPanel = figurePanel;
-			break;
-		case Billboard:
-			if (imageBoardPanel == null) {
-				imageBoardPanel = new ImageBoardPanel(this);
-				imageBoardPanel.setMinimumSize(new Dimension(100,100));
-				panelPane.add(imageBoardPanel, "Billboard");
-			}
-			currentPanel = imageBoardPanel;
-			break;
-		case Feature:
-			card = "FeatureSet";
-		case FeatureSet:
-			if (featureSetPanel == null) {
-				featureSetPanel = new FeatureSetPanel(this);
-				featureSetPanel.setMinimumSize(new Dimension(100,100));
-				panelPane.add(featureSetPanel, "FeatureSet");
-			}
-			currentPanel = featureSetPanel;
-			break;
-		case Waypoint:
-			card = "Path";
-		case Path:
-			if (pathPanel == null) {
-				pathPanel = new PathPanel(this);
-				pathPanel.setMinimumSize(new Dimension(100,100));
-				panelPane.add(pathPanel, "Path");
-			}
-			currentPanel = pathPanel;
-			break;
-		case Plane:
-			if (planePanel == null) {
-				planePanel = new PlanePanel(this);
-				planePanel.setMinimumSize(new Dimension(100,100));
-				panelPane.add(planePanel, "Plane");
-			}
-			currentPanel = planePanel;
-			break;
-		case RadialGrid:
-			if (radialGridPanel == null) {
-				radialGridPanel = new RadialGridPanel(this);
-				radialGridPanel.setMinimumSize(new Dimension(100,100));
-				panelPane.add(radialGridPanel, "RadialGrid");
-			}
-			currentPanel = radialGridPanel;
-			break;
-		case CartesianGrid:
-			if (cartesianGridPanel == null) {
-				cartesianGridPanel = new CartesianGridPanel(this);
-				cartesianGridPanel.setMinimumSize(new Dimension(100,100));
-				panelPane.add(cartesianGridPanel, "CartesianGrid");
-			}
-			currentPanel = cartesianGridPanel;
-			break;
-		case FieldCamera:
-			if (fieldCameraPanel == null) {
-				fieldCameraPanel = new FieldCameraPanel(this);
-				fieldCameraPanel.setMinimumSize(new Dimension(100,100));
-				panelPane.add(fieldCameraPanel, "FieldCamera");
-			}
-			currentPanel = fieldCameraPanel;
-			break;
-		case Profile:
-			if (profilePanel == null) {
-				profilePanel = new ProfilePanel(this);
-				profilePanel.setMinimumSize(new Dimension(100,100));
-				panelPane.add(profilePanel, "Profile");
-			}
-			currentPanel = profilePanel;
-			break;
-		case Scale:
-			if (scalePanel == null) {
-				scalePanel = new ScaleBarPanel(this);
-				scalePanel.setMinimumSize(new Dimension(100,100));
-				panelPane.add(scalePanel, "Scale");
-			}
-			currentPanel = scalePanel;
-			break;
-		default:
-			break;
-		}
+		currentMapElements = new MapElement[meList.size()];
+		meList.toArray(currentMapElements);
+		enableButtons(hasFeature, false, null);
 		
-		if (currentPanel == null)
-			throw new IllegalStateException("No map element panel selected.");
-		currentPanel.setMapElement(mapElement);
-		panelLayout.show(panelPane, card);
-		state.setLastMapElement(mapElement);
+		panelLayout.show(panelPane, "Empty");
+		state.setLastMapElement(null);
+	}
+	
+	private void enableButtons(boolean hasFeature, boolean allLandmark, MapElement currentMapElement) {
+		if (currentMapElements == null) {
+			editButton.setEnabled(false);
+			openButton.setEnabled(false);
+			colorList.setEnabled(false);
+			showButton.setEnabled(false);
+			hideButton.setEnabled(false);
+			lockButton.setEnabled(false);
+			unlockButton.setEnabled(false);
+			labelButton.setEnabled(false);
+			unlabelButton.setEnabled(false);
+			deleteButton.setEnabled(false);
+			groundButton.setEnabled(false);
+			seekButton.setEnabled(false);
+			renameButton.setEnabled(false);
+			csvButton.setEnabled(false);
+		}
+		else if (currentMapElement == null) {
+			editButton.setEnabled(false);
+			openButton.setEnabled(false);
+			colorList.setEnabled(true);
+			showButton.setEnabled(true);
+			hideButton.setEnabled(true);
+			lockButton.setEnabled(!hasFeature);
+			unlockButton.setEnabled(!hasFeature);
+			labelButton.setEnabled(true);
+			unlabelButton.setEnabled(true);
+			deleteButton.setEnabled(true);
+			groundButton.setEnabled(!hasFeature);
+			seekButton.setEnabled(false);
+			renameButton.setEnabled(false);
+			csvButton.setEnabled(allLandmark);
+		}
+		else {
+			editButton.setEnabled(true);
+			openButton.setEnabled((currentMapElements[0] instanceof ImageBoard) || (currentMapElements[0] instanceof FieldCamera) ||
+					(currentMapElements[0] instanceof Path) || (currentMapElements[0] instanceof Profile) || (currentMapElements[0] instanceof Plane));
+			colorList.setEnabled(!(currentMapElement instanceof ImageBoard));
+			showButton.setEnabled(!currentMapElement.isVisible());
+			hideButton.setEnabled(currentMapElement.isVisible());
+			lockButton.setEnabled(!currentMapElement.isPinned() && !(currentMapElements[0] instanceof FeatureSet));
+			unlockButton.setEnabled(currentMapElement.isPinned() && !(currentMapElements[0] instanceof FeatureSet));
+			labelButton.setEnabled(!currentMapElement.isLabelVisible());
+			unlabelButton.setEnabled(currentMapElement.isLabelVisible());
+			deleteButton.setEnabled(!(currentMapElement instanceof Feature));
+			groundButton.setEnabled(!(currentMapElement instanceof Feature) && !(currentMapElements[0] instanceof FeatureSet));
+			seekButton.setEnabled(true);
+			renameButton.setEnabled(!(currentMapElement instanceof Feature) && !(currentMapElement instanceof Waypoint));
+			csvButton.setEnabled(currentMapElement instanceof Path);
+		}
+
 	}
 
 	/**
@@ -961,18 +723,18 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			if (spatial instanceof MapElement) {
 				updateMapElement((MapElement) spatial);
 			}
-			if (spatial == currentMapElement) {
-				currentPanel.updateData((MapElement) spatial);
-			}
+//			if ((currentPanel != null) && (spatial == currentMapElements[0])) {
+//				currentPanel.updateData((MapElement) spatial);
+//			}
 			break;
 		case Transform:
-			if (currentPanel != null) {
-				if (spatial == currentMapElement) {
-					currentPanel.updateLocation((MapElement) spatial);
-				} else if (spatial.getParent() == currentMapElement) {
-					currentPanel.updateLocation((MapElement) spatial.getParent());
-				}
-			}
+//			if (currentPanel != null) {
+//				if (spatial == currentMapElements[0]) {
+//					currentPanel.updateLocation((MapElement) spatial);
+//				} else if (spatial.getParent() == currentMapElements[0]) {
+//					currentPanel.updateLocation((MapElement) spatial.getParent());
+//				}
+//			}
 			break;
 		case Destroyed:
 			break;
@@ -985,40 +747,265 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		return (false);
 	}
 	
-	public void dispose() {
-		if (placemarkPanel != null) {
-			placemarkPanel.dispose();
-		}
-		if (figurePanel != null) {
-			figurePanel.dispose();
-		}
-		if (imageBoardPanel != null) {
-			imageBoardPanel.dispose();
-		}
-		if (featureSetPanel != null) {
-			featureSetPanel.dispose();
-		}
-		if (pathPanel != null) {
-			pathPanel.dispose();
-		}
-		if (planePanel != null) {
-			planePanel.dispose();
-		}
-		if (radialGridPanel != null) {
-			radialGridPanel.dispose();
-		}
-		if (cartesianGridPanel != null) {
-			cartesianGridPanel.dispose();
-		}
-		if (fieldCameraPanel != null) {
-			fieldCameraPanel.dispose();
-		}
-		if (profilePanel != null) {
-			profilePanel.dispose();
-		}
-		if (scalePanel != null) {
-			scalePanel.dispose();
-		}
+	private void fillButtonPanel(JPanel buttonPanel) {
+		// Add
+		addButton = new JButton("Add");
+		addButton.setToolTipText("add a map element");
+		addButton.setEnabled(true);
+		addButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				add();
+			}
+		});
+		buttonPanel.add(addButton);
 		
+		// edit
+		editButton = new JButton("Edit");
+		editButton.setToolTipText("edit the selected map element");
+		editButton.setEnabled(false);
+		editButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				edit();
+			}
+		});
+		buttonPanel.add(editButton);
+		
+		// open
+		openButton = new JButton("Open");
+		openButton.setToolTipText("edit the selected map element");
+		openButton.setEnabled(false);
+		openButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				open();
+			}
+		});
+		buttonPanel.add(openButton);
+		
+		// Delete
+		deleteButton = new JButton("Delete");
+		deleteButton.setToolTipText("remove selected map element");
+		deleteButton.setEnabled(false);
+		deleteButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				String nameStr = currentMapElements[0].getName();
+				if (currentMapElements.length > 1)
+					nameStr += "...";
+				boolean yes = OptionDialog.showDeleteConfirmDialog((Window)MapElementsPanel.this.getTopLevelAncestor(), "Delete " + nameStr + "?");
+				if (yes) {
+					MapElementState[] state = new MapElementState[currentMapElements.length];
+					for (int i = 0; i < currentMapElements.length; ++i) {
+						state[i] = currentMapElements[i].getState();
+					}
+					Dert.getMainWindow().getUndoHandler().addEdit(new DeleteEditMulti(state));
+					currentMapElements = null;
+					enableButtons(false, false, null);
+				}
+			}
+		});
+		buttonPanel.add(deleteButton);
+		
+		colorList = new ColorSelectionPanel(Path.defaultColor) {
+			@Override
+			public void doColor(Color color) {
+				for (int i=0; i<currentMapElements.length; ++i)
+					currentMapElements[i].setColor(color);
+			}
+		};
+		colorList.setToolTipText("set color of selected map element");
+		colorList.setEnabled(false);
+		buttonPanel.add(colorList);
+		
+		// Show
+		showButton = new JButton("Show");
+		showButton.setToolTipText("show selected map element");
+		showButton.setEnabled(false);
+		showButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				if (currentMapElements.length == 1)
+					Dert.getMainWindow().getUndoHandler().addEdit(new ShowEdit(currentMapElements[0]));
+				else
+					Dert.getMainWindow().getUndoHandler().addEdit(new ShowEditMulti(currentMapElements));
+				showButton.setEnabled(false);
+				hideButton.setEnabled(true);
+			}
+		});
+		buttonPanel.add(showButton);
+		
+		// Hide
+		hideButton = new JButton("Hide");
+		hideButton.setToolTipText("hide selected map element");
+		hideButton.setEnabled(false);
+		hideButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				if (currentMapElements.length == 1)
+					Dert.getMainWindow().getUndoHandler().addEdit(new HideEdit(currentMapElements[0]));
+				else
+					Dert.getMainWindow().getUndoHandler().addEdit(new HideEditMulti(currentMapElements));
+				hideButton.setEnabled(false);
+				showButton.setEnabled(true);
+			}
+		});
+		buttonPanel.add(hideButton);
+		
+		// Lock
+		lockButton = new JButton("Lock");
+		lockButton.setToolTipText("lock selected map element");
+		lockButton.setEnabled(false);
+		lockButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				for (int i=0; i<currentMapElements.length; ++i)
+					currentMapElements[i].setPinned(true);
+				lockButton.setEnabled(false);
+				unlockButton.setEnabled(true);
+			}
+		});
+		buttonPanel.add(lockButton);
+		
+		// Unlock
+		unlockButton = new JButton("Unlock");
+		unlockButton.setToolTipText("unlock selected map element");
+		unlockButton.setEnabled(false);
+		unlockButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				for (int i=0; i<currentMapElements.length; ++i)
+					currentMapElements[i].setPinned(false);
+				unlockButton.setEnabled(false);
+				lockButton.setEnabled(true);
+			}
+		});
+		buttonPanel.add(unlockButton);
+		
+		// Label
+		labelButton = new JButton("Label");
+		labelButton.setToolTipText("show label for selected map element");
+		labelButton.setEnabled(false);
+		labelButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				for (int i=0; i<currentMapElements.length; ++i) {
+					currentMapElements[i].setLabelVisible(true);
+					((Spatial) currentMapElements[i]).markDirty(DirtyType.RenderState);
+				}
+				labelButton.setEnabled(false);
+				unlabelButton.setEnabled(true);
+			}
+		});
+		buttonPanel.add(labelButton);
+		
+		// Unlabel
+		unlabelButton = new JButton("No Label");
+		unlabelButton.setToolTipText("hide label for selected map element");
+		unlabelButton.setEnabled(false);
+		unlabelButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				for (int i=0; i<currentMapElements.length; ++i) {
+					currentMapElements[i].setLabelVisible(false);
+					((Spatial) currentMapElements[i]).markDirty(DirtyType.RenderState);
+				}
+				unlabelButton.setEnabled(false);
+				labelButton.setEnabled(true);
+			}
+		});
+		buttonPanel.add(unlabelButton);
+		
+		// Seek
+		seekButton = new JButton("Seek");
+		seekButton.setToolTipText("move viewpoint close to selected map element");
+		seekButton.setEnabled(false);
+		seekButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				WorldView wv = Dert.getWorldView();
+				ViewpointNode cameraControl = ((WorldScene) wv.getScenePanel().getScene()).getViewpointNode();
+				cameraControl.seek(currentMapElements[0]);
+				Dert.getMainWindow().getUndoHandler().addEdit(new SeekEdit(currentMapElements[0]));
+			}
+		});
+		buttonPanel.add(seekButton);
+		
+		// Rename
+		renameButton = new JButton("Rename");
+		renameButton.setToolTipText("rename selected map element");
+		renameButton.setEnabled(false);
+		renameButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				String nameStr = NameDialog.getName((Dialog)getTopLevelAncestor(), currentMapElements[0].getName());
+				if (nameStr == null) {
+					return;
+				}
+				if (currentMapElements[0] instanceof Waypoint) {
+					currentMapElements[0].getState().setAnnotation(nameStr);
+				} else {
+					currentMapElements[0].setName(nameStr);
+				}
+			}
+		});
+		buttonPanel.add(renameButton);
+
+		// Ground
+		groundButton = new JButton("Ground");
+		groundButton.setToolTipText("put map element on terrain surface");
+		groundButton.setEnabled(false);
+		groundButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				if (currentMapElements.length == 1)
+					Dert.getMainWindow().getUndoHandler().addEdit(currentMapElements[0].ground());
+				else {
+					GroundEdit[] ge = new GroundEdit[currentMapElements.length];
+					for (int i=0; i<currentMapElements.length; ++i)
+						ge[i] = currentMapElements[i].ground();
+					Dert.getMainWindow().getUndoHandler().addEdit(new GroundEdit(ge));
+				}
+			}
+		});
+		buttonPanel.add(groundButton);
+		
+		// CSV
+		csvButton = new JButton("To CSV");
+		csvButton.setEnabled(false);
+		csvButton.setToolTipText("save coordinates to a CSV formatted file");
+		csvButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				String fileName = FileHelper.getCSVFile();
+				if (fileName == null) {
+					return;
+				}
+				if (currentMapElements[0] instanceof Path) {
+					((Path)currentMapElements[0]).saveAsCsv(fileName);
+				}
+				else if (currentMapElements[0] instanceof Profile) {
+					((Profile)currentMapElements[0]).saveAsCsv(fileName);
+				}
+				else
+					World.getInstance().getLandmarks().saveAsCsv(fileName);
+			}
+		});
+		buttonPanel.add(csvButton);		
+
+	}
+	
+	private void add() {
+		panelLayout.show(panelPane, "Add");
+	}
+	
+	private void edit() {
+		currentMapElements[0].getState().openEditor();
+	}
+	
+	private void open() {
+		currentMapElements[0].getState().getViewData().setVisible(true);
+		currentMapElements[0].getState().open();
 	}
 }

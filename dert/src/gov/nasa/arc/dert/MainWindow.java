@@ -5,6 +5,7 @@ import gov.nasa.arc.dert.action.MenuItemAction;
 import gov.nasa.arc.dert.action.PopupMenuAction;
 import gov.nasa.arc.dert.action.edit.BackgroundColorDialog;
 import gov.nasa.arc.dert.action.edit.CoordAction;
+import gov.nasa.arc.dert.action.edit.PreferencesDialog;
 import gov.nasa.arc.dert.action.edit.StereoDialog;
 import gov.nasa.arc.dert.action.file.AboutAction;
 import gov.nasa.arc.dert.action.file.DeleteConfigAction;
@@ -473,6 +474,15 @@ public class MainWindow extends JFrame {
 		});
 		toolHiddenDashedAction.setState(World.getInstance().isHiddenDashed());
 		menu.add(toolHiddenDashedAction);
+
+		MenuItemAction prefAction = new MenuItemAction("Edit Map Element Preferences") {
+			@Override
+			protected void run() {
+				PreferencesDialog dialog = new PreferencesDialog();
+				dialog.open();
+			}
+		};
+		menu.add(prefAction);
 
 		MenuItemAction canvasSizeAction = new MenuItemAction("Set WorldView Canvas Dimensions") {
 			@Override

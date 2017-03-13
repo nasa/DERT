@@ -4,26 +4,16 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.ui.OptionDialog;
-import gov.nasa.arc.dert.util.FileHelper;
-import gov.nasa.arc.dert.util.StringUtil;
-import gov.nasa.arc.dert.view.Console;
+import gov.nasa.arc.dert.ui.FieldPanel;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
+import java.awt.Component;
+import java.util.ArrayList;
 
-import javax.swing.JButton;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * Provides controls for setting options for image billboards.
@@ -34,8 +24,6 @@ public class ImageBoardPanel extends MapElementBasePanel {
 	// Controls
 	private JTextField imageText;
 	private DoubleTextField sizeText;
-	private JButton browseButton;
-	private JButton openButton;
 
 	// Image billboard
 	private ImageBoard imageBoard;
@@ -45,36 +33,27 @@ public class ImageBoardPanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public ImageBoardPanel(MapElementsPanel parent) {
-		super(parent);
+	public ImageBoardPanel() {
+		super();
 		icon = ImageBoard.icon;
 		type = "ImageBoard";
-		build(true, true, true);
+		build(true, true);
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc, boolean addCBs) {
-		super.build(addNotes, addLoc, addCBs);
+	protected void build(boolean addNotes, boolean addLoc) {
+		super.build(addNotes, addLoc);
+		
+		ArrayList<Component> compList = new ArrayList<Component>();
 
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel("File"), BorderLayout.WEST);
+		compList.add(new JLabel("File", SwingConstants.RIGHT));
 		imageText = new JTextField();
+		imageText.setEditable(false);
+		imageText.setBorder(BorderFactory.createEmptyBorder());
 		imageText.setToolTipText("image file path");
-		panel.add(imageText, BorderLayout.CENTER);
-		browseButton = new JButton("Browse");
-		browseButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				setImageFile();
-			}
-		});
-		browseButton.setToolTipText("browse to image file");
-		panel.add(browseButton, BorderLayout.EAST);
-		panel.setMaximumSize(new Dimension(1000, -1));
-		contents.add(panel);
+		compList.add(imageText);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Size", SwingConstants.RIGHT));
+		compList.add(new JLabel("Size", SwingConstants.RIGHT));
 		sizeText = new DoubleTextField(8, ImageBoard.defaultSize, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
@@ -84,26 +63,9 @@ public class ImageBoardPanel extends MapElementBasePanel {
 				imageBoard.setSize(value);
 			}
 		};
-		panel.add(sizeText);
-		contents.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		openButton = new JButton("Open Image");
-		openButton.setToolTipText("view the image in full size");
-		openButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				try {
-					Desktop.getDesktop().open(new File(imageBoard.getImagePath()));
-				} catch (Exception e) {
-					e.printStackTrace();
-					Console.println("Unable to open image, see log.");
-					OptionDialog.showErrorMessageDialog((Window)ImageBoardPanel.this.getTopLevelAncestor(), "Unable to open image.");
-				}
-			}
-		});
-		panel.add(openButton);
-		contents.add(panel);
+		compList.add(sizeText);
+		
+		contents.add(new FieldPanel(compList), BorderLayout.CENTER);
 	}
 
 	@Override
@@ -111,26 +73,10 @@ public class ImageBoardPanel extends MapElementBasePanel {
 		this.mapElement = mapElement;
 		imageBoard = (ImageBoard) mapElement;
 		setLocation(locationText, imageBoard.getTranslation());
-		pinnedCheckBox.setSelected(imageBoard.isPinned());
 		nameLabel.setText(imageBoard.getName());
 		sizeText.setValue(imageBoard.getSize());
 		imageText.setText(imageBoard.getImagePath());
-		labelCheckBox.setSelected(imageBoard.isLabelVisible());
 		noteText.setText(imageBoard.getState().getAnnotation());
-	}
-
-	protected void setImageFile() {
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Image File", "jpg", "jpeg", "tif", "tiff", "png");
-		String path = FileHelper.getFilePathForOpen("Image File Selection", filter);
-		if (path != null) {
-			File file = new File(path);
-			path = file.getAbsolutePath();
-			imageText.setText(path);
-			nameLabel.setText(StringUtil.getLabelFromFilePath(path));
-			if (!path.equals(imageBoard.getImagePath())) {
-				imageBoard.setImagePath(path);
-			}
-		}
 	}
 
 }

@@ -90,10 +90,10 @@ public abstract class AbstractDialog extends JDialog {
 	 * @param closeOnly
 	 * @param addMessage
 	 */
-	public AbstractDialog(Dialog parent, String title, boolean modal, boolean closeOnly, boolean addMessage) {
+	public AbstractDialog(Dialog parent, String title, boolean modal, boolean boolArg, boolean addMessage) {
 		super(parent, title, modal);
 		setLocationRelativeTo(parent);
-		this.boolArg = closeOnly;
+		this.boolArg = boolArg;
 		this.addMessage = addMessage;
 	}
 
@@ -166,11 +166,13 @@ public abstract class AbstractDialog extends JDialog {
 	 */
 	public boolean open() {
 		result = false;
-		build();
-		if ((width == 0) || (height == 0)) {
-			pack();
-		} else {
-			setSize(width, height);
+		if (contentArea == null) {
+			build();
+			if ((width == 0) || (height == 0)) {
+				pack();
+			} else {
+				setSize(width, height);
+			}
 		}
 		setVisible(true);
 		return(result);

@@ -126,6 +126,10 @@ public class Profile extends Node implements ViewDependent, Tool {
 				updateGraph();
 				updateGeometricState(0);
 			}
+			
+			public void pin(Movable m, boolean value) {
+				// nothing
+			}
 		});
 		attachChild(endpointA);
 
@@ -136,6 +140,10 @@ public class Profile extends Node implements ViewDependent, Tool {
 				pBLoc.set(pos);
 				updateGraph();
 				updateGeometricState(0);
+			}
+			
+			public void pin(Movable m, boolean value) {
+				// nothing
 			}
 		});
 		attachChild(endpointB);

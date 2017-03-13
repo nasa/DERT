@@ -60,7 +60,7 @@ public class LayersPanel extends GroupPanel {
 			}
 		});
 		topPanel.add(showLayersCheckBox);
-		configureButton = new JButton("Change Configuration");
+		configureButton = new JButton("Configure");
 		configureButton.setToolTipText("add and remove visible layers");
 		configureButton.addActionListener(new ActionListener() {
 			@Override

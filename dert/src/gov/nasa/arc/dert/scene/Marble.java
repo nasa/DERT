@@ -11,6 +11,8 @@ import gov.nasa.arc.dert.state.MarbleState;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
+import javax.swing.Icon;
+
 import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -144,6 +146,10 @@ public class Marble extends FigureMarker implements MapElement {
 	 */
 	public boolean isSurfaceNormalVisible() {
 		return (SpatialUtil.isDisplayed(surfaceNormalArrow));
+	}
+	
+	public Icon getIcon() {
+		return(null);
 	}
 
 }

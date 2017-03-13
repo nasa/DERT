@@ -7,21 +7,20 @@ import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Path.BodyType;
 import gov.nasa.arc.dert.scene.tool.Path.LabelType;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
-import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.util.FileHelper;
+import gov.nasa.arc.dert.ui.FieldPanel;
 
-import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dialog;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 /**
@@ -31,10 +30,9 @@ import javax.swing.SwingConstants;
 public class PathPanel extends MapElementBasePanel {
 
 	// Controls
-	private ColorSelectionPanel colorList;
 	private JComboBox typeCombo;
 	private JComboBox labelCombo;
-	private JButton saveAsCSV, addPoints, statistics, fly;
+	private JButton addPoints, fly;
 	private JCheckBox showWaypoints;
 	private DoubleTextField lineWidthText;
 	private DoubleTextField sizeText;
@@ -48,19 +46,20 @@ public class PathPanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public PathPanel(MapElementsPanel parent) {
-		super(parent);
+	public PathPanel() {
+		super();
 		icon = Path.icon;
 		type = "Path";
-		build(true, true, true);
+		build(true, true);
 	}
 
 	@Override
-	protected void build(boolean addNotes, boolean addLoc, boolean addCBs) {
-		super.build(addNotes, addLoc, addCBs);
+	protected void build(boolean addNotes, boolean addLoc) {
+		super.build(addNotes, addLoc);
+		
+		ArrayList<Component> compList = new ArrayList<Component>();
 
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Type"));
+		compList.add(new JLabel("Type", SwingConstants.RIGHT));
 		typeCombo = new JComboBox(Path.BodyType.values());
 		typeCombo.setToolTipText("select path body type");
 		typeCombo.addActionListener(new ActionListener() {
@@ -69,21 +68,19 @@ public class PathPanel extends MapElementBasePanel {
 				path.setBodyType((BodyType) typeCombo.getSelectedItem());
 			}
 		});
-		panel.add(typeCombo);
+		compList.add(typeCombo);
 
-		showWaypoints = new JCheckBox("Show Waypoints");
+		compList.add(new JLabel("Waypoints", SwingConstants.RIGHT));
+		showWaypoints = new JCheckBox("visible");
 		showWaypoints.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				path.setWaypointsVisible(showWaypoints.isSelected());
 			}
 		});
-		panel.add(showWaypoints);
+		compList.add(showWaypoints);
 
-		contents.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Label"));
+		compList.add(new JLabel("Label", SwingConstants.RIGHT));
 		labelCombo = new JComboBox(Path.LabelType.values());
 		labelCombo.setToolTipText("select type of label");
 		labelCombo.addActionListener(new ActionListener() {
@@ -92,22 +89,9 @@ public class PathPanel extends MapElementBasePanel {
 				path.setLabelType((LabelType) labelCombo.getSelectedItem());
 			}
 		});
-		panel.add(labelCombo);
-		contents.add(panel);
+		compList.add(labelCombo);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Color"));
-		colorList = new ColorSelectionPanel(Path.defaultColor) {
-			@Override
-			public void doColor(Color color) {
-				path.setColor(color);
-			}
-		};
-		panel.add(colorList);
-		contents.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Line Width", SwingConstants.RIGHT));
+		compList.add(new JLabel("Line Width", SwingConstants.RIGHT));
 		lineWidthText = new DoubleTextField(8, Path.defaultLineWidth, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
@@ -117,9 +101,9 @@ public class PathPanel extends MapElementBasePanel {
 				path.setLineWidth((float) value);
 			}
 		};
-		panel.add(lineWidthText);
+		compList.add(lineWidthText);
 
-		panel.add(new JLabel("       Point Size", SwingConstants.RIGHT));
+		compList.add(new JLabel("Point Size", SwingConstants.RIGHT));
 		sizeText = new DoubleTextField(8, Path.defaultSize, true, "0.00") {
 			@Override
 			protected void handleChange(double value) {
@@ -129,23 +113,8 @@ public class PathPanel extends MapElementBasePanel {
 				path.setPointSize(value);
 			}
 		};
-		panel.add(sizeText);
-		contents.add(panel);
+		compList.add(sizeText);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		saveAsCSV = new JButton("Save As CSV");
-		saveAsCSV.setToolTipText("save waypoints formatted as comma separated values");
-		saveAsCSV.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				String fileName = FileHelper.getCSVFile();
-				if (fileName == null) {
-					return;
-				}
-				path.saveAsCsv(fileName);
-			}
-		});
-		panel.add(saveAsCSV);
 		addPoints = new JButton("Add Points");
 		addPoints.setToolTipText("add points to the path");;
 		addPoints.addActionListener(new ActionListener() {
@@ -155,17 +124,8 @@ public class PathPanel extends MapElementBasePanel {
 				Dert.getWorldView().getScenePanel().getInputHandler().setPath(path);
 			}
 		});
-		panel.add(addPoints);
-		statistics = new JButton("Open Info");
-		statistics.setToolTipText("display path statistics in a separate window");
-		statistics.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				path.getState().getViewData().setVisible(true);
-				path.getState().open();
-			}
-		});
-		panel.add(statistics);
+		compList.add(addPoints);
+
 		fly = new JButton("Fly");
 		fly.setToolTipText("fly along this path");
 		fly.addActionListener(new ActionListener() {
@@ -176,8 +136,9 @@ public class PathPanel extends MapElementBasePanel {
 				Dert.getWorldView().getScenePanel().getViewpointController().flyThrough(path, (Dialog)getTopLevelAncestor());
 			}
 		});
-		panel.add(fly);
-		contents.add(panel);
+		compList.add(fly);
+		
+		contents.add(new FieldPanel(compList), BorderLayout.CENTER);
 	}
 
 	@Override
@@ -189,26 +150,18 @@ public class PathPanel extends MapElementBasePanel {
 			path = (Path) mapElement;
 			waypoint = null;
 			labelCombo.setSelectedItem(path.getLabelType());
-			pinnedCheckBox.setSelected(path.isPinned());
 			nameLabel.setText(path.getName());
-			colorList.setColor(path.getColor());
 			noteText.setText(path.getState().getAnnotation());
 			typeCombo.setSelectedItem(path.getBodyType());
-			labelCheckBox.setSelected(path.isLabelVisible());
 			showWaypoints.setSelected(path.areWaypointsVisible());
 			lineWidthText.setValue(path.getLineWidth());
 			sizeText.setValue(path.getSize());
 
 			locationText.setEnabled(false);
 			labelCombo.setEnabled(true);
-			pinnedCheckBox.setEnabled(true);
-			colorList.setEnabled(true);
 			noteText.setEnabled(true);
-			labelCheckBox.setEnabled(true);
 			typeCombo.setEnabled(true);
-			saveAsCSV.setEnabled(true);
 			addPoints.setEnabled(true);
-			statistics.setEnabled(true);
 			showWaypoints.setEnabled(true);
 			lineWidthText.setEnabled(true);
 			sizeText.setEnabled(true);
@@ -222,25 +175,17 @@ public class PathPanel extends MapElementBasePanel {
 			nameLabel.setText(waypoint.getName());
 			setLocation(locationText, waypoint.getTranslation());
 			labelCombo.setSelectedItem(path.getLabelType());
-			pinnedCheckBox.setSelected(path.isPinned());
-			colorList.setColor(path.getColor());
 			noteText.setText(waypoint.getState().getAnnotation());
 			typeCombo.setSelectedItem(path.getBodyType());
-			labelCheckBox.setSelected(waypoint.isLabelVisible());
 			showWaypoints.setSelected(path.areWaypointsVisible());
 			lineWidthText.setValue(path.getLineWidth());
 			sizeText.setValue(path.getSize());
 
 			locationText.setEnabled(true);
 			labelCombo.setEnabled(false);
-			pinnedCheckBox.setEnabled(false);
-			colorList.setEnabled(false);
 			noteText.setEnabled(true);
-			labelCheckBox.setEnabled(true);
 			typeCombo.setEnabled(false);
-			saveAsCSV.setEnabled(false);
 			addPoints.setEnabled(true);
-			statistics.setEnabled(false);
 			showWaypoints.setEnabled(false);
 			lineWidthText.setEnabled(false);
 			sizeText.setEnabled(false);

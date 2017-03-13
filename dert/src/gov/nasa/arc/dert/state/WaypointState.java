@@ -1,11 +1,8 @@
 package gov.nasa.arc.dert.state;
 
-import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
-import gov.nasa.arc.dert.ui.TextDialog;
 import gov.nasa.arc.dert.util.StateUtil;
-import gov.nasa.arc.dert.util.StringUtil;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -77,35 +74,27 @@ public class WaypointState extends MapElementState {
 		return(map);
 	}
 
-	@Override
-	public void openAnnotation() {
-		if (annotationDialog == null) {
-			annotationDialog = new TextDialog(Dert.getMainWindow(), name, 400, 200, true, false);
-		}
-		setAnnotation(null);
-		annotationDialog.open();
-	}
+//	@Override
+//	public void setAnnotation(String note) {
+//		if (note != null) {
+//			annotation = note;
+//		}
+//		if (annotationDialog != null) {
+//			String annot = "W A Y P O I N T :\n" + annotation;
+//			annot += "\n\n";
+//			// also display Path annotation
+//			if (mapElement != null) {
+//				Waypoint waypoint = (Waypoint) mapElement;
+//				parent = (PathState) waypoint.getPath().getState();
+//				if (parent != null) {
+//					annot += "P A T H :\n" + parent.getAnnotation();
+//				}
+//				annotationDialog.update();
+//			}
+//			annotationDialog.setText(annot);
+//		}
+//	}
 
-	@Override
-	public void setAnnotation(String note) {
-		if (note != null) {
-			annotation = note;
-		}
-		if (annotationDialog != null) {
-			String annot = "W A Y P O I N T :\n" + annotation;
-			annot += "\n\n";
-			// also display Path annotation
-			if (mapElement != null) {
-				Waypoint waypoint = (Waypoint) mapElement;
-				parent = (PathState) waypoint.getPath().getState();
-				if (parent != null) {
-					annot += "P A T H :\n" + parent.getAnnotation();
-				}
-				annotationDialog.setMessage(StringUtil.format(mapElement.getLocationInWorld()));
-			}
-			annotationDialog.setText(annot);
-		}
-	}
 	
 	@Override
 	public String toString() {
