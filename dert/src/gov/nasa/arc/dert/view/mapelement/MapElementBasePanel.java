@@ -43,7 +43,7 @@ public abstract class MapElementBasePanel extends JPanel {
 	protected JPanel topPanel;
 	protected JTextArea noteText;
 	protected JButton saveButton;
-	protected JLabel typeLabel, lockedLabel;
+	protected JLabel typeLabel;
 	protected CoordTextField locationText;
 
 	// Map element icon and type
@@ -78,6 +78,7 @@ public abstract class MapElementBasePanel extends JPanel {
 		JPanel titlePanel = new JPanel(new BorderLayout());
 		titlePanel.add(new JLabel("Notes", SwingConstants.LEFT), BorderLayout.WEST);
 		saveButton = new JButton("Save");
+		saveButton.setEnabled(false);
 		saveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -173,14 +174,6 @@ public abstract class MapElementBasePanel extends JPanel {
 	 * @param mapElement
 	 */
 	public void updateData(MapElement mapElement) {
-		if (mapElement.isPinned()) {
-			if (lockedLabel.getParent() == null)
-				topPanel.add(lockedLabel);
-		}
-		else {
-			if (lockedLabel.getParent() != null)
-				topPanel.remove(lockedLabel);
-		}
 	}
 
 	/**

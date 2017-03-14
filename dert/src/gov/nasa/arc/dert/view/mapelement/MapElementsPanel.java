@@ -594,9 +594,8 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			currentMapElements = new MapElement[treeNode.getChildCount()];
 			for (int i=0; i<currentMapElements.length; ++i)
 				currentMapElements[i] = (MapElement)((DefaultMutableTreeNode)treeNode.getChildAt(i)).getUserObject();			
-//			panelLayout.show(panelPane, "Empty");
+			enableButtons(treeNode == featureSetsNode, treeNode == landmarksNode, null);
 			state.setLastMapElement(null);
-//			currentPanel = emptyPanel;
 		}
 		else {
 			currentMapElements = new MapElement[] {(MapElement)treeNode.getUserObject()};
@@ -625,9 +624,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		meList.toArray(currentMapElements);
 		enableButtons(hasFeature, false, null);
 		
-//		panelLayout.show(panelPane, "Empty");
 		state.setLastMapElement(null);
-//		currentPanel = emptyPanel;
 	}
 	
 	private void enableButtons(boolean hasFeature, boolean allLandmark, MapElement currentMapElement) {
@@ -743,7 +740,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		
 		// open
 		openButton = new JButton("Open");
-		openButton.setToolTipText("edit the selected map element");
+		openButton.setToolTipText("open the selected map element");
 		openButton.setEnabled(false);
 		openButton.addActionListener(new ActionListener() {
 			@Override
@@ -755,7 +752,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		
 		// Delete
 		deleteButton = new JButton("Delete");
-		deleteButton.setToolTipText("remove selected map element");
+		deleteButton.setToolTipText("remove the selected map element");
 		deleteButton.setEnabled(false);
 		deleteButton.addActionListener(new ActionListener() {
 			@Override
@@ -824,7 +821,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		
 		// Lock
 		lockButton = new JButton("Lock");
-		lockButton.setToolTipText("lock selected map element");
+		lockButton.setToolTipText("make selected map element immovable");
 		lockButton.setEnabled(false);
 		lockButton.addActionListener(new ActionListener() {
 			@Override
@@ -839,7 +836,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		
 		// Unlock
 		unlockButton = new JButton("Unlock");
-		unlockButton.setToolTipText("unlock selected map element");
+		unlockButton.setToolTipText("make selected map element movable");
 		unlockButton.setEnabled(false);
 		unlockButton.addActionListener(new ActionListener() {
 			@Override

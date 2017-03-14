@@ -1,14 +1,16 @@
 package gov.nasa.arc.dert.view.mapelement;
 
-import gov.nasa.arc.dert.scene.featureset.Feature;
-import gov.nasa.arc.dert.scene.featureset.FeatureSet;
-import gov.nasa.arc.dert.scene.landmark.Landmark;
-import gov.nasa.arc.dert.scene.tool.Tool;
-import gov.nasa.arc.dert.scene.tool.Waypoint;
+import gov.nasa.arc.dert.icon.Icons;
+import gov.nasa.arc.dert.scene.MapElement;
 
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.Font;
 
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -23,6 +25,9 @@ public class MapElementTreeCellRenderer extends DefaultTreeCellRenderer {
 	private Font defaultFont;
 	private Font boldFont;
 	private Font italicFont;
+	private JLabel lockedLabel;
+	private ImageIcon lockedIcon;
+	private JPanel panel;
 
 	/**
 	 * Constructor
@@ -32,6 +37,11 @@ public class MapElementTreeCellRenderer extends DefaultTreeCellRenderer {
 		setOpenIcon(null);
 		setClosedIcon(null);
 		setLeafIcon(null);
+		lockedIcon = Icons.getImageIcon("locked.png");
+		panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+		panel.setBorder(BorderFactory.createEmptyBorder());
+		lockedLabel = new JLabel(lockedIcon);
+		panel.setOpaque(false);
 	}
 
 	@Override
@@ -47,53 +57,24 @@ public class MapElementTreeCellRenderer extends DefaultTreeCellRenderer {
 		}
 		if (value instanceof String) {
 			setFont(boldFont);
-		} else if (value instanceof Landmark) {
-			Landmark landmark = (Landmark) value;
-			if (!landmark.isVisible()) {
-				setFont(italicFont);
-			} else {
-				setFont(defaultFont);
-			}
-			setIcon(landmark.getIcon());
-			setText(landmark.getName());
-		} else if (value instanceof Tool) {
-			Tool tool = (Tool) value;
-			if (!tool.isVisible()) {
-				setFont(italicFont);
-			} else {
-				setFont(defaultFont);
-			}
-			setIcon(tool.getIcon());
-			setText(tool.getName());
-		} else if (value instanceof Waypoint) {
-			Waypoint waypoint = (Waypoint) value;
-			if (!waypoint.isVisible()) {
-				setFont(italicFont);
-			} else {
-				setFont(defaultFont);
-			}
-			setIcon(null);
-			setText(waypoint.getName());
-		} else if (value instanceof Feature) {
-			Feature feature = (Feature) value;
-			if (!feature.isVisible()) {
-				setFont(italicFont);
-			} else {
-				setFont(defaultFont);
-			}
-			setIcon(null);
-			setText(feature.getName());
-		} else if (value instanceof FeatureSet) {
-			FeatureSet featureSet = (FeatureSet) value;
-			if (!featureSet.isVisible()) {
-				setFont(italicFont);
-			} else {
-				setFont(defaultFont);
-			}
-			setIcon(featureSet.getIcon());
-			setText(featureSet.getName());
+			return(this);
 		}
-		return (this);
+		else if (value instanceof MapElement) {
+			MapElement mapElement = (MapElement)value;
+			if (!mapElement.isVisible()) {
+				setFont(italicFont);
+			} else {
+				setFont(defaultFont);
+			}
+			setIcon(mapElement.getIcon());
+			setText(mapElement.getName());
+			panel.removeAll();
+			panel.add(this);
+			if (mapElement.isPinned())
+				panel.add(lockedLabel);
+			return(panel);
+		}
+		return(null);
 	}
 
 }

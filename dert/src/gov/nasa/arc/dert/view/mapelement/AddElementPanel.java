@@ -38,7 +38,7 @@ public class AddElementPanel extends JPanel {
 		setLayout(new GridLayout(2, 6));
 		
 		JButton newButton = new JButton(Icons.getImageIcon("placemark.png"));
-		newButton.setToolTipText("Placemark");
+		newButton.setToolTipText("add Placemark");
 		newButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -50,7 +50,7 @@ public class AddElementPanel extends JPanel {
 		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("figure.png"));
-		newButton.setToolTipText("3D Figure");
+		newButton.setToolTipText("add 3D Figure");
 		newButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -63,7 +63,7 @@ public class AddElementPanel extends JPanel {
 		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("billboard.png"));
-		newButton.setToolTipText("Image Billboard");
+		newButton.setToolTipText("add Image Billboard");
 		newButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -75,7 +75,7 @@ public class AddElementPanel extends JPanel {
 		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("path.png"));
-		newButton.setToolTipText("Path");
+		newButton.setToolTipText("add Path");
 		newButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -88,7 +88,7 @@ public class AddElementPanel extends JPanel {
 		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("plane.png"));
-		newButton.setToolTipText("Plane");
+		newButton.setToolTipText("add Plane");
 		newButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -100,7 +100,7 @@ public class AddElementPanel extends JPanel {
 		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("cartesiangrid.png"));
-		newButton.setToolTipText("Cartesian Grid");
+		newButton.setToolTipText("add Cartesian Grid");
 		newButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -112,7 +112,7 @@ public class AddElementPanel extends JPanel {
 		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("radialgrid.png"));
-		newButton.setToolTipText("Radial Grid");
+		newButton.setToolTipText("add Radial Grid");
 		newButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -124,7 +124,7 @@ public class AddElementPanel extends JPanel {
 		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("fieldcamera.png"));
-		newButton.setToolTipText("Camera");
+		newButton.setToolTipText("add Camera");
 		newButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -136,7 +136,7 @@ public class AddElementPanel extends JPanel {
 		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("profile.png"));
-		newButton.setToolTipText("Profile");
+		newButton.setToolTipText("add Profile");
 		newButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -148,7 +148,7 @@ public class AddElementPanel extends JPanel {
 		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("scale.png"));
-		newButton.setToolTipText("Scale");
+		newButton.setToolTipText("add Scale");
 		newButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -160,7 +160,7 @@ public class AddElementPanel extends JPanel {
 		add(newButton);
 
 		newButton = new JButton(Icons.getImageIcon("lineset.png"));
-		newButton.setToolTipText("FeatureSet");
+		newButton.setToolTipText("add FeatureSet");
 		newButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {

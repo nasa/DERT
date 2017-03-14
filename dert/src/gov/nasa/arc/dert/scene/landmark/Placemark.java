@@ -23,7 +23,7 @@ import com.ardor3d.math.Vector3;
  */
 public class Placemark extends BillboardMarker implements Landmark {
 
-	public static final Icon icon = Icons.getImageIcon("placemark.png");
+	public static final Icon icon = Icons.getImageIcon("placemark_16.png");
 	
 	public static enum IconId { pushpin, flag, mappin }	
 	public static final String[] ICON_LABEL = { "Pushpin", "Flag", "Map Pin" };
