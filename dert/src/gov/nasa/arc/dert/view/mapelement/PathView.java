@@ -94,7 +94,7 @@ public class PathView extends JPanelView {
 		});
 		volType.add(polyMethod);
 		volPanel.add(polyMethod);
-		planeMethod = new JRadioButton("Above/Below Elevation");
+		planeMethod = new JRadioButton("Above/Below Elevation:");
 		planeMethod.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				enableVolume();

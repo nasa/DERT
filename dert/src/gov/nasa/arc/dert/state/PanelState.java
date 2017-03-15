@@ -84,7 +84,13 @@ public class PanelState extends State {
 	 * 
 	 * @return
 	 */
-	public View open() {
+	@Override
+	public View open(boolean doIt) {
+		if (doIt)
+			viewData.setVisible(true);
+		if (!viewData.isVisible())
+			return(null);
+		
 		Window window = viewData.getViewWindow();
 		View view = viewData.getView();
 		if (window != null) {

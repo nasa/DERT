@@ -1,7 +1,11 @@
 package gov.nasa.arc.dert.state;
 
+import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.scene.MapElement;
+import gov.nasa.arc.dert.scene.featureset.Feature;
 import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.util.StateUtil;
+import gov.nasa.arc.dert.view.mapelement.FeatureSetView;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -18,9 +22,10 @@ public class FeatureSetState extends MapElementState {
 	public String labelProp;
 	public boolean ground;
 	public float lineWidth;
+	public long currentFeature;
 
 	/**
-	 * Constructor for LayerFactory.
+	 * Constructor for FeatureSetState.
 	 * 
 	 * @param name
 	 * @param filePath
@@ -34,7 +39,7 @@ public class FeatureSetState extends MapElementState {
 		this.labelProp = labelProp;
 		this.ground = ground;
 		this.lineWidth = FeatureSet.defaultLineWidth;
-		pinned = true;
+		viewData = new ViewData(-1, -1, 400, 350, false);
 	}
 
 	/**
@@ -56,7 +61,7 @@ public class FeatureSetState extends MapElementState {
 		this.ground = ground;
 		this.lineWidth = FeatureSet.defaultLineWidth;
 		this.annotation = notes;
-		pinned = true;
+		viewData = new ViewData(-1, -1, 550, 400, false);
 	}
 	
 	/**
@@ -69,6 +74,7 @@ public class FeatureSetState extends MapElementState {
 		labelProp = StateUtil.getString(map, "LabelProperty", null);
 		ground = StateUtil.getBoolean(map, "Ground", false);
 		lineWidth = (float)StateUtil.getDouble(map, "LineWidth", FeatureSet.defaultLineWidth);
+		currentFeature = StateUtil.getLong(map, "CurrentFeature", 0);
 	}
 	
 	@Override
@@ -109,6 +115,7 @@ public class FeatureSetState extends MapElementState {
 		map.put("IsProjected", new Boolean(isProjected));
 		map.put("Ground", new Boolean(ground));
 		map.put("LineWidth", new Double(lineWidth));
+		map.put("CurrentFeature", new Long(currentFeature));
 		if (labelProp != null)
 			map.put("LabelProperty", labelProp);
 		return(map);
@@ -118,5 +125,38 @@ public class FeatureSetState extends MapElementState {
 	public String toString() {
 		String str = isProjected+" "+filePath+" "+labelProp+" "+super.toString();
 		return(str);
+	}
+
+	/**
+	 * Set the MapElement
+	 * 
+	 * @param mapElement
+	 */
+	@Override
+	public void setMapElement(MapElement mapElement) {
+		super.setMapElement(mapElement);
+		if (viewData != null) {
+			FeatureSetView fsv = (FeatureSetView)viewData.getView();
+			if (fsv != null)
+				fsv.setMapElement(mapElement);
+		}
+		if (mapElement instanceof Feature)
+			currentFeature = mapElement.getState().id;
+	}
+
+	/**
+	 * Create the view
+	 */
+	@Override
+	protected void createView() {
+		FeatureSetView fsv = new FeatureSetView(this);
+		if (currentFeature != 0) {
+			FeatureSet fs = (FeatureSet)mapElement;
+			Feature f = fs.getFeature((int)currentFeature);
+			System.err.println("FeatureSetState.createView "+currentFeature+" "+f);
+			fsv.setMapElement(f);
+		}
+		setView(fsv);
+		viewData.createWindow(Dert.getMainWindow(), name+" View", X_OFFSET, Y_OFFSET);
 	}
 }

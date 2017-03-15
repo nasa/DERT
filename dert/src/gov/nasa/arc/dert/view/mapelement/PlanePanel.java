@@ -42,11 +42,8 @@ public class PlanePanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public PlanePanel() {
-		super();
-		icon = Plane.icon;
-		type = "Plane";
-		build();
+	public PlanePanel(MapElement mapElement) {
+		super(mapElement);
 	}
 
 	@Override
@@ -165,9 +162,9 @@ public class PlanePanel extends MapElementBasePanel {
 
 	@Override
 	public void setMapElement(MapElement mapElement) {
+		super.setMapElement(mapElement);
 		if (this.mapElement != null)
 			((Plane)this.mapElement).setPlanePanel(null);
-		this.mapElement = mapElement;
 		plane = (Plane) mapElement;
 		plane.setPlanePanel(this);
 		lengthSpinner.setValue(plane.getLengthScale());

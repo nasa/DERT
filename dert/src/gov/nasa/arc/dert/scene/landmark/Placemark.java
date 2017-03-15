@@ -57,7 +57,7 @@ public class Placemark extends BillboardMarker implements Landmark {
 	 * @param state
 	 */
 	public Placemark(PlacemarkState state) {
-		super(state.name, state.position, state.size, state.zOff, state.color, state.labelVisible, state.pinned);
+		super(state.name, state.position, state.size, state.zOff, state.color, state.labelVisible, state.locked);
 		setTexture(state.textureIndex);
 		setVisible(state.visible);
 		this.state = state;

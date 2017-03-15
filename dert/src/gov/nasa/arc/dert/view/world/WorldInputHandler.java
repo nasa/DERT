@@ -18,7 +18,7 @@ import gov.nasa.arc.dert.action.mapelement.HideMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.OnGroundAction;
 import gov.nasa.arc.dert.action.mapelement.OpenAnnotationAction;
 import gov.nasa.arc.dert.action.mapelement.OpenBillboardAction;
-import gov.nasa.arc.dert.action.mapelement.PinMapElementAction;
+import gov.nasa.arc.dert.action.mapelement.LockMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.PlaceHereAction;
 import gov.nasa.arc.dert.action.mapelement.RenameAction;
 import gov.nasa.arc.dert.landscape.QuadTreeMesh;
@@ -199,7 +199,7 @@ public class WorldInputHandler implements InputHandler {
 	protected Movable findMovable(Spatial spat) {
 		while (spat != null) {
 			if (spat instanceof Movable) {
-				if (!((Movable) spat).isPinned() && !(spat instanceof Marble)) {
+				if (!((Movable) spat).isLocked() && !(spat instanceof Marble)) {
 					return ((Movable) spat);
 				} else {
 					return (null);
@@ -376,7 +376,7 @@ public class WorldInputHandler implements InputHandler {
 						contextMenu.add(new DeleteMapElementAction(((Waypoint) mapElement).getPath()));
 						contextMenu.add(new RenameAction(((Waypoint) mapElement).getPath()));
 						contextMenu.add(new EditAction(((Waypoint) mapElement).getPath()));
-						contextMenu.add(new PinMapElementAction(((Waypoint) mapElement).getPath()));
+						contextMenu.add(new LockMapElementAction(((Waypoint) mapElement).getPath()));
 						contextMenu.add(new OnGroundAction((Waypoint) mapElement));
 						contextMenu.add(new OpenAnnotationAction(mapElement));
 					}
@@ -393,7 +393,7 @@ public class WorldInputHandler implements InputHandler {
 						contextMenu.add(new DeleteMapElementAction(mapElement));
 						contextMenu.add(new RenameAction(mapElement));
 						contextMenu.add(new EditAction(mapElement));
-						contextMenu.add(new PinMapElementAction(mapElement));
+						contextMenu.add(new LockMapElementAction(mapElement));
 						contextMenu.add(new OnGroundAction(mapElement));
 						contextMenu.add(new OpenAnnotationAction(mapElement));
 						if (mapElement instanceof ImageBoard) {
@@ -407,7 +407,7 @@ public class WorldInputHandler implements InputHandler {
 						contextMenu.add(new DeleteMapElementAction((MapElement) parent));
 						contextMenu.add(new RenameAction((MapElement) parent));
 						contextMenu.add(new EditAction((MapElement) parent));
-						contextMenu.add(new PinMapElementAction((MapElement) parent));
+						contextMenu.add(new LockMapElementAction((MapElement) parent));
 						contextMenu.add(new OnGroundAction((MapElement) parent));
 						contextMenu.add(new OpenAnnotationAction((MapElement) parent));
 					}

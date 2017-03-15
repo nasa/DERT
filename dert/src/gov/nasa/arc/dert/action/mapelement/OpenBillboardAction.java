@@ -2,10 +2,6 @@ package gov.nasa.arc.dert.action.mapelement;
 
 import gov.nasa.arc.dert.action.MenuItemAction;
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
-import gov.nasa.arc.dert.view.Console;
-
-import java.awt.Desktop;
-import java.io.File;
 
 /**
  * Context menu item for opening a billboard image in the default platform image
@@ -28,12 +24,7 @@ public class OpenBillboardAction extends MenuItemAction {
 
 	@Override
 	protected void run() {
-		try {
-			Desktop.getDesktop().open(new File(imageBoard.getImagePath()));
-		} catch (Exception e) {
-			e.printStackTrace();
-			Console.println("Unable to open image, see log.");
-		}
+		imageBoard.getState().open(true);
 	}
 
 }

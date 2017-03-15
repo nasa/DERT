@@ -21,7 +21,7 @@ import com.ardor3d.util.geom.BufferUtils;
  */
 public class RadialGrid extends Grid {
 
-	public static final Icon icon = Icons.getImageIcon("radialgrid.png");
+	public static final Icon icon = Icons.getImageIcon("radialgrid_16.png");
 
 	// Defaults
 	public static Color defaultColor = Color.white;

@@ -38,7 +38,7 @@ import com.ardor3d.util.geom.BufferUtils;
  */
 public class ScaleBar extends FigureMarker implements Tool {
 
-	public static final Icon icon = Icons.getImageIcon("scale.png");
+	public static final Icon icon = Icons.getImageIcon("scale_16.png");
 
 	// Defaults
 	public static Color defaultColor = Color.white;
@@ -68,7 +68,7 @@ public class ScaleBar extends FigureMarker implements Tool {
 	 * @param state
 	 */
 	public ScaleBar(ScaleBarState state) {
-		super(state.name, state.location, state.size, state.zOff, state.color, state.labelVisible, false, state.pinned);
+		super(state.name, state.location, state.size, state.zOff, state.color, state.labelVisible, false, state.locked);
 		this.state = state;
 		cellCount = state.cellCount;
 		radius = state.radius;

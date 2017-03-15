@@ -7,6 +7,7 @@ import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
 import gov.nasa.arc.dert.scenegraph.LineStrip;
 import gov.nasa.arc.dert.scenegraph.Marker;
+import gov.nasa.arc.dert.state.FeatureState;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.util.SpatialUtil;
@@ -31,7 +32,7 @@ public class Feature
 	extends Node
 	implements MapElement, ViewDependent {
 
-	public static final Icon icon = Icons.getImageIcon("lineset.png");
+	public static final Icon icon = Icons.getImageIcon("lineset_16.png");
 
 	// Line color
 	private Color color;
@@ -43,6 +44,14 @@ public class Feature
 	private HashMap<String,Object> properties;
 	
 	private boolean labelVisible;
+	
+	private FeatureState state;
+	
+	public Feature(FeatureState state, HashMap<String,Object> properties) {
+		this(state.name, state.color, properties);
+		this.state = state;
+		state.setMapElement(this);
+	}
 
 	/**
 	 * Constructor
@@ -63,7 +72,7 @@ public class Feature
 	 */
 	@Override
 	public MapElementState getState() {
-		return (null);
+		return (state);
 	}
 
 	/**
@@ -91,7 +100,7 @@ public class Feature
 	 * Pin this Feature (does nothing)
 	 */
 	@Override
-	public void setPinned(boolean pinned) {
+	public void setLocked(boolean pinned) {
 		// nothing here
 	}
 
@@ -99,8 +108,8 @@ public class Feature
 	 * Find out if pinned
 	 */
 	@Override
-	public boolean isPinned() {
-		return (true);
+	public boolean isLocked() {
+		return (false);
 	}
 
 	/**
@@ -324,5 +333,14 @@ public class Feature
 			if (child instanceof ViewDependent)
 				((ViewDependent)child).update(camera);
 		}
+	}
+	
+	public FeatureSet getFeatureSet() {
+		Node parent = getParent();
+		while (parent != null) {
+			if (parent instanceof FeatureSet)
+				return((FeatureSet)parent);
+		}
+		return(null);
 	}
 }

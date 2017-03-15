@@ -21,7 +21,7 @@ import com.ardor3d.scenegraph.hint.CullHint;
  */
 public class Waypoint extends FigureMarker implements MapElement {
 
-	public static final Icon icon = Icons.getImageIcon("waypoint_24.png");
+	public static final Icon icon = Icons.getImageIcon("waypoint_16.png");
 
 	// Map element state
 	protected WaypointState state;
@@ -33,7 +33,7 @@ public class Waypoint extends FigureMarker implements MapElement {
 	 * @param state
 	 */
 	public Waypoint(WaypointState state) {
-		super(state.name, state.location, state.size, state.zOff, state.color, state.labelVisible, true, state.pinned);
+		super(state.name, state.location, state.size, state.zOff, state.color, state.labelVisible, true, state.locked);
 		contents.detachChild(surfaceNormalArrow);
 		surfaceNormalArrow = null;
 		setShape(ShapeType.sphere);

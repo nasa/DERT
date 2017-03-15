@@ -36,39 +36,39 @@ public class EditDialog extends AbstractDialog {
 		contentArea.setLayout(new BorderLayout());
 		switch (mapElement.getType()) {
 		case Placemark:
-			basePanel = new PlacemarkPanel();
+			basePanel = new PlacemarkPanel(mapElement);
 			break;
 		case Figure:
-			basePanel = new FigurePanel();
+			basePanel = new FigurePanel(mapElement);
 			break;
 		case Billboard:
-			basePanel = new ImageBoardPanel();
+			basePanel = new ImageBoardPanel(mapElement);
 			break;
 		case Feature:
 		case FeatureSet:
-			basePanel = new FeatureSetPanel();
+			basePanel = new FeatureSetPanel(mapElement);
 			break;
 		case Waypoint:
 		case Path:
-			basePanel = new PathPanel();
+			basePanel = new PathPanel(mapElement);
 			break;
 		case Plane:
-			basePanel = new PlanePanel();
+			basePanel = new PlanePanel(mapElement);
 			break;
 		case RadialGrid:
-			basePanel = new RadialGridPanel();
+			basePanel = new RadialGridPanel(mapElement);
 			break;
 		case CartesianGrid:
-			basePanel = new CartesianGridPanel();
+			basePanel = new CartesianGridPanel(mapElement);
 			break;
 		case FieldCamera:
-			basePanel = new FieldCameraPanel();
+			basePanel = new FieldCameraPanel(mapElement);
 			break;
 		case Profile:
-			basePanel = new ProfilePanel();
+			basePanel = new ProfilePanel(mapElement);
 			break;
 		case Scale:
-			basePanel = new ScaleBarPanel();
+			basePanel = new ScaleBarPanel(mapElement);
 			break;
 		default:
 			break;
@@ -77,6 +77,11 @@ public class EditDialog extends AbstractDialog {
 			contentArea.add(basePanel, BorderLayout.CENTER);
 			basePanel.setMapElement(mapElement);
 		}
+	}
+	
+	public void setMapElement(MapElement me) {
+		basePanel.setMapElement(me);
+		update();
 	}
 
 	/**

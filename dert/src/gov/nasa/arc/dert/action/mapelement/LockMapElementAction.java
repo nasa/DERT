@@ -7,7 +7,7 @@ import gov.nasa.arc.dert.scene.MapElement;
  * Context menu item for hiding a map element.
  *
  */
-public class PinMapElementAction extends MenuItemAction {
+public class LockMapElementAction extends MenuItemAction {
 
 	protected MapElement mapElement;
 
@@ -16,14 +16,14 @@ public class PinMapElementAction extends MenuItemAction {
 	 * 
 	 * @param mapElement
 	 */
-	public PinMapElementAction(MapElement mapElement) {
-		super((mapElement.isPinned() ? "Unlock " : "Lock ") + mapElement.getName());
+	public LockMapElementAction(MapElement mapElement) {
+		super((mapElement.isLocked() ? "Unlock " : "Lock ") + mapElement.getName());
 		this.mapElement = mapElement;
 	}
 
 	@Override
 	protected void run() {
-		mapElement.setPinned(!mapElement.isPinned());
+		mapElement.getState().setLocked(!mapElement.isLocked());
 	}
 
 }

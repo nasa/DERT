@@ -40,11 +40,8 @@ public class RadialGridPanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public RadialGridPanel() {
-		super();
-		icon = RadialGrid.icon;
-		type = "Radial Grid";
-		build();
+	public RadialGridPanel(MapElement mapElement) {
+		super(mapElement);
 	}
 
 	@Override
@@ -119,7 +116,7 @@ public class RadialGridPanel extends MapElementBasePanel {
 
 	@Override
 	public void setMapElement(MapElement mapElement) {
-		this.mapElement = mapElement;
+		super.setMapElement(mapElement);
 		grid = (RadialGrid) mapElement;
 		sizeText.setValue(grid.getSize());
 		lineWidthText.setValue(grid.getLineWidth());

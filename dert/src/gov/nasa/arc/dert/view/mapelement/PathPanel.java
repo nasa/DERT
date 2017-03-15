@@ -44,11 +44,8 @@ public class PathPanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public PathPanel() {
-		super();
-		icon = Path.icon;
-		type = "Path";
-		build();
+	public PathPanel(MapElement mapElement) {
+		super(mapElement);
 	}
 
 	@Override
@@ -137,10 +134,9 @@ public class PathPanel extends MapElementBasePanel {
 
 	@Override
 	public void setMapElement(MapElement mapElement) {
-		this.mapElement = mapElement;
+		super.setMapElement(mapElement);
 		// map element is a Path
 		if (mapElement instanceof Path) {
-			typeLabel.setIcon(icon);
 			path = (Path) mapElement;
 			waypoint = null;
 			labelCombo.setSelectedItem(path.getLabelType());
@@ -149,38 +145,20 @@ public class PathPanel extends MapElementBasePanel {
 			showWaypoints.setSelected(path.areWaypointsVisible());
 			lineWidthText.setValue(path.getLineWidth());
 			sizeText.setValue(path.getSize());
-
-			locationText.setEnabled(false);
-			labelCombo.setEnabled(true);
-			noteText.setEnabled(true);
-			typeCombo.setEnabled(true);
-			addPoints.setEnabled(true);
-			showWaypoints.setEnabled(true);
-			lineWidthText.setEnabled(true);
-			sizeText.setEnabled(true);
+			locLabel.setText("Location");
+			locationText.setText("");
+			locationText.setEnabled(false);			
 			path.setCurrentWaypoint(null);
 		}
 		// map element is a Waypoint
 		else {
-			typeLabel.setIcon(Waypoint.icon);
 			waypoint = (Waypoint) mapElement;
+			locLabel.setText(waypoint.getName());
 			path = waypoint.getPath();
 			setLocation(locationText, waypoint.getTranslation());
-			labelCombo.setSelectedItem(path.getLabelType());
 			noteText.setText(waypoint.getState().getAnnotation());
-			typeCombo.setSelectedItem(path.getBodyType());
-			showWaypoints.setSelected(path.areWaypointsVisible());
-			lineWidthText.setValue(path.getLineWidth());
-			sizeText.setValue(path.getSize());
-
 			locationText.setEnabled(true);
-			labelCombo.setEnabled(false);
-			noteText.setEnabled(true);
-			typeCombo.setEnabled(false);
-			addPoints.setEnabled(true);
-			showWaypoints.setEnabled(false);
-			lineWidthText.setEnabled(false);
-			sizeText.setEnabled(false);
+			path.setCurrentWaypoint(waypoint);
 		}
 	}
 

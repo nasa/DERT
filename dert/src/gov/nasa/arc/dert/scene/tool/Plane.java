@@ -53,7 +53,7 @@ import com.ardor3d.util.geom.BufferUtils;
 public class Plane extends Node implements Tool, ViewDependent {
 
 	// Representative icon
-	public static final Icon icon = Icons.getImageIcon("plane.png");
+	public static final Icon icon = Icons.getImageIcon("plane_16.png");
 
 	// Default map element properties
 	public static float defaultSize = 100;
@@ -110,12 +110,11 @@ public class Plane extends Node implements Tool, ViewDependent {
 	public Plane(PlaneState pState) {
 		super(pState.name);
 		this.state = pState;
-		state.setMapElement(this);
 
 		this.size = state.size;
 		this.labelVisible = state.labelVisible;
 		this.triangleVisible = state.triangleVisible;
-		this.pinned = state.pinned;
+		this.pinned = state.locked;
 		this.color = state.color;
 		this.lengthScale = state.lengthScale;
 		this.widthScale = state.widthScale;
@@ -149,10 +148,6 @@ public class Plane extends Node implements Tool, ViewDependent {
 				updatePolygon();
 				updateGeometricState(0);
 			}
-			
-			public void pin(Movable m, boolean value) {
-				// nothing
-			}
 		});
 		attachChild(point[0]);
 
@@ -166,10 +161,6 @@ public class Plane extends Node implements Tool, ViewDependent {
 				updateStrikeDipLines();
 				updatePolygon();
 				updateGeometricState(0);
-			}
-			
-			public void pin(Movable m, boolean value) {
-				// nothing
 			}
 		});
 		attachChild(point[1]);
@@ -185,13 +176,10 @@ public class Plane extends Node implements Tool, ViewDependent {
 				updatePolygon();
 				updateGeometricState(0);
 			}
-			
-			public void pin(Movable m, boolean value) {
-				// nothing
-			}
 		});
 		attachChild(point[2]);
 		updateGeometricState(0);
+		state.setMapElement(this);
 
 		updatePlane();
 		createTriangleLine();
@@ -639,7 +627,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	 * Is this map element pinned?
 	 */
 	@Override
-	public boolean isPinned() {
+	public boolean isLocked() {
 		return (pinned);
 	}
 
@@ -647,10 +635,10 @@ public class Plane extends Node implements Tool, ViewDependent {
 	 * Pin down this map element so it cannot be moved.
 	 */
 	@Override
-	public void setPinned(boolean pinned) {
+	public void setLocked(boolean pinned) {
 		this.pinned = pinned;
 		for (int i = 0; i < point.length; ++i) {
-			point[i].setPinned(pinned);
+			point[i].setLocked(pinned);
 		}
 	}
 
@@ -826,6 +814,15 @@ public class Plane extends Node implements Tool, ViewDependent {
 	 */
 	public ReadOnlyVector3 getLocationInWorld() {
 		workVec.set(centroid);
+		Landscape.getInstance().localToWorldCoordinate(workVec);
+		return (workVec);
+	}
+
+	/**
+	 * Get the location in world coordinates
+	 */
+	public ReadOnlyVector3 getPointInWorld(int index) {
+		workVec.set(point[index].getLocation());
 		Landscape.getInstance().localToWorldCoordinate(workVec);
 		return (workVec);
 	}

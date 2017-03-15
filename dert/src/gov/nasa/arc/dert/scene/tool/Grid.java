@@ -88,7 +88,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 		attachChild(text);
 
 		setVisible(state.visible);
-		setPinned(state.pinned);
+		setLocked(state.locked);
 		
 		state.setMapElement(this);
 	}

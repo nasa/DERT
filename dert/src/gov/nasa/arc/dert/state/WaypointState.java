@@ -3,6 +3,8 @@ package gov.nasa.arc.dert.state;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.util.StateUtil;
+import gov.nasa.arc.dert.view.mapelement.EditDialog;
+import gov.nasa.arc.dert.view.mapelement.NotesDialog;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -38,10 +40,10 @@ public class WaypointState extends MapElementState {
 	 * @param pinned
 	 */
 	public WaypointState(long id, ReadOnlyVector3 position, String prefix, double size, Color color,
-		boolean labelVisible, boolean pinned) {
+		boolean labelVisible, boolean locked) {
 		super(id, MapElementState.Type.Waypoint, prefix, size, color, labelVisible);
 		location = new Vector3(position);
-		this.pinned = pinned;
+		this.locked = locked;
 	}
 	
 	/**
@@ -74,26 +76,52 @@ public class WaypointState extends MapElementState {
 		return(map);
 	}
 
-//	@Override
-//	public void setAnnotation(String note) {
-//		if (note != null) {
-//			annotation = note;
-//		}
-//		if (annotationDialog != null) {
-//			String annot = "W A Y P O I N T :\n" + annotation;
-//			annot += "\n\n";
-//			// also display Path annotation
-//			if (mapElement != null) {
-//				Waypoint waypoint = (Waypoint) mapElement;
-//				parent = (PathState) waypoint.getPath().getState();
-//				if (parent != null) {
-//					annot += "P A T H :\n" + parent.getAnnotation();
-//				}
-//				annotationDialog.update();
-//			}
-//			annotationDialog.setText(annot);
-//		}
-//	}
+	/**
+	 * Open the editor
+	 */
+	@Override
+	public EditDialog openEditor() {
+		if (mapElement == null)
+			return(null);
+		parent = (PathState) ((Waypoint)mapElement).getPath().getState();
+		EditDialog ed = parent.openEditor();
+		if (ed == null)
+			return(null);
+		else {
+			ed.setMapElement(mapElement);
+			ed.update();
+		}
+		ed.open();
+		return(ed);
+	}
+
+	/**
+	 * Open the annotation
+	 */
+	@Override
+	public NotesDialog openAnnotation() {
+		if (mapElement == null)
+			return(null);
+		parent = (PathState) ((Waypoint)mapElement).getPath().getState();
+		NotesDialog nd = parent.openAnnotation();
+		if (nd == null)
+			return(null);
+		else {
+			nd.setMapElement(mapElement);
+			nd.update();
+		}
+		nd.open();
+		return(nd);
+	}
+
+	@Override
+	public void setAnnotation(String note) {
+		if (note != null) {
+			annotation = note;
+		}
+		parent = (PathState) ((Waypoint)mapElement).getPath().getState();
+		parent.setMapElement(mapElement);
+	}
 
 	
 	@Override

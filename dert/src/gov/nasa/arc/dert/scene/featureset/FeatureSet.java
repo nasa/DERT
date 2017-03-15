@@ -18,6 +18,7 @@ import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
 import java.awt.Color;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.Icon;
@@ -36,7 +37,7 @@ import com.ardor3d.scenegraph.hint.CullHint;
  */
 public class FeatureSet extends GroupNode implements MapElement, ViewDependent {
 
-	public static final Icon icon = Icons.getImageIcon("lineset.png");
+	public static final Icon icon = Icons.getImageIcon("lineset_16.png");
 	public static Color defaultColor = Color.white;
 	public static float defaultSize = 0.75f, defaultLineWidth = 2;
 
@@ -94,6 +95,19 @@ public class FeatureSet extends GroupNode implements MapElement, ViewDependent {
 		setLabelVisible(state.labelVisible);
 		getSceneHints().setCullHint(CullHint.Dynamic);
 	}
+	
+	public Feature getFeature(int id) {
+		List<Spatial> child = getChildren();
+		for (int i=0; i<child.size(); ++i) {
+			Spatial spat = child.get(i);
+			if (spat instanceof Feature) {
+				Feature f = (Feature)spat;
+				if (f.getState().id == id)
+					return(f);
+			}
+		}
+		return(null);
+	}
 
 	/**
 	 * Get the MapElement state
@@ -128,7 +142,7 @@ public class FeatureSet extends GroupNode implements MapElement, ViewDependent {
 	 * Pin this Lineset (does nothing)
 	 */
 	@Override
-	public void setPinned(boolean pinned) {
+	public void setLocked(boolean pinned) {
 		// nothing here
 	}
 
@@ -136,8 +150,8 @@ public class FeatureSet extends GroupNode implements MapElement, ViewDependent {
 	 * Find out if pinned
 	 */
 	@Override
-	public boolean isPinned() {
-		return (true);
+	public boolean isLocked() {
+		return (false);
 	}
 
 	/**

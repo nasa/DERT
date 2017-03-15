@@ -42,11 +42,8 @@ public class FigurePanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public FigurePanel() {
-		super();
-		icon = Figure.icon;
-		type = "Figure";
-		build();
+	public FigurePanel(MapElement mapElement) {
+		super(mapElement);
 	}
 
 	@Override
@@ -126,7 +123,7 @@ public class FigurePanel extends MapElementBasePanel {
 
 	@Override
 	public void setMapElement(MapElement mapElement) {
-		this.mapElement = mapElement;
+		super.setMapElement(mapElement);
 		figure = (Figure) mapElement;
 		setLocation(locationText, figure.getTranslation());
 		sizeText.setValue(figure.getSize());

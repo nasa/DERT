@@ -459,30 +459,16 @@ public class Configuration {
 	 * Open all views
 	 */
 	public void openViews() {
-		if (helpState.getViewData().isVisible()) {
-			helpState.open();
-		}
-		if (surfAndLayerState.getViewData().isVisible()) {
-			surfAndLayerState.open();
-		}
-		if (mapElementsState.getViewData().isVisible()) {
-			mapElementsState.open();
-		}
-		if (colorBarsState.getViewData().isVisible()) {
-			colorBarsState.open();
-		}
-		if (lightingState.getViewData().isVisible()) {
-			lightingState.open();
-		}
-		if (lightPosState.getViewData().isVisible()) {
-			lightPosState.open();
-		}
-		if (viewPtState.getViewData().isVisible()) {
-			viewPtState.open();
-		}
+		helpState.open(false);
+		surfAndLayerState.open(false);
+		mapElementsState.open(false);
+		colorBarsState.open(false);
+		lightingState.open(false);
+		lightPosState.open(false);
+		viewPtState.open(false);
 		for (int i = 0; i < mapElementStateList.size(); ++i) {
 			MapElementState state = mapElementStateList.get(i);
-			state.open();
+			state.open(false);
 		}
 	}
 

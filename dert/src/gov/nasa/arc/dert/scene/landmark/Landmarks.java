@@ -144,9 +144,9 @@ public class Landmarks extends GroupNode {
 	 * 
 	 * @param pin
 	 */
-	public void setAllPinned(boolean pin) {
+	public void setAllLocked(boolean pin) {
 		for (int i = 0; i < getNumberOfChildren(); ++i) {
-			((Landmark) getChild(i)).setPinned(pin);
+			((Landmark) getChild(i)).setLocked(pin);
 		}
 	}
 

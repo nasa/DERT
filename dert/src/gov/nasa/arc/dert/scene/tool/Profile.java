@@ -49,7 +49,7 @@ import com.ardor3d.util.geom.BufferUtils;
  */
 public class Profile extends Node implements ViewDependent, Tool {
 
-	public static final Icon icon = Icons.getImageIcon("profile.png");
+	public static final Icon icon = Icons.getImageIcon("profile_16.png");
 
 	// Defaults
 	public static float defaultSize = 1;
@@ -126,10 +126,6 @@ public class Profile extends Node implements ViewDependent, Tool {
 				updateGraph();
 				updateGeometricState(0);
 			}
-			
-			public void pin(Movable m, boolean value) {
-				// nothing
-			}
 		});
 		attachChild(endpointA);
 
@@ -140,10 +136,6 @@ public class Profile extends Node implements ViewDependent, Tool {
 				pBLoc.set(pos);
 				updateGraph();
 				updateGeometricState(0);
-			}
-			
-			public void pin(Movable m, boolean value) {
-				// nothing
 			}
 		});
 		attachChild(endpointB);
@@ -418,17 +410,17 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * Determine mobility
 	 */
 	@Override
-	public boolean isPinned() {
-		return (endpointA.isPinned());
+	public boolean isLocked() {
+		return (endpointA.isLocked());
 	}
 
 	/**
 	 * Set mobility
 	 */
 	@Override
-	public void setPinned(boolean pinned) {
-		endpointA.setPinned(pinned);
-		endpointB.setPinned(pinned);
+	public void setLocked(boolean pinned) {
+		endpointA.setLocked(pinned);
+		endpointB.setLocked(pinned);
 	}
 
 	/**

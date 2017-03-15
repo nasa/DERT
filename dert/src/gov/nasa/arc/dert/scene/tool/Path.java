@@ -45,6 +45,9 @@ import com.ardor3d.scenegraph.hint.PickingHint;
  */
 public class Path extends Node implements MotionListener, Tool, ViewDependent {
 
+	// Representative icon
+	public static final Icon icon = Icons.getImageIcon("path_16.png");
+
 	// Indicates how to draw the path body
 	public static enum BodyType {
 		Point, Line, Polygon
@@ -57,9 +60,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	public static enum LabelType {
 		Name, Distance, CumulativeDistance, Elevation, Slope, Note
 	}
-
-	// Representative icon
-	public static final Icon icon = Icons.getImageIcon("path.png");
 
 	// Default map element properties
 	public static BodyType defaultBodyType = BodyType.Line;
@@ -124,7 +124,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		this.size = state.size;
 		this.labelVisible = state.labelVisible;
 		this.waypointsVisible = state.waypointsVisible;
-		this.pinned = state.pinned;
+		this.pinned = state.locked;
 		this.color = state.color;
 		this.lineWidth = state.lineWidth;
 
@@ -178,10 +178,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		}
 		updateLabels(null);
 		state.pathDirty();
-	}
-	
-	public void pin(Movable m, boolean value) {
-		// nothing
 	}
 
 	/**
@@ -655,7 +651,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	 * Is this map element pinned?
 	 */
 	@Override
-	public boolean isPinned() {
+	public boolean isLocked() {
 		return (pinned);
 	}
 
@@ -663,10 +659,10 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	 * Pin down this map element so it cannot be moved.
 	 */
 	@Override
-	public void setPinned(boolean pinned) {
+	public void setLocked(boolean pinned) {
 		this.pinned = pinned;
 		for (int i = 0; i < pointSet.getNumberOfChildren(); ++i) {
-			((Waypoint) pointSet.getChild(i)).setPinned(pinned);
+			((Waypoint) pointSet.getChild(i)).setLocked(pinned);
 		}
 	}
 

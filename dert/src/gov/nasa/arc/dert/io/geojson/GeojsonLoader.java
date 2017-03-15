@@ -11,6 +11,8 @@ import gov.nasa.arc.dert.scenegraph.FigureMarker;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.scenegraph.LineStrip;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
+import gov.nasa.arc.dert.state.FeatureState;
+import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.view.Console;
 
 import java.awt.Color;
@@ -175,7 +177,8 @@ public class GeojsonLoader {
 			name = gjFeature.getId();
 		if (name == null)
 			name = "Feature"+count;
-		Feature feature = new Feature(name, color, gjFeature.getProperties());
+		FeatureState fState = new FeatureState(count, name, Type.Feature, "Feature", color);
+		Feature feature = new Feature(fState, gjFeature.getProperties());
 		if (geojsonGeometryToArdor3D(feature, geometry, color, count, feature.getProperties())) {
 			return (feature);
 		}

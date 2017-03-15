@@ -31,11 +31,8 @@ public class PlacemarkPanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public PlacemarkPanel() {
-		super();
-		icon = Placemark.icon;
-		type = "Placemark";
-		build();
+	public PlacemarkPanel(MapElement mapElement) {
+		super(mapElement);
 	}
 
 	@Override
@@ -71,7 +68,7 @@ public class PlacemarkPanel extends MapElementBasePanel {
 
 	@Override
 	public void setMapElement(MapElement mapElement) {
-		this.mapElement = mapElement;
+		super.setMapElement(mapElement);
 		placemark = (Placemark) mapElement;
 		setLocation(locationText, placemark.getTranslation());
 		sizeText.setValue(placemark.getSize());

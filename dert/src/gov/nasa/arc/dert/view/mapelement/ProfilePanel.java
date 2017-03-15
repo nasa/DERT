@@ -39,11 +39,8 @@ public class ProfilePanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public ProfilePanel() {
-		super();
-		icon = Profile.icon;
-		type = "Profile";
-		build();
+	public ProfilePanel(MapElement mapElement) {
+		super(mapElement);
 	}
 
 	@Override
@@ -117,7 +114,7 @@ public class ProfilePanel extends MapElementBasePanel {
 
 	@Override
 	public void setMapElement(MapElement mapElement) {
-		this.mapElement = mapElement;
+		super.setMapElement(mapElement);
 		profile = (Profile) mapElement;
 		setLocation(pALocation, profile.getEndpointA());
 		setLocation(pBLocation, profile.getEndpointB());

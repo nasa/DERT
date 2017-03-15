@@ -33,11 +33,8 @@ public class FieldCameraPanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public FieldCameraPanel() {
-		super();
-		icon = FieldCamera.icon;
-		type = "Camera";
-		build();
+	public FieldCameraPanel(MapElement mapElement) {
+		super(mapElement);
 	}
 
 	@Override
@@ -86,7 +83,7 @@ public class FieldCameraPanel extends MapElementBasePanel {
 
 	@Override
 	public void setMapElement(MapElement mapElement) {
-		this.mapElement = mapElement;
+		super.setMapElement(mapElement);
 		fieldCamera = (FieldCamera) mapElement;
 		setLocation(locationText, fieldCamera.getTranslation());
 		defCombo.setSelectedItem(fieldCamera.getFieldCameraDefinition());

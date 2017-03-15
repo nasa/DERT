@@ -2,14 +2,27 @@ package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.landscape.Landscape;
+import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.Plane;
+import gov.nasa.arc.dert.scenegraph.MotionListener;
+import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.StateUtil;
+import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.View;
 import gov.nasa.arc.dert.view.contour.ContourScenePanel;
 import gov.nasa.arc.dert.view.contour.ContourView;
+import gov.nasa.arc.dert.view.mapelement.NotesDialog;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.util.HashMap;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -181,4 +194,103 @@ public class PlaneState extends ToolState {
 		String str = "["+triangleVisible+","+lengthScale+","+widthScale+","+colorMapName+","+gradient+","+minimum+","+maximum+","+p0+","+p1+","+p2+"]"+super.toString();
 		return(str);
 	}
+
+	/**
+	 * Set the MapElement
+	 * 
+	 * @param me
+	 */
+	@Override
+	public void setMapElement(MapElement me) {
+		mapElement = me;
+		Plane plane = (Plane)me;
+		for (int i=0; i<3; ++i) {
+			Movable movable = (Movable) plane.getMarker(i);
+			movable.addMotionListener(new MotionListener() {
+				@Override
+				public void move(Movable mo, ReadOnlyVector3 pos) {
+					if (annotationDialog != null) {
+						annotationDialog.update();
+					}
+					if (editDialog != null) {
+						editDialog.update();
+					}
+				}
+			});
+		}
+	}
+	
+	/**
+	 * Open the annotation
+	 */
+	@Override
+	public NotesDialog openAnnotation() {
+		if (mapElement == null)
+			return(null);
+		if (annotationDialog == null)
+			annotationDialog = new NotesDialog(Dert.getMainWindow(), name, 400, 200, mapElement) {
+				private JLabel p0, p1, p2, l0, l1, l2, strikeNDip;
+				@Override
+				protected void buildLocation(JPanel thePanel) {
+					JPanel panel = new JPanel(new GridLayout(4, 1));
+					panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+					JPanel topPanel = new JPanel(new BorderLayout());
+					topPanel.setBorder(BorderFactory.createEmptyBorder());
+					p0 = new JLabel(" ");
+					l0 = new JLabel(new ImageIcon());
+					topPanel.add(new JLabel("Point 0: ", SwingConstants.RIGHT), BorderLayout.WEST);
+					topPanel.add(p0, BorderLayout.CENTER);
+					topPanel.add(l0, BorderLayout.EAST);
+					panel.add(topPanel);
+					topPanel = new JPanel(new BorderLayout());
+					topPanel.setBorder(BorderFactory.createEmptyBorder());
+					p1 = new JLabel(" ");
+					l1 = new JLabel(new ImageIcon());
+					topPanel.add(new JLabel("Point 1: ", SwingConstants.RIGHT), BorderLayout.WEST);
+					topPanel.add(p1, BorderLayout.CENTER);
+					topPanel.add(l1, BorderLayout.EAST);
+					panel.add(topPanel);
+					topPanel = new JPanel(new BorderLayout());
+					topPanel.setBorder(BorderFactory.createEmptyBorder());
+					p2 = new JLabel(" ");
+					l2 = new JLabel(new ImageIcon());
+					topPanel.add(new JLabel("Point 2: ", SwingConstants.RIGHT), BorderLayout.WEST);
+					topPanel.add(p2, BorderLayout.CENTER);
+					topPanel.add(l2, BorderLayout.EAST);
+					panel.add(topPanel);
+					strikeNDip = new JLabel(" ");
+					panel.add(strikeNDip);
+					thePanel.add(panel, BorderLayout.NORTH);
+				}
+				protected void updateLocation() {
+					Plane plane = (Plane)mapElement;
+					if (mapElement.isLocked()) {
+						l0.setIcon(locked);
+						l1.setIcon(locked);
+						l2.setIcon(locked);
+					}
+					else {
+						l0.setIcon(null);
+						l1.setIcon(null);
+						l2.setIcon(null);
+					}
+					p0.setText(StringUtil.format(plane.getPointInWorld(0)));
+					p1.setText(StringUtil.format(plane.getPointInWorld(1)));
+					p2.setText(StringUtil.format(plane.getPointInWorld(2)));
+					String str = "Strike: ";
+					if (Plane.strikeAsCompassBearing) {
+						str += StringUtil.azimuthToCompassBearing(plane.getStrike());
+					} else {
+						str += StringUtil.format(plane.getStrike()) + StringUtil.DEGREE;
+					}
+					str += "   Dip: " + StringUtil.format(plane.getDip()) + StringUtil.DEGREE;
+					strikeNDip.setText(str);
+				}
+			};
+		else
+			annotationDialog.update();
+		annotationDialog.open();
+		return(annotationDialog);
+	}
+
 }

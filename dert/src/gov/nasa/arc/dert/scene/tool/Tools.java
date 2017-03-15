@@ -141,7 +141,7 @@ public class Tools extends GroupNode {
 				tool.update(Dert.getWorldView().getViewpointNode().getCamera());
 			}
 			if ((tool instanceof FieldCamera) || (tool instanceof Profile)) {
-				state.open();
+				state.open(true);
 				spatial.markDirty(DirtyType.Transform);
 			}
 		}
@@ -151,28 +151,6 @@ public class Tools extends GroupNode {
 	public void setHiddenDashed(boolean hiddenDashed) {
 		for (int i=0; i<getNumberOfChildren(); ++i)
 			((Tool)getChild(i)).setHiddenDashed(hiddenDashed);
-	}
-
-	/**
-	 * Show all tools
-	 * 
-	 * @param visible
-	 */
-	public void setAllVisible(boolean visible) {
-		for (int i = 0; i < getNumberOfChildren(); ++i) {
-			((Tool) getChild(i)).setVisible(visible);
-		}
-	}
-
-	/**
-	 * Pin all the tools
-	 * 
-	 * @param pin
-	 */
-	public void setAllPinned(boolean pin) {
-		for (int i = 0; i < getNumberOfChildren(); ++i) {
-			((Tool) getChild(i)).setPinned(pin);
-		}
 	}
 
 	/**

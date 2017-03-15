@@ -125,5 +125,9 @@ public class State {
 	public void setViewData(ViewData viewData) {
 		this.viewData = viewData;
 	}
+	
+	public View open(boolean doIt) {
+		return(null);
+	}
 
 }

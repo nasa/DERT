@@ -227,7 +227,7 @@ public class Dert {
 		// Create the main and console windows.
 		SceneFramework.createInstance();
 		mainWindow = new MainWindow(MAIN_TITLE, path, args, dertProperties);
-		consoleView = (ConsoleView) currentConfig.consoleState.open();
+		consoleView = (ConsoleView) currentConfig.consoleState.open(false);
 		consoleWindow = (JDialog) currentConfig.consoleState.getViewData().getViewWindow();
 
 		// Sleep a second to let the main view be completely realized so its

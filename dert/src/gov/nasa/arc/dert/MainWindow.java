@@ -174,8 +174,7 @@ public class MainWindow extends JFrame {
 		consoleAction = new ButtonAction("open console", null, "console.png", buttonBorder) {
 			@Override
 			public void run() {
-				currentConfig.consoleState.getViewData().setVisible(true);
-				currentConfig.consoleState.open();
+				currentConfig.consoleState.open(true);
 			}
 		};
 		toolBar.add(consoleAction);
@@ -184,8 +183,7 @@ public class MainWindow extends JFrame {
 		helpAction = new ButtonAction("open help", null, "help.png", buttonBorder) {
 			@Override
 			public void run() {
-				currentConfig.helpState.getViewData().setVisible(true);
-				currentConfig.helpState.open();
+				currentConfig.helpState.open(true);
 			}
 		};
 		toolBar.add(helpAction);
@@ -197,8 +195,7 @@ public class MainWindow extends JFrame {
 			buttonBorder) {
 			@Override
 			public void run() {
-				currentConfig.surfAndLayerState.getViewData().setVisible(true);
-				currentConfig.surfAndLayerState.open();
+				currentConfig.surfAndLayerState.open(true);
 			}
 		};
 		surfaceAndLayersAction.setEnabled(false);
@@ -208,8 +205,7 @@ public class MainWindow extends JFrame {
 		mapElementsAction = new ButtonAction("edit map elements", null, "mapelements.png", buttonBorder) {
 			@Override
 			public void run() {
-				currentConfig.mapElementsState.getViewData().setVisible(true);
-				currentConfig.mapElementsState.open();
+				currentConfig.mapElementsState.open(true);
 			}
 		};
 		mapElementsAction.setEnabled(false);
@@ -219,8 +215,7 @@ public class MainWindow extends JFrame {
 		colorbarAction = new ButtonAction("show color maps", null, "colorbar.png", buttonBorder) {
 			@Override
 			public void run() {
-				currentConfig.colorBarsState.getViewData().setVisible(true);
-				currentConfig.colorBarsState.open();
+				currentConfig.colorBarsState.open(true);
 			}
 		};
 		colorbarAction.setEnabled(false);
@@ -243,8 +238,7 @@ public class MainWindow extends JFrame {
 			buttonBorder) {
 			@Override
 			public void run() {
-				currentConfig.lightingState.getViewData().setVisible(true);
-				currentConfig.lightingState.open();
+				currentConfig.lightingState.open(true);
 			}
 		};
 		lightingAndShadowsAction.setEnabled(false);
@@ -254,8 +248,7 @@ public class MainWindow extends JFrame {
 		lightAction = new ButtonAction("set light position", null, "luxo.png", buttonBorder) {
 			@Override
 			public void run() {
-				currentConfig.lightPosState.getViewData().setVisible(true);
-				currentConfig.lightPosState.open();
+				currentConfig.lightPosState.open(true);
 			}
 		};
 		lightAction.setEnabled(false);
@@ -294,7 +287,7 @@ public class MainWindow extends JFrame {
 			@Override
 			public void run() {
 				currentConfig.marbleState.getViewData().setVisible(true);
-				currentConfig.marbleState.open();
+				currentConfig.marbleState.open(true);
 			}
 		};
 		marbleAction.setEnabled(false);
@@ -390,8 +383,7 @@ public class MainWindow extends JFrame {
 		MenuItemAction viewpointListAction = new MenuItemAction("Open Viewpoint List") {
 			@Override
 			public void run() {
-				currentConfig.viewPtState.getViewData().setVisible(true);
-				currentConfig.viewPtState.open();
+				currentConfig.viewPtState.open(true);
 			}
 		};
 		menu.add(viewpointListAction);

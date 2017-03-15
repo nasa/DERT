@@ -63,14 +63,14 @@ public abstract class Marker extends Movable implements ViewDependent {
 	/**
 	 * Constructor
 	 */
-	public Marker(String name, ReadOnlyVector3 point, double size, double zOff, Color color, boolean labelVisible, boolean pinned) {
+	public Marker(String name, ReadOnlyVector3 point, double size, double zOff, Color color, boolean labelVisible, boolean locked) {
 		super(name);
 		billboard = new BillboardNode("_billboard");
 		this.labelStr = name;
 		this.labelVisible = labelVisible;
 		this.size = size;
 		this.zOff = zOff;
-		setPinned(pinned);
+		setLocked(locked);
 		worldLoc = new Vector3();
 		if (point != null)
 			setLocation(point, false);

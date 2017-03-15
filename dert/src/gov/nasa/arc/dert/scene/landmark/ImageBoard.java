@@ -22,7 +22,7 @@ import com.ardor3d.math.Vector3;
  */
 public class ImageBoard extends BillboardMarker implements Landmark {
 
-	public static final Icon icon = Icons.getImageIcon("billboard.png");
+	public static final Icon icon = Icons.getImageIcon("billboard_16.png");
 
 	// Defaults
 	public static double defaultSize = 1.0;
@@ -42,7 +42,7 @@ public class ImageBoard extends BillboardMarker implements Landmark {
 	 * @param state
 	 */
 	public ImageBoard(ImageBoardState state) {
-		super(state.name, state.position, state.size, state.zOff, state.color, state.labelVisible, state.pinned);
+		super(state.name, state.position, state.size, state.zOff, state.color, state.labelVisible, state.locked);
 		this.state = state;
 		imagePath = state.imagePath;
 

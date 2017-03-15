@@ -32,9 +32,9 @@ public interface MapElement {
 
 	public Type getType();
 
-	public boolean isPinned();
+	public boolean isLocked();
 
-	public void setPinned(boolean pinned);
+	public void setLocked(boolean locked);
 
 	public boolean updateElevation(QuadTree quadTree);
 

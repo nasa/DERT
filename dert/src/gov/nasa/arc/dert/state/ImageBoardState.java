@@ -33,6 +33,7 @@ public class ImageBoardState extends LandmarkState {
 			.incrementMapElementCount(MapElementState.Type.Billboard), MapElementState.Type.Billboard, "Billboard",
 			ImageBoard.defaultSize, Color.white, ImageBoard.defaultLabelVisible, position);
 		this.imagePath = imagePath;
+		viewData = new ViewData(-1, -1, 0, 0, false);
 	}
 	
 	/**
@@ -71,10 +72,27 @@ public class ImageBoardState extends LandmarkState {
 	}
 	
 	@Override
-	public View open() {
+	public View open(boolean doIt) {
+		if (viewData == null)
+			return(null);
+		
+		if (doIt)
+			viewData.setVisible(true);
+		
+		// The view is not visible
+		if (!viewData.isVisible())
+			return(null);
+		
+		// This state element has a view
+		if (viewData.viewWindow != null) {
+			viewData.viewWindow.setVisible(true);
+			return (viewData.view);
+		}
+		
 		if (mapElement == null)
 			return(null);
 		try {
+			viewData.setVisible(true);
 			ImageBoard imageBoard = (ImageBoard)mapElement;
 			Desktop.getDesktop().open(new File(imageBoard.getImagePath()));
 		} catch (Exception e) {

@@ -25,7 +25,7 @@ import com.ardor3d.scenegraph.hint.CullHint;
  */
 public class Figure extends FigureMarker implements Landmark {
 
-	public static final Icon icon = Icons.getImageIcon("figure.png");
+	public static final Icon icon = Icons.getImageIcon("figure_16.png");
 
 	// Defaults
 	public static Color defaultColor = Color.red;
@@ -46,7 +46,7 @@ public class Figure extends FigureMarker implements Landmark {
 	 * @param state
 	 */
 	public Figure(FigureState state) {
-		super(state.name, state.position, state.size, state.zOff, state.color, state.labelVisible, state.autoScale, state.pinned);
+		super(state.name, state.position, state.size, state.zOff, state.color, state.labelVisible, state.autoScale, state.locked);
 		setShape(state.shape);
 		setAzimuth(state.azimuth);
 		setTilt(state.tilt);

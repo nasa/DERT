@@ -20,7 +20,7 @@ import com.ardor3d.util.geom.BufferUtils;
  */
 public class CartesianGrid extends Grid {
 
-	public static final Icon icon = Icons.getImageIcon("cartesiangrid.png");
+	public static final Icon icon = Icons.getImageIcon("cartesiangrid_16.png");
 
 	// Defaults
 	public static double defaultCellSize = 1;

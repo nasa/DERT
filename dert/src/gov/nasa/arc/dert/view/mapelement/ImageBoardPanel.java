@@ -31,11 +31,8 @@ public class ImageBoardPanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public ImageBoardPanel() {
-		super();
-		icon = ImageBoard.icon;
-		type = "ImageBoard";
-		build();
+	public ImageBoardPanel(MapElement mapElement) {
+		super(mapElement);
 	}
 
 	@Override
@@ -64,7 +61,7 @@ public class ImageBoardPanel extends MapElementBasePanel {
 
 	@Override
 	public void setMapElement(MapElement mapElement) {
-		this.mapElement = mapElement;
+		super.setMapElement(mapElement);
 		imageBoard = (ImageBoard) mapElement;
 		setLocation(locationText, imageBoard.getTranslation());
 		sizeText.setValue(imageBoard.getSize());

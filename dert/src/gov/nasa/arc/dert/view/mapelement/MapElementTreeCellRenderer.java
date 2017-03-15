@@ -70,7 +70,7 @@ public class MapElementTreeCellRenderer extends DefaultTreeCellRenderer {
 			setText(mapElement.getName());
 			panel.removeAll();
 			panel.add(this);
-			if (mapElement.isPinned())
+			if (mapElement.isLocked())
 				panel.add(lockedLabel);
 			return(panel);
 		}

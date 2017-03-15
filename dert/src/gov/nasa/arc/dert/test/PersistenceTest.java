@@ -109,7 +109,7 @@ public class PersistenceTest {
 		f.showNormal = true;
 		f.autoScale = false;
 		f.visible = false;
-		f.pinned = true;
+		f.locked = true;
 		f.labelVisible = false;
 		f.size = 10;
 		f.color = Color.pink;

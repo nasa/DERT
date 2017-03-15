@@ -7,16 +7,18 @@ import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.featureset.Feature;
 import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.scene.featureset.FeatureSets;
+import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
 import gov.nasa.arc.dert.scene.landmark.Landmark;
 import gov.nasa.arc.dert.scene.landmark.Landmarks;
+import gov.nasa.arc.dert.scene.landmark.Placemark;
+import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.scene.tool.Path;
-import gov.nasa.arc.dert.scene.tool.Plane;
 import gov.nasa.arc.dert.scene.tool.Profile;
+import gov.nasa.arc.dert.scene.tool.ScaleBar;
 import gov.nasa.arc.dert.scene.tool.Tool;
 import gov.nasa.arc.dert.scene.tool.Tools;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
-import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementsState;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
@@ -45,6 +47,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -145,6 +148,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 
 		// Search function
 		JPanel sPanel = new JPanel(new BorderLayout(0, 0));
+		sPanel.setBorder(BorderFactory.createEmptyBorder());
 		searchText = new JTextField();
 		searchText.setToolTipText("enter text for search");
 		sPanel.add(searchText, BorderLayout.CENTER);
@@ -455,13 +459,8 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		}
 		if (treeNode != null) {
 			treeModel.nodeChanged(treeNode);
-			if (treeNode == selectedNode) {
-//				if (mapElement.isVisible()) {
-//					showButton.setText("Hide");
-//				} else {
-//					showButton.setText("Show");
-//				}
-			}
+			if (treeNode == selectedNode)
+				enableButtons(false, mapElement);
 		}
 	}
 
@@ -594,40 +593,51 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			currentMapElements = new MapElement[treeNode.getChildCount()];
 			for (int i=0; i<currentMapElements.length; ++i)
 				currentMapElements[i] = (MapElement)((DefaultMutableTreeNode)treeNode.getChildAt(i)).getUserObject();			
-			enableButtons(treeNode == featureSetsNode, treeNode == landmarksNode, null);
+			enableButtons(treeNode == landmarksNode, null);
 			state.setLastMapElement(null);
 		}
 		else {
 			currentMapElements = new MapElement[] {(MapElement)treeNode.getUserObject()};
-			enableButtons(treeNode == featureSetsNode, treeNode == landmarksNode, currentMapElements[0]);
+			enableButtons(treeNode == landmarksNode, currentMapElements[0]);
 			state.setLastMapElement(currentMapElements[0]);
+			if (currentMapElements[0] instanceof Waypoint) {
+				Waypoint wp = (Waypoint)currentMapElements[0];
+				wp.getPath().getState().setMapElement(currentMapElements[0]);
+			}
+			else if (currentMapElements[0] instanceof Path) {
+				((Path)currentMapElements[0]).getState().setMapElement(currentMapElements[0]);
+			}
+			else if (currentMapElements[0] instanceof Feature) {
+				Feature f = (Feature)currentMapElements[0];
+				f.getFeatureSet().getState().setMapElement(currentMapElements[0]);
+			}
+			else if (currentMapElements[0] instanceof FeatureSet) {
+				((FeatureSet)currentMapElements[0]).getState().setMapElement(currentMapElements[0]);
+			}
 		}
 	}
 
 	private void doSelection(DefaultMutableTreeNode[] treeNode) {
 		ArrayList<MapElement> meList = new ArrayList<MapElement>();
 		currentMapElements = null;
-		boolean hasFeature = false;
 		for (int i = 0; i < treeNode.length; ++i) {
 			if ((treeNode[i] == landmarksNode) || (treeNode[i] == toolsNode) || (treeNode[i] == featureSetsNode)) {
-				hasFeature |= (treeNode[i] == featureSetsNode);
 				for (int j=0; j<treeNode[i].getChildCount(); ++j)
 					meList.add((MapElement)((DefaultMutableTreeNode)treeNode[i].getChildAt(i)).getUserObject());
 			}
 			else {
 				MapElement me = (MapElement)((DefaultMutableTreeNode)treeNode[i]).getUserObject();
-				hasFeature |= (me instanceof Feature) || (me instanceof FeatureSet);
 				meList.add(me);
 			}
 		}
 		currentMapElements = new MapElement[meList.size()];
 		meList.toArray(currentMapElements);
-		enableButtons(hasFeature, false, null);
+		enableButtons(false, null);
 		
 		state.setLastMapElement(null);
 	}
 	
-	private void enableButtons(boolean hasFeature, boolean allLandmark, MapElement currentMapElement) {
+	private void enableButtons(boolean allLandmark, MapElement currentMapElement) {
 		if (currentMapElements == null) {
 			editButton.setEnabled(false);
 			openButton.setEnabled(false);
@@ -652,30 +662,30 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			colorList.setEnabled(true);
 			showButton.setEnabled(true);
 			hideButton.setEnabled(true);
-			lockButton.setEnabled(!hasFeature);
-			unlockButton.setEnabled(!hasFeature);
+			lockButton.setEnabled(true);
+			unlockButton.setEnabled(true);
 			labelButton.setEnabled(true);
 			unlabelButton.setEnabled(true);
 			deleteButton.setEnabled(true);
-			groundButton.setEnabled(!hasFeature);
+			groundButton.setEnabled(true);
 			seekButton.setEnabled(false);
 			renameButton.setEnabled(false);
 			csvButton.setEnabled(allLandmark);
 		}
 		else {
-			editButton.setEnabled(true);
-			openButton.setEnabled((currentMapElements[0] instanceof ImageBoard) || (currentMapElements[0] instanceof FieldCamera) ||
-					(currentMapElements[0] instanceof Path) || (currentMapElements[0] instanceof Profile) || (currentMapElements[0] instanceof Plane));
-			colorList.setColor(currentMapElements[0].getColor());
-			colorList.setEnabled(!(currentMapElement instanceof ImageBoard));
+			editButton.setEnabled(!(currentMapElement instanceof Feature));
+			openButton.setEnabled(!(currentMapElement instanceof Waypoint) && !(currentMapElement instanceof Grid)
+					&& !(currentMapElement instanceof Figure) && !(currentMapElement instanceof Placemark) && !(currentMapElement instanceof ScaleBar));
+			colorList.setColor(currentMapElement.getColor());
+			colorList.setEnabled(!(currentMapElement instanceof ImageBoard) && !(currentMapElement instanceof Feature) && !(currentMapElement instanceof Waypoint));
 			showButton.setEnabled(!currentMapElement.isVisible());
 			hideButton.setEnabled(currentMapElement.isVisible());
-			lockButton.setEnabled(!currentMapElement.isPinned() && !(currentMapElements[0] instanceof FeatureSet));
-			unlockButton.setEnabled(currentMapElement.isPinned() && !(currentMapElements[0] instanceof FeatureSet));
+			lockButton.setEnabled(!currentMapElement.isLocked() && !(currentMapElement instanceof FeatureSet) && !(currentMapElement instanceof Feature));
+			unlockButton.setEnabled(currentMapElement.isLocked() && !(currentMapElement instanceof FeatureSet) && !(currentMapElement instanceof Feature));
 			labelButton.setEnabled(!currentMapElement.isLabelVisible());
 			unlabelButton.setEnabled(currentMapElement.isLabelVisible());
 			deleteButton.setEnabled(!(currentMapElement instanceof Feature));
-			groundButton.setEnabled(!(currentMapElement instanceof Feature) && !(currentMapElements[0] instanceof FeatureSet));
+			groundButton.setEnabled(!(currentMapElement instanceof Feature) && !(currentMapElement instanceof FeatureSet));
 			seekButton.setEnabled(true);
 			renameButton.setEnabled(!(currentMapElement instanceof Feature) && !(currentMapElement instanceof Waypoint));
 			csvButton.setEnabled(currentMapElement instanceof Path);
@@ -706,12 +716,8 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			if (spatial instanceof MapElement) {
 				updateMapElement((MapElement) spatial);
 			}
-//			if ((currentPanel == notesPanel) && (spatial == currentMapElements[0]))
-//				notesPanel.update();
 			break;
 		case Transform:
-//			if (currentPanel == notesPanel)
-//				notesPanel.update();
 			break;
 		case Destroyed:
 			break;
@@ -733,7 +739,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		editButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				edit();
+				currentMapElements[0].getState().openEditor();
 			}
 		});
 		buttonPanel.add(editButton);
@@ -745,7 +751,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		openButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				open();
+				currentMapElements[0].getState().open(true);
 			}
 		});
 		buttonPanel.add(openButton);
@@ -768,7 +774,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 					}
 					Dert.getMainWindow().getUndoHandler().addEdit(new DeleteEditMulti(state));
 					currentMapElements = null;
-					enableButtons(false, false, null);
+					enableButtons(false, null);
 				}
 			}
 		});
@@ -827,7 +833,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				for (int i=0; i<currentMapElements.length; ++i)
-					currentMapElements[i].setPinned(true);
+					currentMapElements[i].getState().setLocked(true);
 				lockButton.setEnabled(false);
 				unlockButton.setEnabled(true);
 			}
@@ -842,7 +848,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				for (int i=0; i<currentMapElements.length; ++i)
-					currentMapElements[i].setPinned(false);
+					currentMapElements[i].getState().setLocked(false);
 				unlockButton.setEnabled(false);
 				lockButton.setEnabled(true);
 			}
@@ -960,14 +966,5 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		});
 		buttonPanel.add(csvButton);		
 
-	}
-	
-	private void edit() {
-		currentMapElements[0].getState().openEditor();
-	}
-	
-	private void open() {
-		currentMapElements[0].getState().getViewData().setVisible(true);
-		currentMapElements[0].getState().open();
 	}
 }

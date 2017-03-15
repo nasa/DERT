@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.scene.MapElement;
-import gov.nasa.arc.dert.scenegraph.MotionListener;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.View;
@@ -15,6 +14,7 @@ import java.util.HashMap;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.Spatial;
+import com.ardor3d.scenegraph.event.DirtyType;
 
 /**
  * Base class for map element state objects.
@@ -34,7 +34,7 @@ public abstract class MapElementState extends State {
 
 	// Options
 	public boolean visible;
-	public boolean pinned, labelVisible;
+	public boolean locked, labelVisible;
 	public double size;
 	public Color color;
 	public double zOff;
@@ -92,7 +92,7 @@ public abstract class MapElementState extends State {
 		super(map);
 		annotation = StateUtil.getString(map, "Annotation", "");
 		visible = StateUtil.getBoolean(map, "Visible", true);
-		pinned = StateUtil.getBoolean(map, "Pinned", false);
+		locked = StateUtil.getBoolean(map, "Locked", false);
 		labelVisible = StateUtil.getBoolean(map, "LabelVisible", true);
 		size = StateUtil.getDouble(map, "Size", 1);
 		color = StateUtil.getColor(map, "Color", Color.white);
@@ -111,7 +111,7 @@ public abstract class MapElementState extends State {
 			return(false);
 		if (this.visible != that.visible)
 			return(false);
-		if (this.pinned != that.pinned)
+		if (this.locked != that.locked)
 			return(false);
 		if (this.labelVisible != that.labelVisible) 
 			return(false);
@@ -131,7 +131,7 @@ public abstract class MapElementState extends State {
 	@Override
 	public String toString() {
 		String str = super.toString();
-		str += " Visible="+visible+" Pinned="+pinned+" LabelVisible="+labelVisible+" Size="+size+" MapElementType="+mapElementType+" Color="+color+" Id="+id+" Note="+annotation;
+		str += " Visible="+visible+" Locked="+locked+" LabelVisible="+labelVisible+" Size="+size+" MapElementType="+mapElementType+" Color="+color+" Id="+id+" Note="+annotation;
 		return(str);
 	}
 
@@ -150,30 +150,13 @@ public abstract class MapElementState extends State {
 	 * @param me
 	 */
 	public void setMapElement(MapElement me) {
-		this.mapElement = me;
-		if (mapElement instanceof Movable) {
-			Movable movable = (Movable) mapElement;
-			movable.addMotionListener(new MotionListener() {
-				@Override
-				public void move(Movable mo, ReadOnlyVector3 pos) {
-					if (annotationDialog != null) {
-						annotationDialog.update();
-					}
-					if (editDialog != null) {
-						editDialog.update();
-					}
-				}
-				@Override
-				public void pin(Movable mo, boolean value) {
-					if (annotationDialog != null) {
-						annotationDialog.update();
-					}
-					if (editDialog != null) {
-						editDialog.update();
-					}
-				}
-			});
-		}
+		// first time
+		if ((mapElement == null) && (me.getType() == mapElementType))
+			mapElement = me;
+		if (annotationDialog != null)
+			annotationDialog.setMapElement(me);
+		if (editDialog != null)
+			editDialog.setMapElement(me);
 	}
 
 	@Override
@@ -183,7 +166,7 @@ public abstract class MapElementState extends State {
 			name = mapElement.getName();
 			size = mapElement.getSize();
 			color = mapElement.getColor();
-			pinned = mapElement.isPinned();
+			locked = mapElement.isLocked();
 			visible = mapElement.isVisible();
 			labelVisible = mapElement.isLabelVisible();
 			zOff = mapElement.getZOffset();
@@ -192,7 +175,7 @@ public abstract class MapElementState extends State {
 		map.put("Size", new Double(size));
 		map.put("ZOffset", new Double(zOff));
 		map.put("Color", color);
-		map.put("Pinned", new Boolean(pinned));
+		map.put("Locked", new Boolean(locked));
 		map.put("Annotation", annotation);
 		map.put("Visible", new Boolean(visible));
 		map.put("LabelVisible", new Boolean(labelVisible));
@@ -202,29 +185,31 @@ public abstract class MapElementState extends State {
 	}
 
 	/**
-	 * Open the annotation
+	 * Open the editor
 	 */
-	public void openEditor() {
+	public EditDialog openEditor() {
 		if (mapElement == null)
-			return;
+			return(null);
 		if (editDialog == null)
-			editDialog = new EditDialog(Dert.getMainWindow(), name, mapElement);
+			editDialog = new EditDialog(Dert.getMainWindow(), "Edit "+mapElement.getType(), mapElement);
 		else
 			editDialog.update();
 		editDialog.open();
+		return(editDialog);
 	}
 
 	/**
 	 * Open the annotation
 	 */
-	public void openAnnotation() {
+	public NotesDialog openAnnotation() {
 		if (mapElement == null)
-			return;
+			return(null);
 		if (annotationDialog == null)
 			annotationDialog = new NotesDialog(Dert.getMainWindow(), name, 400, 200, mapElement);
 		else
 			annotationDialog.update();
 		annotationDialog.open();
+		return(annotationDialog);
 	}
 
 	/**
@@ -235,6 +220,19 @@ public abstract class MapElementState extends State {
 	public void setAnnotation(String note) {
 		if (note != null) {
 			annotation = note;
+		}
+		if (annotationDialog != null) {
+			annotationDialog.update();
+		}
+		if (editDialog != null) {
+			editDialog.update();
+		}
+	}
+	
+	public void setLocked(boolean locked) {
+		if (mapElement != null) {
+			mapElement.setLocked(locked);
+			((Spatial)mapElement).markDirty(DirtyType.RenderState);
 		}
 		if (annotationDialog != null) {
 			annotationDialog.update();
@@ -279,11 +277,15 @@ public abstract class MapElementState extends State {
 	 * 
 	 * @return
 	 */
-	public View open() {
+	@Override
+	public View open(boolean doIt) {
 		// This state element has no view
 		if (viewData == null) {
 			return (null);
 		}
+		
+		if (doIt)
+			viewData.setVisible(true);
 		
 		// The view is not visible
 		if (!viewData.isVisible())
@@ -303,6 +305,15 @@ public abstract class MapElementState extends State {
 	
 	protected void createView() {
 		// nothing here
+	}
+	
+	public void move(Movable mo, ReadOnlyVector3 pos) {
+		if (annotationDialog != null) {
+			annotationDialog.update();
+		}
+		if (editDialog != null) {
+			editDialog.update();
+		}
 	}
 
 }

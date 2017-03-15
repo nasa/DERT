@@ -18,7 +18,7 @@ import com.ardor3d.scenegraph.Node;
  */
 public abstract class Movable extends Node {
 
-	private boolean pinned, inMotion;
+	private boolean locked, inMotion;
 	protected double zOff;
 	private ArrayList<MotionListener> listeners;
 	protected Vector3 location, workVec;
@@ -40,8 +40,8 @@ public abstract class Movable extends Node {
 	 * 
 	 * @return
 	 */
-	public boolean isPinned() {
-		return (pinned);
+	public boolean isLocked() {
+		return (locked);
 	}
 
 	/**
@@ -49,13 +49,11 @@ public abstract class Movable extends Node {
 	 * 
 	 * @param pinned
 	 */
-	public void setPinned(boolean pinned) {
-		this.pinned = pinned;
-		if (pinned) {
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+		if (locked) {
 			inMotion = false;
 		}
-		for (int i = 0; i < listeners.size(); ++i)
-			listeners.get(i).pin(this, pinned);
 	}
 
 	/**
@@ -179,6 +177,7 @@ public abstract class Movable extends Node {
 	 * @return
 	 */
 	public ReadOnlyVector3 getLocationInWorld() {
+		updateWorldTransform(false);
 		workVec.set(getWorldTranslation());
 		Landscape.getInstance().localToWorldCoordinate(workVec);
 		return (workVec);

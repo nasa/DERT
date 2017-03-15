@@ -284,7 +284,8 @@ public class ViewData {
 	
 	public void save() {
 		if (viewWindow == null) {
-			visible = false;
+			if ((windowWidth != 0) && (windowHeight != 0)) // case for external viewer
+				visible = false;
 			return;
 		}
 		windowX = viewWindow.getX();

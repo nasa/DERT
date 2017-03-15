@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.action.edit.CoordAction;
+import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
@@ -19,7 +20,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -39,16 +40,14 @@ import com.ardor3d.scenegraph.Spatial;
  */
 public abstract class MapElementBasePanel extends JPanel {
 	
+	protected static ImageIcon locked = Icons.getImageIcon("locked.png");
+	
 	// Common controls
 	protected JPanel topPanel;
 	protected JTextArea noteText;
 	protected JButton saveButton;
-	protected JLabel typeLabel;
+	protected JLabel locLabel;
 	protected CoordTextField locationText;
-
-	// Map element icon and type
-	protected Icon icon;
-	protected String type;
 
 	// Helpers
 	protected NumberFormat formatter;
@@ -56,20 +55,29 @@ public abstract class MapElementBasePanel extends JPanel {
 
 	// MapElement being edited
 	protected MapElement mapElement;
+	protected MapElement parentElement;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param parent
 	 */
-	public MapElementBasePanel() {
+	public MapElementBasePanel(MapElement mapElement) {
 		setLayout(new BorderLayout());
 		coord = new Vector3();
 		formatter = new DecimalFormat(Landscape.format);
+		this.parentElement = mapElement;
+		this.mapElement = mapElement;
+		build();
 	}
 
 	protected void build() {
+		JLabel titleLabel = new JLabel(parentElement.getName(), SwingConstants.LEFT);
+		titleLabel.setIcon(parentElement.getIcon());
+		add(titleLabel, BorderLayout.NORTH);
+		
 		ArrayList<Component> compList = new ArrayList<Component>();
+		
 		addFields(compList);
 		
 		add(new FieldPanel(compList), BorderLayout.CENTER);
@@ -112,7 +120,8 @@ public abstract class MapElementBasePanel extends JPanel {
 	}
 	
 	protected void addFields(ArrayList<Component> compList) {
-		compList.add(new JLabel("Location", SwingConstants.RIGHT));
+		locLabel = new JLabel("Location", SwingConstants.RIGHT);
+		compList.add(locLabel);
 		locationText = new CoordTextField(22, "location of map element", Landscape.format, true) {
 			@Override
 			public void handleChange(Vector3 store) {
@@ -145,8 +154,13 @@ public abstract class MapElementBasePanel extends JPanel {
 		if (position == null) {
 			position = World.getInstance().getMarble().getTranslation();
 		}
-		if (locationText != null)
+		if (locationText != null) {
 			locationText.setLocalValue(position);
+			if (mapElement.isLocked())
+				locLabel.setIcon(locked);
+			else
+				locLabel.setIcon(null);
+		}
 	}
 	
 	@Override
@@ -181,7 +195,9 @@ public abstract class MapElementBasePanel extends JPanel {
 	 * 
 	 * @param mapElement
 	 */
-	public abstract void setMapElement(MapElement mapElement);
+	public void setMapElement(MapElement mapElement) {
+		this.mapElement = mapElement;
+	}
 
 	public void dispose() {
 		if (locationText != null)

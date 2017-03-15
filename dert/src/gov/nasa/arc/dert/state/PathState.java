@@ -1,12 +1,15 @@
 package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Path.BodyType;
 import gov.nasa.arc.dert.scene.tool.Path.LabelType;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.View;
+import gov.nasa.arc.dert.view.mapelement.EditDialog;
+import gov.nasa.arc.dert.view.mapelement.NotesDialog;
 import gov.nasa.arc.dert.view.mapelement.PathView;
 import gov.nasa.arc.dert.viewpoint.FlyThroughParameters;
 
@@ -53,7 +56,7 @@ public class PathState extends ToolState {
 		waypointsVisible = Path.defaultWaypointsVisible;
 		viewData = new ViewData(-1, -1, 600, 250, true);
 		pointList = new ArrayList<WaypointState>();
-		WaypointState wp = new WaypointState(0, position, name + ".", Path.defaultSize, color, labelVisible, pinned);
+		WaypointState wp = new WaypointState(0, position, name + ".", Path.defaultSize, color, labelVisible, locked);
 		pointList.add(wp);
 		flyParams = new FlyThroughParameters();
 	}
@@ -142,6 +145,62 @@ public class PathState extends ToolState {
 		return (pointList);
 	}
 
+	/**
+	 * Open the editor
+	 */
+	@Override
+	public EditDialog openEditor() {
+		if (mapElement == null)
+			return(null);
+		if (editDialog == null)
+			editDialog = new EditDialog(Dert.getMainWindow(), "Edit "+mapElement.getType(), mapElement);
+		else {
+			editDialog.setMapElement(mapElement);
+			editDialog.update();
+		}
+		editDialog.open();
+		return(editDialog);
+	}
+
+	/**
+	 * Open the annotation
+	 */
+	@Override
+	public NotesDialog openAnnotation() {
+		if (mapElement == null)
+			return(null);
+		if (annotationDialog == null) {
+			annotationDialog = new NotesDialog(Dert.getMainWindow(), name, 400, 200, mapElement) {			
+				@Override
+				public void setMapElement(MapElement me) {
+					super.setMapElement(me);
+					if (me instanceof Path)
+						location.setEnabled(false);
+					else
+						location.setEnabled(true);
+				}
+				@Override
+				protected void updateText() {
+					if (mapElement instanceof Path)
+						super.updateText();
+					else {
+						Path path = ((Waypoint)mapElement).getPath();
+						String str = path.getName()+":\n"+path.getState().getAnnotation()+"\n";
+						str += mapElement.getName()+":\n"+mapElement.getState().getAnnotation()+"\n";
+						textArea.setText(str);
+						textArea.setCaretPosition(0);
+					}
+				}
+			};
+		}
+		else {
+			annotationDialog.setMapElement(mapElement);
+			annotationDialog.update();
+		}
+		annotationDialog.open();
+		return(annotationDialog);
+	}
+
 	@Override
 	public void setAnnotation(String note) {
 		if (note != null) {
@@ -158,12 +217,28 @@ public class PathState extends ToolState {
 			}
 		}
 	}
+
+	/**
+	 * Set the MapElement
+	 * 
+	 * @param mapElement
+	 */
+	@Override
+	public void setMapElement(MapElement mapElement) {
+		// first time
+		if ((this.mapElement == null) && (mapElement instanceof Path))
+			this.mapElement = mapElement;
+		if (annotationDialog != null)
+			annotationDialog.setMapElement(mapElement);
+		if (editDialog != null)
+			editDialog.setMapElement(mapElement);
+	}
 	
 	@Override
 	public void createView() {
 		PathView view = new PathView(this);
 		setView(view);
-		viewData.createWindow(Dert.getMainWindow(), name + " Info", X_OFFSET, Y_OFFSET);
+		viewData.createWindow(Dert.getMainWindow(), name + " View", X_OFFSET, Y_OFFSET);
 	}
 
 	@Override

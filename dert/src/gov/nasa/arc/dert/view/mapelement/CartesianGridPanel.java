@@ -40,11 +40,8 @@ public class CartesianGridPanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public CartesianGridPanel() {
-		super();
-		icon = CartesianGrid.icon;
-		type = "Cartesian Grid";
-		build();
+	public CartesianGridPanel(MapElement mapElement) {
+		super(mapElement);
 	}
 
 	@Override
@@ -118,7 +115,7 @@ public class CartesianGridPanel extends MapElementBasePanel {
 
 	@Override
 	public void setMapElement(MapElement mapElement) {
-		this.mapElement = mapElement;
+		super.setMapElement(mapElement);
 		grid = (CartesianGrid) mapElement;
 		sizeText.setValue(grid.getSize());
 		lineWidthText.setValue(grid.getLineWidth());

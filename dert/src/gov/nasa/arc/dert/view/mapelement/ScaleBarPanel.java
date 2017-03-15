@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
-import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.tool.ScaleBar;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
 import gov.nasa.arc.dert.ui.DoubleTextField;
@@ -40,11 +39,8 @@ public class ScaleBarPanel extends MapElementBasePanel {
 	 * 
 	 * @param parent
 	 */
-	public ScaleBarPanel() {
-		super();
-		icon = Figure.icon;
-		type = "Figure";
-		build();
+	public ScaleBarPanel(MapElement mapElement) {
+		super(mapElement);
 	}
 
 	@Override
@@ -136,7 +132,7 @@ public class ScaleBarPanel extends MapElementBasePanel {
 
 	@Override
 	public void setMapElement(MapElement mapElement) {
-		this.mapElement = mapElement;
+		super.setMapElement(mapElement);
 		scale = (ScaleBar) mapElement;
 		setLocation(locationText, scale.getTranslation());
 		sizeText.setValue(scale.getSize());
