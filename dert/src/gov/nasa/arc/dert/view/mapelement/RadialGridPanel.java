@@ -121,7 +121,7 @@ public class RadialGridPanel extends MapElementBasePanel {
 		sizeText.setValue(grid.getSize());
 		lineWidthText.setValue(grid.getLineWidth());
 
-		setLocation(locationText, grid.getTranslation());
+		setLocation(locationText, locLabel, grid.getTranslation());
 		ringsSpinner.setValue(grid.getRings());
 		compassRoseCheckBox.setSelected(grid.isCompassRose());
 		actualCoordButton.setSelected(grid.isActualCoordinates());

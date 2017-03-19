@@ -119,7 +119,7 @@ public class CartesianGridPanel extends MapElementBasePanel {
 		grid = (CartesianGrid) mapElement;
 		sizeText.setValue(grid.getSize());
 		lineWidthText.setValue(grid.getLineWidth());
-		setLocation(locationText, grid.getTranslation());
+		setLocation(locationText, locLabel, grid.getTranslation());
 		columnsSpinner.setValue(grid.getColumns());
 		rowsSpinner.setValue(grid.getRows());
 		actualCoordButton.setSelected(grid.isActualCoordinates());

@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.state.State;
 
 import java.awt.BorderLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 
 /**
@@ -23,6 +24,7 @@ public class ColorBarView extends JPanelView {
 		super(state);
 		colorBarPanel = ColorBarPanel.getInstance();
 		JScrollPane scrollPane = new JScrollPane(colorBarPanel);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		add(scrollPane, BorderLayout.CENTER);
 	}
 }

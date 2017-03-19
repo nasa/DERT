@@ -23,7 +23,7 @@ public abstract class ToolState extends MapElementState {
 	 * @param pinned
 	 * @param position
 	 */
-	public ToolState(long id, MapElementState.Type mapElementType, String prefix, double size, Color color,
+	public ToolState(int id, MapElementState.Type mapElementType, String prefix, double size, Color color,
 		boolean labelVisible) {
 		super(id, mapElementType, prefix, size, color, labelVisible);
 	}

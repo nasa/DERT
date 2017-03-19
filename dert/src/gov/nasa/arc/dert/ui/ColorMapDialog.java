@@ -5,10 +5,12 @@ import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.view.surfaceandlayers.SurfaceAndLayersView;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dialog;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -60,8 +62,10 @@ public class ColorMapDialog extends AbstractDialog {
 		super.build();
 		cancelButton.setText("Default");
 		okButton.setText("Close");
-		contentArea.setLayout(new GridLayout(4, 2));
-		contentArea.add(new JLabel("Color Map", SwingConstants.RIGHT));
+		
+		ArrayList<Component> compList = new ArrayList<Component>();
+		
+		compList.add(new JLabel("Color Map", SwingConstants.RIGHT));
 		colorMapName = new JComboBox(ColorMap.getColorMapNames());
 		colorMapName.setEditable(false);
 		colorMapName.setSelectedItem(colorMap.getName());
@@ -73,12 +77,12 @@ public class ColorMapDialog extends AbstractDialog {
 				defaultMax = colorMap.getMaximum();
 				setRange(defaultMin, defaultMax);
 				SurfaceAndLayersView slv = (SurfaceAndLayersView)ConfigurationManager.getInstance().getCurrentConfiguration().surfAndLayerState.getViewData().getView();
-				if (slv.isVisible())
+				if ((slv != null) && slv.isVisible())
 					slv.updateVisibleLayers();
 			}
 		});
-		contentArea.add(colorMapName);
-		contentArea.add(new JLabel("Gradient", SwingConstants.RIGHT));
+		compList.add(colorMapName);
+		compList.add(new JLabel("Gradient", SwingConstants.RIGHT));
 		gradient = new JCheckBox("");
 		gradient.setSelected(colorMap.isGradient());
 		gradient.addActionListener(new ActionListener() {
@@ -87,8 +91,8 @@ public class ColorMapDialog extends AbstractDialog {
 				colorMap.setGradient(gradient.isSelected());
 			}
 		});
-		contentArea.add(gradient);
-		contentArea.add(new JLabel("Maximum", SwingConstants.RIGHT));
+		compList.add(gradient);
+		compList.add(new JLabel("Maximum", SwingConstants.RIGHT));
 		maxSpinner = new DoubleSpinner(defaultMax, defaultMin, upperLimit, Landscape.defaultCellSize / 100.0, false,
 			Landscape.format) {
 			@Override
@@ -99,9 +103,9 @@ public class ColorMapDialog extends AbstractDialog {
 				minSpinner.setMaximum(max);
 			}
 		};
-		contentArea.add(maxSpinner);
+		compList.add(maxSpinner);
 
-		contentArea.add(new JLabel("Minimum", SwingConstants.RIGHT));
+		compList.add(new JLabel("Minimum", SwingConstants.RIGHT));
 		minSpinner = new DoubleSpinner(defaultMin, lowerLimit, defaultMax, Landscape.defaultCellSize / 100.0, false,
 			Landscape.format) {
 			@Override
@@ -112,7 +116,10 @@ public class ColorMapDialog extends AbstractDialog {
 				maxSpinner.setMinimum(min);
 			}
 		};
-		contentArea.add(minSpinner);
+		compList.add(minSpinner);
+		
+		contentArea.setLayout(new BorderLayout());
+		contentArea.add(new FieldPanel(compList), BorderLayout.CENTER);
 
 		getRootPane().setDefaultButton(null);
 	}

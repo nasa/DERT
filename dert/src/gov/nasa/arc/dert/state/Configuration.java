@@ -29,6 +29,7 @@ public class Configuration {
 	public final PanelState lightingState;
 	public final PanelState lightPosState;
 	public final ViewpointState viewPtState;
+	public final AnimationState animationState;
 	public final PanelState consoleState;
 
 	// The world state
@@ -64,6 +65,7 @@ public class Configuration {
 		surfAndLayerState = new PanelState(PanelType.SurfaceAndLayers, "DERT Surface and Layers", new ViewData(-1, -1, 375, 600, false));
 		lightingState = new PanelState(PanelType.Lighting, "DERT Lighting and Shadows", new ViewData(-1, -1, -1, -1, false));
 		viewPtState = new ViewpointState();
+		animationState = new AnimationState();
 		lightPosState = new PanelState(PanelType.LightPosition, "DERT Light Position", new ViewData(-1, -1, -1, -1, false));
 		colorBarsState = new PanelState(PanelType.ColorBars, "DERT Color Bars", new ViewData(-1, -1, 700, 200, false));
 		marbleState = new MarbleState();
@@ -84,6 +86,7 @@ public class Configuration {
 		lightingState = new PanelState((HashMap<String,Object>)map.get("LightingState"));
 		lightPosState = new PanelState((HashMap<String,Object>)map.get("LightPositionState"));
 		viewPtState = new ViewpointState((HashMap<String,Object>)map.get("ViewpointState"));
+		animationState = new AnimationState((HashMap<String,Object>)map.get("AnimationState"));
 
 		int n = StateUtil.getInteger(map, "MapElementStateCount", 0);
 		mapElementStateList = new ArrayList<MapElementState>();
@@ -200,6 +203,10 @@ public class Configuration {
 			System.err.println("Configuration viewpoint state not equal");
 			return(false);
 		}
+		if (!this.animationState.isEqualTo(that.animationState)) {
+			System.err.println("Configuration animation state not equal");
+			return(false);
+		}
 		if (this.mapElementStateList.size() != that.mapElementStateList.size()) {
 			System.err.println("Configuration map elements state list size not equal");
 			return(false);
@@ -231,7 +238,7 @@ public class Configuration {
 	 * @param type
 	 * @return
 	 */
-	public long incrementMapElementCount(MapElementState.Type type) {
+	public int incrementMapElementCount(MapElementState.Type type) {
 		mapElementCount[type.ordinal()]++;
 		return (mapElementCount[type.ordinal()]);
 	}
@@ -356,6 +363,7 @@ public class Configuration {
 		map.put("LightingState", lightingState.save());
 		map.put("LightPositionState", lightPosState.save());
 		map.put("ViewpointState", viewPtState.save());
+		map.put("AnimationState", animationState.save());
 		map.put("ConsoleState", consoleState.save());
 		map.put("MarbleState", marbleState.save());
 
@@ -446,6 +454,7 @@ public class Configuration {
 		lightingState.viewData.close();
 		lightPosState.viewData.close();
 		viewPtState.viewData.close();
+		animationState.viewData.close();
 		for (int i = 0; i < mapElementStateList.size(); ++i) {
 			State state = mapElementStateList.get(i);
 			ViewData viewData = state.viewData;
@@ -466,6 +475,7 @@ public class Configuration {
 		lightingState.open(false);
 		lightPosState.open(false);
 		viewPtState.open(false);
+		animationState.open(false);
 		for (int i = 0; i < mapElementStateList.size(); ++i) {
 			MapElementState state = mapElementStateList.get(i);
 			state.open(false);

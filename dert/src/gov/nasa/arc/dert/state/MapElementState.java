@@ -42,8 +42,8 @@ public abstract class MapElementState extends State {
 	// Map element type
 	public Type mapElementType;
 
-	// Index id for groups
-	public long id;
+	// Index id
+	public int id;
 
 	// The MapElement associated with this state
 	protected transient MapElement mapElement;
@@ -59,7 +59,7 @@ public abstract class MapElementState extends State {
 	 * @param mapElementType
 	 * @param prefix
 	 */
-	public MapElementState(long id, Type mapElementType, String prefix) {
+	public MapElementState(int id, Type mapElementType, String prefix) {
 		this(id, mapElementType, prefix, 1, Color.white, true);
 	}
 
@@ -74,7 +74,7 @@ public abstract class MapElementState extends State {
 	 * @param labelVisible
 	 * @param pinned
 	 */
-	public MapElementState(long id, Type mapElementType, String prefix, double size, Color color, boolean labelVisible) {
+	public MapElementState(int id, Type mapElementType, String prefix, double size, Color color, boolean labelVisible) {
 		super(prefix + id, StateType.MapElement, null);
 		this.id = id;
 		this.size = size;
@@ -98,7 +98,7 @@ public abstract class MapElementState extends State {
 		color = StateUtil.getColor(map, "Color", Color.white);
 		String str = StateUtil.getString(map, "MapElementType", null);
 		mapElementType = Type.valueOf(str);
-		id = StateUtil.getLong(map, "MapElementId", 0);
+		id = StateUtil.getInteger(map, "MapElementId", 0);
 		zOff = StateUtil.getDouble(map, "ZOffset", 0);
 	}
 	
@@ -180,7 +180,7 @@ public abstract class MapElementState extends State {
 		map.put("Visible", new Boolean(visible));
 		map.put("LabelVisible", new Boolean(labelVisible));
 		map.put("MapElementType", mapElementType.toString());
-		map.put("MapElementId", new Long(id));
+		map.put("MapElementId", new Integer(id));
 		return(map);
 	}
 

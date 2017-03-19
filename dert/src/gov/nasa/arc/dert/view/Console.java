@@ -3,6 +3,7 @@ package gov.nasa.arc.dert.view;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -45,6 +46,7 @@ public class Console extends JPanel {
 	 */
 	protected Console() {
 		textArea = new JTextArea();
+		textArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		setLayout(new BorderLayout());
 		textArea.setEditable(false);
 		textArea.setRows(20);

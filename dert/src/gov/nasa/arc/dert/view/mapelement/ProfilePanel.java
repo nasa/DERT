@@ -30,6 +30,7 @@ public class ProfilePanel extends MapElementBasePanel {
 	private CoordTextField pALocation, pBLocation;
 	private DoubleTextField lineWidthText;
 	private JCheckBox endpointsCheckBox;
+	private JLabel pALabel, pBLabel;
 
 	// The profile
 	private Profile profile;
@@ -46,7 +47,8 @@ public class ProfilePanel extends MapElementBasePanel {
 	@Override
 	protected void addFields(ArrayList<Component> compList) {
 
-		compList.add(new JLabel("Point A", SwingConstants.RIGHT));
+		pALabel = new JLabel("Point A", SwingConstants.RIGHT);
+		compList.add(pALabel);
 		pALocation = new CoordTextField(22, "location of end point A", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 result) {
@@ -67,7 +69,8 @@ public class ProfilePanel extends MapElementBasePanel {
 		CoordAction.listenerList.add(pALocation);
 		compList.add(pALocation);
 
-		compList.add(new JLabel("Point B", SwingConstants.RIGHT));
+		pBLabel = new JLabel("Point B", SwingConstants.RIGHT);
+		compList.add(pBLabel);
 		pBLocation = new CoordTextField(22, "location of end point B", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 result) {
@@ -116,8 +119,8 @@ public class ProfilePanel extends MapElementBasePanel {
 	public void setMapElement(MapElement mapElement) {
 		super.setMapElement(mapElement);
 		profile = (Profile) mapElement;
-		setLocation(pALocation, profile.getEndpointA());
-		setLocation(pBLocation, profile.getEndpointB());
+		setLocation(pALocation, pALabel, profile.getEndpointA());
+		setLocation(pBLocation, pBLabel, profile.getEndpointB());
 		endpointsCheckBox.setSelected(profile.isEndpointsVisible());
 		lineWidthText.setValue(profile.getLineWidth());
 		noteText.setText(profile.getState().getAnnotation());
@@ -125,8 +128,8 @@ public class ProfilePanel extends MapElementBasePanel {
 
 	@Override
 	public void updateLocation(MapElement mapElement) {
-		setLocation(pALocation, profile.getEndpointA());
-		setLocation(pBLocation, profile.getEndpointB());
+		setLocation(pALocation, pALabel, profile.getEndpointA());
+		setLocation(pBLocation, pBLabel, profile.getEndpointB());
 	}
 	
 	@Override

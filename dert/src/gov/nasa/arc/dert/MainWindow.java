@@ -47,7 +47,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
-import javax.swing.border.BevelBorder;
 import javax.swing.plaf.FontUIResource;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -146,7 +145,7 @@ public class MainWindow extends JFrame {
 		String filler = "    "; // spacer for grouping tool bar buttons
 		boolean buttonBorder = false; // no button borders on tool bar
 		toolBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 2));
-		toolBar.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+		toolBar.setBorder(BorderFactory.createEmptyBorder());
 
 		// Menu for file operations (loading configurations, exit).
 		PopupMenuAction fileMenu = new PopupMenuAction("file actions", "File", null) {
@@ -262,7 +261,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(viewpointMenuAction);
 
 		// Reset the viewpoint to the default overhead view.
-		resetAction = new ButtonAction("reset viewpoint to nadir position", null, "reset.png", buttonBorder) {
+		resetAction = new ButtonAction("reset viewpoint to overhead position", null, "reset.png", buttonBorder) {
 			@Override
 			public void run() {
 				worldView.getViewpointNode().reset();
@@ -286,7 +285,6 @@ public class MainWindow extends JFrame {
 		marbleAction = new ButtonAction("show terrain attributes at marble location", null, "marble.png", buttonBorder) {
 			@Override
 			public void run() {
-				currentConfig.marbleState.getViewData().setVisible(true);
 				currentConfig.marbleState.open(true);
 			}
 		};
@@ -377,16 +375,6 @@ public class MainWindow extends JFrame {
 	protected void fillEditMenu(PopupMenu menu) {
 		menu.add(undoHandler.getUndoAction());
 		menu.add(undoHandler.getRedoAction());
-		menu.addSeparator();
-
-		// Open the viewpoint view.
-		MenuItemAction viewpointListAction = new MenuItemAction("Open Viewpoint List") {
-			@Override
-			public void run() {
-				currentConfig.viewPtState.open(true);
-			}
-		};
-		menu.add(viewpointListAction);
 		menu.addSeparator();
 
 		MenuItemAction bgColAction = new MenuItemAction("Change Background Color") {

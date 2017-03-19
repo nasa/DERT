@@ -85,7 +85,7 @@ public class FieldCameraPanel extends MapElementBasePanel {
 	public void setMapElement(MapElement mapElement) {
 		super.setMapElement(mapElement);
 		fieldCamera = (FieldCamera) mapElement;
-		setLocation(locationText, fieldCamera.getTranslation());
+		setLocation(locationText, locLabel, fieldCamera.getTranslation());
 		defCombo.setSelectedItem(fieldCamera.getFieldCameraDefinition());
 		noteText.setText(fieldCamera.getState().getAnnotation());
 		fovCheckBox.setSelected(fieldCamera.isFovVisible());

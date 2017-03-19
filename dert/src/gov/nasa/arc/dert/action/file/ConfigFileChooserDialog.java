@@ -14,6 +14,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
@@ -93,6 +94,7 @@ public class ConfigFileChooserDialog extends AbstractDialog {
 		}
 		configList.setVisibleRowCount(4);
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		scrollPane.getViewport().setView(configList);
 		gPanel = new GroupPanel("Configuration");
 		gPanel.setLayout(new GridLayout(1, 1));

@@ -48,6 +48,7 @@ public class WorldScenePanel extends SceneCanvasPanel {
 
 	@Override
 	public void setState(State state) {
+		controller = new ViewpointController();
 		// Add mouse handling after selection of landscape to avoid NPEs.
 		if (inputManager == null) {
 			inputHandler = new WorldInputHandler(controller, this);

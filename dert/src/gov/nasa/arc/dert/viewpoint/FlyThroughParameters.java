@@ -16,7 +16,7 @@ public class FlyThroughParameters {
 	
 	public FlyThroughParameters() {
 		numFrames = 100;
-		millisPerFrame = 100;
+		millisPerFrame = 330;
 		pathHeight = 5;
 		loop = false;
 		grab = false;

@@ -21,7 +21,7 @@ public class AboutBox extends TextDialog {
 	 * @param del
 	 */
 	public AboutBox(Frame parent, String version, String title) {
-		super(parent, "About "+title, 650, 450, false, false);
+		super(parent, "About "+title, 650, 450, false, false, true);
 		String aboutStr = "Desktop Exploration of Remote Terrain (DERT), version "+version+"\nIntelligent Systems Division, NASA Ames Research Center\n\n";
 		try {
 			URL url = AboutAction.class.getResource("About.txt");

@@ -22,7 +22,7 @@ public class FeatureState extends MapElementState {
 	 * @param prefix
 	 * @param color
 	 */
-	public FeatureState(long id, String name, Type mapElementType, String prefix, Color color) {
+	public FeatureState(int id, String name, Type mapElementType, String prefix, Color color) {
 		super(id, mapElementType, prefix, 1, color, false);
 		if (name != null)
 			this.name = name;

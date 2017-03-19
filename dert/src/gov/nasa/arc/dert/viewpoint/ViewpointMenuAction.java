@@ -1,10 +1,12 @@
 package gov.nasa.arc.dert.viewpoint;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.action.CheckBoxMenuItemAction;
 import gov.nasa.arc.dert.action.MenuItemAction;
 import gov.nasa.arc.dert.action.PopupMenuAction;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.viewpoint.ViewpointNode.ViewpointMode;
 
 import java.awt.PopupMenu;
@@ -31,6 +33,7 @@ public class ViewpointMenuAction extends PopupMenuAction {
 	}
 
 	protected boolean oldOnTop;
+	protected CheckBoxMenuItemAction nominal, map, hike;
 	
 	public static ViewpointMenuAction getInstance() {
 		if (INSTANCE == null)
@@ -48,27 +51,57 @@ public class ViewpointMenuAction extends PopupMenuAction {
 
 	@Override
 	protected void fillMenu(PopupMenu menu) {
-		MenuItemAction item = new MenuItemAction("Nominal") {			
+		ViewpointController controller = Dert.getWorldView().getScenePanel().getViewpointController();
+		ViewpointMode currentMode = controller.getViewpointNode().getMode();
+		nominal = new CheckBoxMenuItemAction("Nominal") {			
 			@Override
 			protected void run() {
 				setMode(ViewpointMode.Nominal);
+				map.setState(false);
+				hike.setState(false);
 			}
 		};
-		menu.add(item);
-		item = new MenuItemAction("Map") {			
+		nominal.setState(currentMode == ViewpointMode.Nominal);
+		menu.add(nominal);
+		map = new CheckBoxMenuItemAction("Map") {			
 			@Override
 			protected void run() {
 				setMode(ViewpointMode.Map);
+				nominal.setState(false);
+				hike.setState(false);
 			}
 		};
-		menu.add(item);
-		item = new MenuItemAction("Hike") {			
+		map.setState(currentMode == ViewpointMode.Map);
+		menu.add(map);
+		hike = new CheckBoxMenuItemAction("Hike") {			
 			@Override
 			protected void run() {
 				setMode(ViewpointMode.Hike);
+				nominal.setState(false);
+				map.setState(false);
 			}
 		};
-		menu.add(item);
+		hike.setState(currentMode == ViewpointMode.Hike);
+		menu.add(hike);
+		
+		menu.addSeparator();
+
+		// Open the viewpoint view.
+		MenuItemAction viewpointListAction = new MenuItemAction("Open Viewpoint List") {
+			@Override
+			public void run() {
+				ConfigurationManager.getInstance().getCurrentConfiguration().viewPtState.open(true);
+			}
+		};
+		menu.add(viewpointListAction);
+		// Open the animation view.
+		MenuItemAction animationAction = new MenuItemAction("Open Animation Control Panel") {
+			@Override
+			public void run() {
+				ConfigurationManager.getInstance().getCurrentConfiguration().animationState.open(true);
+			}
+		};
+		menu.add(animationAction);
 	}
 	
 	protected void setMode(ViewpointMode mode) {
@@ -96,7 +129,7 @@ public class ViewpointMenuAction extends PopupMenuAction {
 		setModeIcon(mode);
 	}
 	
-	public void setModeIcon(ViewpointMode mode) {
+	protected void setModeIcon(ViewpointMode mode) {
 		switch (mode) {
 		case Nominal:
 			setIcon(vpIcon);

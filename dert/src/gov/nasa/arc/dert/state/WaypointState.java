@@ -39,7 +39,7 @@ public class WaypointState extends MapElementState {
 	 * @param labelVisible
 	 * @param pinned
 	 */
-	public WaypointState(long id, ReadOnlyVector3 position, String prefix, double size, Color color,
+	public WaypointState(int id, ReadOnlyVector3 position, String prefix, double size, Color color,
 		boolean labelVisible, boolean locked) {
 		super(id, MapElementState.Type.Waypoint, prefix, size, color, labelVisible);
 		location = new Vector3(position);

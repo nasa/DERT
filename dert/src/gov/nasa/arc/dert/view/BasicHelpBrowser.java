@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
@@ -60,6 +61,7 @@ public class BasicHelpBrowser extends JPanel {
 		topPanel.add(searchButton, BorderLayout.EAST);
 		add(topPanel, BorderLayout.NORTH);
 		editorPane = new JEditorPane();
+		editorPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		editorPane.setEditable(false);
 		editorPane.addHyperlinkListener(new HyperlinkListener() {
 			@Override

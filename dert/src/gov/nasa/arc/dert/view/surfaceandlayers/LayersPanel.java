@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -96,7 +97,9 @@ public class LayersPanel extends GroupPanel {
 			layer[i].set(visibleLayers.get(i));
 			panel.add(layer[i]);
 		}
-		add(new JScrollPane(panel), BorderLayout.CENTER);
+		JScrollPane scrollPane = new JScrollPane(panel);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		add(scrollPane, BorderLayout.CENTER);
 	}
 
 	/**

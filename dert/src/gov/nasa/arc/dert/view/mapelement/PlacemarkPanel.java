@@ -70,7 +70,7 @@ public class PlacemarkPanel extends MapElementBasePanel {
 	public void setMapElement(MapElement mapElement) {
 		super.setMapElement(mapElement);
 		placemark = (Placemark) mapElement;
-		setLocation(locationText, placemark.getTranslation());
+		setLocation(locationText, locLabel, placemark.getTranslation());
 		sizeText.setValue(placemark.getSize());
 		iconCombo.setSelectedIndex(placemark.getTextureIndex());
 		noteText.setText(placemark.getState().getAnnotation());

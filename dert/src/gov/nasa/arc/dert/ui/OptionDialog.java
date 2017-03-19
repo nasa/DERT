@@ -12,23 +12,23 @@ public class OptionDialog {
 	public static final ImageIcon deleteIcon = Icons.getImageIcon("delete.png");
 	
 	public static String showSingleInputDialog(Window parent, String message, String value) {
-		String str = (String)JOptionPane.showInputDialog(parent, message, "DERT Input", JOptionPane.PLAIN_MESSAGE, Icons.DERT_ICON_24, null, value);
+		String str = (String)JOptionPane.showInputDialog(parent, message, "DERT Input", JOptionPane.PLAIN_MESSAGE, null, null, value);
 		return(str);
 	}
 	
 	public static void showErrorMessageDialog(Window parent, String message) {
-		JOptionPane.showMessageDialog(parent, message, "DERT Error", JOptionPane.PLAIN_MESSAGE, Icons.DERT_ICON_24);
+		JOptionPane.showMessageDialog(parent, message, "DERT Error", JOptionPane.PLAIN_MESSAGE, null);
 	}
 	
 	public static int showConfirmDialog(Window parent, String message, int option) {
 		int answer = JOptionPane.showConfirmDialog(parent, message, "DERT Confirmation",
-				option, JOptionPane.PLAIN_MESSAGE, Icons.DERT_ICON_24);
+				option, JOptionPane.PLAIN_MESSAGE, null);
 		return(answer);
 	}
 	
 	public static boolean showDeleteConfirmDialog(Window parent, String message) {
 		int answer = JOptionPane.showConfirmDialog(parent, message, "DERT Confirm Delete",
-				JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, deleteIcon);
+				JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null);
 		return(answer == JOptionPane.YES_OPTION);
 	}
 
