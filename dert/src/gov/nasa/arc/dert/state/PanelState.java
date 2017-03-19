@@ -10,6 +10,7 @@ import gov.nasa.arc.dert.view.lighting.LightPositionView;
 import gov.nasa.arc.dert.view.lighting.LightingView;
 import gov.nasa.arc.dert.view.mapelement.MapElementsView;
 import gov.nasa.arc.dert.view.surfaceandlayers.SurfaceAndLayersView;
+import gov.nasa.arc.dert.view.viewpoint.AnimationView;
 import gov.nasa.arc.dert.view.viewpoint.ViewpointView;
 
 import java.awt.Window;
@@ -23,7 +24,7 @@ public class PanelState extends State {
 
 	// Types of views
 	public static enum PanelType {
-		Console, Help, ColorBars, SurfaceAndLayers, Lighting, LightPosition, MapElements, Viewpoint
+		Console, Help, ColorBars, SurfaceAndLayers, Lighting, LightPosition, MapElements, Viewpoint, Animation
 	}
 
 	public PanelType type;
@@ -127,6 +128,9 @@ public class PanelState extends State {
 				break;
 			case Viewpoint:
 				view = new ViewpointView((ViewpointState) this);
+				break;
+			case Animation:
+				view = new AnimationView((AnimationState) this);
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown panel type " + type);

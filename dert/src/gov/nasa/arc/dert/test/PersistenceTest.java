@@ -83,8 +83,10 @@ public class PersistenceTest {
 		store.azimuth = 0.8;
 		store.elevation = 0.9;
 		store.magIndex = 2;
-		config.viewPtState.getViewpointList().add(store);
-		FlyThroughParameters flyParams = config.viewPtState.getFlyParams();
+		config.viewPtState.viewpointList.add(store);
+		
+		// AnimationState
+		FlyThroughParameters flyParams = config.animationState.getFlyParams();
 		flyParams.numFrames = 13;
 		flyParams.millisPerFrame = 444;
 		flyParams.pathHeight = 17;

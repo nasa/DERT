@@ -63,7 +63,7 @@ public class ImageBoardPanel extends MapElementBasePanel {
 	public void setMapElement(MapElement mapElement) {
 		super.setMapElement(mapElement);
 		imageBoard = (ImageBoard) mapElement;
-		setLocation(locationText, imageBoard.getTranslation());
+		setLocation(locationText, locLabel, imageBoard.getTranslation());
 		sizeText.setValue(imageBoard.getSize());
 		imageText.setText(imageBoard.getImagePath());
 		noteText.setText(imageBoard.getState().getAnnotation());

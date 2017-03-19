@@ -1,7 +1,6 @@
 package gov.nasa.arc.dert.ui;
 
 import java.awt.Component;
-import java.awt.Insets;
 import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
@@ -11,7 +10,7 @@ import javax.swing.JPanel;
 public class VerticalPanel
 	extends JPanel {
 	
-	public VerticalPanel(ArrayList<Component> compList) {
+	public VerticalPanel(ArrayList<Component> compList, int gap) {
 		
 		GroupLayout layout = new GroupLayout(this);
 		setLayout(layout);
@@ -24,14 +23,12 @@ public class VerticalPanel
 		layout.setHorizontalGroup(hGroup);
 		
 		GroupLayout.SequentialGroup vGroup = layout.createSequentialGroup();
-		for (int i=0; i<compList.size(); ++i)
-			vGroup.addComponent(compList.get(i));
+		for (int i=0; i<compList.size(); ++i) {
+			if (gap > 0)
+				vGroup.addGap(gap);
+			vGroup.addComponent(compList.get(i), GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
+		}
 		layout.setVerticalGroup(vGroup);
-	}
-	
-	@Override
-	public Insets getInsets() {
-		return(new Insets(5, 5, 5, 5));
 	}
 
 }

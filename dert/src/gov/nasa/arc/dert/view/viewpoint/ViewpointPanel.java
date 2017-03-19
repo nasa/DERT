@@ -7,6 +7,7 @@ import gov.nasa.arc.dert.state.ViewpointState;
 import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DoubleArrayTextField;
 import gov.nasa.arc.dert.ui.DoubleTextField;
+import gov.nasa.arc.dert.ui.FieldPanel;
 import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.ui.Vector3TextField;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
@@ -14,6 +15,7 @@ import gov.nasa.arc.dert.viewpoint.ViewpointController;
 import gov.nasa.arc.dert.viewpoint.ViewpointStore;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Point;
@@ -22,10 +24,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -33,6 +35,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
@@ -47,9 +50,8 @@ public class ViewpointPanel extends JPanel {
 
 	// Controls
 	private JList list;
-	private ButtonAction addButton, deleteButton, flyListButton;
+	private ButtonAction addButton, deleteButton;
 	private JSplitPane splitPane;
-	private JPanel buttonBar;
 	private CoordTextField locationField;
 	private Vector3TextField directionField;
 	private DoubleArrayTextField azElField;
@@ -68,8 +70,6 @@ public class ViewpointPanel extends JPanel {
 	private ViewpointListCellRenderer cellRenderer;
 	private Vector<ViewpointStore> viewpointList;
 	
-	private ViewpointState state;
-	
 	/**
 	 * Constructor
 	 * 
@@ -77,12 +77,9 @@ public class ViewpointPanel extends JPanel {
 	 */
 	public ViewpointPanel(ViewpointState vState) {
 		super();
-		state = vState;
-		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		controller = Dert.getWorldView().getScenePanel().getViewpointController();
-		viewpointList = state.getViewpointList();
-		controller.setViewpointList(viewpointList);
-		controller.setFlyParams(state.getFlyParams());
+		viewpointList = controller.getViewpointList();
 		coord = new Vector3();
 		azEl = new double[2];
 		tempVPS = new ViewpointStore();
@@ -90,6 +87,7 @@ public class ViewpointPanel extends JPanel {
 		// Add the viewpoint list
 		setLayout(new BorderLayout());
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		splitPane.setBorder(BorderFactory.createEmptyBorder());
 		add(splitPane, BorderLayout.CENTER);
 		list = new JList(viewpointList);
 		list.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -117,8 +115,10 @@ public class ViewpointPanel extends JPanel {
 		scrollPane.setMinimumSize(new Dimension(128, 128));
 		JPanel listPanel = new JPanel(new BorderLayout());
 		listPanel.add(scrollPane, BorderLayout.CENTER);
-		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		prevAction = new ButtonAction("Go to the previous viewpoint", null, "prev_16.png") {
+		JToolBar buttonBar = new JToolBar();
+		buttonBar.setFloatable(false);
+		buttonBar.setBorder(BorderFactory.createEmptyBorder());
+		prevAction = new ButtonAction("Go to the previous viewpoint", null, "prev_15.png", true) {
 			@Override
 			protected void run() {
 				int index = list.getSelectedIndex();
@@ -133,8 +133,8 @@ public class ViewpointPanel extends JPanel {
 				viewpointSelected(2);
 			}
 		};
-		topPanel.add(prevAction);
-		nextAction = new ButtonAction("Go to the next viewpoint", null, "next_16.png") {
+		buttonBar.add(prevAction);
+		nextAction = new ButtonAction("Go to the next viewpoint", null, "next_15.png", true) {
 			@Override
 			protected void run() {
 				int index = list.getSelectedIndex();
@@ -149,17 +149,8 @@ public class ViewpointPanel extends JPanel {
 				viewpointSelected(2);
 			}
 		};
-		topPanel.add(nextAction);
-		listPanel.add(topPanel, BorderLayout.NORTH);
-		splitPane.setLeftComponent(listPanel);
-
-		// Add the viewpoint attributes panel
-		splitPane.setRightComponent(createDataPanel());
-
-		// Add buttons panel
-		buttonBar = new JPanel();
-		buttonBar.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		addButton = new ButtonAction("Add the current viewpoint to the list", "Add", null) {
+		buttonBar.add(nextAction);
+		addButton = new ButtonAction("Add the current viewpoint to the list", "+", null) {
 			@Override
 			public void run() {
 				String answer = OptionDialog.showSingleInputDialog((JDialog)getTopLevelAncestor(), "Please enter a name for this viewpoint.",
@@ -174,13 +165,12 @@ public class ViewpointPanel extends JPanel {
 					controller.addViewpoint(index, answer);
 					list.setListData(viewpointList);
 					list.setSelectedIndex(index);
-					flyListButton.setEnabled(viewpointList.size() > 1);
 					viewpointSelected(1);
 				}
 			}
 		};
 		buttonBar.add(addButton);
-		deleteButton = new ButtonAction("Delete the selected viewpoint", "Delete", null) {
+		deleteButton = new ButtonAction("Delete the selected viewpoint", "-", null) {
 			@Override
 			public void run() {
 				int[] vpList = list.getSelectedIndices();
@@ -193,30 +183,22 @@ public class ViewpointPanel extends JPanel {
 					int index = controller.removeViewpoints(vpList);
 					list.setListData(viewpointList);
 					list.setSelectedIndex(index);
-					flyListButton.setEnabled(viewpointList.size() > 1);
 				}
 			}
 		};
 		deleteButton.setEnabled(false);
 		buttonBar.add(deleteButton);
-		flyListButton = new ButtonAction("Fly through the viewpoint list", "Fly", null) {
-			@Override
-			public void run() {
-				controller.flyThrough(null, (JDialog)getTopLevelAncestor());
-			}
-		};
-		flyListButton.setEnabled(viewpointList.size() > 1);
-		buttonBar.add(flyListButton);
-		add(buttonBar, BorderLayout.NORTH);
+		listPanel.add(buttonBar, BorderLayout.NORTH);
+		splitPane.setLeftComponent(listPanel);
+
+		// Add the viewpoint attributes panel
+		splitPane.setRightComponent(createDataPanel());
 	}
 
 	private JPanel createDataPanel() {
 		JPanel panel = null;
-		String tipText = null;
 		JLabel label = null;
-		JPanel dataPanel = new JPanel();
-		BoxLayout boxLayout = new BoxLayout(dataPanel, BoxLayout.Y_AXIS);
-		dataPanel.setLayout(boxLayout);
+		JPanel dataPanel = new JPanel(new BorderLayout());
 
 		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		current = new JButton("Current");
@@ -241,14 +223,13 @@ public class ViewpointPanel extends JPanel {
 			}
 		});
 		panel.add(save);
-		dataPanel.add(panel);
+		dataPanel.add(panel, BorderLayout.NORTH);
 		
-		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		tipText = "location of viewpoint";
+		ArrayList<Component> compList = new ArrayList<Component>();
 		label = new JLabel("VP Location", SwingConstants.RIGHT);
-		label.setToolTipText(tipText);
-		panel.add(label);
-		locationField = new CoordTextField(20, tipText, "0.000", true) {
+		label.setToolTipText("location of viewpoint");
+		compList.add(label);
+		locationField = new CoordTextField(20, "location of viewpoint", "0.000", true) {
 			@Override
 			public void doChange(ReadOnlyVector3 loc) {
 				if (!controller.getViewpointNode().changeLocation(loc)) {
@@ -262,14 +243,11 @@ public class ViewpointPanel extends JPanel {
 			}
 		};
 		CoordAction.listenerList.add(locationField);
-		panel.add(locationField);
-		dataPanel.add(panel);
+		compList.add(locationField);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		tipText = "Vector pointing to center of rotation from viewpoint (X,Y,Z)";
 		label = new JLabel("Direction Vector", SwingConstants.RIGHT);
-		label.setToolTipText(tipText);
-		panel.add(label);
+		label.setToolTipText("Vector pointing to center of rotation from viewpoint (X,Y,Z)");
+		compList.add(label);
 		directionField = new Vector3TextField(20, new Vector3(), "0.000", true) {
 			@Override
 			public void handleChange(Vector3 dir) {
@@ -279,15 +257,12 @@ public class ViewpointPanel extends JPanel {
 				updateData(tempVPS);
 			}
 		};
-		directionField.setToolTipText(tipText);
-		panel.add(directionField);
-		dataPanel.add(panel);
+		directionField.setToolTipText("Vector pointing to center of rotation from viewpoint (X,Y,Z)");
+		compList.add(directionField);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		tipText = "Direction in degrees from N, degrees from hort";
 		label = new JLabel("Direction Az,El", SwingConstants.RIGHT);
-		label.setToolTipText(tipText);
-		panel.add(label);
+		label.setToolTipText("Direction in degrees from N, degrees from hort");
+		compList.add(label);
 		azElField = new DoubleArrayTextField(20, new double[2], "0.00") {
 			@Override
 			protected void handleChange(double[] azel) {
@@ -301,15 +276,12 @@ public class ViewpointPanel extends JPanel {
 				updateData(tempVPS);
 			}
 		};
-		azElField.setToolTipText(tipText);
-		panel.add(azElField);
-		dataPanel.add(panel);
+		azElField.setToolTipText("Direction in degrees from N, degrees from hort");
+		compList.add(azElField);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		tipText = "Magnification scale factor";
 		label = new JLabel("Magnification", SwingConstants.RIGHT);
-		label.setToolTipText(tipText);
-		panel.add(label);
+		label.setToolTipText("Magnification scale factor");
+		compList.add(label);
 		magnificationField = new DoubleTextField(20, 0, false, "0.0") {
 			@Override
 			protected void handleChange(double value) {
@@ -322,9 +294,10 @@ public class ViewpointPanel extends JPanel {
 				updateData(tempVPS);
 			}
 		};
-		magnificationField.setToolTipText(tipText);
-		panel.add(magnificationField);
-		dataPanel.add(panel);
+		magnificationField.setToolTipText("Magnification scale factor");
+		compList.add(magnificationField);
+		
+		dataPanel.add(new FieldPanel(compList), BorderLayout.CENTER);
 
 		return (dataPanel);
 	}

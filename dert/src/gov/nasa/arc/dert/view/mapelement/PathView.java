@@ -6,24 +6,25 @@ import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.State;
 import gov.nasa.arc.dert.ui.DoubleTextField;
+import gov.nasa.arc.dert.ui.VerticalPanel;
 import gov.nasa.arc.dert.view.JPanelView;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
 import com.ardor3d.math.Vector3;
 
@@ -35,8 +36,7 @@ public class PathView extends JPanelView {
 
 	private JTextArea textArea;
 	private JLabel messageLabel;
-	private JCheckBox volumeCheck;
-	private JRadioButton polyMethod, planeMethod;
+	private JRadioButton polyMethod, planeMethod, noMethod;
 	private DoubleTextField volElev;
 	private JButton refreshButton;
 	protected boolean isCalculating;
@@ -49,14 +49,11 @@ public class PathView extends JPanelView {
 	 * 
 	 * @param state
 	 */
-	public PathView(State state) {
+	public PathView(State state, double elev, int volMethod) {
 		super(state);
 		lowerBound = new Vector3();
 		upperBound = new Vector3();
-		JPanel northPanel = new JPanel(new GridLayout(2, 1));
 		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		northPanel.setBackground(Color.white);
-		topPanel.setBackground(Color.white);
 		refreshButton = new JButton(Icons.getImageIcon("refresh.png"));
 		refreshButton.addActionListener(new ActionListener() {
 			@Override
@@ -73,35 +70,47 @@ public class PathView extends JPanelView {
 		messageLabel = new JLabel("        ");
 		messageLabel.setBackground(Color.white);
 		topPanel.add(messageLabel);
-		northPanel.add(topPanel);
+		add(topPanel, BorderLayout.NORTH);
 		
-		JPanel volPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		volPanel.setBackground(Color.white);
-		volumeCheck = new JCheckBox("Volume");
-		volumeCheck.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				enableVolume();
-			}
-		});
-		volPanel.add(volumeCheck);
+		ArrayList<Component> vCompList = new ArrayList<Component>();
+		vCompList.add(createVolumePanel(volMethod));
+		
+		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		textArea = new JTextArea();
+		textArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		textArea.setRows(12);
+		textArea.setEditable(false);
+		vCompList.add(textArea);
+		add(new VerticalPanel(vCompList, 0), BorderLayout.CENTER);
+		if (!Double.isNaN(elev))
+			volElev.setValue(elev);
+		else {
+			Path path = (Path)((MapElementState)state).getMapElement();
+			double value = path.getCenterElevation();
+			volElev.setValue(value);
+		}
+	}
+	
+	private JPanel createVolumePanel(int volMethod) {
+		
+		ArrayList<Component> compList = new ArrayList<Component>();
+		
 		ButtonGroup volType = new ButtonGroup();
-		polyMethod = new JRadioButton("Above/Below Polygon");
-		polyMethod.setSelected(true);
-		polyMethod.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				enableVolume();
-			}			
-		});
+		noMethod = new JRadioButton("No Volume");
+		noMethod.setSelected(volMethod == 0);
+		volType.add(noMethod);
+		compList.add(noMethod);
+		polyMethod = new JRadioButton("Volume Above/Below Polygon");
+		polyMethod.setSelected(volMethod == 1);
 		volType.add(polyMethod);
-		volPanel.add(polyMethod);
-		planeMethod = new JRadioButton("Above/Below Elevation:");
-		planeMethod.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				enableVolume();
-			}			
-		});
+		compList.add(polyMethod);
+		planeMethod = new JRadioButton("Volume Above/Below Reference Elevation");
+		planeMethod.setSelected(volMethod == 2);
 		volType.add(planeMethod);
-		volPanel.add(planeMethod);
+		compList.add(planeMethod);
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		panel.setBorder(BorderFactory.createEmptyBorder());
+		panel.add(new JLabel("Reference Elevation", SwingConstants.RIGHT));
 		volElev = new DoubleTextField(8, Double.NaN, false, Landscape.format) {
 			@Override
 			public void handleChange(double value) {
@@ -109,19 +118,13 @@ public class PathView extends JPanelView {
 					doRefresh();
 			}
 		};
-		volPanel.add(volElev);
-		enableVolume();
-		northPanel.add(volPanel);
-		add(northPanel, BorderLayout.NORTH);
+		panel.add(volElev);
+		compList.add(panel);
 		
-		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		setBackground(Color.white);
-		textArea = new JTextArea();
-		textArea.setEditable(false);
-		add(new JScrollPane(textArea), BorderLayout.CENTER);
-		Path path = (Path)((MapElementState)state).getMapElement();
-		double value = path.getCenterElevation();
-		volElev.setValue(value);
+		JPanel volPanel = new VerticalPanel(compList, 0);
+		
+		return(volPanel);
+
 	}
 	
 	public void doRefresh() {
@@ -139,13 +142,6 @@ public class PathView extends JPanelView {
 		statThread = null;
 		isCalculating = false;
 		messageLabel.setText("Cancelled");
-	}
-	
-	private void enableVolume() {
-		boolean vol = volumeCheck.isSelected();
-		polyMethod.setEnabled(vol);
-		planeMethod.setEnabled(vol);
-		volElev.setEnabled(planeMethod.isSelected() && vol);
 	}
 	
 	public double getVolElevation() {
@@ -190,7 +186,7 @@ public class PathView extends JPanelView {
 							return;
 						}
 						textArea.append(str);
-						if (volumeCheck.isSelected()) {
+						if (polyMethod.isSelected() || planeMethod.isSelected()) {
 							messageLabel.setText("Calculating volume ...");
 							Thread.yield();
 							str = getVolume(getVolElevation(), path);
@@ -200,11 +196,15 @@ public class PathView extends JPanelView {
 							}
 							textArea.append(str);
 						}
+						else {
+							str = "Volume Above: N/A\nVolume Below: N/A";
+							textArea.append(str);
+						}
 					}
 					else {
 						str = "Surface Area: N/A\n";
 						str += "Mean Slope: N/A\n";
-						if (volumeCheck.isSelected())
+						if (noMethod.isSelected())
 							str += "Volume: N/A\n";
 						textArea.append(str);
 					}
@@ -308,6 +308,15 @@ public class PathView extends JPanelView {
 	 */
 	public void pathDirty() {
 		messageLabel.setText("Press refresh to recalculate.");
+	}
+	
+	public int getVolumeMethod() {
+		if (noMethod.isSelected())
+			return(0);
+		else if (polyMethod.isSelected())
+			return(1);
+		else
+			return(2);
 	}
 
 }

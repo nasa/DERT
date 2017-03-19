@@ -22,7 +22,7 @@ public class FeatureSetState extends MapElementState {
 	public String labelProp;
 	public boolean ground;
 	public float lineWidth;
-	public long currentFeature;
+	public int currentFeature;
 
 	/**
 	 * Constructor for FeatureSetState.
@@ -51,9 +51,8 @@ public class FeatureSetState extends MapElementState {
 	 * @param notes
 	 */
 	public FeatureSetState(String name, String filePath, Color color, String notes, boolean isProjected, boolean ground, String labelProp) {
-		super(ConfigurationManager.getInstance().getCurrentConfiguration()
-			.incrementMapElementCount(MapElementState.Type.FeatureSet), MapElementState.Type.FeatureSet, "", FeatureSet.defaultSize, color,
-			false);
+		super(ConfigurationManager.getInstance().getCurrentConfiguration().incrementMapElementCount(MapElementState.Type.FeatureSet),
+			MapElementState.Type.FeatureSet, "", FeatureSet.defaultSize, color, false);
 		this.name = name;
 		this.filePath = filePath;
 		this.isProjected = isProjected;
@@ -74,7 +73,7 @@ public class FeatureSetState extends MapElementState {
 		labelProp = StateUtil.getString(map, "LabelProperty", null);
 		ground = StateUtil.getBoolean(map, "Ground", false);
 		lineWidth = (float)StateUtil.getDouble(map, "LineWidth", FeatureSet.defaultLineWidth);
-		currentFeature = StateUtil.getLong(map, "CurrentFeature", 0);
+		currentFeature = StateUtil.getInteger(map, "CurrentFeature", 0);
 	}
 	
 	@Override

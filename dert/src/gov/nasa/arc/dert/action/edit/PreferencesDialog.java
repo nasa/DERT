@@ -19,21 +19,21 @@ import gov.nasa.arc.dert.ui.AbstractDialog;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.ui.FieldPanel;
-import gov.nasa.arc.dert.ui.GroupPanel;
 import gov.nasa.arc.dert.ui.IconComboBox;
+import gov.nasa.arc.dert.ui.VerticalPanel;
 import gov.nasa.arc.dert.util.ColorMap;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.GroupLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -54,7 +54,7 @@ public class PreferencesDialog extends AbstractDialog {
 	 * Constructor
 	 */
 	public PreferencesDialog() {
-		super(Dert.getMainWindow(), "Map Element Preferences", true, true, false);
+		super(Dert.getMainWindow(), "Map Element Preferences", false, true, false);
 		width = 400;
 		height = 500;
 	}
@@ -75,18 +75,11 @@ public class PreferencesDialog extends AbstractDialog {
 		return (true);
 	}
 	
-	private JPanel getLandmarksPrefPanel() {
-		JPanel prefPanel = new JPanel();
-		GroupLayout layout = new GroupLayout(prefPanel);
-		prefPanel.setLayout(layout);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
+	private JComponent getLandmarksPrefPanel() {
+		ArrayList<Component> vCompList = new ArrayList<Component>();
 		
-		GroupLayout.SequentialGroup vGroup = layout.createSequentialGroup();
-		GroupLayout.ParallelGroup hGroup = layout.createParallelGroup();
-		
-		GroupPanel gPanel = new GroupPanel("Placemark");
-		gPanel.setLayout(new BorderLayout());
+		JPanel gPanel = new JPanel(new BorderLayout());
+		gPanel.add(new JLabel("--- Placemark ---", SwingConstants.CENTER), BorderLayout.NORTH);
 		
 		ArrayList<Component> compList = new ArrayList<Component>();
 		
@@ -133,13 +126,11 @@ public class PreferencesDialog extends AbstractDialog {
 		};
 		compList.add(sizeText);
 		
-		gPanel.add(new FieldPanel(compList));
+		gPanel.add(new FieldPanel(compList), BorderLayout.CENTER);		
+		vCompList.add(gPanel);
 		
-		hGroup.addComponent(gPanel);
-		vGroup.addComponent(gPanel);
-		
-		gPanel = new GroupPanel("3D Figure");
-		gPanel.setLayout(new BorderLayout());
+		gPanel = new JPanel(new BorderLayout());
+		gPanel.add(new JLabel("--- 3D Figure ---", SwingConstants.CENTER), BorderLayout.NORTH);
 		
 		compList = new ArrayList<Component>();
 
@@ -208,13 +199,12 @@ public class PreferencesDialog extends AbstractDialog {
 		});
 		compList.add(checkBox);
 		
-		gPanel.add(new FieldPanel(compList));
+		gPanel.add(new FieldPanel(compList), BorderLayout.CENTER);
 		
-		hGroup.addComponent(gPanel);
-		vGroup.addComponent(gPanel);
+		vCompList.add(gPanel);
 		
-		gPanel = new GroupPanel("Billboard");
-		gPanel.setLayout(new BorderLayout());
+		gPanel = new JPanel(new BorderLayout());
+		gPanel.add(new JLabel("--- Billboard ---", SwingConstants.CENTER), BorderLayout.NORTH);
 		
 		compList = new ArrayList<Component>();
 
@@ -243,30 +233,21 @@ public class PreferencesDialog extends AbstractDialog {
 		
 		gPanel.add(new FieldPanel(compList));
 		
-		hGroup.addComponent(gPanel);
-		vGroup.addComponent(gPanel);
+		vCompList.add(gPanel);
 		
-		layout.setHorizontalGroup(hGroup);
-		layout.setVerticalGroup(vGroup);
+		VerticalPanel prefPanel = new VerticalPanel(vCompList, 30);
 		
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JScrollPane(prefPanel), BorderLayout.CENTER);
-		return(panel);
+		JScrollPane scrollPane = new JScrollPane(prefPanel);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		return(scrollPane);
 	}
 	
-	private JPanel getToolsPrefPanel() {
-		JPanel prefPanel = new JPanel();
-		GroupLayout layout = new GroupLayout(prefPanel);
-		prefPanel.setLayout(layout);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
-		
-		GroupLayout.SequentialGroup vGroup = layout.createSequentialGroup();
-		GroupLayout.ParallelGroup hGroup = layout.createParallelGroup();
+	private JComponent getToolsPrefPanel() {
+		ArrayList<Component> vCompList = new ArrayList<Component>();
 		
 		// Path Preferences
-		GroupPanel gPanel = new GroupPanel("Path");
-		gPanel.setLayout(new BorderLayout());		
+		JPanel gPanel = new JPanel(new BorderLayout());
+		gPanel.add(new JLabel("--- Path ---", SwingConstants.CENTER), BorderLayout.NORTH);
 		ArrayList<Component> compList = new ArrayList<Component>();
 
 		compList.add(new JLabel("Label", SwingConstants.RIGHT));
@@ -335,13 +316,12 @@ public class PreferencesDialog extends AbstractDialog {
 		};
 		compList.add(ptPtSzText);
 		
-		gPanel.add(new FieldPanel(compList));
-		hGroup.addComponent(gPanel);
-		vGroup.addComponent(gPanel);
+		gPanel.add(new FieldPanel(compList), BorderLayout.CENTER);
+		vCompList.add(gPanel);
 
 		// Plane Preferences
-		gPanel = new GroupPanel("Plane");
-		gPanel.setLayout(new BorderLayout());
+		gPanel = new JPanel(new BorderLayout());
+		gPanel.add(new JLabel("--- Plane ---", SwingConstants.CENTER), BorderLayout.NORTH);
 		compList = new ArrayList<Component>();
 
 		compList.add(new JLabel("Label", SwingConstants.RIGHT));
@@ -386,12 +366,12 @@ public class PreferencesDialog extends AbstractDialog {
 		});
 		compList.add(checkBox);
 		
-		gPanel.add(new FieldPanel(compList));
-		prefPanel.add(gPanel);
+		gPanel.add(new FieldPanel(compList), BorderLayout.CENTER);
+		vCompList.add(gPanel);
 
 		// Cartesian Grid Preferences
-		gPanel = new GroupPanel("Cartesian Grid");
-		gPanel.setLayout(new BorderLayout());
+		gPanel = new JPanel(new BorderLayout());
+		gPanel.add(new JLabel("--- Cartesian Grid ---", SwingConstants.CENTER), BorderLayout.NORTH);
 		compList = new ArrayList<Component>();
 
 		compList.add(new JLabel("Label", SwingConstants.RIGHT));
@@ -434,18 +414,6 @@ public class PreferencesDialog extends AbstractDialog {
 			}
 		});
 
-//		gPanel.add(new JLabel("Cell Size:", SwingConstants.RIGHT));
-//		DoubleTextField sizeText = new DoubleTextField(8, CartesianGrid.defaultCellSize, true, "0.00") {
-//			@Override
-//			protected void handleChange(double value) {
-//				if (Double.isNaN(value)) {
-//					return;
-//				}
-//				CartesianGrid.defaultCellSize = value;
-//			}
-//		};
-//		gPanel.add(sizeText);
-
 		compList.add(new JLabel("Linewidth", SwingConstants.RIGHT));
 		DoubleTextField clwText = new DoubleTextField(8, CartesianGrid.defaultLineWidth, true, "0.00") {
 			@Override
@@ -458,13 +426,12 @@ public class PreferencesDialog extends AbstractDialog {
 		};
 		compList.add(clwText);
 		
-		gPanel.add(new FieldPanel(compList));
-		hGroup.addComponent(gPanel);
-		vGroup.addComponent(gPanel);
+		gPanel.add(new FieldPanel(compList), BorderLayout.CENTER);
+		vCompList.add(gPanel);
 
 		// Radial Grid Preferences
-		gPanel = new GroupPanel("Radial Grid");
-		gPanel.setLayout(new BorderLayout());
+		gPanel = new JPanel(new BorderLayout());
+		gPanel.add(new JLabel("--- Radial Grid ---", SwingConstants.CENTER), BorderLayout.NORTH);
 		compList = new ArrayList<Component>();
 
 		compList.add(new JLabel("Label", SwingConstants.RIGHT));
@@ -497,18 +464,6 @@ public class PreferencesDialog extends AbstractDialog {
 			}
 		});
 
-//		gPanel.add(new JLabel("Distance:", SwingConstants.RIGHT));
-//		sizeText = new DoubleTextField(8, RadialGrid.defaultCellSize, true, "0.00") {
-//			@Override
-//			protected void handleChange(double value) {
-//				if (Double.isNaN(value)) {
-//					return;
-//				}
-//				RadialGrid.defaultCellSize = value;
-//			}
-//		};
-//		gPanel.add(sizeText);
-
 		compList.add(new JLabel("Linewidth", SwingConstants.RIGHT));
 		DoubleTextField rlwText = new DoubleTextField(8, RadialGrid.defaultLineWidth, true, "0.00") {
 			@Override
@@ -532,13 +487,12 @@ public class PreferencesDialog extends AbstractDialog {
 		});
 		compList.add(checkBox);
 		
-		gPanel.add(new FieldPanel(compList));
-		hGroup.addComponent(gPanel);
-		vGroup.addComponent(gPanel);
+		gPanel.add(new FieldPanel(compList), BorderLayout.CENTER);
+		vCompList.add(gPanel);
 
 		// FieldCamera Preferences
-		gPanel = new GroupPanel("Camera");
-		gPanel.setLayout(new BorderLayout());
+		gPanel = new JPanel(new BorderLayout());
+		gPanel.add(new JLabel("--- Camera ---", SwingConstants.CENTER), BorderLayout.NORTH);
 		compList = new ArrayList<Component>();
 
 		compList.add(new JLabel("Label", SwingConstants.RIGHT));
@@ -594,13 +548,12 @@ public class PreferencesDialog extends AbstractDialog {
 		});
 		compList.add(comboBox);
 		
-		gPanel.add(new FieldPanel(compList));
-		hGroup.addComponent(gPanel);
-		vGroup.addComponent(gPanel);
+		gPanel.add(new FieldPanel(compList), BorderLayout.CENTER);
+		vCompList.add(gPanel);
 
 		// Profile Preferences
-		gPanel = new GroupPanel("Profile");
-		gPanel.setLayout(new BorderLayout());
+		gPanel = new JPanel(new BorderLayout());
+		gPanel.add(new JLabel("--- Profile ---", SwingConstants.CENTER), BorderLayout.NORTH);
 		compList = new ArrayList<Component>();
 
 		compList.add(new JLabel("Label", SwingConstants.RIGHT));
@@ -635,13 +588,12 @@ public class PreferencesDialog extends AbstractDialog {
 		};
 		compList.add(plwText);
 		
-		gPanel.add(new FieldPanel(compList));
-		hGroup.addComponent(gPanel);
-		vGroup.addComponent(gPanel);
+		gPanel.add(new FieldPanel(compList), BorderLayout.CENTER);
+		vCompList.add(gPanel);
 
 		// Scale Preferences
-		gPanel = new GroupPanel("Scale");
-		gPanel.setLayout(new BorderLayout());
+		gPanel = new JPanel(new BorderLayout());
+		gPanel.add(new JLabel("--- Scale ---", SwingConstants.CENTER), BorderLayout.NORTH);
 		compList = new ArrayList<Component>();
 
 		compList.add(new JLabel("Label", SwingConstants.RIGHT));
@@ -685,32 +637,21 @@ public class PreferencesDialog extends AbstractDialog {
 			}
 		});
 		
-		gPanel.add(new FieldPanel(compList));
-		hGroup.addComponent(gPanel);
-		vGroup.addComponent(gPanel);
+		gPanel.add(new FieldPanel(compList), BorderLayout.CENTER);
+		vCompList.add(gPanel);
 		
-		layout.setHorizontalGroup(hGroup);
-		layout.setVerticalGroup(vGroup);;
-		
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JScrollPane(prefPanel), BorderLayout.CENTER);
-		return(panel);
-
+		VerticalPanel prefPanel = new VerticalPanel(vCompList, 30);
+		JScrollPane scrollPane = new JScrollPane(prefPanel);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		return(scrollPane);
 	}
 	
-	private JPanel getFeatureSetsPrefPanel() {
-		JPanel prefPanel = new JPanel();
-		GroupLayout layout = new GroupLayout(prefPanel);
-		prefPanel.setLayout(layout);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
-		
-		GroupLayout.SequentialGroup vGroup = layout.createSequentialGroup();
-		GroupLayout.ParallelGroup hGroup = layout.createParallelGroup();
+	private JComponent getFeatureSetsPrefPanel() {
+		ArrayList<Component> vCompList = new ArrayList<Component>();
 		
 		// Path Preferences
-		GroupPanel gPanel = new GroupPanel("FeatureSet");
-		gPanel.setLayout(new FlowLayout());		
+		JPanel gPanel = new JPanel(new BorderLayout());
+		gPanel.add(new JLabel("--- FeatureSet ---", SwingConstants.CENTER), BorderLayout.NORTH);
 		ArrayList<Component> compList = new ArrayList<Component>();
 
 		// FeatureSet Preferences
@@ -747,17 +688,13 @@ public class PreferencesDialog extends AbstractDialog {
 		};
 		compList.add(ptSzText);
 		
-		gPanel.add(new FieldPanel(compList));
-		hGroup.addComponent(gPanel);
-		vGroup.addComponent(gPanel);
+		gPanel.add(new FieldPanel(compList), BorderLayout.CENTER);
+		vCompList.add(gPanel);
 		
-		layout.setHorizontalGroup(hGroup);
-		layout.setVerticalGroup(vGroup);
-		
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JScrollPane(prefPanel), BorderLayout.CENTER);
-		return(panel);
-
+		VerticalPanel prefPanel = new VerticalPanel(vCompList, 30);
+		JScrollPane scrollPane = new JScrollPane(prefPanel);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		return(scrollPane);
 	}
 
 }

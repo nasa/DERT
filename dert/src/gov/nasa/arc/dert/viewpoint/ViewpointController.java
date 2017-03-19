@@ -5,16 +5,16 @@ import gov.nasa.arc.dert.render.SceneFramework;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scenegraph.Ray3WithLine;
+import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.PathState;
-import gov.nasa.arc.dert.view.viewpoint.FlyThroughDialog;
 import gov.nasa.arc.dert.viewpoint.ViewpointNode.ViewpointMode;
 
-import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.Vector;
 
+import javax.swing.JLabel;
 import javax.swing.Timer;
 
 import com.ardor3d.math.Ray3;
@@ -61,7 +61,6 @@ public class ViewpointController {
 	private Timer flyThroughTimer;
 	private Vector<ViewpointStore> flyList;
 	private int flyIndex;
-	private FlyThroughDialog flyThroughDialog;
 	private FlyThroughParameters flyParams;
 	private DecimalFormat formatter1 = new DecimalFormat("00");
 	private DecimalFormat formatter2 = new DecimalFormat("00.000");
@@ -74,6 +73,10 @@ public class ViewpointController {
 	 * Constructor
 	 */
 	public ViewpointController() {
+		Vector<ViewpointStore> vpList = ConfigurationManager.getInstance().getCurrentConfiguration().viewPtState.viewpointList;
+		viewpointList = new Vector<ViewpointStore>(vpList.size());
+		for (int i=0; i<vpList.size(); ++i)
+			viewpointList.addElement(vpList.elementAt(i));
 	}
 
 	/**
@@ -292,15 +295,6 @@ public class ViewpointController {
 	}
 
 	/**
-	 * Set the list of viewpoints
-	 * 
-	 * @param viewpointList
-	 */
-	public void setViewpointList(Vector<ViewpointStore> viewpointList) {
-		this.viewpointList = viewpointList;
-	}
-
-	/**
 	 * Set the fly through parameters
 	 * 
 	 * @param flyParams
@@ -423,7 +417,6 @@ public class ViewpointController {
 		if (oldViewpoint != null)
 			viewpointNode.setViewpoint(oldViewpoint, true, false);
 		flyThroughTimer = null;
-		flyThroughDialog.enableParameters(true);
 	}
 
 	/**
@@ -439,7 +432,7 @@ public class ViewpointController {
 	 * A timer is used to run the flight. If frames are grabbed, each time a frame is rendered,
 	 * it is saved to a file.
 	 */
-	public void startFlyThrough() {
+	public void startFlyThrough(final JLabel statusField) {
 		if (flyThroughTimer == null) {
 			if (flyParams.grab) {
 				Dert.getWorldView().getScenePanel().enableFrameGrab(flyParams.imageSequencePath);
@@ -460,9 +453,7 @@ public class ViewpointController {
 					t -= hr * 3600;
 					int min = (int) (t / 60);
 					double sec = t - (min * 60);
-					if (flyThroughDialog != null)
-						flyThroughDialog.setStatus(formatter1.format(hr) + ":" + formatter1.format(min) + ":"
-								+ formatter2.format(sec) + "    Frame " + flyIndex);
+					statusField.setText(formatter1.format(hr) + ":" + formatter1.format(min) + ":" + formatter2.format(sec) + "    Frame " + flyIndex);
 					flyIndex++;
 					if (flyIndex == flyList.size()) {
 						if (!flyParams.loop)
@@ -477,28 +468,11 @@ public class ViewpointController {
 	}
 
 	/**
-	 * Open the fly through dialog with a path
-	 * 
-	 * @param path
-	 */
-	public void flyThrough(Path path, Dialog owner) {
-		// We are already doing a fly through
-		if (flyThroughDialog == null) {
-			flyThroughDialog = new FlyThroughDialog(owner, this);
-			flyThroughDialog.pack();
-			flyThroughDialog.setLocationRelativeTo(owner);
-			flyThroughDialog.setPath(path);
-		}
-		flyThroughDialog.setVisible(true);
-	}
-
-	/**
 	 * Close the fly through dialog
 	 */
 	public void closeFlyThrough() {
 		// stop the flythrough if it is going
 		stopFlyThrough();
-		flyThroughDialog = null;
 	}
 
 	/**
@@ -511,14 +485,6 @@ public class ViewpointController {
 	 * @param seqPath the file path for the image sequence
 	 */
 	public void flyViewpoints(FlyThroughParameters flyParams) {
-		// we need more than one frame
-    	if (flyParams.numFrames <= 1)
-    		return;
-		
-		// we need more than one viewpoint
-		int vpCount = viewpointList.size();
-		if (vpCount <= 1)
-			return;
 
 		flyList = new Vector<ViewpointStore>();
 		
@@ -538,15 +504,6 @@ public class ViewpointController {
 	 */
 	public void flyPath(Path path) {
 		flyParams = ((PathState)path.getState()).flyParams;
-		
-		// we need more than one frame
-    	if (flyParams.numFrames <= 1)
-    		return;
-		
-		// we need more than one waypoint
-		int ptCount = path.getNumberOfPoints();
-		if (ptCount <= 1)
-			return;
 		
 		// create an interpolated curve from the path
 		Vector3[] curve = path.getCurve(10);

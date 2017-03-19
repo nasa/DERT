@@ -10,24 +10,25 @@ import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DateTextField;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.ui.GBCHelper;
+import gov.nasa.arc.dert.ui.FieldPanel;
 import gov.nasa.arc.dert.ui.GroupPanel;
+import gov.nasa.arc.dert.ui.VerticalPanel;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Date;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 
 import com.ardor3d.bounding.BoundingVolume;
@@ -53,19 +54,24 @@ public class LightingPanel extends JPanel {
 	private Vector3 coord = new Vector3();
 
 	public LightingPanel() {
-		setLayout(new GridBagLayout());
-		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		ArrayList<Component> vCompList = new ArrayList<Component>();
+		
+		setLayout(new BorderLayout());
 
+		// Main Light section
 		GroupPanel mainPanel = new GroupPanel("Main Light");
-		mainPanel.setLayout(new GridLayout(4, 1, 0, 0));
+		mainPanel.setLayout(new BorderLayout());
+		ArrayList<Component> compList = new ArrayList<Component>();
+		
+		// Light mode
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		modeLabel = new JLabel("Mode");
+		modeLabel = new JLabel("Mode", SwingConstants.RIGHT);
 		if (World.getInstance().getLighting().isLampMode()) {
 			modeLabel.setIcon(Icons.getImageIcon("luxo.png"));
 		} else {
 			modeLabel.setIcon(Icons.getImageIcon("sun.png"));
 		}
-		panel.add(modeLabel);
+		compList.add(modeLabel);
 		ButtonGroup group = new ButtonGroup();
 		solButton = new JRadioButton("Solar");
 		solButton.setToolTipText("light is positioned by time");
@@ -77,9 +83,10 @@ public class LightingPanel extends JPanel {
 		lampButton.setSelected(World.getInstance().getLighting().isLampMode());
 		group.add(lampButton);
 		panel.add(lampButton);
-		mainPanel.add(panel);
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Diffuse Intensity"));
+		compList.add(panel);
+		
+		// Light attributes
+		compList.add(new JLabel("Diffuse Intensity", SwingConstants.RIGHT));
 		mainDiffuseSpinner = new DoubleSpinner(World.getInstance().getLighting().getDiffuseIntensity(), 0, 1, 0.05,
 			false) {
 			@Override
@@ -88,10 +95,8 @@ public class LightingPanel extends JPanel {
 				World.getInstance().getLighting().setDiffuseIntensity(value);
 			}
 		};
-		panel.add(mainDiffuseSpinner);
-		mainPanel.add(panel);
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Ambient Intensity"));
+		compList.add(mainDiffuseSpinner);
+		compList.add(new JLabel("Ambient Intensity", SwingConstants.RIGHT));
 		mainAmbientSpinner = new DoubleSpinner(World.getInstance().getLighting().getAmbientIntensity(), 0, 1, 0.05,
 			false) {
 			@Override
@@ -100,10 +105,8 @@ public class LightingPanel extends JPanel {
 				World.getInstance().getLighting().setAmbientIntensity(value);
 			}
 		};
-		panel.add(mainAmbientSpinner);
-		mainPanel.add(panel);
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Global Ambient Intensity"));
+		compList.add(mainAmbientSpinner);
+		compList.add(new JLabel("Global Ambient Intensity", SwingConstants.RIGHT));
 		globalAmbientSpinner = new DoubleSpinner(World.getInstance().getLighting().getGlobalIntensity(), 0, 1, 0.05,
 			false) {
 			@Override
@@ -112,28 +115,33 @@ public class LightingPanel extends JPanel {
 				World.getInstance().getLighting().setGlobalIntensity(value);
 			}
 		};
-		panel.add(globalAmbientSpinner);
-		mainPanel.add(panel);
-		add(mainPanel, GBCHelper.getGBC(0, 0, 1, 4, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("LMST Epoch"));
-		lmstEpoch = new DateTextField(30, World.getInstance().getLighting().getEpoch(), Lighting.DATE_FORMAT) {
+		compList.add(globalAmbientSpinner);
+		
+		// Time epoch for determing Local Mars Solar Time
+		compList.add(new JLabel("LMST Epoch", SwingConstants.RIGHT));
+		lmstEpoch = new DateTextField(10, World.getInstance().getLighting().getEpoch(), Lighting.DATE_FORMAT) {
 			@Override
 			public void handleChange(Date value) {
 				World.getInstance().getLighting().setEpoch(value);
 			}
 		};
-		panel.add(lmstEpoch);
-		add(panel, GBCHelper.getGBC(0, 4, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
+		compList.add(lmstEpoch);
+		
+		FieldPanel fPanel = new FieldPanel(compList);
+		mainPanel.add(fPanel, BorderLayout.CENTER);
+		vCompList.add(mainPanel);
 
+		// Headlight section
 		GroupPanel headPanel = new GroupPanel("Headlight");
-		headPanel.setLayout(new GridLayout(2, 1, 0, 0));
-		headlightButton = new JCheckBox("Enable");
+		headPanel.setLayout(new BorderLayout());
+		compList = new ArrayList<Component>();
+		
+		compList.add(new JLabel("Headlight", SwingConstants.RIGHT));
+		headlightButton = new JCheckBox("enable");
 		headlightButton.setSelected(World.getInstance().getLighting().isHeadlightEnabled());
-		headPanel.add(headlightButton);
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Diffuse Intensity"));
+		compList.add(headlightButton);
+		
+		compList.add(new JLabel("Diffuse Intensity", SwingConstants.RIGHT));
 		headDiffuseSpinner = new DoubleSpinner(World.getInstance().getLighting().getHeadlightIntensity(), 0, 1, 0.05,
 			false) {
 			@Override
@@ -142,12 +150,19 @@ public class LightingPanel extends JPanel {
 				World.getInstance().getLighting().setHeadlightIntensity(value);
 			}
 		};
-		panel.add(headDiffuseSpinner);
-		headPanel.add(panel);
-		add(headPanel, GBCHelper.getGBC(0, 5, 1, 2, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
+		compList.add(headDiffuseSpinner);
+		
+		fPanel = new FieldPanel(compList);
+		headPanel.add(fPanel, BorderLayout.CENTER);
+		vCompList.add(headPanel);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		shadowButton = new JCheckBox("Enable Shadows");
+		// Shadows section
+		GroupPanel shadowPanel = new GroupPanel("Shadows");
+		shadowPanel.setLayout(new BorderLayout());
+		compList = new ArrayList<Component>();
+		
+		compList.add(new JLabel("Shadow Map", SwingConstants.RIGHT));
+		shadowButton = new JCheckBox("enable");
 		shadowButton.setToolTipText("display shadows");
 		shadowButton.setSelected(World.getInstance().getLighting().isShadowEnabled());
 		shadowButton.addActionListener(new ActionListener() {
@@ -156,25 +171,11 @@ public class LightingPanel extends JPanel {
 				World.getInstance().getLighting().enableShadow(shadowButton.isSelected());
 			}
 		});
-		panel.add(shadowButton);
-		advancedShadow = new JButton("Advanced");
-		advancedShadow.setToolTipText("edit advanced shadow settings");
-		advancedShadow.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				ShadowSettingsDialog dialog = new ShadowSettingsDialog();
-				dialog.open();
-			}
-		});
-		panel.add(advancedShadow);
-		add(panel, GBCHelper.getGBC(0, 7, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
+		compList.add(shadowButton);
 
-		GroupPanel shadowPanel = new GroupPanel("Shadow Sphere");
-		shadowPanel.setLayout(new GridLayout(3, 1));
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Center"));
-		shadowCenterText = new CoordTextField(30, "coordinates of shadow sphere center", Landscape.format, false) {
+		// Shadow sphere
+		compList.add(new JLabel("Shadow Center", SwingConstants.RIGHT));
+		shadowCenterText = new CoordTextField(10, "coordinates of shadow sphere center", Landscape.format, false) {
 			@Override
 			public void doChange(ReadOnlyVector3 result) {
 				coord.set(result);
@@ -189,11 +190,8 @@ public class LightingPanel extends JPanel {
 		coord.set(World.getInstance().getLighting().getRefLoc());
 		Landscape.getInstance().sphericalToLocalCoordinate(coord);
 		shadowCenterText.setLocalValue(coord);
-		panel.add(shadowCenterText);
-		shadowPanel.add(panel);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(new JLabel("Radius"));
+		compList.add(shadowCenterText);
+		compList.add(new JLabel("Shadow Radius", SwingConstants.RIGHT));
 		shadowRadiusText = new DoubleTextField(10, World.getInstance().getLighting().getShadowMap().getRadius(), true, Landscape.format) {
 			@Override
 			public void handleChange(double radius) {
@@ -201,10 +199,8 @@ public class LightingPanel extends JPanel {
 				lighting.getShadowMap().setRadius(radius);
 			}
 		};
-		panel.add(shadowRadiusText);
-		shadowPanel.add(panel);
+		compList.add(shadowRadiusText);
 
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		defaultSphereButton = new JButton("Default");
 		defaultSphereButton.addActionListener(new ActionListener() {
 			@Override
@@ -219,9 +215,24 @@ public class LightingPanel extends JPanel {
 				lighting.getShadowMap().setRadius((float) bv.getRadius());
 			}
 		});
-		panel.add(defaultSphereButton);
-		shadowPanel.add(panel);
-		add(shadowPanel, GBCHelper.getGBC(0, 8, 1, 2, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
+		compList.add(defaultSphereButton);
+		advancedShadow = new JButton("Advanced");
+		advancedShadow.setToolTipText("edit advanced shadow settings");
+		advancedShadow.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				ShadowSettingsDialog dialog = new ShadowSettingsDialog();
+				dialog.open();
+			}
+		});
+		compList.add(advancedShadow);
+		
+		fPanel = new FieldPanel(compList);
+		shadowPanel.add(fPanel, BorderLayout.CENTER);
+		vCompList.add(shadowPanel);
+		
+		VerticalPanel vPanel = new VerticalPanel(vCompList, 0);
+		add(vPanel, BorderLayout.CENTER);
 
 		solButton.addActionListener(new ActionListener() {
 			@Override

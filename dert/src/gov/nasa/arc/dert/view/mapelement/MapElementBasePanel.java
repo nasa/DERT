@@ -12,7 +12,6 @@ import gov.nasa.arc.dert.ui.FieldPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -150,23 +149,23 @@ public abstract class MapElementBasePanel extends JPanel {
 		compList.add(locationText);
 	}
 
-	protected void setLocation(CoordTextField locationText, ReadOnlyVector3 position) {
+	protected void setLocation(CoordTextField locationText, JLabel label, ReadOnlyVector3 position) {
 		if (position == null) {
 			position = World.getInstance().getMarble().getTranslation();
 		}
 		if (locationText != null) {
 			locationText.setLocalValue(position);
 			if (mapElement.isLocked())
-				locLabel.setIcon(locked);
+				label.setIcon(locked);
 			else
-				locLabel.setIcon(null);
+				label.setIcon(null);
 		}
 	}
 	
-	@Override
-	public Insets getInsets() {
-		return(new Insets(5, 5, 5, 5));
-	}
+//	@Override
+//	public Insets getInsets() {
+//		return(new Insets(5, 5, 5, 5));
+//	}
 
 	/**
 	 * Map element was moved
@@ -178,7 +177,7 @@ public abstract class MapElementBasePanel extends JPanel {
 			return;
 		}
 		if (locationText != null) {
-			setLocation(locationText, ((Spatial) mapElement).getTranslation());
+			setLocation(locationText, locLabel, ((Spatial) mapElement).getTranslation());
 		}
 	}
 

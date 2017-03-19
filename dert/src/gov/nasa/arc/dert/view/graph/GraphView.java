@@ -21,6 +21,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -54,6 +55,8 @@ public class GraphView extends JPanelView {
 	 */
 	public GraphView(ProfileState viewState) {
 		super(viewState);
+		setBackground(Color.white);
+		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		coord = new Vector3();
 		JPanel controlPanel = new JPanel();
 		controlPanel.setLayout(new GridBagLayout());

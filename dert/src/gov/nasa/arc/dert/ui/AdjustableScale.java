@@ -1,5 +1,7 @@
 package gov.nasa.arc.dert.ui;
 
+import gov.nasa.arc.dert.action.ButtonAction;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -7,8 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
@@ -22,8 +22,6 @@ import java.text.NumberFormat;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.plaf.basic.BasicArrowButton;
 
 /**
  * Provides a scale with an adjustable range. The scale can be zoomed by
@@ -66,30 +64,26 @@ public class AdjustableScale extends JPanel {
 
 		GridBagConstraints gbc = GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
 			0, 0);
-		left = new BasicArrowButton(SwingConstants.WEST);
-		add(left, gbc);
-		left.setToolTipText("move left one pixel");
-		left.addActionListener(new ActionListener() {
+		left = new ButtonAction("move left one pixel", null, "prev_15.png", true) {
 			@Override
-			public void actionPerformed(ActionEvent event) {
+			protected void run() {
 				scaleCanvas.left();
 			}
-		});
+		};
+		add(left, gbc);
 
 		scaleCanvas = new ScaleCanvas(delta);
-		gbc = GBCHelper.getGBC(1, 0, 4, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 1);
+		gbc = GBCHelper.getGBC(1, 0, 4, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 1, 1);
 		add(scaleCanvas, gbc);
 
 		gbc = GBCHelper.getGBC(5, 0, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0);
-		right = new BasicArrowButton(SwingConstants.EAST);
-		add(right, gbc);
-		right.setToolTipText("move right one pixel");
-		right.addActionListener(new ActionListener() {
+		right = new ButtonAction("move right one pixel", null, "next_15.png", true) {
 			@Override
-			public void actionPerformed(ActionEvent event) {
+			protected void run() {
 				scaleCanvas.right();
 			}
-		});
+		};
+		add(right, gbc);
 
 	}
 

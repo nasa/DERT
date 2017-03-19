@@ -134,7 +134,7 @@ public class ScaleBarPanel extends MapElementBasePanel {
 	public void setMapElement(MapElement mapElement) {
 		super.setMapElement(mapElement);
 		scale = (ScaleBar) mapElement;
-		setLocation(locationText, scale.getTranslation());
+		setLocation(locationText, locLabel, scale.getTranslation());
 		sizeText.setValue(scale.getSize());
 		radiusText.setValue(scale.getCellRadius());
 		autoLabelButton.setSelected(scale.isAutoLabel());

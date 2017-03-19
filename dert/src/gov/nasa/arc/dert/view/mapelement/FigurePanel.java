@@ -125,7 +125,7 @@ public class FigurePanel extends MapElementBasePanel {
 	public void setMapElement(MapElement mapElement) {
 		super.setMapElement(mapElement);
 		figure = (Figure) mapElement;
-		setLocation(locationText, figure.getTranslation());
+		setLocation(locationText, locLabel, figure.getTranslation());
 		sizeText.setValue(figure.getSize());
 		shapeCombo.setSelectedItem(figure.getShapeType());
 		autoScaleButton.setSelected(figure.isAutoScale());

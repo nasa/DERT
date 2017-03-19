@@ -94,9 +94,9 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 * 
 	 * @param state
 	 */
-	public Profile(ProfileState state) {
-		super(state.name);
-		this.state = state;
+	public Profile(ProfileState pstate) {
+		super(pstate.name);
+		this.state = pstate;
 		this.labelVisible = state.labelVisible;
 		this.color = state.color;
 		this.size = state.size;
@@ -124,6 +124,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 			public void move(Movable mo, ReadOnlyVector3 pos) {
 				pALoc.set(pos);
 				updateGraph();
+				state.move(mo, pos);
 				updateGeometricState(0);
 			}
 		});
@@ -135,6 +136,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 			public void move(Movable mo, ReadOnlyVector3 pos) {
 				pBLoc.set(pos);
 				updateGraph();
+				state.move(mo, pos);
 				updateGeometricState(0);
 			}
 		});

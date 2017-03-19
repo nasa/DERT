@@ -23,7 +23,7 @@ public class SurfaceAndLayersView extends JPanelView {
 	public SurfaceAndLayersView(State state) {
 		super(state);
 
-		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
 		layersPanel = new LayersPanel(state);
 

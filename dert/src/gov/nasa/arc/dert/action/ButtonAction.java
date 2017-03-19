@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.action;
 
 import gov.nasa.arc.dert.icon.Icons;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -22,6 +23,8 @@ public abstract class ButtonAction extends JButton {
 
 	public ButtonAction(String toolTipText, String label, String iconFileName, boolean border) {
 		super(label);
+//		System.err.println("ButtonAction "+getFont());
+		setFont(getFont().deriveFont(Font.BOLD));
 		if (iconFileName == null) {
 			border = true;
 		}

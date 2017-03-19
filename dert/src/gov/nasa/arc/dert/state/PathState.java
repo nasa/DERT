@@ -40,6 +40,10 @@ public class PathState extends ToolState {
 	public double lineWidth;
 	
 	public FlyThroughParameters flyParams;
+	
+	// Params for PathView
+	public double refElev = Double.NaN;
+	public int volMethod = 1;
 
 	/**
 	 * Constructor
@@ -54,7 +58,7 @@ public class PathState extends ToolState {
 		labelType = Path.defaultLabelType;
 		lineWidth = Path.defaultLineWidth;
 		waypointsVisible = Path.defaultWaypointsVisible;
-		viewData = new ViewData(-1, -1, 600, 250, true);
+		viewData = new ViewData(-1, -1, -1, -1, true);
 		pointList = new ArrayList<WaypointState>();
 		WaypointState wp = new WaypointState(0, position, name + ".", Path.defaultSize, color, labelVisible, locked);
 		pointList.add(wp);
@@ -76,6 +80,8 @@ public class PathState extends ToolState {
 		pointList = new ArrayList<WaypointState>();
 		for (int i=0; i<n; ++i)
 			pointList.add(new WaypointState((HashMap<String,Object>)map.get("Waypoint"+i)));
+		refElev = StateUtil.getDouble(map, "ReferenceElevation", Double.NaN);
+		volMethod = StateUtil.getInteger(map, "VolumeMethod", 1);
 	}
 	
 	@Override
@@ -122,6 +128,13 @@ public class PathState extends ToolState {
 		map.put("WaypointCount", new Integer(pointList.size()));
 		for (int i=0; i<pointList.size(); ++i)
 			map.put("Waypoint"+i, pointList.get(i).save());
+		if (viewData.view != null) {
+			PathView pv = (PathView)(viewData.view);
+			refElev = pv.getVolElevation();
+			volMethod = pv.getVolumeMethod();
+			map.put("ReferenceElevation", new Double(refElev));
+			map.put("VolumeMethod", new Integer(volMethod));
+		}
 		return(map);
 	}
 
@@ -236,7 +249,7 @@ public class PathState extends ToolState {
 	
 	@Override
 	public void createView() {
-		PathView view = new PathView(this);
+		PathView view = new PathView(this, refElev, volMethod);
 		setView(view);
 		viewData.createWindow(Dert.getMainWindow(), name + " View", X_OFFSET, Y_OFFSET);
 	}

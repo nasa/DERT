@@ -24,6 +24,7 @@ public class TextDialog extends AbstractDialog {
 	protected JTextArea textArea;
 	protected String theText, theMessage;
 	protected Color theColor;
+	protected boolean scrolled;
 
 	/**
 	 * Constructor
@@ -35,14 +36,16 @@ public class TextDialog extends AbstractDialog {
 	 * @param addMessage
 	 * @param addRefresh
 	 */
-	public TextDialog(Frame parent, String title, int width, int height, boolean addMessage, boolean addRefresh) {
+	public TextDialog(Frame parent, String title, int width, int height, boolean addMessage, boolean addRefresh, boolean scrolled) {
 		super(parent, title, false, addRefresh, addMessage);
 		this.width = width;
 		this.height = height;
+		this.scrolled = scrolled;
 	}
 
 	@Override
 	protected void build() {
+		setBackground(Color.white);
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		getRootPane().setLayout(new BorderLayout());
 		if (boolArg) {
@@ -73,12 +76,16 @@ public class TextDialog extends AbstractDialog {
 		}
 		
 		contentArea = new JPanel(new BorderLayout());
-		JScrollPane scrollPane = new JScrollPane();
 		textArea = new JTextArea();
 		textArea.setEditable(false);
-		textArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		scrollPane.getViewport().setView(textArea);
-		contentArea.add(scrollPane, BorderLayout.CENTER);
+		if (scrolled) {
+			textArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+			JScrollPane scrollPane = new JScrollPane();
+			scrollPane.getViewport().setView(textArea);
+			contentArea.add(scrollPane, BorderLayout.CENTER);
+		}
+		else
+			contentArea.add(textArea, BorderLayout.CENTER);
 		getRootPane().add(contentArea, BorderLayout.CENTER);
 		if (theMessage != null) {
 			messageText.setText(theMessage);

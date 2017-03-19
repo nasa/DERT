@@ -4,31 +4,29 @@ import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.FeatureSetState;
 import gov.nasa.arc.dert.ui.AbstractDialog;
-import gov.nasa.arc.dert.ui.GBCHelper;
+import gov.nasa.arc.dert.ui.FieldPanel;
+import gov.nasa.arc.dert.ui.FileInputField;
 import gov.nasa.arc.dert.util.FileHelper;
 import gov.nasa.arc.dert.util.StringUtil;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class FeatureSetDialog
 	extends AbstractDialog {
 	
-	private JTextField fileText;
-	private JButton browseButton;
 	private JCheckBox isProjected;
 	private JCheckBox ground;
 	private JTextField labelText;
+	private FileInputField fif;
 
 	/**
 	 * Constructor
@@ -44,42 +42,42 @@ public class FeatureSetDialog
 	protected void build() {
 		super.build();
 		
-		contentArea.setMaximumSize(new Dimension(1000, -1));
-		contentArea.setLayout(new GridBagLayout());
-		
-		JLabel label = new JLabel("File");
-		contentArea.add(label, GBCHelper.getGBC(0, 0, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
-		fileText = new JTextField();
-		fileText.setToolTipText("path to GeoJSON file");
-		contentArea.add(fileText, GBCHelper.getGBC(1, 0, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
-		
-		browseButton = new JButton("Browse");
-		browseButton.setToolTipText("browse to GeoJSON file");
-		browseButton.addActionListener(new ActionListener() {
+		ArrayList<Component> compList = new ArrayList<Component>();
+		compList.add(new JLabel("File", SwingConstants.RIGHT));
+		fif = new FileInputField("", "enter path to GeoJSON file") {
 			@Override
-			public void actionPerformed(ActionEvent event) {
-				setFile();
+			public void setFile() {
+				String path = FileHelper.getFilePathForOpen("Select GeoJSON File", "GeoJSON Files", "json");
+				if (path != null) {
+					File file = new File(path);
+					fileText.setText(file.getAbsolutePath());
+				}
 			}
-		});
-		contentArea.add(browseButton, GBCHelper.getGBC(4, 0, 1, 1, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, 0, 0));
+		};
+		compList.add(fif);
 		
-		label = new JLabel("Is projected but contains no CRS: ");
-		contentArea.add(label, GBCHelper.getGBC(0, 1, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
 		isProjected = new JCheckBox();
-		contentArea.add(isProjected, GBCHelper.getGBC(3, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
+		compList.add(isProjected);
+		compList.add(new JLabel("This file is projected but contains no CRS.", SwingConstants.LEFT));
 		
-		label = new JLabel("Use elevation for Z coordinate: ");
-		contentArea.add(label, GBCHelper.getGBC(0, 2, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
 		ground = new JCheckBox();
-		contentArea.add(ground, GBCHelper.getGBC(3, 2, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
+		compList.add(ground);
+		compList.add(new JLabel("Use landscape elevation for Z coordinate.", SwingConstants.LEFT));
 		
-		label = new JLabel("Property to use as label: ");
-		contentArea.add(label, GBCHelper.getGBC(0, 3, 2, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 0, 0));
+		JLabel label = new JLabel("Label Property", SwingConstants.RIGHT);
+		label.setToolTipText("use this property for Point labels");
+		compList.add(label);
 		labelText = new JTextField();
-		contentArea.add(labelText, GBCHelper.getGBC(2, 3, 3, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 1, 0));
+		labelText.setToolTipText("use this property for Point labels");
+		compList.add(labelText);
+		
+		contentArea.setLayout(new BorderLayout());
+		contentArea.add(new FieldPanel(compList), BorderLayout.CENTER);
 		
 		width = 400;
 		height = 220;
+		
+		messageText.setText("Enter the path to a GeoJSON file.");
 	}
 
 	@Override
@@ -87,18 +85,10 @@ public class FeatureSetDialog
 		return (loadFile());
 	}
 
-	protected void setFile() {
-		String path = FileHelper.getFilePathForOpen("Select GeoJSON File", "GeoJSON Files", "json");
-		if (path != null) {
-			File file = new File(path);
-			fileText.setText(file.getAbsolutePath());
-		}
-	}
-
 	private boolean loadFile() {
 
 		// get the file path
-		String filePath = fileText.getText().trim();
+		String filePath = fif.getFilePath();
 		if (filePath.isEmpty()) {
 			messageText.setText("Invalid file path.");
 			return(false);

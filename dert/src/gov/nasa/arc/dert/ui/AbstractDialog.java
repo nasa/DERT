@@ -114,15 +114,15 @@ public abstract class AbstractDialog extends JDialog {
 		buttonsPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		if (boolArg) {
 			okButton = new JButton("Close");
-			okButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent event) {
-					if (okPressed()) {
-						close();
-					}
-				}
-			});
-			buttonsPanel.add(okButton);
+//			okButton.addActionListener(new ActionListener() {
+//				@Override
+//				public void actionPerformed(ActionEvent event) {
+//					if (okPressed()) {
+//						close();
+//					}
+//				}
+//			});
+//			buttonsPanel.add(okButton);
 		} else {
 			cancelButton = new JButton("Cancel");
 			cancelButton.addActionListener(new ActionListener() {

@@ -33,6 +33,7 @@ public class PlanePanel extends MapElementBasePanel {
 	private DoubleSpinner lengthSpinner, widthSpinner;
 	private JCheckBox triangleCheckBox;
 	private JLabel strikeAndDip;
+	private JLabel p0Label, p1Label, p2Label;
 
 	// The plane
 	private Plane plane;
@@ -49,7 +50,8 @@ public class PlanePanel extends MapElementBasePanel {
 	@Override
 	protected void addFields(ArrayList<Component> compList) {
 
-		compList.add(new JLabel("Point 0", SwingConstants.RIGHT));
+		p0Label = new JLabel("Point 0", SwingConstants.RIGHT);
+		compList.add(p0Label);
 		p0Location = new CoordTextField(22, "location of first point of triangle", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 result) {
@@ -70,7 +72,8 @@ public class PlanePanel extends MapElementBasePanel {
 		CoordAction.listenerList.add(p0Location);
 		compList.add(p0Location);
 
-		compList.add(new JLabel("Point 1", SwingConstants.RIGHT));
+		p1Label = new JLabel("Point 1", SwingConstants.RIGHT);
+		compList.add(p1Label);
 		p1Location = new CoordTextField(22, "location of second point of triangle", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 result) {
@@ -91,7 +94,8 @@ public class PlanePanel extends MapElementBasePanel {
 		CoordAction.listenerList.add(p1Location);
 		compList.add(p1Location);
 
-		compList.add(new JLabel("Point 2", SwingConstants.RIGHT));
+		p2Label = new JLabel("Point 2", SwingConstants.RIGHT);
+		compList.add(p2Label);
 		p2Location = new CoordTextField(22, "location of third point of triangle", Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 result) {
@@ -171,15 +175,15 @@ public class PlanePanel extends MapElementBasePanel {
 		widthSpinner.setValue(plane.getWidthScale());
 		noteText.setText(plane.getState().getAnnotation());
 		triangleCheckBox.setSelected(plane.isTriangleVisible());
-		updateLocation(plane);
+		updateLocation(mapElement);
 		updateStrikeAndDip(plane.getStrike(), plane.getDip());
 	}
 
 	@Override
 	public void updateLocation(MapElement mapElement) {
-		setLocation(p0Location, plane.getPoint(0));
-		setLocation(p1Location, plane.getPoint(1));
-		setLocation(p2Location, plane.getPoint(2));
+		setLocation(p0Location, p0Label, plane.getPoint(0));
+		setLocation(p1Location, p1Label, plane.getPoint(1));
+		setLocation(p2Location, p2Label, plane.getPoint(2));
 //		System.err.println("PlanePanel.updateLocation "+plane.getStrike()+" "+plane.getDip());
 //		String str = "Strike: ";
 //		if (Plane.strikeAsCompassBearing) {

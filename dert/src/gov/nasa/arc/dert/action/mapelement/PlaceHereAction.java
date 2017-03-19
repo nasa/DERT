@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.action.mapelement;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.MenuItemAction;
-import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Profile;
@@ -75,7 +74,7 @@ public class PlaceHereAction extends MenuItemAction {
 
 		// ask user to select one
 		Movable movable = (Movable) JOptionPane.showInputDialog(Dert.getMainWindow(), "Select a Map Element",
-			"Place Here", JOptionPane.PLAIN_MESSAGE, Icons.DERT_ICON_24, spatials, spatials[0]);
+			"Place Here", JOptionPane.PLAIN_MESSAGE, null, spatials, spatials[0]);
 
 		// move the map element and hand it to the undo handler
 		if (movable != null) {

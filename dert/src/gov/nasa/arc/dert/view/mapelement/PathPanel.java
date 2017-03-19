@@ -10,7 +10,6 @@ import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.ui.DoubleTextField;
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ public class PathPanel extends MapElementBasePanel {
 	// Controls
 	private JComboBox typeCombo;
 	private JComboBox labelCombo;
-	private JButton addPoints, fly;
+	private JButton addPoints;
 	private JCheckBox showWaypoints;
 	private DoubleTextField lineWidthText;
 	private DoubleTextField sizeText;
@@ -118,18 +117,7 @@ public class PathPanel extends MapElementBasePanel {
 			}
 		});
 		compList.add(addPoints);
-
-		fly = new JButton("Fly");
-		fly.setToolTipText("fly along this path");
-		fly.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				if (path.getNumberOfPoints() < 1)
-					return;
-				Dert.getWorldView().getScenePanel().getViewpointController().flyThrough(path, (Dialog)getTopLevelAncestor());
-			}
-		});
-		compList.add(fly);
+		compList.add(new JLabel(""));
 	}
 
 	@Override
@@ -155,7 +143,7 @@ public class PathPanel extends MapElementBasePanel {
 			waypoint = (Waypoint) mapElement;
 			locLabel.setText(waypoint.getName());
 			path = waypoint.getPath();
-			setLocation(locationText, waypoint.getTranslation());
+			setLocation(locationText, locLabel, waypoint.getTranslation());
 			noteText.setText(waypoint.getState().getAnnotation());
 			locationText.setEnabled(true);
 			path.setCurrentWaypoint(waypoint);
