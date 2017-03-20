@@ -310,8 +310,10 @@ public class PdsLabel {
 				if (n < 0) {
 					for (int j=0; j<str.length(); ++j)
 						if (str.charAt(j) != ' ') {
-							if (j > 0)
+							if (j > 0) {
 								str = str.substring(j-1);
+								break;
+							}
 						}
 					value += str;
 					if (current != null)
