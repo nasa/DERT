@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.action.mapelement;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.MenuItemAction;
+import gov.nasa.arc.dert.action.UndoHandler;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Profile;
@@ -80,7 +81,7 @@ public class PlaceHereAction extends MenuItemAction {
 		if (movable != null) {
 			Vector3 trans = new Vector3(movable.getTranslation());
 			movable.setLocation(position, false);
-			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(movable, trans));
+			UndoHandler.getInstance().addEdit(new MoveEdit(movable, trans));
 		}
 	}
 

@@ -1,7 +1,6 @@
 package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
-import gov.nasa.arc.dert.MainWindow;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.Marble;
 import gov.nasa.arc.dert.scene.World;
@@ -55,9 +54,7 @@ public class MarbleState extends MapElementState {
 	 * Update the data displayed in the Marble view
 	 */
 	public void updateText() {
-		MainWindow mw = Dert.getMainWindow();
-		if (mw != null)
-			mw.updateMarbleLocationField();
+		Dert.getMainWindow().updateMarbleLocationField();
 
 		View view = viewData.getView();
 		if (view == null) {

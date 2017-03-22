@@ -3,6 +3,7 @@ package gov.nasa.arc.dert;
 import gov.nasa.arc.dert.action.ButtonAction;
 import gov.nasa.arc.dert.action.MenuItemAction;
 import gov.nasa.arc.dert.action.PopupMenuAction;
+import gov.nasa.arc.dert.action.UndoHandler;
 import gov.nasa.arc.dert.action.edit.BackgroundColorDialog;
 import gov.nasa.arc.dert.action.edit.CoordAction;
 import gov.nasa.arc.dert.action.edit.PreferencesDialog;
@@ -63,9 +64,6 @@ public class MainWindow extends JFrame {
 	// The current configuration
 	private Configuration currentConfig;
 
-	// Undo/Redo management
-	private UndoHandler undoHandler;
-
 	// Menu for undo/redo and a few general operations
 	private PopupMenuAction editMenu;
 	
@@ -123,7 +121,6 @@ public class MainWindow extends JFrame {
 
 		// Initialize
 //		marbleLocation = new Vector3();
-		undoHandler = new UndoHandler();
 		version = properties.getProperty("Dert.Version");
 
 		// User interface details.
@@ -373,6 +370,7 @@ public class MainWindow extends JFrame {
 	}
 
 	protected void fillEditMenu(PopupMenu menu) {
+		UndoHandler undoHandler = UndoHandler.getInstance();
 		menu.add(undoHandler.getUndoAction());
 		menu.add(undoHandler.getRedoAction());
 		menu.addSeparator();
@@ -566,15 +564,6 @@ public class MainWindow extends JFrame {
 	 */
 	public WorldView getWorldView() {
 		return (worldView);
-	}
-
-	/**
-	 * Get the undo handler.
-	 * 
-	 * @return the handler
-	 */
-	public UndoHandler getUndoHandler() {
-		return (undoHandler);
 	}
 
 	private Menu getRecentSubmenu() {

@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.action.mapelement;
 
-import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.MenuItemAction;
+import gov.nasa.arc.dert.action.UndoHandler;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.view.world.HideEdit;
 
@@ -27,7 +27,7 @@ public class HideMapElementAction extends MenuItemAction {
 	protected void run() {
 		// hide map element and notify the undo handler
 		mapElement.setVisible(false);
-		Dert.getMainWindow().getUndoHandler().addEdit(new HideEdit(mapElement));
+		UndoHandler.getInstance().addEdit(new HideEdit(mapElement));
 	}
 
 }

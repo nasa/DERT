@@ -175,6 +175,7 @@ public class Dert {
 
 		// Initialize main window and console.
 		createMainWindows(pathStr, args);
+		createFont();
 		
 		Console.println("OpenGL Vendor: " + SceneCanvas.openGLVendor);
 		Console.println("OpenGL Renderer: " + SceneCanvas.openGLRenderer);
@@ -237,7 +238,9 @@ public class Dert {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+	}
+	
+	protected void createFont() {	
 		// Create our own OpenGL bitmap font from a Java font.
 		// First determine font size.
 		int fontSize = StringUtil.getIntegerValue(dertProperties, "RasterText.FontSize", true, 0, false);

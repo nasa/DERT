@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.action.edit;
 
-import gov.nasa.arc.dert.UndoHandler;
 import gov.nasa.arc.dert.action.MenuItemAction;
+import gov.nasa.arc.dert.action.UndoHandler;
 
 /**
  * Provides an Undo menu entry for the Edit menu.

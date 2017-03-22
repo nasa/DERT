@@ -1,6 +1,6 @@
 package gov.nasa.arc.dert.scenegraph;
 
-import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.action.UndoHandler;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.view.world.GroundEdit;
 import gov.nasa.arc.dert.view.world.MoveEdit;
@@ -139,7 +139,7 @@ public abstract class Movable extends Node {
 	 */
 	public void setLocation(double x, double y, double z, boolean doEdit) {
 		if (doEdit)
-			Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(this, new Vector3(location)));
+			UndoHandler.getInstance().addEdit(new MoveEdit(this, new Vector3(location)));
 		location.set(x, y, z);
 		setTranslation(x, y, z+zOff);
 		updateListeners();

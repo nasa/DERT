@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.view.world;
 
-import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.MenuItemAction;
+import gov.nasa.arc.dert.action.UndoHandler;
 import gov.nasa.arc.dert.action.mapelement.AddBillboardAction;
 import gov.nasa.arc.dert.action.mapelement.AddCameraAction;
 import gov.nasa.arc.dert.action.mapelement.AddCartesianGridAction;
@@ -15,10 +15,10 @@ import gov.nasa.arc.dert.action.mapelement.AddScaleAction;
 import gov.nasa.arc.dert.action.mapelement.DeleteMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.EditAction;
 import gov.nasa.arc.dert.action.mapelement.HideMapElementAction;
+import gov.nasa.arc.dert.action.mapelement.LockMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.OnGroundAction;
 import gov.nasa.arc.dert.action.mapelement.OpenAnnotationAction;
 import gov.nasa.arc.dert.action.mapelement.OpenBillboardAction;
-import gov.nasa.arc.dert.action.mapelement.LockMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.PlaceHereAction;
 import gov.nasa.arc.dert.action.mapelement.RenameAction;
 import gov.nasa.arc.dert.landscape.QuadTreeMesh;
@@ -267,7 +267,7 @@ public class WorldInputHandler implements InputHandler {
 				if (hasMouse()) {
 					((Spatial) movable).getSceneHints().setAllPickingHints(true);
 					movable.setInMotion(false, null);
-					Dert.getMainWindow().getUndoHandler().addEdit(new MoveEdit(movable, lastPosition));
+					UndoHandler.getInstance().addEdit(new MoveEdit(movable, lastPosition));
 					movable = null;
 					canvasPanel.setCursor(null);
 				}

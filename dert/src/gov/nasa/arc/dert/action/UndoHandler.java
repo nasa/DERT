@@ -1,6 +1,5 @@
-package gov.nasa.arc.dert;
+package gov.nasa.arc.dert.action;
 
-import gov.nasa.arc.dert.action.MenuItemAction;
 import gov.nasa.arc.dert.action.edit.RedoAction;
 import gov.nasa.arc.dert.action.edit.UndoAction;
 
@@ -12,11 +11,19 @@ import javax.swing.undo.UndoableEdit;
  *
  */
 public class UndoHandler {
+	
+	private static UndoHandler instance;
 
 	private UndoManager undoManager;
 	private MenuItemAction undoAction, redoAction;
+	
+	public static UndoHandler getInstance() {
+		if (instance == null)
+			instance = new UndoHandler();
+		return(instance);
+	}
 
-	public UndoHandler() {
+	protected UndoHandler() {
 		undoManager = new UndoManager();
 		undoAction = new UndoAction(this);
 		undoAction.setEnabled(false);

@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.action.mapelement;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.MenuItemAction;
+import gov.nasa.arc.dert.action.UndoHandler;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.MapElementState;
@@ -35,7 +36,7 @@ public class DeleteMapElementAction extends MenuItemAction {
 			MapElementState state = mapElement.getState();
 			state.save();
 			ConfigurationManager.getInstance().getCurrentConfiguration().removeMapElementState(state);
-			Dert.getMainWindow().getUndoHandler().addEdit(new DeleteEdit(state));
+			UndoHandler.getInstance().addEdit(new DeleteEdit(state));
 		}
 
 	}

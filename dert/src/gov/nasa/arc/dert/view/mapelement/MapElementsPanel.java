@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.action.UndoHandler;
 import gov.nasa.arc.dert.action.mapelement.NameDialog;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
@@ -772,7 +773,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 					for (int i = 0; i < currentMapElements.length; ++i) {
 						state[i] = currentMapElements[i].getState();
 					}
-					Dert.getMainWindow().getUndoHandler().addEdit(new DeleteEditMulti(state));
+					UndoHandler.getInstance().addEdit(new DeleteEditMulti(state));
 					currentMapElements = null;
 					enableButtons(false, null);
 				}
@@ -799,9 +800,9 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				if (currentMapElements.length == 1)
-					Dert.getMainWindow().getUndoHandler().addEdit(new ShowEdit(currentMapElements[0]));
+					UndoHandler.getInstance().addEdit(new ShowEdit(currentMapElements[0]));
 				else
-					Dert.getMainWindow().getUndoHandler().addEdit(new ShowEditMulti(currentMapElements));
+					UndoHandler.getInstance().addEdit(new ShowEditMulti(currentMapElements));
 				showButton.setEnabled(false);
 				hideButton.setEnabled(true);
 			}
@@ -816,9 +817,9 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				if (currentMapElements.length == 1)
-					Dert.getMainWindow().getUndoHandler().addEdit(new HideEdit(currentMapElements[0]));
+					UndoHandler.getInstance().addEdit(new HideEdit(currentMapElements[0]));
 				else
-					Dert.getMainWindow().getUndoHandler().addEdit(new HideEditMulti(currentMapElements));
+					UndoHandler.getInstance().addEdit(new HideEditMulti(currentMapElements));
 				hideButton.setEnabled(false);
 				showButton.setEnabled(true);
 			}
@@ -899,7 +900,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 				WorldView wv = Dert.getWorldView();
 				ViewpointNode cameraControl = ((WorldScene) wv.getScenePanel().getScene()).getViewpointNode();
 				cameraControl.seek(currentMapElements[0]);
-				Dert.getMainWindow().getUndoHandler().addEdit(new SeekEdit(currentMapElements[0]));
+				UndoHandler.getInstance().addEdit(new SeekEdit(currentMapElements[0]));
 			}
 		});
 		buttonPanel.add(seekButton);
@@ -932,12 +933,12 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				if (currentMapElements.length == 1)
-					Dert.getMainWindow().getUndoHandler().addEdit(currentMapElements[0].ground());
+					UndoHandler.getInstance().addEdit(currentMapElements[0].ground());
 				else {
 					GroundEdit[] ge = new GroundEdit[currentMapElements.length];
 					for (int i=0; i<currentMapElements.length; ++i)
 						ge[i] = currentMapElements[i].ground();
-					Dert.getMainWindow().getUndoHandler().addEdit(new GroundEdit(ge));
+					UndoHandler.getInstance().addEdit(new GroundEdit(ge));
 				}
 			}
 		});
