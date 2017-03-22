@@ -14,11 +14,11 @@ See demonstrations of DERT [here](https://github.com/nasa/DERT/wiki/Videos).
 
 Prebuilt releases are available on the [releases](https://github.com/nasa/DERT/releases) tab for this site. Additionally, versions that include the JPL SPICE kernels as well as some prebuilt landscapes are available [here](https://github.com/nasa/DERT/wiki/Download). These releases are built with the Java 1.8.0_112 JDK so the corresponding JRE is required to run them.
 
-##Contributions
+## Contributions
 
 DERT v1.0 is currently undergoing beta testing and we are not adding contributors at this time.  However, we could use help with the testing. If you are interested, you can test DERT by running the examples in the user guide. Please let us know of any issues you find by submitting them to this site.
 
-##LICENSE
+## LICENSE
 
 DERT is a viewer for digital terrain models created from data collected during NASA missions.
 
@@ -70,7 +70,7 @@ separate “DERT Third Party Licenses” pdf document found where you downloaded
 **PROJ.4**, Copyright © 2000, Frank Warmerdam.
  
 
-###Disclaimers
+### Disclaimers
 
 	No Warranty: THE SUBJECT SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY OF ANY KIND,
 	EITHER EXPRESSED, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTY
