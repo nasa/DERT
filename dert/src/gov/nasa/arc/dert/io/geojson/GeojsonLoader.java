@@ -48,8 +48,6 @@ public class GeojsonLoader {
 	private String elevAttrName;
 	private boolean ground;
 	private float size, lineWidth;
-	
-//	private Texture texture;
 
 	/**
 	 * Constructor
@@ -74,8 +72,6 @@ public class GeojsonLoader {
 	 * @return a GeoJSON object
 	 */
 	public GeoJsonObject load(String filePath) {
-//		texture = ImageUtil.createTexture(ImageBoard.defaultImagePath, true);
-//		texture.setApply(ApplyMode.Modulate);
 		this.filePath = filePath;
 		File file = null;
 		try {
@@ -202,7 +198,7 @@ public class GeojsonLoader {
 			if (pos != null) {
 				FigureMarker fm = new FigureMarker(parent.getName(), pos, size, 0, color, false, true, true);
 				fm.setShape(ShapeType.crystal);
-//				fm.setAutoShowLabel(false);
+				fm.setAutoShowLabel(true);
 				parent.attachChild(fm);
 				minZ = pos.getZ();
 				maxZ = pos.getZ();
@@ -226,7 +222,7 @@ public class GeojsonLoader {
 				if (coord != null) {
 					FigureMarker fm = new FigureMarker(parent.getName()+i, pos, size, 0, color, false, true, true);
 					fm.setShape(ShapeType.crystal);
-//					fm.setAutoShowLabel(false);
+					fm.setAutoShowLabel(true);
 					parent.attachChild(fm);
 					minZ = Math.min(minZ, pos.getZ());
 					maxZ = Math.max(maxZ, pos.getZ());
@@ -349,28 +345,6 @@ public class GeojsonLoader {
 		return(true);
 		
 	}
-
-//	private ReadOnlyVector3 toWorld(double[] coordinate, boolean getZ) {
-//		if (coordinate.length == 3) {
-//			coord.set(coordinate[0], coordinate[1], coordinate[2]);
-//			srs.getProjection().worldToLocal(coord);
-//			coord.setZ(coord.getZ() - landscapeMinZ);
-//			return (coord);
-//		} else if (coordinate.length == 2) {
-//			coord.set(coordinate[0], coordinate[1], 0);
-//			srs.getProjection().worldToLocal(coord);
-//			if (getZ) {
-//				coord.setZ(Landscape.getInstance().getZ(coord.getX(), coord.getY()));
-//			}
-//			if (Double.isNaN(coord.getZ())) {
-//				return (null);
-//			} else {
-//				return (coord);
-//			}
-//		} else {
-//			throw new IllegalArgumentException("GeoJSON Position has < 2 elements.");
-//		}
-//	}
 
 	private ReadOnlyVector3 toWorld(double[] coordinate, boolean getZ) {
 		if (coordinate.length == 3) {
