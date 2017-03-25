@@ -1,6 +1,5 @@
-package gov.nasa.arc.dert.io.geojson;
+package gov.nasa.arc.dert.scenegraph;
 
-import gov.nasa.arc.dert.scenegraph.LineStrip;
 import gov.nasa.arc.dert.scenegraph.text.VectorText;
 import gov.nasa.arc.dert.util.UIUtil;
 
