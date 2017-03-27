@@ -162,7 +162,7 @@ public class Proj4 {
 	}
 
 	/**
-	 * Calls pj_transform for the coordinate tuple. Lon/lat must be in radians.
+	 * Calls pj_transform for the coordinate triple. Lon/lat must be in radians.
 	 * 
 	 * @param dest
 	 * @param coords
@@ -172,7 +172,7 @@ public class Proj4 {
 			throw new NullPointerException("Null destination");
 		}
 		if ((coords == null) || (coords.length < 3)) {
-			throw new IllegalArgumentException("Invalid coordinates");
+			throw new IllegalArgumentException("Null or too few elements for coordinates.");
 		}
 		xCoord[0] = coords[0];
 		yCoord[0] = coords[1];

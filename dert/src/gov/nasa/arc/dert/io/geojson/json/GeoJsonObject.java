@@ -1,6 +1,5 @@
-package gov.nasa.arc.dert.io.geojson;
+package gov.nasa.arc.dert.io.geojson.json;
 
-import gov.nasa.arc.dert.io.geojson.json.JsonObject;
 
 /**
  * Provides a GeoJSON Object.
@@ -12,7 +11,7 @@ public class GeoJsonObject {
 	protected double[] bbox;
 
 	// Coordinate reference system
-	protected CoordinateReferenceSystem crs;
+	public CoordinateReferenceSystem crs;
 
 	/**
 	 * Constructor

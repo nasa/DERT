@@ -235,6 +235,18 @@ public class Projection {
 	 * @param vec
 	 */
 	public void sphericalToWorld(Vector3 vec) {
+		vec.toArray(coord);
+		sphericalToWorld(coord);
+		vec.setX(coord[0]);
+		vec.setY(coord[1]);
+	}
+	
+	/**
+	 * Convert lon/lat (degree) coordinate to virtual world coordinates.
+	 * 
+	 * @param coord is a double array of 3 elements
+	 */
+	public void sphericalToWorld(double[] coord) {
 		if (pjUnprojected == null) {
 			String projStr = "+proj=longlat +a=" + projInfo.getSemiMajorAxis() + " +b=" + projInfo.getSemiMinorAxis()
 				+ " +no_defs";
@@ -243,12 +255,9 @@ public class Projection {
 		if (pjProjected == null) {
 			pjProjected = Proj4.newInstance(proj4String);
 		}
-		vec.toArray(coord);
 		coord[0] = Math.toRadians(coord[0]);
 		coord[1] = Math.toRadians(coord[1]);
 		pjUnprojected.transform(pjProjected, coord);
-		vec.setX(coord[0]);
-		vec.setY(coord[1]);
 	}
 
 	/**

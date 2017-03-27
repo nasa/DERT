@@ -1,8 +1,8 @@
 package gov.nasa.arc.dert.scene.featureset;
 
 import gov.nasa.arc.dert.icon.Icons;
-import gov.nasa.arc.dert.io.geojson.GeoJsonObject;
 import gov.nasa.arc.dert.io.geojson.GeojsonLoader;
+import gov.nasa.arc.dert.io.geojson.json.GeoJsonObject;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.raster.SpatialReferenceSystem;

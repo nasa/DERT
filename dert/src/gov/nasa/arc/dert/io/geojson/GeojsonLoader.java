@@ -1,9 +1,22 @@
 package gov.nasa.arc.dert.io.geojson;
 
+import gov.nasa.arc.dert.io.geojson.json.CoordinateReferenceSystem;
+import gov.nasa.arc.dert.io.geojson.json.GeoJsonFeature;
+import gov.nasa.arc.dert.io.geojson.json.GeoJsonFeatureCollection;
+import gov.nasa.arc.dert.io.geojson.json.GeoJsonObject;
+import gov.nasa.arc.dert.io.geojson.json.Geometry;
+import gov.nasa.arc.dert.io.geojson.json.GeometryCollection;
 import gov.nasa.arc.dert.io.geojson.json.Json;
 import gov.nasa.arc.dert.io.geojson.json.JsonObject;
 import gov.nasa.arc.dert.io.geojson.json.JsonReader;
+import gov.nasa.arc.dert.io.geojson.json.LineString;
+import gov.nasa.arc.dert.io.geojson.json.MultiLineString;
+import gov.nasa.arc.dert.io.geojson.json.MultiPoint;
+import gov.nasa.arc.dert.io.geojson.json.MultiPolygon;
+import gov.nasa.arc.dert.io.geojson.json.Point;
+import gov.nasa.arc.dert.io.geojson.json.Polygon;
 import gov.nasa.arc.dert.landscape.Landscape;
+import gov.nasa.arc.dert.raster.Projection;
 import gov.nasa.arc.dert.raster.SpatialReferenceSystem;
 import gov.nasa.arc.dert.scene.featureset.Feature;
 import gov.nasa.arc.dert.scene.featureset.FeatureSet;
@@ -114,9 +127,31 @@ public class GeojsonLoader {
 	 * @return the FeatureSet
 	 */
 	public FeatureSet geoJsonToArdor3D(GeoJsonObject gjRoot, FeatureSet root, Color color, boolean isProjected) {
-		crs = gjRoot.crs;
-		if (!isProjected && (crs == null))
-			crs = new CoordinateReferenceSystem(Landscape.getInstance().getSpatialReferenceSystem().getProjection());
+		if (!isProjected && (gjRoot.crs != null))
+			System.err.println("Found coordinate reference system.");
+//		crs = gjRoot.crs;
+//		if (!isProjected && (crs == null))
+//			crs = new CoordinateReferenceSystem(Landscape.getInstance().getSpatialReferenceSystem().getProjection());
+		
+		if (!isProjected)
+			crs = new CoordinateReferenceSystem() {
+				private Projection projection = Landscape.getInstance().getSpatialReferenceSystem().getProjection();
+				private double[] dcoord = new double[3];
+				@Override
+				public void translate(double[] coordinate) {
+					if (coordinate.length == 3)
+						projection.sphericalToWorld(coordinate);
+					else {
+						dcoord[0] = coordinate[0];
+						dcoord[1] = coordinate[1];
+						dcoord[2] = 0;
+						projection.sphericalToWorld(dcoord);
+						coordinate[0] = dcoord[0];
+						coordinate[1] = dcoord[1];
+					}
+				}				
+			};
+			
 		// Minimum landscape elevation
 		landscapeMinZ = 0;
 		if ((elevAttrName == null) && ground)
@@ -349,18 +384,18 @@ public class GeojsonLoader {
 
 	private ReadOnlyVector3 toWorld(double[] coordinate, boolean getZ) {
 		if (coordinate.length == 3) {
-			coord.set(coordinate[0], coordinate[1], coordinate[2]);
 			if (crs != null)
-				crs.translate(coordinate, coord);
+				crs.translate(coordinate);
+			coord.set(coordinate[0], coordinate[1], coordinate[2]);
 			srs.getProjection().worldToLocal(coord);
 			if (getZ)
 				coord.setZ(Landscape.getInstance().getZ(coord.getX(), coord.getY()));
 			else
 				coord.setZ(coord.getZ() - landscapeMinZ);
 		} else if (coordinate.length == 2) {
-			coord.set(coordinate[0], coordinate[1], 0);
 			if (crs != null)
-				crs.translate(coordinate, coord);
+				crs.translate(coordinate);
+			coord.set(coordinate[0], coordinate[1], 0);
 			srs.getProjection().worldToLocal(coord);
 			if (getZ)
 				coord.setZ(Landscape.getInstance().getZ(coord.getX(), coord.getY()));

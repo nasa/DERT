@@ -1,12 +1,11 @@
-package gov.nasa.arc.dert.io.geojson;
+package gov.nasa.arc.dert.io.geojson.json;
 
-import gov.nasa.arc.dert.io.geojson.json.JsonObject;
 
 /**
- * Provides a GeoJSON MultiPoint object.
+ * Provides a GeoJSON LineString Geometry object.
  *
  */
-public class MultiPoint extends Geometry {
+public class LineString extends Geometry {
 
 	private double[][] coordinate;
 
@@ -15,18 +14,20 @@ public class MultiPoint extends Geometry {
 	 * 
 	 * @param jsonObject
 	 */
-	public MultiPoint(JsonObject jsonObject) {
-		super(jsonObject, GeojsonType.MultiPoint);
+	public LineString(JsonObject jsonObject) {
+		super(jsonObject, GeojsonType.LineString);
 		Object[] arrayN = jsonObject.getArray("coordinates");
 		int n = arrayN.length;
+		if (n < 2) {
+			throw new IllegalArgumentException("LineString has < 2 positions.");
+		}
 		Object[] pos = (Object[])arrayN[0];
 		int posLength = pos.length;
 		coordinate = new double[n][posLength];
 		for (int i = 0; i < n; ++i) {
 			pos = (Object[])arrayN[i];
-			for (int p = 0; p < posLength; ++p) {
+			for (int p = 0; p < posLength; ++p)
 				coordinate[i][p] = ((Double)pos[p]).doubleValue();
-			}
 		}
 	}
 

@@ -1,6 +1,5 @@
-package gov.nasa.arc.dert.io.geojson;
+package gov.nasa.arc.dert.io.geojson.json;
 
-import gov.nasa.arc.dert.io.geojson.json.JsonObject;
 
 /**
  * Provides a base class for GeoJSON Geometry objects.

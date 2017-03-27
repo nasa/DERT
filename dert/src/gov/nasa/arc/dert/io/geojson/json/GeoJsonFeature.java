@@ -1,6 +1,4 @@
-package gov.nasa.arc.dert.io.geojson;
-
-import gov.nasa.arc.dert.io.geojson.json.JsonObject;
+package gov.nasa.arc.dert.io.geojson.json;
 
 import java.util.HashMap;
 

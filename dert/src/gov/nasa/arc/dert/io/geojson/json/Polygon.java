@@ -1,12 +1,11 @@
-package gov.nasa.arc.dert.io.geojson;
+package gov.nasa.arc.dert.io.geojson.json;
 
-import gov.nasa.arc.dert.io.geojson.json.JsonObject;
 
 /**
- * Provides a GeoJSON MultiLineString object.
+ * Provides a GeoJSON Polygon object.
  *
  */
-public class MultiLineString extends Geometry {
+public class Polygon extends Geometry {
 
 	private double[][][] coordinate;
 
@@ -15,8 +14,8 @@ public class MultiLineString extends Geometry {
 	 * 
 	 * @param jsonObject
 	 */
-	public MultiLineString(JsonObject jsonObject) {
-		super(jsonObject, GeojsonType.MultiLineString);
+	public Polygon(JsonObject jsonObject) {
+		super(jsonObject, GeojsonType.Polygon);
 		Object[] arrayN = jsonObject.getArray("coordinates");
 		int n = arrayN.length;
 		Object[] arrayM = (Object[])arrayN[0];
