@@ -1,6 +1,5 @@
 package gov.nasa.arc.dert.io.geojson;
 
-import gov.nasa.arc.dert.io.geojson.json.CoordinateReferenceSystem;
 import gov.nasa.arc.dert.io.geojson.json.GeoJsonFeature;
 import gov.nasa.arc.dert.io.geojson.json.GeoJsonFeatureCollection;
 import gov.nasa.arc.dert.io.geojson.json.GeoJsonObject;
@@ -56,7 +55,7 @@ public class GeojsonLoader {
 	private String labelProp;
 	private double minZ, maxZ;
 	private Vector3 coord = new Vector3();
-	private CoordinateReferenceSystem crs;
+	private double[] dcoord = new double[3];
 	private SpatialReferenceSystem srs;
 	private double landscapeMinZ;
 	private String elevAttrName;
@@ -126,32 +125,8 @@ public class GeojsonLoader {
 	 *            the elevation attribute name (from gdaldem)
 	 * @return the FeatureSet
 	 */
-	public FeatureSet geoJsonToArdor3D(GeoJsonObject gjRoot, FeatureSet root, Color color, boolean isProjected) {
-		if (!isProjected && (gjRoot.crs != null))
-			System.err.println("Found coordinate reference system.");
-//		crs = gjRoot.crs;
-//		if (!isProjected && (crs == null))
-//			crs = new CoordinateReferenceSystem(Landscape.getInstance().getSpatialReferenceSystem().getProjection());
-		
-		if (!isProjected)
-			crs = new CoordinateReferenceSystem() {
-				private Projection projection = Landscape.getInstance().getSpatialReferenceSystem().getProjection();
-				private double[] dcoord = new double[3];
-				@Override
-				public void translate(double[] coordinate) {
-					if (coordinate.length == 3)
-						projection.sphericalToWorld(coordinate);
-					else {
-						dcoord[0] = coordinate[0];
-						dcoord[1] = coordinate[1];
-						dcoord[2] = 0;
-						projection.sphericalToWorld(dcoord);
-						coordinate[0] = dcoord[0];
-						coordinate[1] = dcoord[1];
-					}
-				}				
-			};
-			
+	public FeatureSet geoJsonToArdor3D(GeoJsonObject gjRoot, FeatureSet root, Color color) {
+					
 		// Minimum landscape elevation
 		landscapeMinZ = 0;
 		if ((elevAttrName == null) && ground)
@@ -384,8 +359,7 @@ public class GeojsonLoader {
 
 	private ReadOnlyVector3 toWorld(double[] coordinate, boolean getZ) {
 		if (coordinate.length == 3) {
-			if (crs != null)
-				crs.translate(coordinate);
+			translate(coordinate);
 			coord.set(coordinate[0], coordinate[1], coordinate[2]);
 			srs.getProjection().worldToLocal(coord);
 			if (getZ)
@@ -393,8 +367,7 @@ public class GeojsonLoader {
 			else
 				coord.setZ(coord.getZ() - landscapeMinZ);
 		} else if (coordinate.length == 2) {
-			if (crs != null)
-				crs.translate(coordinate);
+			translate(coordinate);
 			coord.set(coordinate[0], coordinate[1], 0);
 			srs.getProjection().worldToLocal(coord);
 			if (getZ)
@@ -431,5 +404,19 @@ public class GeojsonLoader {
 		}
 		return(null);
 	}
+	
+	public void translate(double[] coordinate) {
+		Projection projection = Landscape.getInstance().getSpatialReferenceSystem().getProjection();
+		if (coordinate.length == 3)
+			projection.sphericalToWorld(coordinate);
+		else {
+			dcoord[0] = coordinate[0];
+			dcoord[1] = coordinate[1];
+			dcoord[2] = 0;
+			projection.sphericalToWorld(dcoord);
+			coordinate[0] = dcoord[0];
+			coordinate[1] = dcoord[1];
+		}
+	}				
 
 }

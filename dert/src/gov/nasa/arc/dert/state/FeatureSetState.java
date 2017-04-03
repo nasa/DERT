@@ -18,7 +18,6 @@ public class FeatureSetState extends MapElementState {
 
 	// Path to the FeatureSet file
 	public String filePath;
-	public boolean isProjected;
 	public String labelProp;
 	public boolean ground;
 	public float lineWidth;
@@ -31,11 +30,10 @@ public class FeatureSetState extends MapElementState {
 	 * @param filePath
 	 * @param color
 	 */
-	public FeatureSetState(String name, String filePath, Color color, boolean isProjected, boolean ground, String labelProp) {
+	public FeatureSetState(String name, String filePath, Color color, boolean ground, String labelProp) {
 		super(0, MapElementState.Type.FeatureSet, "", FeatureSet.defaultSize, color, false);
 		this.name = name;
 		this.filePath = filePath;
-		this.isProjected = isProjected;
 		this.labelProp = labelProp;
 		this.ground = ground;
 		this.lineWidth = FeatureSet.defaultLineWidth;
@@ -50,12 +48,11 @@ public class FeatureSetState extends MapElementState {
 	 * @param color
 	 * @param notes
 	 */
-	public FeatureSetState(String name, String filePath, Color color, String notes, boolean isProjected, boolean ground, String labelProp) {
+	public FeatureSetState(String name, String filePath, Color color, String notes, boolean ground, String labelProp) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration().incrementMapElementCount(MapElementState.Type.FeatureSet),
 			MapElementState.Type.FeatureSet, "", FeatureSet.defaultSize, color, false);
 		this.name = name;
 		this.filePath = filePath;
-		this.isProjected = isProjected;
 		this.labelProp = labelProp;
 		this.ground = ground;
 		this.lineWidth = FeatureSet.defaultLineWidth;
@@ -69,7 +66,6 @@ public class FeatureSetState extends MapElementState {
 	public FeatureSetState(HashMap<String,Object> map) {
 		super(map);
 		filePath = StateUtil.getString(map, "FilePath", null);
-		isProjected = StateUtil.getBoolean(map, "IsProjected", false);
 		labelProp = StateUtil.getString(map, "LabelProperty", null);
 		ground = StateUtil.getBoolean(map, "Ground", false);
 		lineWidth = (float)StateUtil.getDouble(map, "LineWidth", FeatureSet.defaultLineWidth);
@@ -82,8 +78,6 @@ public class FeatureSetState extends MapElementState {
 			return(false);
 		FeatureSetState that = (FeatureSetState)state;
 		if (!super.isEqualTo(that)) 
-			return(false);
-		if (this.isProjected != that.isProjected)
 			return(false);
 		if (this.ground != that.ground)
 			return(false);
@@ -111,7 +105,6 @@ public class FeatureSetState extends MapElementState {
 			lineWidth = featureSet.getLineWidth();			
 		}
 		map.put("FilePath", filePath);
-		map.put("IsProjected", new Boolean(isProjected));
 		map.put("Ground", new Boolean(ground));
 		map.put("LineWidth", new Double(lineWidth));
 		map.put("CurrentFeature", new Long(currentFeature));
@@ -122,7 +115,7 @@ public class FeatureSetState extends MapElementState {
 	
 	@Override
 	public String toString() {
-		String str = isProjected+" "+filePath+" "+labelProp+" "+super.toString();
+		String str = filePath+" "+labelProp+" "+super.toString();
 		return(str);
 	}
 
@@ -152,7 +145,6 @@ public class FeatureSetState extends MapElementState {
 		if (currentFeature != 0) {
 			FeatureSet fs = (FeatureSet)mapElement;
 			Feature f = fs.getFeature((int)currentFeature);
-			System.err.println("FeatureSetState.createView "+currentFeature+" "+f);
 			fsv.setMapElement(f);
 		}
 		setView(fsv);

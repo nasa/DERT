@@ -10,9 +10,6 @@ public class GeoJsonObject {
 	// Bounding box
 	protected double[] bbox;
 
-	// Coordinate reference system
-	public CoordinateReferenceSystem crs;
-
 	/**
 	 * Constructor
 	 * 
@@ -21,9 +18,6 @@ public class GeoJsonObject {
 	public GeoJsonObject(JsonObject jsonObject) {
 		Object[] array = jsonObject.getArray("bbox");
 		createBBox(array);
-		JsonObject jObj = jsonObject.getJsonObject("crs");
-		if (jObj != null)
-			crs = new CoordinateReferenceSystem(jObj);
 	}
 
 	private void createBBox(Object[] array) {

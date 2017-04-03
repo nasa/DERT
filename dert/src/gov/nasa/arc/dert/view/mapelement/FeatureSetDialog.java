@@ -23,7 +23,6 @@ import javax.swing.SwingConstants;
 public class FeatureSetDialog
 	extends AbstractDialog {
 	
-	private JCheckBox isProjected;
 	private JCheckBox ground;
 	private JTextField labelText;
 	private FileInputField fif;
@@ -55,10 +54,6 @@ public class FeatureSetDialog
 			}
 		};
 		compList.add(fif);
-		
-		isProjected = new JCheckBox();
-		compList.add(isProjected);
-		compList.add(new JLabel("This file is projected but contains no CRS.", SwingConstants.LEFT));
 		
 		ground = new JCheckBox();
 		compList.add(ground);
@@ -98,7 +93,7 @@ public class FeatureSetDialog
 		if (labelProp.isEmpty())
 			labelProp = null;
 		String label = StringUtil.getLabelFromFilePath(filePath);
-		FeatureSetState lsState = new FeatureSetState(label, filePath, FeatureSet.defaultColor, null, isProjected.isSelected(), ground.isSelected(), labelProp);
+		FeatureSetState lsState = new FeatureSetState(label, filePath, FeatureSet.defaultColor, null, ground.isSelected(), labelProp);
 		if (ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(lsState, messageText) == null)
 			return(false);
 		return(true);

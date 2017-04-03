@@ -121,7 +121,7 @@ public class VectorPyramidLayerFactory extends PyramidLayerFactory {
 			false), new JoglRendererDouble(), ColorRGBA.BLACK_NO_ALPHA);
 
 		// Load the vector file into an Ardor3D object.
-		FeatureSetState state = new FeatureSetState(layerName, sourceFilePath, color, true, false, null);
+		FeatureSetState state = new FeatureSetState(layerName, sourceFilePath, color, false, null);
 		root = new FeatureSet(state, elevAttrName, srs);
 		root.updateGeometricState(0);
 
