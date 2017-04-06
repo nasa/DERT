@@ -206,7 +206,7 @@ public class ViewpointPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				setEditing(true);
-				controller.getViewpointNode().getViewpoint(tempVPS);
+				controller.getViewpoint().get(tempVPS);
 				updateData(tempVPS);
 			}
 		});
@@ -216,7 +216,7 @@ public class ViewpointPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				if (currentVPS != null) {
-					controller.getViewpointNode().getViewpoint(currentVPS);
+					controller.getViewpoint().get(currentVPS);
 					updateData(currentVPS);
 					setEditing(false);
 				}
@@ -232,12 +232,12 @@ public class ViewpointPanel extends JPanel {
 		locationField = new CoordTextField(20, "location of viewpoint", "0.000", true) {
 			@Override
 			public void doChange(ReadOnlyVector3 loc) {
-				if (!controller.getViewpointNode().changeLocation(loc)) {
+				if (!controller.getViewpoint().changeLocation(loc)) {
 					Toolkit.getDefaultToolkit().beep();
 				}
 				else {
 					setEditing(true);
-					controller.getViewpointNode().getViewpoint(tempVPS);
+					controller.getViewpoint().get(tempVPS);
 					updateData(tempVPS);
 				}
 			}
@@ -251,9 +251,9 @@ public class ViewpointPanel extends JPanel {
 		directionField = new Vector3TextField(20, new Vector3(), "0.000", true) {
 			@Override
 			public void handleChange(Vector3 dir) {
-				controller.getViewpointNode().changeDirection(dir);
+				controller.getViewpoint().changeDirection(dir);
 				setEditing(true);
-				controller.getViewpointNode().getViewpoint(tempVPS);
+				controller.getViewpoint().get(tempVPS);
 				updateData(tempVPS);
 			}
 		};
@@ -269,10 +269,10 @@ public class ViewpointPanel extends JPanel {
 				if (azel == null) {
 					return;
 				}
-				controller.getViewpointNode().changeAzimuthAndElevation(Math.toRadians(azel[0]),
+				controller.getViewpoint().changeAzimuthAndElevation(Math.toRadians(azel[0]),
 					Math.toRadians(azel[1]));
 				setEditing(true);
-				controller.getViewpointNode().getViewpoint(tempVPS);
+				controller.getViewpoint().get(tempVPS);
 				updateData(tempVPS);
 			}
 		};
@@ -288,9 +288,9 @@ public class ViewpointPanel extends JPanel {
 				if (Double.isNaN(value)) {
 					return;
 				}
-				controller.getViewpointNode().changeMagnification(value);
+				controller.getViewpoint().changeMagnification(value);
 				setEditing(true);
-				controller.getViewpointNode().getViewpoint(tempVPS);
+				controller.getViewpoint().get(tempVPS);
 				updateData(tempVPS);
 			}
 		};

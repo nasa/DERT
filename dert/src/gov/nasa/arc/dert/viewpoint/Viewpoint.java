@@ -19,6 +19,7 @@ import com.ardor3d.bounding.BoundingSphere;
 import com.ardor3d.bounding.BoundingVolume;
 import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Matrix3;
+import com.ardor3d.math.Transform;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.Camera.ProjectionMode;
@@ -26,13 +27,10 @@ import com.ardor3d.renderer.queue.RenderBucketType;
 import com.ardor3d.scenegraph.Node;
 
 /**
- * Provides a node that carries the main camera for the WorldView. Note: This
- * node must be updated explicitly with updateGeometricState. It is not included
- * in the scene graph that is listened to for events.
+ * Carries the main camera for the WorldView.
  *
  */
-public class ViewpointNode
-	extends Node
+public class Viewpoint
 	implements CoordListener {
 	
 	public static final double ELEV_HOME = Math.PI/2;
@@ -66,8 +64,6 @@ public class ViewpointNode
 	// Angle of rotation around center of rotation (lookAt or location)
 	private double azimuth = 0;
 
-	private boolean strictFrustum;
-
 	// Cross hair
 	private RGBAxes crosshair;
 	private Node overlay;
@@ -77,6 +73,9 @@ public class ViewpointNode
 	private ViewpointMode mode = ViewpointMode.Nominal;
 	private ViewpointStore oldVP;
 	private double zOffset;
+	private String name;
+	
+	private Transform cameraTransform;
 	
 
 	/**
@@ -85,13 +84,14 @@ public class ViewpointNode
 	 * @param name
 	 * @param store
 	 */
-	public ViewpointNode(String name, ViewpointStore store) {
-		setName(name);
+	public Viewpoint(String name, ViewpointStore store) {
+		this.name = name;
+		cameraTransform = new Transform();
 		setCamera(new BasicCamera(1, 1, 45, 1));
 		crosshair = new RGBAxes();
 		createOverlays();
 		if (store != null) {
-			setViewpoint(store, true, true);
+			set(store, true);
 			updateOverlay();
 		}
 	}
@@ -104,9 +104,8 @@ public class ViewpointNode
 	public void setCamera(BasicCamera camera) {
 		this.camera = camera;
 		if (camera != null) {
-			updateWorldTransform(true);
-			camera.setFrustum(sceneBounds);
-			updateGeometricState(0);
+			updateFromCamera();
+			camera.setClippingPlanes(sceneBounds, true);
 			changed.set(true);
 		}
 	}
@@ -120,46 +119,29 @@ public class ViewpointNode
 	}
 
 	/**
-	 * Point at the given map element.
+	 * Move close to and point at the given map element.
 	 * 
 	 * @param mapElement
 	 */
-	public void seek(MapElement mapElement) {
+	public void seek(final MapElement mapElement) {
 		
 		double distance = mapElement.getSeekPointAndDistance(seekPoint);
 		if (Double.isNaN(distance)) {
 			return;
 		}
-		azimuth = 0;
-		if (mode == ViewpointMode.Hike) {
-			location.set(seekPoint.getX(), seekPoint.getY()-distance, 0);
-			double z = Landscape.getInstance().getZ(location.getX(), location.getY());
-			if (Double.isNaN(z)) {
-				Toolkit.getDefaultToolkit().beep();
-				return;
-			}
-			location.setZ(z+zOffset);
-			tmpVec.set(seekPoint);
-			tmpVec.subtractLocal(location);			
-			tmpVec.normalizeLocal();
-			Vector3 angle = MathUtil.directionToAzEl(tmpVec, null);
-			elevation = ELEV_HOME+angle.getY();
-			rotateCameraAroundLocation(location);
-		}
-		else if (mode == ViewpointMode.Nominal) {
-			elevation = 1.25;
-			rotateCameraAroundLookAtPoint(seekPoint, distance);
-		}
-		else {
-			elevation = 0;
-			rotateCameraAroundLookAtPoint(seekPoint, distance);
-		}
 		
-		camera.setFrustum(sceneBounds);
-		
-		// update this node
+		direction.set(camera.getDirection());
+		location.set(seekPoint);
+		location.subtractLocal(direction.multiplyLocal(distance));
+		double z = Landscape.getInstance().getZ(location.getX(), location.getY());
+		if (Double.isNaN(z)) {
+			Toolkit.getDefaultToolkit().beep();
+			return;
+		}
+		camera.setLocation(location);
+		camera.setLookAt(seekPoint);
 		updateFromCamera();
-		updateGeometricState(0);
+		camera.setClippingPlanes(sceneBounds, false);
 		updateCrosshair();
 		updateOverlay();
 		changed.set(true);
@@ -173,7 +155,7 @@ public class ViewpointNode
 		// Determine the size of the cursor.
 		tmpVec.set(Vector3.UNIT_Z);
 		double d = camera.getFrustumNear()+Landscape.getInstance().getPixelWidth();
-		tmpVec.multiplyLocal(camera.getFrustumNear()+Landscape.getInstance().getPixelWidth());
+		tmpVec.multiplyLocal(d);
 		localToWorld(tmpVec, tmpVec);
 		double scale = camera.getPixelSizeAt(tmpVec, true) * Marker.PIXEL_SIZE;
 		if (scale <= 0)
@@ -188,6 +170,10 @@ public class ViewpointNode
 		crosshair.setTranslation(tmpVec);
 		
 		crosshair.updateWorldTransform(false);
+	}
+	
+	private void localToWorld(ReadOnlyVector3 in, Vector3 store) {
+		cameraTransform.applyForward(in, store);
 	}
 	
 	private void createOverlays() {
@@ -288,20 +274,8 @@ public class ViewpointNode
 	}
 
 	@Override
-	public void updateWorldTransform(boolean recurse) {
-		super.updateWorldTransform(recurse);
-		if (camera == null) {
-			return;
-		}
-		if (!strictFrustum) {
-			camera.setFrustum(sceneBounds);
-		}
-		strictFrustum = false;
-	}
-
-	@Override
 	public String toString() {
-		return (getName() + " location:" + getWorldTranslation() + " left:" + camera.getLeft() + " up:"
+		return (name + " location:" + camera.getLocation() + " left:" + camera.getLeft() + " up:"
 			+ camera.getUp() + " direction:" + camera.getDirection());
 	}
 
@@ -323,7 +297,7 @@ public class ViewpointNode
 		camera.setLocation(location);
 		camera.setLookAt(lookAt);
 		updateFromCamera();
-		updateGeometricState(0);
+		camera.setClippingPlanes(sceneBounds, false);
 		updateCrosshair();
 		updateOverlay();
 		changed.set(true);
@@ -393,9 +367,8 @@ public class ViewpointNode
 		camera.setMagnification(BasicCamera.DEFAULT_MAGNIFICATION);
 		camera.setFrame(location, rotate);
 		camera.setLookAt(lookAt);
-		camera.setFrustum(sceneBounds);
 		updateFromCamera();
-		updateGeometricState(0);
+		camera.setClippingPlanes(sceneBounds, true);
 		updateCrosshair();
 		Dert.getMainWindow().updateCompass(azimuth);
 		updateOverlay();
@@ -448,7 +421,7 @@ public class ViewpointNode
 			}
 			camera.setLocation(location);
 			updateFromCamera();
-			updateGeometricState(0);
+			camera.setClippingPlanes(sceneBounds, false);
 			updateCrosshair();
 			updateOverlay();
 			changed.set(true);
@@ -492,8 +465,7 @@ public class ViewpointNode
 	 * @param strict
 	 *            set the camera frustum
 	 */
-	public void setViewpoint(ViewpointStore vps, boolean strict, boolean vpSelected) {
-		strictFrustum = strict;
+	public void set(ViewpointStore vps, boolean vpSelected) {
 		if (vps.mode == null)
 			vps.mode = "Nominal";
 		mode = ViewpointMode.valueOf(vps.mode);
@@ -502,17 +474,13 @@ public class ViewpointNode
 		elevation = vps.elevation+ELEV_HOME;
 		camera.setMagnification(vps.magIndex);
 		camera.setLookAt(vps.lookAt);
-		if (strict) {
-			camera.setFrustum(vps.frustumNear, vps.frustumFar, vps.frustumLeft, vps.frustumRight, vps.frustumTop,
-				vps.frustumBottom);
-		}
+		camera.setFrustum(vps.frustumNear, vps.frustumFar, vps.frustumLeft, vps.frustumRight, vps.frustumTop, vps.frustumBottom);
 		if (mode == ViewpointMode.Hike)
 			rotateCameraAroundLocation(vps.location);
 		else
 			rotateCameraAroundLookAtPoint(vps.lookAt, vps.lookAt.distance(vps.location));
 		ViewpointMenuAction.getInstance().setModeIcon(mode);
 		updateFromCamera();
-		updateGeometricState(0);
 		updateCrosshair();
 		updateOverlay();
 		changed.set(true);
@@ -530,8 +498,8 @@ public class ViewpointNode
         final Matrix3 rotation = Matrix3.fetchTempInstance();
         rotation.fromAxes(camLeft, camUp, camDir);
 
-        setRotation(rotation);
-        setTranslation(camLoc);
+        cameraTransform.setRotation(rotation);
+        cameraTransform.setTranslation(camLoc);
 
         Matrix3.releaseTempInstance(rotation);
     }
@@ -542,7 +510,7 @@ public class ViewpointNode
 	 * @param name
 	 * @return
 	 */
-	public ViewpointStore getViewpoint(String name) {
+	public ViewpointStore get(String name) {
 		ViewpointStore store = new ViewpointStore(name, camera);
 		store.zOffset = zOffset;
 		store.mode = mode.toString();
@@ -555,7 +523,7 @@ public class ViewpointNode
 	 * @param store
 	 * @return
 	 */
-	public ViewpointStore getViewpoint(ViewpointStore store) {
+	public ViewpointStore get(ViewpointStore store) {
 		if (store == null) {
 			store = new ViewpointStore();
 		}
@@ -602,7 +570,6 @@ public class ViewpointNode
 		camera.setLookAt(lookAt);
 		// update this node
 		updateFromCamera();
-		updateGeometricState(0);
 		updateCrosshair();
 		updateOverlay();
 		changed.set(true);
@@ -626,7 +593,6 @@ public class ViewpointNode
 		camera.setLookAt(tmpVec);
 		// update this node
 		updateFromCamera();
-		updateGeometricState(0);
 		updateCrosshair();
 		updateOverlay();
 		changed.set(true);
@@ -647,8 +613,9 @@ public class ViewpointNode
 		camera.setLocation(loc);
 		camera.setLookAt(lookAt);
 		updateFromCamera();
-		updateGeometricState(0);
+		camera.setClippingPlanes(sceneBounds, false);
 		updateCrosshair();
+		updateOverlay();
 		changed.set(true);
 		return (true);
 	}
@@ -672,7 +639,7 @@ public class ViewpointNode
 		setAzAndEl(angle.getX(), angle.getY() + Math.PI / 2);
 		rotateCameraAroundLocation(camera.getLocation());
 		updateFromCamera();
-		updateGeometricState(0);
+		camera.setClippingPlanes(sceneBounds, false);
 		updateCrosshair();
 		changed.set(true);
 	}
@@ -693,7 +660,7 @@ public class ViewpointNode
 //		setTranslation(loc);
 		camera.setLocation(location);
 		updateFromCamera();
-		updateGeometricState(0);
+		camera.setClippingPlanes(sceneBounds, false);
 		updateCrosshair();
 		changed.set(true);
 		return (true);
@@ -706,7 +673,7 @@ public class ViewpointNode
 	 * @return
 	 */
 	public boolean changeAltitude(double alt) {
-		ReadOnlyVector3 trans = getWorldTranslation();
+		ReadOnlyVector3 trans = camera.getLocation();
 		double z = Landscape.getInstance().getZ(trans.getX(), trans.getY());
 		if (Double.isNaN(z))
 			return(false);
@@ -758,7 +725,6 @@ public class ViewpointNode
 	 */
 	public void changeMagnification(double val) {
 		camera.magnify(val);
-		updateGeometricState(0);
 		updateOverlay();
 		changed.set(true);
 	}
@@ -770,7 +736,6 @@ public class ViewpointNode
 	 */
 	public void magnify(int delta) {
 		camera.magnify(delta);
-		updateGeometricState(0);
 		updateCrosshair();
 		updateOverlay();
 		changed.set(true);
@@ -782,12 +747,19 @@ public class ViewpointNode
 	 * 
 	 * @param cor
 	 */
-	public void setCenterOfRotation(ReadOnlyVector3 cor) {
-		camera.setLookAt(cor);
-		rotate(0, 0);
-		updateFromCamera();
-		updateGeometricState(0);
-		updateCrosshair();
+	public void setCenterOfRotation(ReadOnlyVector3 cor, boolean relocateCam) {
+		if (cor == null) {
+			centerScale.showText(false);
+		}
+		else {
+			camera.setLookAt(cor);
+			if (relocateCam)
+				rotate(0, 0);
+			updateFromCamera();
+			camera.setClippingPlanes(sceneBounds, false);
+			updateCrosshair();
+			centerScale.showText(true);
+		}
 		updateOverlay();
 		changed.set(true);
 	}
@@ -797,24 +769,24 @@ public class ViewpointNode
 	 * 
 	 * @param lookAt
 	 */
-	public void setLookAt(ReadOnlyVector3 lookAt) {
-		if (lookAt == null) {
-			centerScale.showText(false);
-		}
-		else {
-			camera.setLookAt(lookAt);
-			updateFromCamera();
-			updateGeometricState(0);
-			updateCrosshair();
-			centerScale.showText(true);
-		}
-		updateOverlay();
-		changed.set(true);
-	}
+//	public void setLookAt(ReadOnlyVector3 lookAt) {
+//		if (lookAt == null) {
+//			centerScale.showText(false);
+//		}
+//		else {
+//			camera.setLookAt(lookAt);
+//			updateFromCamera();
+//			camera.setClippingPlanes(sceneBounds, false);
+//			updateCrosshair();
+//			centerScale.showText(true);
+//		}
+//		updateOverlay();
+//		changed.set(true);
+//	}
 	
 	public boolean setMode(ViewpointMode mode) {
 		if (mode == ViewpointMode.Map) {
-			oldVP = getViewpoint(oldVP);
+			oldVP = get(oldVP);
 			this.mode = mode;
 			reset();
 		}
@@ -829,7 +801,7 @@ public class ViewpointNode
 			location.setZ(z + zOffset);
 			if (mode == ViewpointMode.Map) {
 				camera.setProjectionMode(ProjectionMode.Perspective);				
-				camera.setFrustum(sceneBounds);
+				camera.setClippingPlanes(sceneBounds, true);
 			}
 			this.mode = mode;
 			rotate.setIdentity();
@@ -838,7 +810,7 @@ public class ViewpointNode
 			rotate(0, 0);
 			camera.setFrame(location, rotate);
 			updateFromCamera();
-			updateGeometricState(0);
+			camera.setClippingPlanes(sceneBounds, true);
 			updateCrosshair();
 			updateOverlay();
 			changed.set(true);			
@@ -846,7 +818,7 @@ public class ViewpointNode
 		else {
 			camera.setMaxNearPlane(Float.MAX_VALUE);
 			if (this.mode == ViewpointMode.Map)
-				setViewpoint(oldVP, true, false);
+				set(oldVP, false);
 			else
 				this.mode = mode;
 		}

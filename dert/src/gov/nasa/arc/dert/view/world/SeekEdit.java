@@ -2,7 +2,7 @@ package gov.nasa.arc.dert.view.world;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.scene.MapElement;
-import gov.nasa.arc.dert.viewpoint.ViewpointNode;
+import gov.nasa.arc.dert.viewpoint.Viewpoint;
 import gov.nasa.arc.dert.viewpoint.ViewpointStore;
 
 import javax.swing.undo.AbstractUndoableEdit;
@@ -24,8 +24,8 @@ public class SeekEdit extends AbstractUndoableEdit {
 	public SeekEdit(MapElement mapElement) {
 		this.mapElement = mapElement;
 		WorldView wv = Dert.getWorldView();
-		ViewpointNode cameraControl = ((WorldScene) wv.getScenePanel().getScene()).getViewpointNode();
-		vpStore = cameraControl.getViewpoint("");
+		Viewpoint cameraControl = ((WorldScene) wv.getScenePanel().getScene()).getViewpoint();
+		vpStore = cameraControl.get("");
 	}
 
 	@Override
@@ -37,15 +37,15 @@ public class SeekEdit extends AbstractUndoableEdit {
 	public void undo() {
 		super.undo();
 		WorldView wv = Dert.getWorldView();
-		ViewpointNode cameraControl = ((WorldScene) wv.getScenePanel().getScene()).getViewpointNode();
-		cameraControl.setViewpoint(vpStore, true, false);
+		Viewpoint cameraControl = ((WorldScene) wv.getScenePanel().getScene()).getViewpoint();
+		cameraControl.set(vpStore, false);
 	}
 
 	@Override
 	public void redo() {
 		super.redo();
 		WorldView wv = Dert.getWorldView();
-		ViewpointNode cameraControl = ((WorldScene) wv.getScenePanel().getScene()).getViewpointNode();
+		Viewpoint cameraControl = ((WorldScene) wv.getScenePanel().getScene()).getViewpoint();
 		cameraControl.seek(mapElement);
 	}
 

@@ -138,7 +138,7 @@ public class Tools extends GroupNode {
 			attachChild(spatial);
 			if (update) {
 				spatial.updateGeometricState(0, true);
-				tool.update(Dert.getWorldView().getViewpointNode().getCamera());
+				tool.update(Dert.getWorldView().getViewpoint().getCamera());
 			}
 			if ((tool instanceof FieldCamera) || (tool instanceof Profile)) {
 				state.open(true);

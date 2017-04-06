@@ -261,7 +261,7 @@ public class MainWindow extends JFrame {
 		resetAction = new ButtonAction("reset viewpoint to overhead position", null, "reset.png", buttonBorder) {
 			@Override
 			public void run() {
-				worldView.getViewpointNode().reset();
+				worldView.getViewpoint().reset();
 			}
 		};
 		resetAction.setEnabled(false);
@@ -293,7 +293,7 @@ public class MainWindow extends JFrame {
 			@Override
 			public void run() {
 				// seek marble
-				worldView.getViewpointNode().seek(World.getInstance().getMarble());
+				worldView.getViewpoint().seek(World.getInstance().getMarble());
 			}
 		};
 		gotoMarble.setEnabled(false);

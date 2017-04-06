@@ -7,7 +7,7 @@ import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scenegraph.Ray3WithLine;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.PathState;
-import gov.nasa.arc.dert.viewpoint.ViewpointNode.ViewpointMode;
+import gov.nasa.arc.dert.viewpoint.Viewpoint.ViewpointMode;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,7 +44,7 @@ public class ViewpointController {
 	private Vector<ViewpointStore> viewpointList;
 
 	// Node that carries the camera in the scene
-	private ViewpointNode viewpointNode;
+	private Viewpoint viewpoint;
 
 	// Helpers
 	private Vector2 mousePos = new Vector2();
@@ -80,22 +80,22 @@ public class ViewpointController {
 	}
 
 	/**
-	 * Set the viewpoint node
+	 * Set the viewpoint
 	 * 
-	 * @param viewpointNode
+	 * @param viewpoint
 	 */
-	public void setViewpointNode(ViewpointNode viewpointNode) {
-		this.viewpointNode = viewpointNode;
+	public void setViewpointNode(Viewpoint viewpoint) {
+		this.viewpoint = viewpoint;
 		viewpointIndex = -1;
 	}
 
 	/**
-	 * Get the viewpoint node
+	 * Get the viewpoint
 	 * 
 	 * @return
 	 */
-	public ViewpointNode getViewpointNode() {
-		return (viewpointNode);
+	public Viewpoint getViewpoint() {
+		return (viewpoint);
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class ViewpointController {
 	public Spatial doPick(double x, double y, Vector3 position, Vector3 normal, boolean terrainOnly) {
 		mousePos.set(x, y);
 		Ray3 pickRay = new Ray3WithLine();
-		viewpointNode.getCamera().getPickRay(mousePos, false, pickRay);
+		viewpoint.getCamera().getPickRay(mousePos, false, pickRay);
 		return (World.getInstance().select(pickRay, position, normal, null, terrainOnly));
 	}
 
@@ -158,17 +158,17 @@ public class ViewpointController {
 			double delta = Math.sqrt(dx * dx + dy * dy);
 			velocity = (100 * delta / (1 + elapsed)) * 0.8 + 0.2 * velocity;
 //			System.err.println("ViewpointController.mouseMove "+velocity+" "+amplitude+" "+elapsed+" "+dx+" "+dy);
-			viewpointNode.drag(dx, dy);
+			viewpoint.drag(dx, dy);
 			lastDx = dx;
 			lastDy = dy;
 			break;
 		// translating the terrain in the screen plane
 		case 2:
-			viewpointNode.translateInScreenPlane(-dx, -dy);
+			viewpoint.translateInScreenPlane(-dx, -dy);
 			break;
 		// rotating the terrain
 		case 3:
-			viewpointNode.rotate((float)dy, (float)dx);
+			viewpoint.rotate((float)dy, (float)dx);
 			break;
 		}
 	}
@@ -180,10 +180,10 @@ public class ViewpointController {
 	 */
 	public void mouseScroll(int delta) {
 		if (isZoom) {
-			viewpointNode.magnify(-mouseScrollDirection * delta);
+			viewpoint.magnify(-mouseScrollDirection * delta);
 		} else {
-			viewpointNode.dolly(mouseScrollDirection * 2 * delta);
-			updateLookAt();
+			viewpoint.dolly(mouseScrollDirection * 2 * delta);
+			updateCoR();
 		}
 	}
 
@@ -202,8 +202,8 @@ public class ViewpointController {
 		velocity = 0;
 		amplitude = 0;
 		// turn off center scale text since we won't have an accurate value until mouse release
-		if ((mouseButton == 1) || (viewpointNode.getMode() == ViewpointMode.Hike))
-			viewpointNode.setLookAt(null);
+		if ((mouseButton == 1) || (viewpoint.getMode() == ViewpointMode.Hike))
+			viewpoint.setCenterOfRotation(null, false);
 	}
 
 	/**
@@ -226,14 +226,14 @@ public class ViewpointController {
 			lastDy /= length;
 		} else {
 			amplitude = 0;
-			updateLookAt();
+			updateCoR();
 		}
 	}
 	
-	public void updateLookAt() {
-		Spatial spat = doPick(viewpointNode.getCenterX(), viewpointNode.getCenterY(), pickPosition, pickNormal, false);
+	public void updateCoR() {
+		Spatial spat = doPick(viewpoint.getCenterX(), viewpoint.getCenterY(), pickPosition, pickNormal, false);
 		if (spat != null) {
-			viewpointNode.setLookAt(pickPosition);
+			viewpoint.setCenterOfRotation(pickPosition, false);
 		}		
 	}
 
@@ -246,10 +246,10 @@ public class ViewpointController {
 			double delta = amplitude * Math.exp(-elapsed / timeConstant);
 //			System.err.println("ViewpointController.update "+amplitude+" "+elapsed+" "+delta);
 			if (Math.abs(delta) > 0.5) {
-				viewpointNode.drag(lastDx * delta, lastDy * delta);
+				viewpoint.drag(lastDx * delta, lastDy * delta);
 			} else {
 				amplitude = 0;
-				updateLookAt();
+				updateCoR();
 			}
 		}
 	}
@@ -259,9 +259,9 @@ public class ViewpointController {
 	 */
 	public void stepLeft(boolean shiftDown) {
 		if (shiftDown)
-			viewpointNode.drag(-1, 0);
+			viewpoint.drag(-1, 0);
 		else
-			viewpointNode.rotate(0, 1);
+			viewpoint.rotate(0, 1);
 	}
 
 	/**
@@ -269,9 +269,9 @@ public class ViewpointController {
 	 */
 	public void stepRight(boolean shiftDown) {
 		if (shiftDown)
-			viewpointNode.drag(1, 0);
+			viewpoint.drag(1, 0);
 		else
-			viewpointNode.rotate(0, -1);
+			viewpoint.rotate(0, -1);
 	}
 
 	/**
@@ -279,9 +279,9 @@ public class ViewpointController {
 	 */
 	public void stepUp(boolean shiftDown) {
 		if (shiftDown)
-			viewpointNode.drag(0, 1);
+			viewpoint.drag(0, 1);
 		else
-			viewpointNode.rotate(1, 0);
+			viewpoint.rotate(1, 0);
 	}
 
 	/**
@@ -289,9 +289,9 @@ public class ViewpointController {
 	 */
 	public void stepDown(boolean shiftDown) {
 		if (shiftDown)
-			viewpointNode.drag(0, -1);
+			viewpoint.drag(0, -1);
 		else
-			viewpointNode.rotate(-1, 0);
+			viewpoint.rotate(-1, 0);
 	}
 
 	/**
@@ -310,7 +310,7 @@ public class ViewpointController {
 	 * @param name
 	 */
 	public void addViewpoint(int index, String name) {
-		ViewpointStore vps = viewpointNode.getViewpoint(name);
+		ViewpointStore vps = viewpoint.get(name);
 		viewpointList.add(index, vps);
 	}
 
@@ -342,7 +342,7 @@ public class ViewpointController {
 		if (viewpointIndex < 0) {
 			viewpointIndex = viewpointList.size() - 1;
 		}
-		viewpointNode.setViewpoint(viewpointList.get(viewpointIndex), true, true);
+		viewpoint.set(viewpointList.get(viewpointIndex), true);
 	}
 
 	/**
@@ -356,7 +356,7 @@ public class ViewpointController {
 		if (viewpointIndex >= viewpointList.size()) {
 			viewpointIndex = 0;
 		}
-		viewpointNode.setViewpoint(viewpointList.get(viewpointIndex), true, true);
+		viewpoint.set(viewpointList.get(viewpointIndex), true);
 	}
 
 	/**
@@ -370,7 +370,7 @@ public class ViewpointController {
 			return;
 		}
 		viewpointIndex = index;
-		viewpointNode.setViewpoint(vp, true, true);
+		viewpoint.set(vp, true);
 	}
 
 	/**
@@ -415,7 +415,7 @@ public class ViewpointController {
 		SceneFramework.getInstance().suspend(false);
 		// put us back where we were
 		if (oldViewpoint != null)
-			viewpointNode.setViewpoint(oldViewpoint, true, false);
+			viewpoint.set(oldViewpoint, false);
 		flyThroughTimer = null;
 	}
 
@@ -442,11 +442,11 @@ public class ViewpointController {
 			// make time step at least 1 second if we are grabbing frames
 			final int millis = (flyParams.grab && (flyParams.millisPerFrame < 1000)) ? 1000 : flyParams.millisPerFrame;
 			flyIndex = 0;
-			oldViewpoint = viewpointNode.getViewpoint(oldViewpoint);
+			oldViewpoint = viewpoint.get(oldViewpoint);
 			flyThroughTimer = new Timer(millis, new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					viewpointNode.setViewpoint(flyList.get(flyIndex), true, false);
+					viewpoint.set(flyList.get(flyIndex), false);
 					SceneFramework.getInstance().getFrameHandler().updateFrame();
 					double t = (flyIndex * millis) / 1000.0;
 					int hr = (int) (t / 3600);
@@ -510,7 +510,7 @@ public class ViewpointController {
 
 		// create a list of viewpoints from the curve
 		Vector<ViewpointStore> vpList = new Vector<ViewpointStore>();
-		BasicCamera cam = new BasicCamera((BasicCamera)viewpointNode.getCamera());
+		BasicCamera cam = new BasicCamera((BasicCamera)viewpoint.getCamera());
 		Vector3 loc = null;
 		Vector3 look = null;
 		ViewpointStore vps = null;
@@ -528,14 +528,14 @@ public class ViewpointController {
 				continue;
 			
 			// set frustum and clipping planes
-			cam.setFrustum(viewpointNode.getSceneBounds());
+			cam.setClippingPlanes(viewpoint.getSceneBounds(), false);
 			vps = new ViewpointStore(Integer.toString(i), cam);
 			vpList.add(vps);
 		}
 		loc = look;
 		look.addLocal(vps.direction);
 		angle = cam.setFrameAndLookAt(loc, look, Math.PI/2-Math.PI/20);
-		cam.setFrustum(viewpointNode.getSceneBounds());
+		cam.setClippingPlanes(viewpoint.getSceneBounds(), false);
 		vps = new ViewpointStore(Integer.toString(curve.length-1), cam);
 		vpList.add(vps);
 		flyList = new Vector<ViewpointStore>();

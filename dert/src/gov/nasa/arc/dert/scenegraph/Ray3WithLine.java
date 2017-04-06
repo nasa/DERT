@@ -59,7 +59,7 @@ public class Ray3WithLine
         	v.scaleAdd(tr, _origin, pr);
         	dist = pl.distance(pr);        	    		
     	}
-    	double pixelSize = Dert.getWorldView().getViewpointNode().getCamera().getPixelSizeAt(pl, true);
+    	double pixelSize = Dert.getWorldView().getViewpoint().getCamera().getPixelSizeAt(pl, true);
     	if (dist <= (pixelSize*4)) {
     		if (store != null)
     			store.set(pl);

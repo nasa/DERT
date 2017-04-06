@@ -119,7 +119,7 @@ public class Landmarks extends GroupNode {
 			attachChild(spatial);
 			if (update) {
 				spatial.updateGeometricState(0, true);
-				landmark.update(Dert.getWorldView().getViewpointNode().getCamera());
+				landmark.update(Dert.getWorldView().getViewpoint().getCamera());
 			}
 			spatial.markDirty(DirtyType.RenderState);
 		}

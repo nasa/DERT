@@ -7,7 +7,7 @@ import gov.nasa.arc.dert.action.PopupMenuAction;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.state.ConfigurationManager;
-import gov.nasa.arc.dert.viewpoint.ViewpointNode.ViewpointMode;
+import gov.nasa.arc.dert.viewpoint.Viewpoint.ViewpointMode;
 
 import java.awt.PopupMenu;
 import java.awt.Toolkit;
@@ -52,7 +52,7 @@ public class ViewpointMenuAction extends PopupMenuAction {
 	@Override
 	protected void fillMenu(PopupMenu menu) {
 		ViewpointController controller = Dert.getWorldView().getScenePanel().getViewpointController();
-		ViewpointMode currentMode = controller.getViewpointNode().getMode();
+		ViewpointMode currentMode = controller.getViewpoint().getMode();
 		nominal = new CheckBoxMenuItemAction("Nominal") {			
 			@Override
 			protected void run() {
@@ -106,10 +106,10 @@ public class ViewpointMenuAction extends PopupMenuAction {
 	
 	protected void setMode(ViewpointMode mode) {
 		ViewpointController controller = Dert.getWorldView().getScenePanel().getViewpointController();
-		ViewpointMode currentMode = controller.getViewpointNode().getMode();
+		ViewpointMode currentMode = controller.getViewpoint().getMode();
 		if (currentMode == mode)
 			return;
-		if (!Dert.getWorldView().getViewpointNode().setMode(mode)) {
+		if (!Dert.getWorldView().getViewpoint().setMode(mode)) {
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
@@ -119,7 +119,7 @@ public class ViewpointMenuAction extends PopupMenuAction {
 			break;
 		case Hike:
 			World.getInstance().setMapElementsOnTop(oldOnTop);
-			controller.updateLookAt();
+			controller.updateCoR();
 			break;
 		case Map:
 			oldOnTop = World.getInstance().isMapElementsOnTop();

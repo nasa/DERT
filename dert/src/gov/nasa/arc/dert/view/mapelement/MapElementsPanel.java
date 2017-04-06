@@ -34,7 +34,7 @@ import gov.nasa.arc.dert.view.world.ShowEdit;
 import gov.nasa.arc.dert.view.world.ShowEditMulti;
 import gov.nasa.arc.dert.view.world.WorldScene;
 import gov.nasa.arc.dert.view.world.WorldView;
-import gov.nasa.arc.dert.viewpoint.ViewpointNode;
+import gov.nasa.arc.dert.viewpoint.Viewpoint;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -898,7 +898,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				WorldView wv = Dert.getWorldView();
-				ViewpointNode cameraControl = ((WorldScene) wv.getScenePanel().getScene()).getViewpointNode();
+				Viewpoint cameraControl = ((WorldScene) wv.getScenePanel().getScene()).getViewpoint();
 				cameraControl.seek(currentMapElements[0]);
 				UndoHandler.getInstance().addEdit(new SeekEdit(currentMapElements[0]));
 			}

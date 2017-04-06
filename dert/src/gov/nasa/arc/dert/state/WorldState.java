@@ -158,7 +158,7 @@ public class WorldState extends State {
 		if (viewData != null) {
 			WorldView wv = (WorldView)viewData.getView();
 			if (wv != null)
-				currentViewpoint = wv.getViewpointNode().getViewpoint(currentViewpoint);
+				currentViewpoint = wv.getViewpoint().get(currentViewpoint);
 		}
 		map.put("CurrentViewpoint", currentViewpoint.toHashMap());
 		verticalExaggeration = world.getVerticalExaggeration();

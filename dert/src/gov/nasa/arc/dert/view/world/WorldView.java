@@ -2,7 +2,7 @@ package gov.nasa.arc.dert.view.world;
 
 import gov.nasa.arc.dert.state.WorldState;
 import gov.nasa.arc.dert.view.PanelView;
-import gov.nasa.arc.dert.viewpoint.ViewpointNode;
+import gov.nasa.arc.dert.viewpoint.Viewpoint;
 
 import java.awt.BorderLayout;
 
@@ -38,8 +38,8 @@ public class WorldView extends PanelView {
 	 * 
 	 * @return
 	 */
-	public ViewpointNode getViewpointNode() {
-		return (panel.getViewpointController().getViewpointNode());
+	public Viewpoint getViewpoint() {
+		return (panel.getViewpointController().getViewpoint());
 	}
 
 	/**

@@ -9,7 +9,7 @@ import gov.nasa.arc.dert.state.WorldState;
 import gov.nasa.arc.dert.viewpoint.AnaglyphCamera;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
-import gov.nasa.arc.dert.viewpoint.ViewpointNode;
+import gov.nasa.arc.dert.viewpoint.Viewpoint;
 
 import java.util.ArrayList;
 
@@ -39,7 +39,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	private ColorRGBA backgroundColor = new ColorRGBA(Lighting.defaultBackgroundColor);
 
 	// Viewpoint
-	private ViewpointNode viewpointNode;
+	private Viewpoint viewpoint;
 	
 	// Viewpoint crosshair and text
 	private RGBAxes crosshair;
@@ -79,17 +79,16 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		setRootNode(world);
 		world.initialize();
 		
-		if (viewpointNode != null)
-			CoordAction.listenerList.remove(viewpointNode);
-		viewpointNode = new ViewpointNode(world.getName() + "_viewpoint", null);
+		if (viewpoint != null)
+			CoordAction.listenerList.remove(viewpoint);
+		viewpoint = new Viewpoint(world.getName() + "_viewpoint", null);
 		viewDependentList = new ArrayList<ViewDependent>();
-		world.attachChild(viewpointNode);
-		crosshair = viewpointNode.getCrosshair();
+		crosshair = viewpoint.getCrosshair();
 //		world.attachChild(crosshair);
-		textOverlay = viewpointNode.getTextOverlay();
-		centerScale = viewpointNode.getCenterScale();
-		CoordAction.listenerList.add(viewpointNode);
-		viewpointNode.setSceneBounds();
+		textOverlay = viewpoint.getTextOverlay();
+		centerScale = viewpoint.getCenterScale();
+		CoordAction.listenerList.add(viewpoint);
+		viewpoint.setSceneBounds();
 		spatialDirty(null, DirtyType.Attached); // add the tiles to the
 												// viewdependent list
 	}
@@ -99,8 +98,8 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	 * 
 	 * @return
 	 */
-	public ViewpointNode getViewpointNode() {
-		return (viewpointNode);
+	public Viewpoint getViewpoint() {
+		return (viewpoint);
 	}
 
 	/**
@@ -109,13 +108,13 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	@Override
 	public void update(ReadOnlyTimer timer) {
 		// update the landscape quad tree
-		Landscape.getInstance().update(viewpointNode.getCamera());
+		Landscape.getInstance().update(viewpoint.getCamera());
 		// has the viewpoint changed?
-		boolean viewpointChanged = viewpointNode.changed.getAndSet(false);
+		boolean viewpointChanged = viewpoint.changed.getAndSet(false);
 		// if either the viewpoint or landscape changed, update the other view dependent objects
 		if (viewpointChanged) {
 			for (int i = 0; i < viewDependentList.size(); ++i) {
-				viewDependentList.get(i).update(viewpointNode.getCamera());
+				viewDependentList.get(i).update(viewpoint.getCamera());
 			}
 		}
 		worldChanged = World.getInstance().getDirtyEventHandler().changed.get();
@@ -131,13 +130,12 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		if (rootNode == null)
 			return;
 		Lighting lighting = ((World)rootNode).getLighting();
-		lighting.prerender(viewpointNode.getCamera(), renderer, worldChanged);
+		lighting.prerender(viewpoint.getCamera(), renderer, worldChanged);
 		if (terrainChanged || worldChanged) {
 			Landscape.getInstance().getLayerManager().renderLayers(renderer);
 		}
 
-		viewpointNode.updateGeometricState(0);
-		viewpointNode.getCamera().update();
+		viewpoint.getCamera().update();
 		ReadOnlyColorRGBA bgCol = lighting.getBackgroundColor();
 		if (!bgCol.equals(backgroundColor)) {
 			renderer.setBackgroundColor(bgCol);
@@ -146,7 +144,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	}
 
 	private void postRender(Renderer renderer) {
-		((World)rootNode).getLighting().postrender(viewpointNode.getCamera(), renderer, worldChanged);
+		((World)rootNode).getLighting().postrender(viewpoint.getCamera(), renderer, worldChanged);
 
 		if (showNormals) {
 			Debugger.drawNormals(rootNode, renderer);
@@ -174,8 +172,8 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 
 	@Override
 	public void render(Renderer renderer) {
-		if (viewpointNode.getCamera() instanceof AnaglyphCamera) {
-			AnaglyphCamera camera = (AnaglyphCamera) viewpointNode.getCamera();
+		if (viewpoint.getCamera() instanceof AnaglyphCamera) {
+			AnaglyphCamera camera = (AnaglyphCamera) viewpoint.getCamera();
 			camera.setupLeftRightCameras();
 			camera.updateLeftRightCameraFrames();
 
@@ -207,11 +205,11 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		switch (type) {
 		case Attached:
 			addViewDependents(spatial);
-			viewpointNode.setSceneBounds();
+			viewpoint.setSceneBounds();
 			break;
 		case Detached:
 			removeViewDependents(spatial);
-			viewpointNode.setSceneBounds();
+			viewpoint.setSceneBounds();
 			break;
 		case Bounding:
 			break;
@@ -234,14 +232,14 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
-		if (viewpointNode != null)
-			viewpointNode.resize(width, height);
+		if (viewpoint != null)
+			viewpoint.resize(width, height);
 	}
 
 	private void addViewDependents(Spatial spatial) {
 		if (spatial instanceof ViewDependent) {
 			viewDependentList.add((ViewDependent) spatial);
-			((ViewDependent) spatial).update(viewpointNode.getCamera());
+			((ViewDependent) spatial).update(viewpoint.getCamera());
 		}
 		else if (spatial instanceof Node) {
 			Node node = (Node) spatial;
@@ -265,7 +263,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 
 	@Override
 	public BasicCamera getCamera() {
-		return ((BasicCamera) viewpointNode.getCamera());
+		return ((BasicCamera) viewpoint.getCamera());
 	}
 
 	/**

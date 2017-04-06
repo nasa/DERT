@@ -160,7 +160,7 @@ public class WorldInputHandler implements InputHandler {
 	 */
 	public void move(Vector3 pos, Vector3 normal) {
 		if (movable instanceof ViewDependent)
-			((ViewDependent) movable).update(controller.getViewpointNode().getCamera());
+			((ViewDependent) movable).update(controller.getViewpoint().getCamera());
 		movable.setLocation(pos.getX(), pos.getY(), pos.getZ(), false);
 	}
 
@@ -298,7 +298,7 @@ public class WorldInputHandler implements InputHandler {
 		if (hasMouse()) {
 			if (shiftDown) {
 //				controller.getViewpointNode().coordInScreenPlane(dx, dy, tmpVec, pickPosition);
-				double s = controller.getViewpointNode().getCamera().getPixelSizeAt(pickPosition, false);
+				double s = controller.getViewpoint().getCamera().getPixelSizeAt(pickPosition, false);
 				movable.setZOffset(movable.getZOffset()+dy*xCanvasScale*s, true);
 			} else {
 				controller.doPick(x*xCanvasScale, y*yCanvasScale, pickPosition, pickNormal, true);
@@ -321,7 +321,7 @@ public class WorldInputHandler implements InputHandler {
 			} else if (path != null) {
 				path.click(pickPosition);
 			} else if (lastSelection instanceof World) {
-				World.getInstance().getMarble().update(pickPosition, getPickNormal(), controller.getViewpointNode().getCamera());
+				World.getInstance().getMarble().update(pickPosition, getPickNormal(), controller.getViewpoint().getCamera());
 			} else if (lastSelection instanceof MapElement) {
 				MapElementsView view = ConfigurationManager.getInstance().getCurrentConfiguration().getMapElementsView();
 				if (view != null)
@@ -456,7 +456,7 @@ public class WorldInputHandler implements InputHandler {
 	}
 
 	public void setCenterOfRotation() {
-		controller.getViewpointNode().setCenterOfRotation(getPickLocation());
+		controller.getViewpoint().setCenterOfRotation(getPickLocation(), true);
 	}
 	
 	public void setCanvasScale(double xScale, double yScale) {

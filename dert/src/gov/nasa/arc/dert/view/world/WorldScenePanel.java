@@ -7,7 +7,7 @@ import gov.nasa.arc.dert.view.InputManager;
 import gov.nasa.arc.dert.viewpoint.AnaglyphCamera;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
-import gov.nasa.arc.dert.viewpoint.ViewpointNode;
+import gov.nasa.arc.dert.viewpoint.Viewpoint;
 
 import java.awt.Dimension;
 
@@ -58,22 +58,22 @@ public class WorldScenePanel extends SceneCanvasPanel {
 		WorldState wState = (WorldState) state;
 		worldScene.setState(wState);
 		canvasRenderer.setCamera(worldScene.getCamera());
-		controller.setViewpointNode(worldScene.getViewpointNode());
+		controller.setViewpointNode(worldScene.getViewpoint());
 		Dimension size = canvas.getSize();
 		inputManager.setComponentSize(size.width, size.height);
 		inputManager.setCanvasScale(canvasWidth/size.width, canvasHeight/size.height);
 		worldScene.resize((int)canvasWidth, (int)canvasHeight);
 		worldScene.spatialDirty(null, DirtyType.RenderState);
 		if (wState.currentViewpoint != null) {
-			worldScene.getViewpointNode().setViewpoint(wState.currentViewpoint, true, false);
+			worldScene.getViewpoint().set(wState.currentViewpoint, false);
 		} else {
-			worldScene.getViewpointNode().reset();
+			worldScene.getViewpoint().reset();
 		}
 	}
 
 	@Override
 	public void update(ReadOnlyTimer timer) {
-		if (controller.getViewpointNode() != null) {
+		if (controller.getViewpoint() != null) {
 			super.update(timer);
 			controller.update();
 		}
@@ -105,12 +105,12 @@ public class WorldScenePanel extends SceneCanvasPanel {
 	 * @param eyeSeparation
 	 */
 	public void setStereo(boolean stereo, double focalDistance, double eyeSeparation) {
-		ViewpointNode viewpointNode = worldScene.getViewpointNode();
-		BasicCamera bc = viewpointNode.getCamera();
+		Viewpoint viewpoint = worldScene.getViewpoint();
+		BasicCamera bc = viewpoint.getCamera();
 		if (stereo) {
 			if (!(bc instanceof AnaglyphCamera)) {
 				bc = new AnaglyphCamera(bc);
-				viewpointNode.setCamera(bc);
+				viewpoint.setCamera(bc);
 				canvasRenderer.setCamera(bc);
 			}
 			((AnaglyphCamera) bc).setFocalDistance(focalDistance);
@@ -118,7 +118,7 @@ public class WorldScenePanel extends SceneCanvasPanel {
 		} else {
 			if (bc instanceof AnaglyphCamera) {
 				bc = new BasicCamera(bc);
-				viewpointNode.setCamera(bc);
+				viewpoint.setCamera(bc);
 				canvasRenderer.setCamera(bc);
 			}
 		}
@@ -131,7 +131,7 @@ public class WorldScenePanel extends SceneCanvasPanel {
 	 * @return
 	 */
 	public boolean isStereo() {
-		return (worldScene.getViewpointNode().getCamera() instanceof AnaglyphCamera);
+		return (worldScene.getViewpoint().getCamera() instanceof AnaglyphCamera);
 	}
 
 	/**

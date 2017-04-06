@@ -4,7 +4,7 @@ import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.render.SceneFramework;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.view.viewpoint.AnimationPanel;
-import gov.nasa.arc.dert.viewpoint.ViewpointNode.ViewpointMode;
+import gov.nasa.arc.dert.viewpoint.Viewpoint.ViewpointMode;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,7 +22,7 @@ import com.ardor3d.math.Vector3;
  */
 public class Animator {
 	
-	private ViewpointNode viewpointNode;
+	private Viewpoint viewpoint;
 
 	// Fly through
 	private Timer flyThroughTimer;
@@ -43,7 +43,7 @@ public class Animator {
 	 */
 	public Animator(AnimationPanel animationPanel) {
 		this.animationPanel = animationPanel;
-		viewpointNode = Dert.getWorldView().getScenePanel().getViewpointController().getViewpointNode();
+		viewpoint = Dert.getWorldView().getScenePanel().getViewpointController().getViewpoint();
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class Animator {
 		SceneFramework.getInstance().suspend(false);
 		// put us back where we were
 		if (oldViewpoint != null)
-			viewpointNode.setViewpoint(oldViewpoint, true, false);
+			viewpoint.set(oldViewpoint, false);
 		flyThroughTimer = null;
 		animationPanel.enableParameters(true);
 	}
@@ -105,11 +105,11 @@ public class Animator {
 			// make time step at least 1 second if we are grabbing frames
 			final int millis = (flyParams.grab && (flyParams.millisPerFrame < 1000)) ? 1000 : flyParams.millisPerFrame;
 			flyIndex = 0;
-			oldViewpoint = viewpointNode.getViewpoint(oldViewpoint);
+			oldViewpoint = viewpoint.get(oldViewpoint);
 			flyThroughTimer = new Timer(millis, new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					viewpointNode.setViewpoint(flyList.get(flyIndex), true, false);
+					viewpoint.set(flyList.get(flyIndex), false);
 					SceneFramework.getInstance().getFrameHandler().updateFrame();
 					double t = (flyIndex * millis) / 1000.0;
 					int hr = (int) (t / 3600);
@@ -177,7 +177,7 @@ public class Animator {
 
 		// create a list of viewpoints from the curve
 		Vector<ViewpointStore> vpList = new Vector<ViewpointStore>();
-		BasicCamera cam = new BasicCamera((BasicCamera)viewpointNode.getCamera());
+		BasicCamera cam = new BasicCamera((BasicCamera)viewpoint.getCamera());
 		Vector3 loc = null;
 		Vector3 look = null;
 		ViewpointStore vps = null;
@@ -195,14 +195,14 @@ public class Animator {
 				continue;
 			
 			// set frustum and clipping planes
-			cam.setFrustum(viewpointNode.getSceneBounds());
+			cam.setClippingPlanes(viewpoint.getSceneBounds(), false);
 			vps = new ViewpointStore(Integer.toString(i), cam);
 			vpList.add(vps);
 		}
 		loc = look;
 		look.addLocal(vps.direction);
 		angle = cam.setFrameAndLookAt(loc, look, Math.PI/2-Math.PI/20);
-		cam.setFrustum(viewpointNode.getSceneBounds());
+		cam.setClippingPlanes(viewpoint.getSceneBounds(), false);
 		vps = new ViewpointStore(Integer.toString(curve.length-1), cam);
 		vpList.add(vps);
 		flyList = new Vector<ViewpointStore>();
