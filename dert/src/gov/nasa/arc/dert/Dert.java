@@ -247,7 +247,7 @@ public class Dert {
 		// Calculate from screen resolution.
 		double hgt = mainWindow.getWorldView().getScenePanel().getHeightScale()*Toolkit.getDefaultToolkit().getScreenResolution();
 		if (fontSize == 0) {
-			fontSize = (int)Math.ceil(hgt/10);
+			fontSize = (int)Math.abs(Math.ceil(hgt/10));
 			if (fontSize%2 == 1)
 				fontSize ++;
 		}
