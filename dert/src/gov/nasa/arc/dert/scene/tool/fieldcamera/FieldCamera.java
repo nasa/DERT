@@ -371,7 +371,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		BoundingVolume bounds = World.getInstance().getRoot().getWorldBound();
 		sceneBounds.setRadius(bounds.getRadius());
 		sceneBounds.setCenter(bounds.getCenter());
-		basicCamera.setFrustum(sceneBounds);
+		basicCamera.setClippingPlanes(sceneBounds, true);
 		basicCamera.setFrustumNear(0.1);
 		double farPlane = MathUtil.distanceToSphere(World.getInstance().getRoot().getWorldBound(),
 			basicCamera.getLocation(), basicCamera.getDirection());

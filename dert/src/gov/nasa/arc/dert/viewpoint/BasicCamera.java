@@ -568,12 +568,16 @@ public class BasicCamera extends Camera {
 	 * 
 	 * @param bs
 	 */
-	private void setClippingPlanes(BoundingSphere bs) {
+	public void setClippingPlanes(BoundingSphere bs, boolean forceFrustum) {
 		double distance = getDistanceToCoR();
+		double oldNearPlane = nearPlane;
+		double oldFarPlane = farPlane;
 		nearPlane = Math.pow(10, Math.ceil(Math.log10(distance))) / 100;
 		farPlane = MathUtil.distanceToSphere(bs, _location, _direction);
 		if (nearPlane > maxNearPlane)
 			nearPlane = maxNearPlane;
+		if (forceFrustum || (oldNearPlane != nearPlane) || (oldFarPlane != farPlane))
+			setFrustum(bs);
 	}
 	
 	public void setMaxNearPlane(double val) {
@@ -585,8 +589,7 @@ public class BasicCamera extends Camera {
 	 * 
 	 * @param bs
 	 */
-	public void setFrustum(BoundingSphere bs) {
-		setClippingPlanes(bs);
+	private void setFrustum(BoundingSphere bs) {
 		double xRadius = 1;
 		double yRadius = 1;
 		if (getProjectionMode() == Camera.ProjectionMode.Parallel) {
