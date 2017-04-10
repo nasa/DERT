@@ -583,6 +583,7 @@ public class QuadTreeFactory {
 		mesh.setRenderState(cullState);
 		mesh.setModelBound(new BoundingBox());
 		mesh.updateModelBound();
+		mesh.cacheEdges();
 		return (mesh);
 	}
 
