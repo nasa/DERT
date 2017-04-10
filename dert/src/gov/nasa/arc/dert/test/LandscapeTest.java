@@ -177,12 +177,13 @@ public class LandscapeTest {
 		Vector3 v1 = new Vector3();
 		Vector3 v2 = new Vector3();
 		Vector3 meanNormal = new Vector3();
+		Vector3 work = new Vector3();
 		for (int r=0; r<10; ++r) {
 			for (int c=0; c<10; ++c) {
 				v0.set(c, r, demFactory.getZ(c, r));
 				v1.set(c+1, r, demFactory.getZ(c+1, r));
 				v2.set(c+1, r+1, demFactory.getZ(c+1, r+1));
-				MathUtil.createNormal(normal, v0, v1, v2);
+				MathUtil.createNormal(normal, v0, v1, v2, work);
 				meanNormal.addLocal(normal);
 			}
 		}

@@ -26,6 +26,9 @@ public class SelectionHandler {
 
 	// data structure to hold results of a pick
 	private PickResults pickResults;
+	
+	// Helper
+	private Vector3 work = new Vector3();
 
 	/**
 	 * Constructor
@@ -125,7 +128,7 @@ public class SelectionHandler {
 	 */
 	public Vector3 getNormal(Vector3 v0, Vector3 v1, Vector3 v2) {
 		Vector3 store = new Vector3();
-		MathUtil.createNormal(store, v0, v1, v2);
+		MathUtil.createNormal(store, v0, v1, v2, work);
 		return (store);
 	}
 }

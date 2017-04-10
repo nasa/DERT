@@ -778,7 +778,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 
 		// find the surface normal of the triangle
 		MathUtil.createNormal(normal, point[0].getWorldTranslation(), point[1].getWorldTranslation(),
-			point[2].getWorldTranslation());
+			point[2].getWorldTranslation(), tmp0);
 		// be sure the normal is pointing up
 		if (normal.getZ() < 0) {
 			normal.negateLocal();

@@ -293,7 +293,7 @@ public class MainWindow extends JFrame {
 			@Override
 			public void run() {
 				// seek marble
-				worldView.getViewpoint().seek(World.getInstance().getMarble());
+				worldView.getScenePanel().getViewpointController().seek(World.getInstance().getMarble());
 			}
 		};
 		gotoMarble.setEnabled(false);
