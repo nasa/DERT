@@ -4,7 +4,6 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.render.ShadowEffects;
 import gov.nasa.arc.dert.render.ShadowMap;
 import gov.nasa.arc.dert.scene.World;
-import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.TimeUtil;
@@ -51,7 +50,7 @@ public class Lighting {
 	protected ColorRGBA headlightIntensity = new ColorRGBA(0.85f, 0.85f, 0.85f, 1);
 
 	// Visibility flags
-	protected boolean lightEnabled = false, isLamp = true, headlightEnabled = false;
+	protected boolean isLamp = true, headlightEnabled = false;
 
 	// Main light position (artificial)
 	protected double azimuth, elevation;
@@ -109,7 +108,6 @@ public class Lighting {
 		diffuseIntensity = StateUtil.getColorRGBA(map, "DiffuseIntensity", diffuseIntensity);
 		ambientIntensity = StateUtil.getColorRGBA(map, "AmbientIntensity", ambientIntensity);
 		headlightIntensity = StateUtil.getColorRGBA(map, "HeadlightIntensity", headlightIntensity);
-		lightEnabled = StateUtil.getBoolean(map, "LightEnabled", lightEnabled);
 		isLamp = StateUtil.getBoolean(map, "IsLamp", isLamp);
 		headlightEnabled = StateUtil.getBoolean(map, "HeadlightEnabled", headlightEnabled);
 		refLoc = StateUtil.getVector3(map, "ReferenceLocation", refLoc);
@@ -143,6 +141,7 @@ public class Lighting {
 	 */
 	public void setTarget(Spatial target) {
 		light.setTarget(target);
+		light.setEnabled(true);
 		shadowEffects = new ShadowEffects();
 		shadowEffects.setEnabled(true);
 		target.setRenderState(shadowEffects);
@@ -158,17 +157,6 @@ public class Lighting {
 	}
 
 	/**
-	 * Make the lights visible
-	 * 
-	 * @param enabled
-	 */
-	public void enableLight(boolean enabled) {
-		light.setEnabled(enabled);
-		lightEnabled = enabled;
-		headlight.setEnabled(headlightEnabled && enabled);
-	}
-
-	/**
 	 * Make the shadows visible
 	 * 
 	 * @param enabled
@@ -176,15 +164,6 @@ public class Lighting {
 	public void enableShadow(boolean enabled) {
 		getShadowMap().setEnabled(enabled);
 		shadowEffects.shadowEnabled = enabled;
-	}
-
-	/**
-	 * Find out if lights are visible
-	 * 
-	 * @return
-	 */
-	public boolean isLightEnabled() {
-		return (lightEnabled);
 	}
 
 	/**
@@ -316,10 +295,8 @@ public class Lighting {
 	 * @param worldChanged
 	 */
 	public void postrender(BasicCamera camera, Renderer renderer, boolean worldChanged) {
-		if (SpatialUtil.isDisplayed(light)) {
-			light.updateOrb(camera);
-			light.drawOrb(renderer);
-		}
+		light.updateOrb(camera);
+		light.drawOrb(renderer);
 	}
 
 	/**
@@ -377,7 +354,6 @@ public class Lighting {
 		StateUtil.putColorRGBA(map, "DiffuseIntensity", diffuseIntensity);
 		StateUtil.putColorRGBA(map, "AmbientIntensity", ambientIntensity);
 		StateUtil.putColorRGBA(map, "HeadlightIntensity", headlightIntensity);
-		map.put("LightEnabled", new Boolean(lightEnabled));
 		map.put("IsLamp", new Boolean(isLamp));
 		map.put("HeadlightEnabled", new Boolean(headlightEnabled));
 		StateUtil.putVector3(map, "ReferenceLocation", refLoc);

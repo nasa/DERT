@@ -554,16 +554,6 @@ public class QuadTree extends Node {
 		return(changed);
 	}
 
-//	private int getColumn(double x) {
-//		x = testPoint[2].getX() - x;
-//		return ((int) (x / pixelWidth));
-//	}
-//
-//	private int getRow(double y) {
-//		y = testPoint[2].getY() - y;
-//		return ((int) (y / pixelLength));
-//	}
-
 	private final QuadTree getNeighbor(Side side) {
 		switch (side) {
 		case Left:

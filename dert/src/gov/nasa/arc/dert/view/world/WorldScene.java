@@ -119,7 +119,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		}
 		worldChanged = World.getInstance().getDirtyEventHandler().changed.get();
 		terrainChanged = World.getInstance().getDirtyEventHandler().terrainChanged.get();
-//		System.err.println("WorldScene.update "+viewpointChanged+" "+worldChanged+" "+terrainChanged+" "+Landscape.getInstance().quadTreeChanged+" "+initializingCount);
+//		System.err.println("WorldScene.update "+viewpointChanged+" "+worldChanged+" "+terrainChanged+" "+sceneChanged.get());
 		sceneChanged.set(viewpointChanged || worldChanged || terrainChanged || sceneChanged.get());
 		if (sceneChanged.get())
 			rootNode.updateGeometricState(0);
@@ -131,6 +131,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 			return;
 		Lighting lighting = ((World)rootNode).getLighting();
 		lighting.prerender(viewpoint.getCamera(), renderer, worldChanged);
+//		System.err.println("WorldScene.preRender "+terrainChanged+" "+worldChanged);
 		if (terrainChanged || worldChanged) {
 			Landscape.getInstance().getLayerManager().renderLayers(renderer);
 		}

@@ -146,7 +146,6 @@ public class World extends GroupNode {
 		colorMaskState = new ColorMaskState();
 		colorMaskState.setEnabled(true);
 		lighting.setTarget(contents);
-		lighting.enableLight(true);
 		root.attachChild(lighting.getLight());
 		root.attachChild(contents);
 		attachChild(root);

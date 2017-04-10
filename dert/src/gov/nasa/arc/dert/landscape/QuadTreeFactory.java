@@ -537,7 +537,7 @@ public class QuadTreeFactory {
 
 		QuadTreeMesh mesh = new QuadTreeMesh("_mesh_"+key, tileWidth, tileLength, pixelWidth, pixelLength);
 		mesh.empty = true;
-		mesh.setMeshData(new TileMeshData(vertexBuffer, texCoordBuffer, colorBuffer, indexBuffer, indexLengths,
+		mesh.setMeshData(createTileMeshData(vertexBuffer, texCoordBuffer, colorBuffer, indexBuffer, indexLengths,
 			normalBuffer, IndexMode.TriangleStrip));
 
 		mesh.getSceneHints().setNormalsMode(NormalsMode.NormalizeIfScaled);
@@ -573,7 +573,7 @@ public class QuadTreeFactory {
 		FloatBuffer texCoordBuffer = getTexCoords(key);
 
 		QuadTreeMesh mesh = new QuadTreeMesh("_mesh_"+key, tileWidth, tileLength, pixelWidth, pixelLength);
-		mesh.setMeshData(new TileMeshData(vertexBuffer, texCoordBuffer, colorBuffer, indexBuffer, indexLengths,
+		mesh.setMeshData(createTileMeshData(vertexBuffer, texCoordBuffer, colorBuffer, indexBuffer, indexLengths,
 			normalBuffer, IndexMode.TriangleStrip));
 
 		mesh.getSceneHints().setNormalsMode(NormalsMode.NormalizeIfScaled);
@@ -585,6 +585,12 @@ public class QuadTreeFactory {
 		mesh.updateModelBound();
 		mesh.cacheEdges();
 		return (mesh);
+	}
+	
+	private synchronized TileMeshData createTileMeshData(FloatBuffer vertexBuffer, FloatBuffer texCoordBuffer, FloatBuffer colorBuffer, IntBuffer indexBuffer, int[] indexLengths,
+			FloatBuffer normalBuffer, IndexMode indexMode) {
+		return(new TileMeshData(vertexBuffer, texCoordBuffer, colorBuffer, indexBuffer, indexLengths,
+				normalBuffer, indexMode));
 	}
 
 	private FloatBuffer getTexCoords(String key) {
