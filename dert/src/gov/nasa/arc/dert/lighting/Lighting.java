@@ -31,9 +31,10 @@ public class Lighting {
 
 	public static ReadOnlyColorRGBA defaultBackgroundColor = ColorRGBA.LIGHT_GRAY;
 	public static String DATE_FORMAT;
+	public static final float HALF_PI = (float)(Math.PI/2);
 
 	// Defaults for light position (artificial)
-	public static float defaultAz = 0, defaultEl = (float) (Math.PI / 2);
+	public static float defaultAz = 0, defaultEl = HALF_PI;
 
 	// Table of LMST epochs for each globe
 	protected static Hashtable<String, Object> lmstTable = new Hashtable<String, Object>();
@@ -369,7 +370,7 @@ public class Lighting {
 	 * @return
 	 */
 	public ReadOnlyColorRGBA getBackgroundColor() {
-		return (background);
+		return (backgroundColor);
 	}
 
 	/**
@@ -383,9 +384,11 @@ public class Lighting {
 	}
 	
 	public void setBackgroundSaturation(double el) {
-		// Start to darken at 8.5 degrees from horizon.
-		if (el <= 0.15)
-			backgroundSat = (float)(Math.max(el, 0)/0.15);
+		// Start to darken at 3 degrees from horizon.		
+		if (el <= 0.05) {
+			el /= 0.05f;
+			backgroundSat = (float)(Math.max(Math.sin(HALF_PI*el), 0));
+		}
 		else
 			backgroundSat = 1;
 		backgroundColor.set(background.getRed()*backgroundSat, background.getGreen()*backgroundSat, background.getBlue()*backgroundSat, background.getAlpha());
