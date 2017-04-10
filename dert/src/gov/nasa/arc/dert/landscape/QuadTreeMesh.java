@@ -30,6 +30,12 @@ public class QuadTreeMesh extends Mesh {
 	// This mesh is empty
 	protected boolean empty;
 
+	// Copy of edge vertices for stitching
+	private float[][] edge;
+
+	// Copy of edge normals for stitching
+	private Vector3[][] nrml;
+
 	/**
 	 * Constructor
 	 * 
@@ -384,6 +390,56 @@ public class QuadTreeMesh extends Mesh {
 		}
 		getMeshData().setColorBuffer(colors);
 		markDirty(DirtyType.RenderState);
+	}
+	
+	public void cacheEdges() {
+		edge = new float[4][];
+		// cache edge elevations
+		// left
+		edge[0] = new float[tLength];
+		for (int i = 0; i < tLength; ++i) {
+			edge[0][i] = getElevation(0, i);
+		}
+		// top
+		edge[1] = new float[tWidth];
+		for (int i = 0; i < tWidth; ++i) {
+			edge[1][i] = getElevation(i, 0);
+		}
+		// right
+		edge[2] = new float[tLength];
+		for (int i = 0; i < tLength; ++i) {
+			edge[2][i] = getElevation(tileWidth, i);
+		}
+		// bottom
+		edge[3] = new float[tWidth];
+		for (int i = 0; i < tWidth; ++i) {
+			edge[3][i] = getElevation(i, tileLength);
+		}
+
+		// cache edge normals
+		FloatBuffer normalBuffer = getMeshData().getNormalBuffer();
+		nrml = new Vector3[2][];
+		// left
+		nrml[0] = new Vector3[tLength];
+		for (int i = 0; i < tLength; ++i) {
+			int ii = i * tWidth * 3;
+			nrml[0][i] = new Vector3(normalBuffer.get(ii), normalBuffer.get(ii + 1), normalBuffer.get(ii + 2));
+		}
+		// top
+		nrml[1] = new Vector3[tWidth];
+		for (int i = 0; i < tWidth; ++i) {
+			int ii = i * 3;
+			nrml[1][i] = new Vector3(normalBuffer.get(ii), normalBuffer.get(ii + 1), normalBuffer.get(ii + 2));
+		}
+
+	}
+	
+	public final float[] getEdge(int index) {
+		return(edge[index]);
+	}
+	
+	public final Vector3[] getNrml(int index) {
+		return(nrml[index]);
 	}
 
 }

@@ -54,17 +54,17 @@ public class QuadTree extends Node {
 	private QuadTree left, top, right, bottom;
 
 	// Fields used for determining if quad tree should be merged or split
-	private Vector3 tmpVec, camLoc, lookAt, closest;
+	private Vector3 camLoc, lookAt, closest;
 
 	// Points in the quad tree used to determine if it should be merged or split
 	// Coordinates are relative to the landscape center
 	private Vector3[] testPoint;
-
-	// Copy of edge vertices for stitching
-	private float[][] edge;
-
-	// Copy of edge normals for stitching
-	private Vector3[][] nrml;
+//
+//	// Copy of edge vertices for stitching
+//	private float[][] edge;
+//
+//	// Copy of edge normals for stitching
+//	private Vector3[][] nrml;
 
 	// Fields used for interpolation of edge normals.
 	private Vector3 n0, n1, n2;
@@ -87,7 +87,6 @@ public class QuadTree extends Node {
 	 */
 	public QuadTree(String name, ReadOnlyVector3 p, int level, int quadrant, double pixelWidth, double pixelLength) {
 		super(name);
-		tmpVec = new Vector3();
 		camLoc = new Vector3();
 		lookAt = new Vector3();
 		closest = new Vector3();
@@ -133,47 +132,6 @@ public class QuadTree extends Node {
 		int tileWidth = mesh.getTileWidth();
 		int tileLength = mesh.getTileLength();
 		int tWidth = tileWidth + 1;
-		int tLength = tileLength + 1;
-		if (!mesh.isEmpty()) {
-			edge = new float[4][];
-			// cache edge elevations
-			// left
-			edge[0] = new float[tLength];
-			for (int i = 0; i < tLength; ++i) {
-				edge[0][i] = mesh.getElevation(0, i);
-			}
-			// top
-			edge[1] = new float[tWidth];
-			for (int i = 0; i < tWidth; ++i) {
-				edge[1][i] = mesh.getElevation(i, 0);
-			}
-			// right
-			edge[2] = new float[tLength];
-			for (int i = 0; i < tLength; ++i) {
-				edge[2][i] = mesh.getElevation(tileWidth, i);
-			}
-			// bottom
-			edge[3] = new float[tWidth];
-			for (int i = 0; i < tWidth; ++i) {
-				edge[3][i] = mesh.getElevation(i, tileLength);
-			}
-
-			// cache edge normals
-			FloatBuffer normalBuffer = mesh.getMeshData().getNormalBuffer();
-			nrml = new Vector3[2][];
-			// left
-			nrml[0] = new Vector3[tLength];
-			for (int i = 0; i < tLength; ++i) {
-				int ii = i * tWidth * 3;
-				nrml[0][i] = new Vector3(normalBuffer.get(ii), normalBuffer.get(ii + 1), normalBuffer.get(ii + 2));
-			}
-			// top
-			nrml[1] = new Vector3[tWidth];
-			for (int i = 0; i < tWidth; ++i) {
-				int ii = i * 3;
-				nrml[1][i] = new Vector3(normalBuffer.get(ii), normalBuffer.get(ii + 1), normalBuffer.get(ii + 2));
-			}
-		}
 
 		// update test point Z values
 		FloatBuffer vertexBuffer = mesh.getMeshData().getVertexBuffer();
@@ -262,28 +220,28 @@ public class QuadTree extends Node {
 			int tileLength = mesh.getTileLength();
 			switch (side) {
 			case Left:
-				mesh.setElevationColumn(0, this.edge[0]);
-				mesh.setNormalsColumn(0, this.nrml[0]);
-				that.mesh.setElevationColumn(tileWidth, that.edge[2]);
-				that.mesh.setNormalsColumn(tileWidth, this.nrml[0]);
+				mesh.setElevationColumn(0, mesh.getEdge(0));
+				mesh.setNormalsColumn(0, mesh.getNrml(0));
+				that.mesh.setElevationColumn(tileWidth, that.mesh.getEdge(2));
+				that.mesh.setNormalsColumn(tileWidth, mesh.getNrml(0));
 				break;
 			case Top:
-				mesh.setElevationRow(0, this.edge[1]);
-				mesh.setNormalsRow(0, this.nrml[1]);
-				that.mesh.setElevationRow(tileLength, that.edge[3]);
-				that.mesh.setNormalsRow(tileLength, this.nrml[1]);
+				mesh.setElevationRow(0, mesh.getEdge(1));
+				mesh.setNormalsRow(0, mesh.getNrml(1));
+				that.mesh.setElevationRow(tileLength, that.mesh.getEdge(3));
+				that.mesh.setNormalsRow(tileLength, mesh.getNrml(1));
 				break;
 			case Right:
-				mesh.setElevationColumn(tileWidth, this.edge[2]);
-				mesh.setNormalsColumn(tileWidth, that.nrml[0]);
-				that.mesh.setElevationColumn(0, that.edge[0]);
-				that.mesh.setNormalsColumn(0, that.nrml[0]);
+				mesh.setElevationColumn(tileWidth, mesh.getEdge(2));
+				mesh.setNormalsColumn(tileWidth, that.mesh.getNrml(0));
+				that.mesh.setElevationColumn(0, that.mesh.getEdge(0));
+				that.mesh.setNormalsColumn(0, that.mesh.getNrml(0));
 				break;
 			case Bottom:
-				mesh.setElevationRow(tileLength, this.edge[3]);
-				mesh.setNormalsRow(tileLength, that.nrml[1]);
-				that.mesh.setElevationRow(0, that.edge[1]);
-				that.mesh.setNormalsRow(0, that.nrml[1]);
+				mesh.setElevationRow(tileLength, mesh.getEdge(3));
+				mesh.setNormalsRow(tileLength, that.mesh.getNrml(1));
+				that.mesh.setElevationRow(0, that.mesh.getEdge(1));
+				that.mesh.setNormalsRow(0, that.mesh.getNrml(1));
 				break;
 			}
 		}
@@ -530,26 +488,26 @@ public class QuadTree extends Node {
 			if (d < minDist) {
 				minDist = d;
 				closest.set(tPoint[i]);
-				if (contains(tPoint[i].getX(), camLoc.getY())) {
-					int c = getColumn(tPoint[i].getX());
-					int r = getRow(camLoc.getY());
-					mesh.getVertex(c, r, tmpVec);
-					d = camLoc.distance(tmpVec);
-					if (d < minDist) {
-						minDist = d;
-						closest.set(tmpVec);
-					}
-				}
-				if (contains(camLoc.getX(), tPoint[i].getY())) {
-					int c = getColumn(camLoc.getX());
-					int r = getRow(tPoint[i].getY());
-					mesh.getVertex(c, r, tmpVec);
-					d = camLoc.distance(tmpVec);
-					if (d < minDist) {
-						minDist = d;
-						closest.set(tmpVec);
-					}
-				}
+//				if (contains(tPoint[i].getX(), camLoc.getY())) {
+//					int c = getColumn(tPoint[i].getX());
+//					int r = getRow(camLoc.getY());
+//					mesh.getVertex(c, r, tmpVec);
+//					d = camLoc.distance(tmpVec);
+//					if (d < minDist) {
+//						minDist = d;
+//						closest.set(tmpVec);
+//					}
+//				}
+//				if (contains(camLoc.getX(), tPoint[i].getY())) {
+//					int c = getColumn(camLoc.getX());
+//					int r = getRow(tPoint[i].getY());
+//					mesh.getVertex(c, r, tmpVec);
+//					d = camLoc.distance(tmpVec);
+//					if (d < minDist) {
+//						minDist = d;
+//						closest.set(tmpVec);
+//					}
+//				}
 			}
 		}
 
@@ -594,16 +552,6 @@ public class QuadTree extends Node {
 			}
 		}
 		return(changed);
-	}
-
-	private int getColumn(double x) {
-		x = testPoint[2].getX() - x;
-		return ((int) (x / pixelWidth));
-	}
-
-	private int getRow(double y) {
-		y = testPoint[2].getY() - y;
-		return ((int) (y / pixelLength));
 	}
 
 	private final QuadTree getNeighbor(Side side) {
@@ -802,13 +750,15 @@ public class QuadTree extends Node {
 		int i = ib;
 		float ww = 1.0f / nw;
 		float wh = 1.0f / nh;
-		float[] data;
+		float[] dataEdge;
+		Vector3[] dataNrml;
 		switch (side) {
 		case Left:
-			data = that.edge[2];
+			dataEdge = that.mesh.getEdge(2);
+			dataNrml = mesh.getNrml(0);
 			for (int j = 0; j < tLength; j += nh) {
-				mesh.setElevation(0, j, data[i]);
-				that.mesh.setNormal(tileWidth, i, nrml[0][j]);
+				mesh.setElevation(0, j, dataEdge[i]);
+				that.mesh.setNormal(tileWidth, i, dataNrml[j]);
 				i++;
 			}
 			for (int j = 0; j < tileLength; j += nh) {
@@ -825,10 +775,11 @@ public class QuadTree extends Node {
 			}
 			break;
 		case Top:
-			data = that.edge[3];
+			dataEdge = that.mesh.getEdge(3);
+			dataNrml = mesh.getNrml(1);
 			for (int j = 0; j < tWidth; j += nw) {
-				mesh.setElevation(j, 0, data[i]);
-				that.mesh.setNormal(i, tileLength, nrml[1][j]);
+				mesh.setElevation(j, 0, dataEdge[i]);
+				that.mesh.setNormal(i, tileLength, dataNrml[j]);
 				i++;
 			}
 			for (int j = 0; j < tileWidth; j += nw) {
@@ -845,10 +796,11 @@ public class QuadTree extends Node {
 			}
 			break;
 		case Right:
-			data = that.edge[0];
+			dataEdge = that.mesh.getEdge(0);
+			dataNrml = that.mesh.getNrml(0);
 			for (int j = 0; j < tLength; j += nh) {
-				mesh.setElevation(tileWidth, j, data[i]);
-				mesh.setNormal(tileWidth, j, that.nrml[0][i]);
+				mesh.setElevation(tileWidth, j, dataEdge[i]);
+				mesh.setNormal(tileWidth, j, dataNrml[i]);
 				i++;
 			}
 			for (int j = 0; j < tileLength; j += nh) {
@@ -865,10 +817,11 @@ public class QuadTree extends Node {
 			}
 			break;
 		case Bottom:
-			data = that.edge[1];
+			dataEdge = that.mesh.getEdge(1);
+			dataNrml = that.mesh.getNrml(1);
 			for (int j = 0; j < tWidth; j += nw) {
-				mesh.setElevation(j, tileLength, data[i]);
-				mesh.setNormal(j, tileLength, that.nrml[1][i]);
+				mesh.setElevation(j, tileLength, dataEdge[i]);
+				mesh.setNormal(j, tileLength, dataNrml[i]);
 				i++;
 			}
 			for (int j = 0; j < tileWidth; j += nw) {
