@@ -258,19 +258,17 @@ public class MathUtil {
 	 * @param v2
 	 * @return
 	 */
-	public static boolean createNormal(Vector3 norm, ReadOnlyVector3 v0, ReadOnlyVector3 v1, ReadOnlyVector3 v2) {
+	public static boolean createNormal(Vector3 norm, ReadOnlyVector3 v0, ReadOnlyVector3 v1, ReadOnlyVector3 v2, Vector3 work) {
 		if (Double.isNaN(v0.getZ()) || Double.isNaN(v1.getZ()) || Double.isNaN(v2.getZ())) {
 			norm.set(0, 0, 0);
 			return (false);
 		}
-		Vector3 work = Vector3.fetchTempInstance();
 		norm.set(v1);
 		norm.subtractLocal(v0);
 		work.set(v2);
 		work.subtractLocal(v0);
 		norm.crossLocal(work);
 		norm.normalizeLocal();
-		Vector3.releaseTempInstance(work);
 		return (true);
 	}
 

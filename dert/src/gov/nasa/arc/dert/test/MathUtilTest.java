@@ -401,29 +401,30 @@ public class MathUtilTest {
 	
 	public boolean testCreateNormal() {
 		boolean created = false;
-		created = MathUtil.createNormal(new Vector3(), new Vector3(0, 0, Double.NaN), new Vector3(), new Vector3());
+		Vector3 work = new Vector3();
+		created = MathUtil.createNormal(new Vector3(), new Vector3(0, 0, Double.NaN), new Vector3(), new Vector3(), work);
 		if (created)
 			return(false);
-		created = MathUtil.createNormal(new Vector3(), new Vector3(), new Vector3(0, 0, Double.NaN), new Vector3());
+		created = MathUtil.createNormal(new Vector3(), new Vector3(), new Vector3(0, 0, Double.NaN), new Vector3(), work);
 		if (created)
 			return(false);
-		created = MathUtil.createNormal(new Vector3(), new Vector3(), new Vector3(), new Vector3(0, 0, Double.NaN));
+		created = MathUtil.createNormal(new Vector3(), new Vector3(), new Vector3(), new Vector3(0, 0, Double.NaN), work);
 		if (created)
 			return(false);
 		Vector3 norm = new Vector3();
-		created = MathUtil.createNormal(norm, new Vector3(), new Vector3(), new Vector3());
+		created = MathUtil.createNormal(norm, new Vector3(), new Vector3(), new Vector3(), work);
 		System.err.println("MathUtil.createNormal: normal="+norm);
 		if (!created)
 			return(false);
 		if (!norm.equals(Vector3.ZERO))
 			return(false);
-		created = MathUtil.createNormal(norm, new Vector3(), new Vector3(1,0,0), new Vector3(1,1,0));
+		created = MathUtil.createNormal(norm, new Vector3(), new Vector3(1,0,0), new Vector3(1,1,0), work);
 		System.err.println("MathUtil.createNormal: normal="+norm);
 		if (!created)
 			return(false);
 		if (!norm.equals(Vector3.UNIT_Z))
 			return(false);
-		created = MathUtil.createNormal(norm, new Vector3(), new Vector3(0,1,0), new Vector3(1,1,0));
+		created = MathUtil.createNormal(norm, new Vector3(), new Vector3(0,1,0), new Vector3(1,1,0), work);
 		System.err.println("MathUtil.createNormal: normal="+norm);
 		if (!created)
 			return(false);

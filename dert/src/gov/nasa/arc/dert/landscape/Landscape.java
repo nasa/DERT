@@ -625,9 +625,10 @@ public class Landscape extends Node {
 		boolean qtChanged = false;
 		if (quadTree != null) {
 			qtChanged = quadTree.update(camera);
-			for (int i = 0; i <= baseMapLevel; ++i) {
-				quadTree.stitch(i);
-			}
+			if (qtChanged)
+				for (int i = 0; i <= baseMapLevel; ++i) {
+					quadTree.stitch(i);
+				}
 		}
 		return(qtChanged);
 	}

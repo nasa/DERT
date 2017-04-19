@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.viewpoint;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.render.SceneFramework;
+import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scenegraph.Ray3WithLine;
@@ -9,6 +10,7 @@ import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.PathState;
 import gov.nasa.arc.dert.viewpoint.Viewpoint.ViewpointMode;
 
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -235,6 +237,15 @@ public class ViewpointController {
 		if (spat != null) {
 			viewpoint.setCenterOfRotation(pickPosition, false);
 		}		
+	}
+	
+	public void seek(MapElement mapElement) {
+		viewpoint.seek(mapElement);
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				updateCoR();
+			}
+		});
 	}
 
 	/**
