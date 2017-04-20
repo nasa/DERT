@@ -299,7 +299,7 @@ public class Configuration {
 		}
 		World world = World.getInstance();
 		if (world != null) {
-			world.setVerticalExaggeration(world.getVerticalExaggeration());
+			world.setVerticalExaggeration(mapElement);
 		}
 		return (mapElement);
 	}

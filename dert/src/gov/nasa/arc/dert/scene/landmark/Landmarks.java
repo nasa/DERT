@@ -118,7 +118,9 @@ public class Landmarks extends GroupNode {
 			Spatial spatial = (Spatial) landmark;
 			attachChild(spatial);
 			if (update) {
+				// update geometric state so we know where landmark is attached
 				spatial.updateGeometricState(0, true);
+				// update landmark scale according to location
 				landmark.update(Dert.getWorldView().getViewpoint().getCamera());
 			}
 			spatial.markDirty(DirtyType.RenderState);

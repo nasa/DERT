@@ -200,10 +200,10 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 	 */
 	@Override
 	public boolean spatialDirty(Spatial spatial, DirtyType type) {
-//		System.err.println("WorldScene.spatialDirty "+spatial+" "+type);
 		if (spatial == null) {
 			spatial = rootNode;
 		}
+//		System.err.println("WorldScene.spatialDirty "+spatial+" "+type+" "+spatial.getParent());
 		switch (type) {
 		case Attached:
 			addViewDependents(spatial);

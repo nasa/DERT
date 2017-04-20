@@ -4,8 +4,10 @@ import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.MenuItemAction;
 import gov.nasa.arc.dert.action.UndoHandler;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.scene.landmark.Landmark;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Profile;
+import gov.nasa.arc.dert.scene.tool.Tool;
 import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.view.world.MoveEdit;
 
@@ -81,6 +83,11 @@ public class PlaceHereAction extends MenuItemAction {
 		if (movable != null) {
 			Vector3 trans = new Vector3(movable.getTranslation());
 			movable.setLocation(position, false);
+			movable.updateGeometricState(0);
+			if (movable instanceof Landmark)
+				((Landmark)movable).update(Dert.getWorldView().getViewpoint().getCamera());
+			else if (movable instanceof Tool)
+				((Tool)movable).update(Dert.getWorldView().getViewpoint().getCamera());
 			UndoHandler.getInstance().addEdit(new MoveEdit(movable, trans));
 		}
 	}

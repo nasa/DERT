@@ -341,6 +341,22 @@ public class World extends GroupNode {
 	}
 
 	/**
+	 * Set the vertical exaggeration of a new map element
+	 * 
+	 * @param vertExag
+	 */
+	public void setVerticalExaggeration(MapElement me) {
+		Landscape landscape = Landscape.getInstance();
+		if (landscape == null) {
+			return;
+		}
+		double oldVal = landscape.getVerticalExaggeration();
+		double minZ = landscape.getMinimumElevation();
+		me.setVerticalExaggeration(oldVal, oldVal, minZ);
+		((Spatial)me).updateGeometricState(0);
+	}
+
+	/**
 	 * Get the vertical exaggeration of the terrain
 	 * 
 	 * @return

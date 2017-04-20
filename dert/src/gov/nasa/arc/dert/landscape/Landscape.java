@@ -285,7 +285,7 @@ public class Landscape extends Node {
 		quadTree.markDirty(DirtyType.RenderState);
 
 		// translate to minimum elevation for terrain exaggeration
-		contents = new Node("_contents");
+		contents = new Node("_landscape_contents");
 		contents.setTranslation(0, 0, -minZ * pixelScale);
 		contents.attachChild(quadTree);
 

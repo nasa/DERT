@@ -87,7 +87,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 		// set the color and material state
 		setColor(color);
 
-		contents = new Node("_contents");
+		contents = new Node("_marker_contents");
 		contents.setScale(size);
 		attachChild(contents);
 
