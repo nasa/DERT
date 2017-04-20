@@ -574,7 +574,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		}
 
 		FeatureSets featureSets = World.getInstance().getFeatureSets();
-		featureSetsNode = new DefaultMutableTreeNode("FeatureSets", true);
+		featureSetsNode = new DefaultMutableTreeNode("Feature Sets", true);
 		rootNode.add(featureSetsNode);
 		for (int i = 0; i < featureSets.getNumberOfChildren(); ++i) {
 			FeatureSet vg = (FeatureSet) featureSets.getChild(i);

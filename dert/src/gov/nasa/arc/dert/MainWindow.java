@@ -208,7 +208,7 @@ public class MainWindow extends JFrame {
 		toolBar.add(mapElementsAction);
 
 		// Open the color bar view.
-		colorbarAction = new ButtonAction("show color maps", null, "colorbar.png", buttonBorder) {
+		colorbarAction = new ButtonAction("show color bars", null, "colorbar.png", buttonBorder) {
 			@Override
 			public void run() {
 				currentConfig.colorBarsState.open(true);

@@ -205,7 +205,7 @@ public abstract class MapElementState extends State {
 		if (mapElement == null)
 			return(null);
 		if (annotationDialog == null)
-			annotationDialog = new NotesDialog(Dert.getMainWindow(), name, 400, 200, mapElement);
+			annotationDialog = new NotesDialog(Dert.getMainWindow(), name+" Notes", 400, 200, mapElement);
 		else
 			annotationDialog.update();
 		annotationDialog.open();

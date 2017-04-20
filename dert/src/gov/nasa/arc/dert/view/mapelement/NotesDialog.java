@@ -52,6 +52,8 @@ public class NotesDialog extends AbstractDialog {
 		super.build();
 		contentArea.setLayout(new BorderLayout());
 		titleLabel = new JLabel(" ", SwingConstants.LEFT);
+		titleLabel.setIcon(mapElement.getIcon());
+		titleLabel.setText(mapElement.getName());
 		contentArea.add(titleLabel, BorderLayout.NORTH);
 		JPanel notesPanel = new JPanel(new BorderLayout());
 		buildLocation(notesPanel);

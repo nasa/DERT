@@ -43,7 +43,7 @@ public class BasicCamera extends Camera {
 	private int magIndex = 9;
 	private double aspect = 1;
 	private double nearPlane, farPlane;
-	private Vector3 lookAt = new Vector3(0, 0, -10);
+	private Vector3 lookAt = new Vector3(0, 0, -10), tmpAngle = new Vector3();
 	private int[] viewport = new int[4];
 	private double fovX;
 	private double maxNearPlane = Float.MAX_VALUE;
@@ -707,19 +707,19 @@ public class BasicCamera extends Camera {
 		direction.normalizeLocal();
 		
 		// get the az and el angles
-		Vector3 angle = MathUtil.directionToAzEl(direction, null);
+		MathUtil.directionToAzEl(direction, tmpAngle);
 		
 		// adjust with optional tilt and get the new camera direction
-//		if (tilt != 0) {
-//			angle.setY(angle.getY()+tilt);
-//			MathUtil.azElToDirection(angle.getX(), angle.getY(), direction);
-//		}
+		if (tilt != 0) {
+			tmpAngle.setY(tmpAngle.getY()+tilt);
+			MathUtil.azElToDirection(tmpAngle.getX(), tmpAngle.getY(), direction);
+		}
 		
 		// rotate the camera frame
 		Matrix3 rotMat = Matrix3.fetchTempInstance();
 		Matrix3 workMat = Matrix3.fetchTempInstance();
-		rotMat.fromAngleNormalAxis(angle.getX(), Vector3.NEG_UNIT_Z);
-		workMat.fromAngleNormalAxis(angle.getY(), Vector3.UNIT_X);
+		rotMat.fromAngleNormalAxis(tmpAngle.getX(), Vector3.NEG_UNIT_Z);
+		workMat.fromAngleNormalAxis(tmpAngle.getY(), Vector3.UNIT_X);
 		rotMat.multiplyLocal(workMat);		
 		setFrame(loc, rotMat);
 		Matrix3.releaseTempInstance(rotMat);
@@ -731,6 +731,6 @@ public class BasicCamera extends Camera {
 //		lookAt.scaleAddLocal(dist, loc);
 		lookAt.set(look);
 		
-		return(angle);
+		return(tmpAngle);
 	}
 }

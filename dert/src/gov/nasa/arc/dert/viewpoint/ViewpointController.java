@@ -506,12 +506,6 @@ public class ViewpointController {
 	 * Fly through path waypoints
 	 * 
 	 * @param path the Path mapElement
-	 * @param numFrames the total number of frames (will be a little less)
-	 * @param millis the number of millis per frame
-	 * @param loop repeat
-	 * @param height the height of the viewpoint maintained above each waypoint
-	 * @param grab save each frame to an image sequence
-	 * @param seqPath the image sequence file path
 	 */
 	public void flyPath(Path path) {
 		flyParams = ((PathState)path.getState()).flyParams;

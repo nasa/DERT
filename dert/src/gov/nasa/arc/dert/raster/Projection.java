@@ -214,6 +214,7 @@ public class Projection {
 			String projStr = "+proj=longlat +a=" + projInfo.getSemiMajorAxis() + " +b=" + projInfo.getSemiMinorAxis()
 				+ " +no_defs";
 			pjUnprojected = Proj4.newInstance(projStr);
+			System.err.println("Unprojection: "+projStr);
 		}
 		if (pjProjected == null) {
 			pjProjected = Proj4.newInstance(proj4String);
