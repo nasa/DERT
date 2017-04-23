@@ -25,9 +25,9 @@ public class OpenAnnotationAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		mapElement.getState().save();
-		if (mapElement instanceof Waypoint) {
-			((Waypoint) mapElement).getPath().getState().save();
-		}
+//		if (mapElement instanceof Waypoint) {
+//			((Waypoint) mapElement).getPath().getState().save();
+//		}
 		mapElement.getState().openAnnotation();
 	}
 

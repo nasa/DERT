@@ -128,7 +128,6 @@ public class PathPanel extends MapElementBasePanel {
 			path = (Path) mapElement;
 			waypoint = null;
 			labelCombo.setSelectedItem(path.getLabelType());
-			noteText.setText(path.getState().getAnnotation());
 			typeCombo.setSelectedItem(path.getBodyType());
 			showWaypoints.setSelected(path.areWaypointsVisible());
 			lineWidthText.setValue(path.getLineWidth());
@@ -144,7 +143,6 @@ public class PathPanel extends MapElementBasePanel {
 			locLabel.setText(waypoint.getName());
 			path = waypoint.getPath();
 			setLocation(locationText, locLabel, waypoint.getTranslation());
-			noteText.setText(waypoint.getState().getAnnotation());
 			locationText.setEnabled(true);
 			path.setCurrentWaypoint(waypoint);
 		}

@@ -73,7 +73,6 @@ public class PlacemarkPanel extends MapElementBasePanel {
 		setLocation(locationText, locLabel, placemark.getTranslation());
 		sizeText.setValue(placemark.getSize());
 		iconCombo.setSelectedIndex(placemark.getTextureIndex());
-		noteText.setText(placemark.getState().getAnnotation());
 	}
 
 }

@@ -9,7 +9,6 @@ import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.View;
 import gov.nasa.arc.dert.view.mapelement.EditDialog;
-import gov.nasa.arc.dert.view.mapelement.NotesDialog;
 import gov.nasa.arc.dert.view.mapelement.PathView;
 import gov.nasa.arc.dert.viewpoint.FlyThroughParameters;
 
@@ -165,71 +164,35 @@ public class PathState extends ToolState {
 	public EditDialog openEditor() {
 		if (mapElement == null)
 			return(null);
-		if (editDialog == null)
-			editDialog = new EditDialog(Dert.getMainWindow(), "Edit "+mapElement.getType(), mapElement);
-		else {
-			editDialog.setMapElement(mapElement);
-			editDialog.update();
-		}
+		getEditDialog();
 		editDialog.open();
+		editDialog.setMapElement(mapElement);
+		editDialog.update();
+		return(editDialog);
+	}
+	
+	public EditDialog getEditDialog() {
+		if (editDialog == null)
+			editDialog = new EditDialog(Dert.getMainWindow(), "Edit "+mapElement.getName(), mapElement);
 		return(editDialog);
 	}
 
-	/**
-	 * Open the annotation
-	 */
-	@Override
-	public NotesDialog openAnnotation() {
-		if (mapElement == null)
-			return(null);
-		if (annotationDialog == null) {
-			annotationDialog = new NotesDialog(Dert.getMainWindow(), name, 400, 200, mapElement) {			
-				@Override
-				public void setMapElement(MapElement me) {
-					super.setMapElement(me);
-					if (me instanceof Path)
-						location.setEnabled(false);
-					else
-						location.setEnabled(true);
-				}
-				@Override
-				protected void updateText() {
-					if (mapElement instanceof Path)
-						super.updateText();
-					else {
-						Path path = ((Waypoint)mapElement).getPath();
-						String str = path.getName()+":\n"+path.getState().getAnnotation()+"\n";
-						str += mapElement.getName()+":\n"+mapElement.getState().getAnnotation()+"\n";
-						textArea.setText(str);
-						textArea.setCaretPosition(0);
-					}
-				}
-			};
-		}
-		else {
-			annotationDialog.setMapElement(mapElement);
-			annotationDialog.update();
-		}
-		annotationDialog.open();
-		return(annotationDialog);
-	}
-
-	@Override
-	public void setAnnotation(String note) {
-		if (note != null) {
-			annotation = note;
-		}
-		if (mapElement != null) {
-			Path path = (Path) mapElement;
-			// update the way points
-			int n = path.getNumberOfPoints();
-			for (int i = 0; i < n; ++i) {
-				Waypoint wp = path.getWaypoint(i);
-				WaypointState wps = (WaypointState) wp.getState();
-				wps.setAnnotation(null);
-			}
-		}
-	}
+//	@Override
+//	public void setAnnotation(String note) {
+//		if (note != null) {
+//			annotation = note;
+//		}
+//		if (mapElement != null) {
+//			Path path = (Path) mapElement;
+//			// update the way points
+//			int n = path.getNumberOfPoints();
+//			for (int i = 0; i < n; ++i) {
+//				Waypoint wp = path.getWaypoint(i);
+//				WaypointState wps = (WaypointState) wp.getState();
+//				wps.setAnnotation(null);
+//			}
+//		}
+//	}
 
 	/**
 	 * Set the MapElement
@@ -241,8 +204,6 @@ public class PathState extends ToolState {
 		// first time
 		if ((this.mapElement == null) && (mapElement instanceof Path))
 			this.mapElement = mapElement;
-		if (annotationDialog != null)
-			annotationDialog.setMapElement(mapElement);
 		if (editDialog != null)
 			editDialog.setMapElement(mapElement);
 	}

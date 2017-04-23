@@ -123,7 +123,6 @@ public class CartesianGridPanel extends MapElementBasePanel {
 		columnsSpinner.setValue(grid.getColumns());
 		rowsSpinner.setValue(grid.getRows());
 		actualCoordButton.setSelected(grid.isActualCoordinates());
-		noteText.setText(grid.getState().getAnnotation());
 	}
 
 	private void setDimensions() {

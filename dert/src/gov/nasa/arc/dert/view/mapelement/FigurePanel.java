@@ -132,7 +132,6 @@ public class FigurePanel extends MapElementBasePanel {
 		surfaceButton.setSelected(figure.isSurfaceNormalVisible());
 		azSpinner.setValue(figure.getAzimuth());
 		tiltSpinner.setValue(figure.getTilt());
-		noteText.setText(figure.getState().getAnnotation());
 	}
 
 }

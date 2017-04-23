@@ -8,7 +8,6 @@ import gov.nasa.arc.dert.ui.DoubleTextField;
 import java.awt.Component;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -43,7 +42,7 @@ public class FeatureSetPanel extends MapElementBasePanel {
 		compList.add(new JLabel("File", SwingConstants.RIGHT));
 		fileText = new JTextField();
 		fileText.setEditable(false);
-		fileText.setBorder(BorderFactory.createEmptyBorder());
+		fileText.setBackground(getBackground());
 		fileText.setToolTipText("path to GeoJSON file");
 		compList.add(fileText);
 		
@@ -79,7 +78,6 @@ public class FeatureSetPanel extends MapElementBasePanel {
 		if (mapElement instanceof FeatureSet) {
 			featureSet = (FeatureSet) mapElement;
 			fileText.setText("File: "+featureSet.getFilePath());
-			noteText.setText(featureSet.getState().getAnnotation());
 			lineWidthText.setValue(featureSet.getLineWidth());
 			lineWidthText.setEnabled(true);
 			sizeText.setValue(featureSet.getSize());

@@ -84,44 +84,40 @@ public class WaypointState extends MapElementState {
 		if (mapElement == null)
 			return(null);
 		parent = (PathState) ((Waypoint)mapElement).getPath().getState();
-		EditDialog ed = parent.openEditor();
-		if (ed == null)
-			return(null);
-		else {
+		EditDialog ed = parent.getEditDialog();
+		if (ed != null) {
+			ed.open();
 			ed.setMapElement(mapElement);
 			ed.update();
 		}
-		ed.open();
 		return(ed);
 	}
 
 	/**
 	 * Open the annotation
 	 */
-	@Override
-	public NotesDialog openAnnotation() {
-		if (mapElement == null)
-			return(null);
-		parent = (PathState) ((Waypoint)mapElement).getPath().getState();
-		NotesDialog nd = parent.openAnnotation();
-		if (nd == null)
-			return(null);
-		else {
-			nd.setMapElement(mapElement);
-			nd.update();
-		}
-		nd.open();
-		return(nd);
-	}
+//	@Override
+//	public NotesDialog openAnnotation() {
+//		if (mapElement == null)
+//			return(null);
+//		parent = (PathState) ((Waypoint)mapElement).getPath().getState();
+//		NotesDialog nd = parent.getAnnotationDialog();
+//		if (nd != null) {
+//			nd.open();
+//			nd.setMapElement(mapElement);
+//			nd.update();
+//		}
+//		return(nd);
+//	}
 
-	@Override
-	public void setAnnotation(String note) {
-		if (note != null) {
-			annotation = note;
-		}
-		parent = (PathState) ((Waypoint)mapElement).getPath().getState();
-		parent.setMapElement(mapElement);
-	}
+//	@Override
+//	public void setAnnotation(String note) {
+//		if (note != null) {
+//			annotation = note;
+//		}
+////		parent = (PathState) ((Waypoint)mapElement).getPath().getState();
+////		parent.setMapElement(mapElement);
+//	}
 
 	
 	@Override

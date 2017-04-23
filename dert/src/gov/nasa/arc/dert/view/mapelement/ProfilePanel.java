@@ -123,7 +123,6 @@ public class ProfilePanel extends MapElementBasePanel {
 		setLocation(pBLocation, pBLabel, profile.getEndpointB());
 		endpointsCheckBox.setSelected(profile.isEndpointsVisible());
 		lineWidthText.setValue(profile.getLineWidth());
-		noteText.setText(profile.getState().getAnnotation());
 	}
 
 	@Override

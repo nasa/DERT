@@ -13,21 +13,14 @@ import gov.nasa.arc.dert.ui.FieldPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -43,8 +36,6 @@ public abstract class MapElementBasePanel extends JPanel {
 	
 	// Common controls
 	protected JPanel topPanel;
-	protected JTextArea noteText;
-	protected JButton saveButton;
 	protected JLabel locLabel;
 	protected CoordTextField locationText;
 
@@ -80,42 +71,6 @@ public abstract class MapElementBasePanel extends JPanel {
 		addFields(compList);
 		
 		add(new FieldPanel(compList), BorderLayout.CENTER);
-
-		JPanel notePanel = new JPanel(new BorderLayout());
-		JPanel titlePanel = new JPanel(new BorderLayout());
-		titlePanel.add(new JLabel("Notes", SwingConstants.LEFT), BorderLayout.WEST);
-		saveButton = new JButton("Save");
-		saveButton.setEnabled(false);
-		saveButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				mapElement.getState().setAnnotation(noteText.getText());
-				saveButton.setEnabled(false);
-			}
-		});
-		titlePanel.add(saveButton, BorderLayout.EAST);
-		notePanel.add(titlePanel, BorderLayout.NORTH);
-		noteText = new JTextArea();
-		noteText.setEditable(true);
-		noteText.setRows(4);
-		noteText.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
-			public void changedUpdate(DocumentEvent event) {
-				saveButton.setEnabled(true);
-			}
-
-			@Override
-			public void insertUpdate(DocumentEvent event) {
-				saveButton.setEnabled(true);
-			}
-
-			@Override
-			public void removeUpdate(DocumentEvent event) {
-				saveButton.setEnabled(true);
-			}
-		});
-		notePanel.add(new JScrollPane(noteText), BorderLayout.CENTER);
-		add(notePanel, BorderLayout.SOUTH);
 	}
 	
 	protected void addFields(ArrayList<Component> compList) {
@@ -161,11 +116,6 @@ public abstract class MapElementBasePanel extends JPanel {
 				label.setIcon(null);
 		}
 	}
-	
-//	@Override
-//	public Insets getInsets() {
-//		return(new Insets(5, 5, 5, 5));
-//	}
 
 	/**
 	 * Map element was moved

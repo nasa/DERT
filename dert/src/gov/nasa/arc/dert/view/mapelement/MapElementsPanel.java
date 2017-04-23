@@ -79,7 +79,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	// Buttons for actions applying to all map elements
 	private JButton showButton, deleteButton, seekButton, renameButton, editButton;
 	private JButton findButton, hideButton, labelButton, unlabelButton, lockButton, unlockButton;
-	private JButton csvButton, groundButton, openButton;
+	private JButton csvButton, groundButton, openButton, noteButton;
 	private ColorSelectionPanel colorList;
 
 	// Controls
@@ -135,7 +135,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		JPanel tPanel = new JPanel(new BorderLayout());
 		tPanel.add(scrollPane, BorderLayout.CENTER);
 		
-		JPanel buttonPanel = new JPanel(new GridLayout(14, 1, 0, 0));
+		JPanel buttonPanel = new JPanel(new GridLayout(15, 1, 0, 0));
 		fillButtonPanel(buttonPanel);
 		JPanel panel = new JPanel(new FlowLayout());
 		panel.add(buttonPanel);
@@ -654,6 +654,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			seekButton.setEnabled(false);
 			renameButton.setEnabled(false);
 			csvButton.setEnabled(false);
+			noteButton.setEnabled(false);
 		}
 		else if (currentMapElement == null) {
 			editButton.setEnabled(false);
@@ -671,6 +672,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			seekButton.setEnabled(false);
 			renameButton.setEnabled(false);
 			csvButton.setEnabled(allLandmark);
+			noteButton.setEnabled(false);
 		}
 		else {
 			editButton.setEnabled(!(currentMapElement instanceof Feature));
@@ -689,6 +691,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			seekButton.setEnabled(true);
 			renameButton.setEnabled(!(currentMapElement instanceof Feature) && !(currentMapElement instanceof Waypoint));
 			csvButton.setEnabled(currentMapElement instanceof Path);
+			noteButton.setEnabled(!(currentMapElement instanceof Feature));
 		}
 
 	}
@@ -965,6 +968,21 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			}
 		});
 		buttonPanel.add(csvButton);		
+		
+		// Annotations
+		noteButton = new JButton("Note");
+		noteButton.setEnabled(false);
+		noteButton.setToolTipText("view and edit annotation");
+		noteButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				for (int i=0; i<currentMapElements.length; ++i) {
+					currentMapElements[i].getState().save();
+					currentMapElements[i].getState().openAnnotation();
+				}
+			}
+		});
+		buttonPanel.add(noteButton);		
 
 	}
 }

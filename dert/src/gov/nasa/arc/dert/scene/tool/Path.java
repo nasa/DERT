@@ -1037,14 +1037,15 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	}
 
 	public ReadOnlyVector3 getLocationInWorld() {
-		if (pointSet.getNumberOfChildren() == 0) {
-			location.set(getWorldTranslation());
-			Landscape.getInstance().localToWorldCoordinate(location);
-			return (location);
-		} else {
-			Waypoint wp = (Waypoint) pointSet.getChild(0);
-			return (wp.getLocationInWorld());
-		}
+//		if (pointSet.getNumberOfChildren() == 0) {
+//			location.set(getWorldTranslation());
+//			Landscape.getInstance().localToWorldCoordinate(location);
+//			return (location);
+//		} else {
+//			Waypoint wp = (Waypoint) pointSet.getChild(0);
+//			return (wp.getLocationInWorld());
+//		}
+		return(null);
 	}
 	
 	public GroundEdit ground() {

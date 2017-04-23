@@ -173,7 +173,6 @@ public class PlanePanel extends MapElementBasePanel {
 		plane.setPlanePanel(this);
 		lengthSpinner.setValue(plane.getLengthScale());
 		widthSpinner.setValue(plane.getWidthScale());
-		noteText.setText(plane.getState().getAnnotation());
 		triangleCheckBox.setSelected(plane.isTriangleVisible());
 		updateLocation(mapElement);
 		updateStrikeAndDip(plane.getStrike(), plane.getDip());

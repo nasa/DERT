@@ -378,6 +378,7 @@ public class WorldInputHandler implements InputHandler {
 						contextMenu.add(new EditAction(((Waypoint) mapElement).getPath()));
 						contextMenu.add(new LockMapElementAction(((Waypoint) mapElement).getPath()));
 						contextMenu.add(new OnGroundAction((Waypoint) mapElement));
+						contextMenu.add(new OpenAnnotationAction(((Waypoint)mapElement).getPath()));
 						contextMenu.add(new OpenAnnotationAction(mapElement));
 					}
 					else if (mapElement instanceof FeatureSet) {

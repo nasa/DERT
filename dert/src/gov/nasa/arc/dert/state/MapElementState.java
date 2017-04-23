@@ -221,12 +221,12 @@ public abstract class MapElementState extends State {
 		if (note != null) {
 			annotation = note;
 		}
-		if (annotationDialog != null) {
-			annotationDialog.update();
-		}
-		if (editDialog != null) {
-			editDialog.update();
-		}
+//		if (annotationDialog != null) {
+//			annotationDialog.update();
+//		}
+//		if (editDialog != null) {
+//			editDialog.update();
+//		}
 	}
 	
 	public void setLocked(boolean locked) {

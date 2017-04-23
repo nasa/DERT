@@ -141,7 +141,6 @@ public class ScaleBarPanel extends MapElementBasePanel {
 		cellsSpinner.setValue(scale.getCellCount());
 		azSpinner.setValue(scale.getAzimuth());
 		tiltSpinner.setValue(scale.getTilt());
-		noteText.setText(scale.getState().getAnnotation());
 	}
 
 }

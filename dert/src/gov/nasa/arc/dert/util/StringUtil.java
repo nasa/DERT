@@ -36,7 +36,7 @@ public class StringUtil {
 	 */
 	public static final String format(ReadOnlyVector3 vec) {
 		if (vec == null) {
-			return ("");
+			return ("N/A");
 		}
 		return (String.format(Landscape.stringFormat, vec.getX()) + ","
 			+ String.format(Landscape.stringFormat, vec.getY()) + "," + String.format(Landscape.stringFormat,

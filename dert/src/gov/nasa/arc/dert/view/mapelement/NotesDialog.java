@@ -7,14 +7,19 @@ import gov.nasa.arc.dert.util.StringUtil;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * A dialog that displays text in a JTextArea.
@@ -28,7 +33,9 @@ public class NotesDialog extends AbstractDialog {
 	protected JTextArea textArea;
 	protected JLabel location;
 	protected JLabel lockLabel;
-	protected JLabel titleLabel;
+	protected JLabel locLabel;
+	protected JButton saveButton;
+	protected boolean showLocation;
 
 	/**
 	 * Constructor
@@ -51,32 +58,57 @@ public class NotesDialog extends AbstractDialog {
 	protected void build() {
 		super.build();
 		contentArea.setLayout(new BorderLayout());
-		titleLabel = new JLabel(" ", SwingConstants.LEFT);
-		titleLabel.setIcon(mapElement.getIcon());
-		titleLabel.setText(mapElement.getName());
-		contentArea.add(titleLabel, BorderLayout.NORTH);
 		JPanel notesPanel = new JPanel(new BorderLayout());
 		buildLocation(notesPanel);
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		textArea = new JTextArea();
-		textArea.setEditable(false);
+		textArea.setEditable(true);
+		textArea.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void changedUpdate(DocumentEvent event) {
+				saveButton.setEnabled(true);
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent event) {
+				saveButton.setEnabled(true);
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent event) {
+				saveButton.setEnabled(true);
+			}
+		});
 		textArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		scrollPane.getViewport().setView(textArea);
 		notesPanel.add(scrollPane, BorderLayout.CENTER);
+		
+		JPanel bottomPanel = new JPanel(new BorderLayout());
+		bottomPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		saveButton = new JButton("Save");
+		saveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				mapElement.getState().setAnnotation(textArea.getText());
+				saveButton.setEnabled(false);
+			}
+		});
+		bottomPanel.add(saveButton, BorderLayout.EAST);
+		notesPanel.add(bottomPanel, BorderLayout.SOUTH);	
+		
 		contentArea.add(notesPanel, BorderLayout.CENTER);
 		update();
 	}
 	
-	protected void buildLocation(JPanel panel) {		
-		JPanel locPanel = new JPanel(new BorderLayout());
-		locPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		locPanel.add(new JLabel("Location: ", SwingConstants.RIGHT), BorderLayout.WEST);
+	protected void buildLocation(JPanel panel) {
+		JPanel topPanel = new JPanel(new BorderLayout());
+		topPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		topPanel.add(new JLabel("Location: ", SwingConstants.RIGHT), BorderLayout.WEST);
 		location = new JLabel();
-		locPanel.add(location, BorderLayout.CENTER);
+		topPanel.add(location, BorderLayout.CENTER);
 		lockLabel = new JLabel(new ImageIcon());
-		locPanel.add(lockLabel, BorderLayout.EAST);
-		panel.add(locPanel, BorderLayout.NORTH);
+		topPanel.add(lockLabel, BorderLayout.EAST);
+		panel.add(topPanel, BorderLayout.NORTH);		
 	}
 	
 	protected void updateLocation() {
@@ -97,6 +129,7 @@ public class NotesDialog extends AbstractDialog {
 			return;
 		updateLocation();
 		updateText();
+		saveButton.setEnabled(false);
 		revalidate();
 	}
 
@@ -110,8 +143,6 @@ public class NotesDialog extends AbstractDialog {
 	
 	public void setMapElement(MapElement me) {
 		mapElement = me;
-		titleLabel.setIcon(mapElement.getIcon());
-		titleLabel.setText(mapElement.getName());
 		update();
 	}
 }
