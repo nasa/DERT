@@ -45,7 +45,8 @@ public class LineStrip extends Line {
 	 * @param quadTree
 	 */
 	public synchronized void updateElevation(QuadTree quadTree) {
-		FloatBuffer vertex = _meshData.getVertexBuffer();
+		FloatBufferData vertexData = _meshData.getVertexCoords();
+		FloatBuffer vertex = vertexData.getBuffer();
 		int n = vertex.limit();
 		Landscape landscape = Landscape.getInstance();
 		for (int i = 0; i < n; i += 3) {
@@ -57,7 +58,7 @@ public class LineStrip extends Line {
 			}
 		}
 		
-		_meshData.setVertexBuffer(vertex);
+		_meshData.setVertexCoords(vertexData);
 		updateModelBound();
 	}
 
