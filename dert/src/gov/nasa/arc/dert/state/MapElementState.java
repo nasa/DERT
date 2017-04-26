@@ -191,7 +191,7 @@ public abstract class MapElementState extends State {
 		if (mapElement == null)
 			return(null);
 		if (editDialog == null)
-			editDialog = new EditDialog(Dert.getMainWindow(), "Edit "+mapElement.getType(), mapElement);
+			editDialog = new EditDialog(Dert.getMainWindow(), "Edit "+mapElement.getName(), mapElement);
 		else
 			editDialog.update();
 		editDialog.open();

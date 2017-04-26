@@ -95,7 +95,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	private ColorRGBA colorRGBA;
 	private Color color;
 	private double size;
-	private boolean labelVisible, pinned, waypointsVisible;
+	private boolean labelVisible, locked, waypointsVisible;
 	private boolean lineIsEnabled, polyIsEnabled;
 
 	// Indicates if this path is currently being created
@@ -104,7 +104,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	// The map element state object
 	protected PathState state;
 
-	private Vector3 lowerBound, upperBound, location;
+	private Vector3 lowerBound, upperBound;
 
 	/**
 	 * Constructor
@@ -115,7 +115,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		super(state.name);
 		lowerBound = new Vector3();
 		upperBound = new Vector3();
-		location = new Vector3();
 		this.state = state;
 		state.setMapElement(this);
 
@@ -124,7 +123,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 		this.size = state.size;
 		this.labelVisible = state.labelVisible;
 		this.waypointsVisible = state.waypointsVisible;
-		this.pinned = state.locked;
+		this.locked = state.locked;
 		this.color = state.color;
 		this.lineWidth = state.lineWidth;
 
@@ -278,7 +277,7 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			index = pointSet.getNumberOfChildren();
 		}
 		// create a way point state
-		WaypointState wpState = new WaypointState(index, p, getName() + ".", size, color, labelVisible, pinned);
+		WaypointState wpState = new WaypointState(index, p, getName() + ".", size, color, labelVisible, locked);
 		// add the new way point and return it
 		return (addWaypoint(wpState));
 	}
@@ -648,22 +647,19 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 	}
 
 	/**
-	 * Is this map element pinned?
+	 * Is this map element locked?
 	 */
 	@Override
 	public boolean isLocked() {
-		return (pinned);
+		return (locked);
 	}
 
 	/**
-	 * Pin down this map element so it cannot be moved.
+	 * Lock down this map element so it cannot be moved.
 	 */
 	@Override
-	public void setLocked(boolean pinned) {
-		this.pinned = pinned;
-		for (int i = 0; i < pointSet.getNumberOfChildren(); ++i) {
-			((Waypoint) pointSet.getChild(i)).setLocked(pinned);
-		}
+	public void setLocked(boolean locked) {
+		this.locked = locked;
 	}
 
 	/**

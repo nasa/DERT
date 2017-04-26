@@ -122,5 +122,13 @@ public class Waypoint extends FigureMarker implements MapElement {
 	public Icon getIcon() {
 		return (icon);
 	}
+	
+	@Override
+	public boolean isLocked() {
+		Path path = getPath();
+		if (path == null)
+			return(false);
+		return (path.isLocked());
+	}
 
 }

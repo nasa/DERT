@@ -1,7 +1,6 @@
 package gov.nasa.arc.dert.view.mapelement;
 
 import gov.nasa.arc.dert.action.edit.CoordAction;
-import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
@@ -17,7 +16,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -32,7 +30,7 @@ import com.ardor3d.scenegraph.Spatial;
  */
 public abstract class MapElementBasePanel extends JPanel {
 	
-	protected static ImageIcon locked = Icons.getImageIcon("locked.png");
+//	protected static ImageIcon locked = Icons.getImageIcon("locked.png");
 	
 	// Common controls
 	protected JPanel topPanel;
@@ -62,10 +60,6 @@ public abstract class MapElementBasePanel extends JPanel {
 	}
 
 	protected void build() {
-		JLabel titleLabel = new JLabel(parentElement.getName(), SwingConstants.LEFT);
-		titleLabel.setIcon(parentElement.getIcon());
-		add(titleLabel, BorderLayout.NORTH);
-		
 		ArrayList<Component> compList = new ArrayList<Component>();
 		
 		addFields(compList);
@@ -110,10 +104,10 @@ public abstract class MapElementBasePanel extends JPanel {
 		}
 		if (locationText != null) {
 			locationText.setLocalValue(position);
-			if (mapElement.isLocked())
-				label.setIcon(locked);
-			else
-				label.setIcon(null);
+//			if (mapElement.isLocked())
+//				label.setIcon(locked);
+//			else
+//				label.setIcon(null);
 		}
 	}
 

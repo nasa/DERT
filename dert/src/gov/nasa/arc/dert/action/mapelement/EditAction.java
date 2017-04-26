@@ -21,12 +21,18 @@ public class EditAction extends MenuItemAction {
 		this.mapElement = mapElement;
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param mapElement
+	 */
+	public EditAction(MapElement mapElement, String label) {
+		super("Edit " + label);
+		this.mapElement = mapElement;
+	}
+
 	@Override
 	protected void run() {
-		// Open the MapElements view
-//		Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
-//		MapElementsView view = (MapElementsView) currentConfig.mapElementsState.open();
-//		view.selectMapElement(mapElement);
 		mapElement.getState().openEditor();
 	}
 

@@ -82,7 +82,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	private ColorRGBA colorRGBA;
 	private Color color;
 	private double size;
-	private boolean labelVisible, pinned, triangleVisible;
+	private boolean labelVisible, locked, triangleVisible;
 	private double lengthScale = 1, widthScale = 1;
 
 	// The map element state object
@@ -114,7 +114,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 		this.size = state.size;
 		this.labelVisible = state.labelVisible;
 		this.triangleVisible = state.triangleVisible;
-		this.pinned = state.locked;
+		this.locked = state.locked;
 		this.color = state.color;
 		this.lengthScale = state.lengthScale;
 		this.widthScale = state.widthScale;
@@ -224,7 +224,12 @@ public class Plane extends Node implements Tool, ViewDependent {
 			texture = ImageUtil.createTexture(Icons.getIconURL("paddle.png"), true);
 			highlightTexture = ImageUtil.createTexture(Icons.getIconURL("paddle-highlight.png"), true);
 		}
-		BillboardMarker bm = new BillboardMarker(name, point, 1, zOff, color, labelVisible, pinned);
+		BillboardMarker bm = new BillboardMarker(name, point, 1, zOff, color, labelVisible, false) {
+			@Override
+			public boolean isLocked() {
+				return(Plane.this.locked);
+			}
+		};
 		bm.setTexture(texture, highlightTexture);
 		return (bm);
 	}
@@ -624,11 +629,11 @@ public class Plane extends Node implements Tool, ViewDependent {
 	}
 
 	/**
-	 * Is this map element pinned?
+	 * Is this map element locked?
 	 */
 	@Override
 	public boolean isLocked() {
-		return (pinned);
+		return (locked);
 	}
 
 	/**
@@ -636,10 +641,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	 */
 	@Override
 	public void setLocked(boolean pinned) {
-		this.pinned = pinned;
-		for (int i = 0; i < point.length; ++i) {
-			point[i].setLocked(pinned);
-		}
+		this.locked = pinned;
 	}
 
 	/**

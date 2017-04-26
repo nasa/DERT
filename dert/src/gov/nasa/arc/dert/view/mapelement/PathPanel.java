@@ -127,15 +127,9 @@ public class PathPanel extends MapElementBasePanel {
 		if (mapElement instanceof Path) {
 			path = (Path) mapElement;
 			waypoint = null;
-			labelCombo.setSelectedItem(path.getLabelType());
-			typeCombo.setSelectedItem(path.getBodyType());
-			showWaypoints.setSelected(path.areWaypointsVisible());
-			lineWidthText.setValue(path.getLineWidth());
-			sizeText.setValue(path.getSize());
 			locLabel.setText("Location");
-			locationText.setText("");
-			locationText.setEnabled(false);			
-			path.setCurrentWaypoint(null);
+			locationText.setText("N/A");
+			locationText.setEnabled(false);	
 		}
 		// map element is a Waypoint
 		else {
@@ -144,8 +138,13 @@ public class PathPanel extends MapElementBasePanel {
 			path = waypoint.getPath();
 			setLocation(locationText, locLabel, waypoint.getTranslation());
 			locationText.setEnabled(true);
-			path.setCurrentWaypoint(waypoint);
 		}
+		labelCombo.setSelectedItem(path.getLabelType());
+		typeCombo.setSelectedItem(path.getBodyType());
+		showWaypoints.setSelected(path.areWaypointsVisible());
+		lineWidthText.setValue(path.getLineWidth());
+		sizeText.setValue(path.getSize());
+		path.setCurrentWaypoint(waypoint);
 	}
 
 }

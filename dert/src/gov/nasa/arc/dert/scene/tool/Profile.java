@@ -83,7 +83,7 @@ public class Profile extends Node implements ViewDependent, Tool {
 	private double size;
 	private ColorRGBA colorRGBA;
 	private Color color;
-	private boolean labelVisible, pinned;
+	private boolean labelVisible, locked;
 	private float lineWidth;
 
 	// MapElement state
@@ -181,7 +181,12 @@ public class Profile extends Node implements ViewDependent, Tool {
 			texture = ImageUtil.createTexture(Icons.getIconURL("paddle.png"), true);
 			highlightTexture = ImageUtil.createTexture(Icons.getIconURL("paddle-highlight.png"), true);
 		}
-		BillboardMarker bm = new BillboardMarker(name, point, size, zOff, color, labelVisible, pinned);
+		BillboardMarker bm = new BillboardMarker(name, point, size, zOff, color, labelVisible, false) {
+			@Override
+			public boolean isLocked() {
+				return(Profile.this.locked);
+			}
+		};
 		bm.setTexture(texture, highlightTexture);
 		return (bm);
 	}
@@ -413,16 +418,15 @@ public class Profile extends Node implements ViewDependent, Tool {
 	 */
 	@Override
 	public boolean isLocked() {
-		return (endpointA.isLocked());
+		return (locked);
 	}
 
 	/**
 	 * Set mobility
 	 */
 	@Override
-	public void setLocked(boolean pinned) {
-		endpointA.setLocked(pinned);
-		endpointB.setLocked(pinned);
+	public void setLocked(boolean locked) {
+		this.locked = locked;
 	}
 
 	/**

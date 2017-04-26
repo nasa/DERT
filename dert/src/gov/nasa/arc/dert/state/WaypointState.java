@@ -4,7 +4,6 @@ import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.mapelement.EditDialog;
-import gov.nasa.arc.dert.view.mapelement.NotesDialog;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -73,6 +72,8 @@ public class WaypointState extends MapElementState {
 			parent = (PathState) waypoint.getPath().getState();
 		}
 		StateUtil.putVector3(map, "Location", location);
+		// Waypoint is uses Path locked state.
+		map.put("Locked", new Boolean(false));
 		return(map);
 	}
 

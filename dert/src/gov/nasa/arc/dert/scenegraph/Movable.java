@@ -43,11 +43,15 @@ public abstract class Movable extends Node {
 	public boolean isLocked() {
 		return (locked);
 	}
+	
+	public boolean getLocked() {
+		return(locked);
+	}
 
 	/**
 	 * Set mobility
 	 * 
-	 * @param pinned
+	 * @param locked
 	 */
 	public void setLocked(boolean locked) {
 		this.locked = locked;

@@ -375,7 +375,7 @@ public class WorldInputHandler implements InputHandler {
 						contextMenu.add(new HideMapElementAction(((Waypoint) mapElement).getPath()));
 						contextMenu.add(new DeleteMapElementAction(((Waypoint) mapElement).getPath()));
 						contextMenu.add(new RenameAction(((Waypoint) mapElement).getPath()));
-						contextMenu.add(new EditAction(((Waypoint) mapElement).getPath()));
+						contextMenu.add(new EditAction((Waypoint) mapElement, ((Waypoint) mapElement).getPath().getName()));
 						contextMenu.add(new LockMapElementAction(((Waypoint) mapElement).getPath()));
 						contextMenu.add(new OnGroundAction((Waypoint) mapElement));
 						contextMenu.add(new OpenAnnotationAction(((Waypoint)mapElement).getPath()));

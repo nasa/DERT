@@ -75,6 +75,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 	private DefaultTreeModel treeModel;
 	private JTree tree;
 	private DefaultMutableTreeNode rootNode, landmarksNode, toolsNode, featureSetsNode;
+	private TreePath[] selectedPaths;
 
 	// Buttons for actions applying to all map elements
 	private JButton showButton, deleteButton, seekButton, renameButton, editButton;
@@ -116,16 +117,26 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
 			@Override
 			public void valueChanged(TreeSelectionEvent event) {
-				TreePath[] paths = tree.getSelectionPaths();
-				if (paths != null) {
-					if (paths.length == 1) {
-						doSelection((DefaultMutableTreeNode) paths[0].getLastPathComponent());
+				selectedPaths = tree.getSelectionPaths();
+				if (selectedPaths != null) {
+					if (selectedPaths.length == 1) {
+						doSelection((DefaultMutableTreeNode) selectedPaths[0].getLastPathComponent());
 					} else {
-						DefaultMutableTreeNode[] nodes = new DefaultMutableTreeNode[paths.length];
-						for (int i = 0; i < paths.length; ++i) {
-							nodes[i] = (DefaultMutableTreeNode) paths[i].getLastPathComponent();
+						ArrayList<DefaultMutableTreeNode> nodeList = new ArrayList<DefaultMutableTreeNode>();
+						// add nodes to list removing selected children to simplify undo/redo
+						for (int i = 0; i < selectedPaths.length; ++i) {
+							DefaultMutableTreeNode tn = (DefaultMutableTreeNode) selectedPaths[i].getLastPathComponent();
+							boolean skip = false;
+							for (int j=0; j<nodeList.size(); ++j) {
+								if (tn.getParent() == nodeList.get(j)) {
+									skip = true;
+									break;
+								}
+							}
+							if (!skip)
+								nodeList.add(tn);
 						}
-						doSelection(nodes);
+						doSelection(nodeList);
 					}
 				}
 			}
@@ -458,9 +469,15 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			}
 		}
 		if (treeNode != null) {
-			treeModel.nodeChanged(treeNode);
+			if (mapElement instanceof Path) {
+				treeModel.nodeChanged(treeNode);
+				for (int i=0; i<treeNode.getChildCount(); ++i)
+					treeModel.nodeChanged(treeNode.getChildAt(i));
+			}
+			else
+				treeModel.nodeChanged(treeNode);
 			if (treeNode == selectedNode)
-				enableButtons(false, mapElement);
+				enableButtons(false, (treeNode.getUserObject() instanceof Waypoint), mapElement);
 		}
 	}
 
@@ -593,12 +610,12 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			currentMapElements = new MapElement[treeNode.getChildCount()];
 			for (int i=0; i<currentMapElements.length; ++i)
 				currentMapElements[i] = (MapElement)((DefaultMutableTreeNode)treeNode.getChildAt(i)).getUserObject();			
-			enableButtons(treeNode == landmarksNode, null);
+			enableButtons(treeNode == landmarksNode, false, null);
 			state.setLastMapElement(null);
 		}
 		else {
 			currentMapElements = new MapElement[] {(MapElement)treeNode.getUserObject()};
-			enableButtons(treeNode == landmarksNode, currentMapElements[0]);
+			enableButtons(false, (currentMapElements[0] instanceof Waypoint), currentMapElements[0]);
 			state.setLastMapElement(currentMapElements[0]);
 			if (currentMapElements[0] instanceof Waypoint) {
 				Waypoint wp = (Waypoint)currentMapElements[0];
@@ -617,27 +634,35 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		}
 	}
 
-	private void doSelection(DefaultMutableTreeNode[] treeNode) {
+	private void doSelection(ArrayList<DefaultMutableTreeNode> treeNode) {
 		ArrayList<MapElement> meList = new ArrayList<MapElement>();
 		currentMapElements = null;
-		for (int i = 0; i < treeNode.length; ++i) {
-			if ((treeNode[i] == landmarksNode) || (treeNode[i] == toolsNode) || (treeNode[i] == featureSetsNode)) {
-				for (int j=0; j<treeNode[i].getChildCount(); ++j)
-					meList.add((MapElement)((DefaultMutableTreeNode)treeNode[i].getChildAt(i)).getUserObject());
+		boolean hasWaypoint = false;
+		for (int i=0; i<treeNode.size(); ++i) {
+			if (treeNode.get(i).getUserObject() instanceof Waypoint) {
+				hasWaypoint = true;
+				break;
+			}
+		}
+		for (int i = 0; i < treeNode.size(); ++i) {
+			DefaultMutableTreeNode tn = treeNode.get(i);
+			if ((tn == landmarksNode) || (tn == toolsNode) || (tn == featureSetsNode)) {
+				for (int j=0; j<tn.getChildCount(); ++j)
+					meList.add((MapElement)((DefaultMutableTreeNode)tn.getChildAt(j)).getUserObject());
 			}
 			else {
-				MapElement me = (MapElement)((DefaultMutableTreeNode)treeNode[i]).getUserObject();
+				MapElement me = (MapElement)((DefaultMutableTreeNode)tn).getUserObject();
 				meList.add(me);
 			}
 		}
 		currentMapElements = new MapElement[meList.size()];
 		meList.toArray(currentMapElements);
-		enableButtons(false, null);
+		enableButtons(false, hasWaypoint, null);
 		
 		state.setLastMapElement(null);
 	}
 	
-	private void enableButtons(boolean allLandmark, MapElement currentMapElement) {
+	private void enableButtons(boolean allLandmark, boolean hasWaypoint, MapElement currentMapElement) {
 		if (currentMapElements == null) {
 			editButton.setEnabled(false);
 			openButton.setEnabled(false);
@@ -663,8 +688,8 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			colorList.setEnabled(true);
 			showButton.setEnabled(true);
 			hideButton.setEnabled(true);
-			lockButton.setEnabled(true);
-			unlockButton.setEnabled(true);
+			lockButton.setEnabled(!hasWaypoint);
+			unlockButton.setEnabled(!hasWaypoint);
 			labelButton.setEnabled(true);
 			unlabelButton.setEnabled(true);
 			deleteButton.setEnabled(true);
@@ -682,8 +707,8 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			colorList.setEnabled(!(currentMapElement instanceof ImageBoard) && !(currentMapElement instanceof Feature) && !(currentMapElement instanceof Waypoint));
 			showButton.setEnabled(!currentMapElement.isVisible());
 			hideButton.setEnabled(currentMapElement.isVisible());
-			lockButton.setEnabled(!currentMapElement.isLocked() && !(currentMapElement instanceof FeatureSet) && !(currentMapElement instanceof Feature));
-			unlockButton.setEnabled(currentMapElement.isLocked() && !(currentMapElement instanceof FeatureSet) && !(currentMapElement instanceof Feature));
+			lockButton.setEnabled(!currentMapElement.isLocked() && !(currentMapElement instanceof FeatureSet) && !(currentMapElement instanceof Feature) && !(currentMapElement instanceof Waypoint));
+			unlockButton.setEnabled(currentMapElement.isLocked() && !(currentMapElement instanceof FeatureSet) && !(currentMapElement instanceof Feature) && !(currentMapElement instanceof Waypoint));
 			labelButton.setEnabled(!currentMapElement.isLabelVisible());
 			unlabelButton.setEnabled(currentMapElement.isLabelVisible());
 			deleteButton.setEnabled(!(currentMapElement instanceof Feature));
@@ -777,7 +802,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 					}
 					UndoHandler.getInstance().addEdit(new DeleteEditMulti(state));
 					currentMapElements = null;
-					enableButtons(false, null);
+					enableButtons(false, false, null);
 				}
 			}
 		});
