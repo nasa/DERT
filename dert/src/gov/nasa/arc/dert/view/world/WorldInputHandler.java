@@ -22,6 +22,7 @@ import gov.nasa.arc.dert.action.mapelement.OpenBillboardAction;
 import gov.nasa.arc.dert.action.mapelement.PlaceHereAction;
 import gov.nasa.arc.dert.action.mapelement.RenameAction;
 import gov.nasa.arc.dert.landscape.QuadTreeMesh;
+import gov.nasa.arc.dert.render.SceneCanvas;
 import gov.nasa.arc.dert.render.SceneCanvasPanel;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.Marble;
@@ -39,7 +40,7 @@ import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.view.Console;
-import gov.nasa.arc.dert.view.InputHandler;
+import gov.nasa.arc.dert.view.InputManager;
 import gov.nasa.arc.dert.view.mapelement.MapElementsView;
 import gov.nasa.arc.dert.viewpoint.CoRAction;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
@@ -57,7 +58,8 @@ import com.ardor3d.scenegraph.Spatial;
  * Provides an InputHandler for the WorldView.
  *
  */
-public class WorldInputHandler implements InputHandler {
+public class WorldInputHandler
+	extends InputManager {
 
 	// Spatial being dragged
 	private Movable movable;
@@ -96,7 +98,8 @@ public class WorldInputHandler implements InputHandler {
 	 * @param controller
 	 * @param canvasPanel
 	 */
-	public WorldInputHandler(ViewpointController controller, SceneCanvasPanel canvasPanel) {
+	public WorldInputHandler(SceneCanvas canvas, ViewpointController controller, SceneCanvasPanel canvasPanel) {
+		super(canvas);
 		this.controller = controller;
 		this.canvasPanel = canvasPanel;
 		contextMenu = new PopupMenu("");
@@ -248,7 +251,7 @@ public class WorldInputHandler implements InputHandler {
 				}
 				else
 					// Workaround for cursor changing to default after clicking on tape dialog when it is
-					// entirely inside the main window. Will cursor will be changed back to crosshair on
+					// entirely inside the main window. Cursor will be changed back to crosshair on
 					// release.
 					canvasPanel.setCursor(null);
 			}
@@ -321,6 +324,7 @@ public class WorldInputHandler implements InputHandler {
 			} else if (path != null) {
 				path.click(pickPosition);
 			} else if (lastSelection instanceof World) {
+				System.err.println("WorldInputHandler.mouseClick "+pickPosition);
 				World.getInstance().getMarble().update(pickPosition, getPickNormal(), controller.getViewpoint().getCamera());
 			} else if (lastSelection instanceof MapElement) {
 				MapElementsView view = ConfigurationManager.getInstance().getCurrentConfiguration().getMapElementsView();
@@ -345,7 +349,7 @@ public class WorldInputHandler implements InputHandler {
 					setPath(null);
 				}					
 			});
-			contextMenu.show(canvasPanel, x, canvasPanel.getHeight() - y);
+			contextMenu.show(canvasPanel, x, height - y);
 		}
 		else if (!hasMouse()) {
 			if (lastSelection != null) {

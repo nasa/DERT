@@ -275,7 +275,7 @@ public class ContourScene extends BasicScene implements ColorMapListener {
 	public Vector3 getPickCoords(double x, double y) {
 		Vector2 mousePos = new Vector2(x, y);
 		Ray3 pickRay = new Ray3();
-		camera.getPickRay(mousePos, false, pickRay);
+		camera.getPickRay(mousePos, true, pickRay);
 		PickResults pickResults = doPick(pickRay);
 		if (pickResults == null) {
 			return (null);
@@ -330,10 +330,10 @@ public class ContourScene extends BasicScene implements ColorMapListener {
 	 * @param y
 	 * @return
 	 */
-	public Vector3 getCoords(int x, int y) {
+	public Vector3 getCoords(double x, double y) {
+		y = camera.getHeight()-y;
 		Vector2 mousePos = new Vector2(x, y);
 		ReadOnlyVector3 pos = camera.getWorldCoordinates(mousePos, 0);
-		System.err.println("ContourScene.getCoords "+x+" "+y+" "+pos+" "+offX+" "+offY+" "+imageSize);
 		double pX = pos.getX() + (imageSize / 2) - offX;
 		double pY = pos.getY() + (imageSize / 2) - offY;
 		if ((pX < 0) || (pX > columns)) {

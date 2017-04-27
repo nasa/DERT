@@ -12,7 +12,6 @@ import gov.nasa.arc.dert.ui.ColorBar;
 import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.StringUtil;
-import gov.nasa.arc.dert.view.InputManager;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
@@ -50,9 +49,6 @@ public class ContourScenePanel extends SceneCanvasPanel {
 
 	// Current cursor location
 	private CoordTextField coordTextField;
-
-	// Handle input
-	private ContourInputHandler inputHandler;
 
 	// Display color map
 	private ColorBar colorBar;
@@ -102,8 +98,7 @@ public class ContourScenePanel extends SceneCanvasPanel {
 	public void setState(State state) {
 		super.setState(state);
 		canvasRenderer.setCamera(contourScene.getCamera());
-		inputHandler = new ContourInputHandler(contourScene.getCamera(), this);
-		inputManager = new InputManager(canvas, inputHandler);
+		inputManager = new ContourInputHandler(canvas, contourScene.getCamera(), this);
 		Dimension size = canvas.getSize();
 		inputManager.setComponentSize(size.width, size.height);
 		inputManager.setCanvasScale(canvasWidth/size.width, canvasHeight/size.height);
@@ -158,8 +153,6 @@ public class ContourScenePanel extends SceneCanvasPanel {
 		if (coord == null) {
 			return (null);
 		}
-//		double z = coord.getZ();
-//		coord.setZ(z);
 		coordTextField.setLocalValue(coord);
 		return (coord);
 	}

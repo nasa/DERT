@@ -14,19 +14,16 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 /**
- * Manages input events on the SceneCanvas and redirects them to an
- * InputHandler.
+ * Manages input events for the SceneCanvas.
  *
  */
-public class InputManager {
+public abstract class InputManager {
 
-	protected InputHandler handler;
 	protected int mouseX, mouseY;
 	protected int width = 1, height = 1;
 	protected KeyListener keyListener;
 
-	public InputManager(final SceneCanvas canvas, InputHandler hndler) {
-		handler = hndler;
+	public InputManager(final SceneCanvas canvas) {
 
 		canvas.addMouseListener(new MouseListener() {
 			@Override
@@ -34,9 +31,9 @@ public class InputManager {
 				mouseX = event.getX();
 				mouseY = height - event.getY();
 				if (event.getClickCount() == 2) {
-					handler.mouseDoubleClick(mouseX, mouseY, event.getButton());
+					mouseDoubleClick(mouseX, mouseY, event.getButton());
 				} else {
-					handler.mouseClick(mouseX, mouseY, event.getButton());
+					mouseClick(mouseX, mouseY, event.getButton());
 				}
 			}
 
@@ -52,21 +49,21 @@ public class InputManager {
 			public void mousePressed(MouseEvent event) {
 				mouseX = event.getX();
 				mouseY = height - event.getY();
-				handler.mousePress(mouseX, mouseY, event.getButton(), event.isControlDown(), event.isShiftDown());
+				mousePress(mouseX, mouseY, event.getButton(), event.isControlDown(), event.isShiftDown());
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent event) {
 				mouseX = event.getX();
 				mouseY = height - event.getY();
-				handler.mouseRelease(mouseX, mouseY, event.getButton());
+				mouseRelease(mouseX, mouseY, event.getButton());
 			}
 		});
 
 		canvas.addMouseWheelListener(new MouseWheelListener() {
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent event) {
-				handler.mouseScroll(event.getWheelRotation());
+				mouseScroll(event.getWheelRotation());
 			}
 		});
 
@@ -77,7 +74,7 @@ public class InputManager {
 				int y = height - event.getY();
 				int button = event.getButton();
 				button |= getButton(event.getModifiers());
-				handler.mouseMove(x, y, x - mouseX, y - mouseY, button, event.isControlDown(), event.isShiftDown());
+				mouseMove(x, y, x - mouseX, y - mouseY, button, event.isControlDown(), event.isShiftDown());
 				mouseX = x;
 				mouseY = y;
 			}
@@ -86,7 +83,7 @@ public class InputManager {
 			public void mouseMoved(MouseEvent event) {
 				int x = event.getX();
 				int y = height - event.getY();
-				handler.mouseMove(x, y, x - mouseX, y - mouseY, 0, event.isControlDown(), event.isShiftDown());
+				mouseMove(x, y, x - mouseX, y - mouseY, 0, event.isControlDown(), event.isShiftDown());
 				mouseX = x;
 				mouseY = y;
 			}
@@ -123,19 +120,19 @@ public class InputManager {
 		switch (keyCode) {
 		case KeyEvent.VK_UP:
 		case KeyEvent.VK_KP_UP:
-			handler.stepUp(shiftDown);
+			stepUp(shiftDown);
 			break;
 		case KeyEvent.VK_DOWN:
 		case KeyEvent.VK_KP_DOWN:
-			handler.stepDown(shiftDown);
+			stepDown(shiftDown);
 			break;
 		case KeyEvent.VK_LEFT:
 		case KeyEvent.VK_KP_LEFT:
-			handler.stepLeft(shiftDown);
+			stepLeft(shiftDown);
 			break;
 		case KeyEvent.VK_RIGHT:
 		case KeyEvent.VK_KP_RIGHT:
-			handler.stepRight(shiftDown);
+			stepRight(shiftDown);
 			break;
 		}
 	}
@@ -157,12 +154,40 @@ public class InputManager {
 		return (0);
 	}
 	
-	public void setCanvasScale(double xScale, double yScale) {
-		handler.setCanvasScale(xScale, yScale);
-	}
-	
 	public void setComponentSize(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}
+	
+	public abstract void setCanvasScale(double xScale, double yScale);
+
+	// Mouse was scrolled
+	protected abstract void mouseScroll(int delta);
+
+	// Mouse button was pressed
+	protected abstract void mousePress(int x, int y, int mouseButton, boolean isControlled, boolean shiftDown);
+
+	// Mouse button was released
+	protected abstract void mouseRelease(int x, int y, int mouseButton);
+
+	// Mouse was moved
+	protected abstract void mouseMove(int x, int y, int dx, int dy, int mouseButton, boolean isControlled, boolean shiftDown);
+
+	// Mouse button was clicked
+	protected abstract void mouseClick(int x, int y, int mouseButton);
+
+	// Mouse button was double-clicked
+	protected abstract void mouseDoubleClick(int x, int y, int mouseButton);
+
+	// Up arrow was pressed
+	protected abstract void stepUp(boolean shiftDown);
+
+	// Down arrow was pressed
+	protected abstract void stepDown(boolean shiftDown);
+
+	// Right arrow was pressed
+	protected abstract void stepRight(boolean shiftDown);
+
+	// Left arrow was pressed
+	protected abstract void stepLeft(boolean shiftDown);
 }

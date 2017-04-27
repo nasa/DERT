@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.view.contour;
 
-import gov.nasa.arc.dert.view.InputHandler;
+import gov.nasa.arc.dert.render.SceneCanvas;
+import gov.nasa.arc.dert.view.InputManager;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
 
@@ -12,7 +13,8 @@ import com.ardor3d.math.Vector3;
  * InputHandler for ContourView
  *
  */
-public class ContourInputHandler implements InputHandler {
+public class ContourInputHandler
+	extends InputManager {
 
 	// Contour view camera
 	private BasicCamera camera;
@@ -35,7 +37,8 @@ public class ContourInputHandler implements InputHandler {
 	 * @param camera
 	 * @param canvasPanel
 	 */
-	public ContourInputHandler(BasicCamera camera, ContourScenePanel canvasPanel) {
+	public ContourInputHandler(SceneCanvas canvas, BasicCamera camera, ContourScenePanel canvasPanel) {
+		super(canvas);
 		this.camera = camera;
 		this.canvasPanel = canvasPanel;
 	}
@@ -76,6 +79,7 @@ public class ContourInputHandler implements InputHandler {
 			canvasPanel.viewpointChanged();
 		} else {
 			x *= xCanvasScale;
+			y = height-y;
 			y *= yCanvasScale;
 			canvasPanel.getCoords(x, y);
 		}
@@ -83,7 +87,7 @@ public class ContourInputHandler implements InputHandler {
 
 	@Override
 	public void mouseClick(int x, int y, int mouseButton) {
-		canvasPanel.getPickCoords(x*xCanvasScale, y*yCanvasScale);
+		canvasPanel.getPickCoords(x*xCanvasScale, (height-y)*yCanvasScale);
 	}
 
 	@Override

@@ -3,11 +3,10 @@ package gov.nasa.arc.dert.view.world;
 import gov.nasa.arc.dert.render.SceneCanvasPanel;
 import gov.nasa.arc.dert.state.State;
 import gov.nasa.arc.dert.state.WorldState;
-import gov.nasa.arc.dert.view.InputManager;
 import gov.nasa.arc.dert.viewpoint.AnaglyphCamera;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
-import gov.nasa.arc.dert.viewpoint.ViewpointController;
 import gov.nasa.arc.dert.viewpoint.Viewpoint;
+import gov.nasa.arc.dert.viewpoint.ViewpointController;
 
 import java.awt.Dimension;
 
@@ -25,9 +24,6 @@ public class WorldScenePanel extends SceneCanvasPanel {
 
 	// Controls the viewpoint
 	private ViewpointController controller;
-
-	// Handles user input
-	private WorldInputHandler inputHandler;
 
 	/**
 	 * Constructor
@@ -50,10 +46,8 @@ public class WorldScenePanel extends SceneCanvasPanel {
 	public void setState(State state) {
 		controller = new ViewpointController();
 		// Add mouse handling after selection of landscape to avoid NPEs.
-		if (inputManager == null) {
-			inputHandler = new WorldInputHandler(controller, this);
-			inputManager = new InputManager(canvas, inputHandler);
-		}
+		if (inputManager == null)
+			inputManager = new WorldInputHandler(canvas, controller, this);
 		super.setState(state);
 		WorldState wState = (WorldState) state;
 		worldScene.setState(wState);
@@ -94,7 +88,7 @@ public class WorldScenePanel extends SceneCanvasPanel {
 	 * @return
 	 */
 	public WorldInputHandler getInputHandler() {
-		return (inputHandler);
+		return ((WorldInputHandler)inputManager);
 	}
 
 	/**
