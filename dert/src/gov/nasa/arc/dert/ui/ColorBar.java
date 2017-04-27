@@ -63,9 +63,7 @@ public class ColorBar extends JPanel implements ColorMapListener {
 			panel.add(new JLabel("Layer: " + colorMap.getLayer()));
 			panel.add(button);
 			add(panel, BorderLayout.NORTH);
-			panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-			panel.add(palette);
-			add(panel, BorderLayout.CENTER);
+			add(palette, BorderLayout.CENTER);
 		}
 	}
 
@@ -78,8 +76,6 @@ public class ColorBar extends JPanel implements ColorMapListener {
 		this.colorMap = colorMap;
 		palette.build(colorMap);
 		palette.repaint();
-		palette.invalidate();
-		revalidate();
 	}
 
 	/**
@@ -89,8 +85,6 @@ public class ColorBar extends JPanel implements ColorMapListener {
 	public void mapChanged(ColorMap cMap) {
 		palette.build(cMap);
 		palette.repaint();
-		palette.invalidate();
-		revalidate();
 	}
 
 	/**
@@ -100,7 +94,5 @@ public class ColorBar extends JPanel implements ColorMapListener {
 	public void rangeChanged(ColorMap cMap) {
 		palette.build(cMap);
 		palette.repaint();
-		palette.invalidate();
-		revalidate();
 	}
 }

@@ -5,7 +5,6 @@ import gov.nasa.arc.dert.view.Console;
 
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
@@ -25,9 +24,6 @@ public class Palette extends Canvas {
 	// Formatter for tick marks
 	private DecimalFormat formatter;
 
-	// Color bars
-	private Rectangle colorRect;
-
 	// Colors
 	private Color[] color;
 
@@ -38,7 +34,7 @@ public class Palette extends Canvas {
 	private String[] tickStr;
 
 	// Dimensions
-	private int width, height;
+//	private int width, height;
 	private String bigTick;
 
 	// Draw as gradient
@@ -97,16 +93,6 @@ public class Palette extends Canvas {
 				bigTick = tickStr[i];
 			}
 		}
-		if (vertical) {
-			colorRect = new Rectangle(0, 0, 40, 20);
-			width = 100;
-			height = color.length * colorRect.height;
-		} else {
-			colorRect = new Rectangle(0, 0, 80, 40);
-			width = (color.length+1) * colorRect.width;
-			height = 80;
-		}
-		setPreferredSize(new Dimension(width, height));
 	}
 
 	@Override
@@ -130,9 +116,11 @@ public class Palette extends Canvas {
 		int wid = (int) Math.round(fm.stringWidth(bigTick) * 1.5);
 		int hh = fm.getAscent();
 		int hv = fm.getAscent() / 2;
-		int hgt = colorRect.height;
+		int hgt = getHeight()/(color.length+1);
 
+		Rectangle colorRect = null;
 		if (vertical) {
+			colorRect = new Rectangle(0, 0, 40, getHeight()/(color.length+1));
 			x1 = 60 + fm.stringWidth(bigTick);
 			colorRect.height ++;
 		} else {
@@ -192,11 +180,7 @@ public class Palette extends Canvas {
 				}
 			}
 		}
-		if (!vertical) {
-			width = colorRect.x + 2*wid;
-		}
 		g2d.setPaint(textForeground);
 		g2d.setBackground(textBackground);
-		setPreferredSize(new Dimension(width, height));
 	}
 }

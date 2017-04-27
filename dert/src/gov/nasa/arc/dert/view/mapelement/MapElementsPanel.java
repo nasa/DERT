@@ -715,7 +715,7 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 			groundButton.setEnabled(!(currentMapElement instanceof Feature) && !(currentMapElement instanceof FeatureSet));
 			seekButton.setEnabled(true);
 			renameButton.setEnabled(!(currentMapElement instanceof Feature) && !(currentMapElement instanceof Waypoint));
-			csvButton.setEnabled(currentMapElement instanceof Path);
+			csvButton.setEnabled((currentMapElement instanceof Path) || (currentMapElement instanceof Profile));
 			noteButton.setEnabled(!(currentMapElement instanceof Feature));
 		}
 

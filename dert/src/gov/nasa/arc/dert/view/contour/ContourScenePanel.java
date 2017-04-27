@@ -158,8 +158,8 @@ public class ContourScenePanel extends SceneCanvasPanel {
 		if (coord == null) {
 			return (null);
 		}
-		double z = coord.getZ();
-		coord.setZ(z);
+//		double z = coord.getZ();
+//		coord.setZ(z);
 		coordTextField.setLocalValue(coord);
 		return (coord);
 	}

@@ -333,6 +333,7 @@ public class ContourScene extends BasicScene implements ColorMapListener {
 	public Vector3 getCoords(int x, int y) {
 		Vector2 mousePos = new Vector2(x, y);
 		ReadOnlyVector3 pos = camera.getWorldCoordinates(mousePos, 0);
+		System.err.println("ContourScene.getCoords "+x+" "+y+" "+pos+" "+offX+" "+offY+" "+imageSize);
 		double pX = pos.getX() + (imageSize / 2) - offX;
 		double pY = pos.getY() + (imageSize / 2) - offY;
 		if ((pX < 0) || (pX > columns)) {
