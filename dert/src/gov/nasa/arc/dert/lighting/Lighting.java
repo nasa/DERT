@@ -31,10 +31,10 @@ public class Lighting {
 
 	public static ReadOnlyColorRGBA defaultBackgroundColor = ColorRGBA.LIGHT_GRAY;
 	public static String DATE_FORMAT;
-	public static final float HALF_PI = (float)(Math.PI/2);
+	public static final double HALF_PI = Math.PI/2;
 
 	// Defaults for light position (artificial)
-	public static float defaultAz = 0, defaultEl = HALF_PI;
+	public static double defaultAz = 0, defaultEl = HALF_PI;
 
 	// Table of LMST epochs for each globe
 	protected static Hashtable<String, Object> lmstTable = new Hashtable<String, Object>();

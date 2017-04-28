@@ -576,7 +576,7 @@ public class BasicCamera extends Camera {
 		farPlane = MathUtil.distanceToSphere(bs, _location, _direction);
 		if (nearPlane > maxNearPlane)
 			nearPlane = maxNearPlane;
-		if (forceFrustum || (oldNearPlane != nearPlane) || (oldFarPlane != farPlane))
+		if (forceFrustum || !MathUtil.closeEnough(oldNearPlane, nearPlane) || !MathUtil.closeEnough(oldFarPlane, farPlane))
 			setFrustum(bs);
 	}
 	

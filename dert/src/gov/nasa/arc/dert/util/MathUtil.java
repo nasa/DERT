@@ -479,4 +479,12 @@ public class MathUtil {
 			return(false);
 		return(true);
 	}
+	
+	public static boolean closeEnough(float v0, float v1) {
+		return (Math.abs(v1-v0) < epsilonF);
+	}
+	
+	public static boolean closeEnough(double v0, double v1) {
+		return (Math.abs(v1-v0) < epsilonD);
+	}
 }
