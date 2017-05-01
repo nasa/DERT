@@ -1,9 +1,11 @@
 package gov.nasa.arc.dert.test;
 
+import gov.nasa.arc.dert.landscape.factory.LayerFactory;
 import gov.nasa.arc.dert.raster.ProjectionInfo;
 import gov.nasa.arc.dert.raster.geotiff.GTIF;
 import gov.nasa.arc.dert.raster.geotiff.GeoKey;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Properties;
@@ -83,6 +85,32 @@ public class TestDemFactory {
 			e.printStackTrace();
 		}
 		return(false);
+	}
+	
+	public boolean createLandscape(String testLoc) {
+		
+		System.err.println("Create "+testLoc);
+		File testDir = new File(testLoc);
+		if (!testDir.exists()) {
+			if (!testDir.mkdir())
+				return(false);
+			File dertDir = new File(testLoc, "dert");
+			if (!dertDir.mkdir())
+				return(false);
+		}
+		
+		System.err.println("Create DEM");
+		if (!createDem(testLoc+"/testdem.tif"))
+			return(false);
+		
+		System.err.println("Create layer");
+		String[] args = new String[] {"-landscape="+testLoc, "-file="+testLoc+"/testdem.tif", "-tilesize=128", "-type=elevation"};
+		LayerFactory lf = new LayerFactory(args);
+		if (!lf.createLayer())
+			return(false);
+		
+		System.err.println("Created layer successfully.\n");
+		return(true);
 	}
 	
 	public static void main(String[] arg) {

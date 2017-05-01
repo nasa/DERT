@@ -111,8 +111,6 @@ public abstract class MapElementState extends State {
 			return(false);
 		if (this.visible != that.visible)
 			return(false);
-		if (this.locked != that.locked)
-			return(false);
 		if (this.labelVisible != that.labelVisible) 
 			return(false);
 		if (this.zOff != that.zOff) 

@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.test;
 
+import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.edit.BackgroundColorDialog;
 import gov.nasa.arc.dert.landscape.DerivativeLayer;
 import gov.nasa.arc.dert.landscape.Landscape;
@@ -74,26 +75,26 @@ public class DertTest {
 	 */
 	public DertTest(String[] args) {
 
-		// Find the path to the executable.
-		String pathStr = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-		if (pathStr.toLowerCase().endsWith(".jar")) {
-			int p = pathStr.lastIndexOf('/');
-			pathStr = pathStr.substring(0, p + 1);
-		} else {
-			pathStr += "../";
-		}
-		try {
-			pathStr = new File(pathStr).getCanonicalPath();
-			if (!pathStr.endsWith("/")) {
-				pathStr = pathStr + "/";
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-
-		// Initialize DERT.
-		initialize(pathStr, args);
+//		// Find the path to the executable.
+//		String pathStr = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+//		if (pathStr.toLowerCase().endsWith(".jar")) {
+//			int p = pathStr.lastIndexOf('/');
+//			pathStr = pathStr.substring(0, p + 1);
+//		} else {
+//			pathStr += "../";
+//		}
+//		try {
+//			pathStr = new File(pathStr).getCanonicalPath();
+//			if (!pathStr.endsWith("/")) {
+//				pathStr = pathStr + "/";
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			System.exit(1);
+//		}
+//
+//		// Initialize DERT.
+//		initialize(pathStr, args);
 	}
 
 	/**
@@ -189,18 +190,35 @@ public class DertTest {
 	}
 	
 	public void runTests(String[] args) {
-		MathUtilTest mut = new MathUtilTest();
-		if (!mut.testMathUtil())
+		TestDemFactory demFactory = new TestDemFactory(1024);
+		if (!demFactory.createLandscape(testLoc))
 			System.exit(1);
 		
+		new Dert(new String[] {"-debug", "-config", testLoc});
+		
+		// Wait for drawing surface to realize.
+		while (Landscape.getInstance() == null) {
+			System.err.println("DertTest wait");
+			try { Thread.sleep(1000); } catch (Exception e) {}
+		}
+		
+		System.err.println("\nLandscape Tests\n");
 		LandscapeTest lt = new LandscapeTest();
-		if (!lt.testLandscape(testLoc))
+		if (!lt.testLandscape(demFactory))
 			System.exit(2);
 		
-		PersistenceTest pt = new PersistenceTest();
-		if (!pt.testPersistence(testLoc))
+		System.err.println("\nMath Tests\n");
+		MathUtilTest mut = new MathUtilTest();
+		if (!mut.testMathUtil())
 			System.exit(3);
 		
+		System.err.println("\nPersistence Tests\n");
+		PersistenceTest pt = new PersistenceTest();
+		if (!pt.testPersistence(testLoc))
+			System.exit(4);
+		
 		System.err.println("\nAll tests passed.");
+		
+		System.exit(0);
 	}
 }

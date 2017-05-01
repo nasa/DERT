@@ -1,14 +1,9 @@
 package gov.nasa.arc.dert.test;
 
-import gov.nasa.arc.dert.io.FileSystemTileSource;
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.landscape.LayerManager;
-import gov.nasa.arc.dert.landscape.factory.LayerFactory;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.Tessellator;
 
-import java.awt.Color;
-import java.io.File;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
@@ -23,47 +18,11 @@ public class LandscapeTest {
 	
 	private TestDemFactory demFactory;
 	
-	public boolean testLandscape(String testLoc) {
+	public boolean testLandscape(TestDemFactory demFactory) {
 		
-		System.err.println("Create "+testLoc);
-		File testDir = new File(testLoc);
-		if (!testDir.exists()) {
-			if (!testDir.mkdir())
-				return(false);
-			File dertDir = new File(testLoc, "dert");
-			if (!dertDir.mkdir())
-				return(false);
-		}
+		this.demFactory = demFactory;
 		
-		System.err.println("Create DEM");
-		demFactory = new TestDemFactory(1024);
-		if (!demFactory.createDem(testLoc+"/testdem.tif"))
-			return(false);
-		
-		System.err.println("Create layer");
-		String[] args = new String[] {"-landscape="+testLoc, "-file="+testLoc+"/testdem.tif", "-tilesize=128", "-type=elevation"};
-		LayerFactory lf = new LayerFactory(args);
-		if (!lf.createLayer())
-			return(false);
-		
-		System.err.println("Create tile source");
-		FileSystemTileSource tileSource = new FileSystemTileSource(testLoc);
-		if (!tileSource.connect("dert", "dert")) {
-			return (false);
-		}
-		String[][] layerInfo = tileSource.getLayerInfo();
-
-		if (layerInfo.length == 0)
-			return (false);
-
-		System.err.println("Create layer manager");
-		LayerManager layerManager = new LayerManager();
-		if (!layerManager.initialize(tileSource))
-			return (false);
-
-		System.err.println("Create landscape");
-		Landscape landscape = Landscape.createInstance(tileSource, layerManager, Color.white);
-		landscape.initialize();
+		Landscape landscape = Landscape.getInstance();
 		
 		if (!testGetVertices(landscape)) {
 			System.err.println("Test of Landscape.getVertices failed.");
