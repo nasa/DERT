@@ -324,7 +324,6 @@ public class WorldInputHandler
 			} else if (path != null) {
 				path.click(pickPosition);
 			} else if (lastSelection instanceof World) {
-				System.err.println("WorldInputHandler.mouseClick "+pickPosition);
 				World.getInstance().getMarble().update(pickPosition, getPickNormal(), controller.getViewpoint().getCamera());
 			} else if (lastSelection instanceof MapElement) {
 				MapElementsView view = ConfigurationManager.getInstance().getCurrentConfiguration().getMapElementsView();
