@@ -66,7 +66,7 @@ public class MarbleState extends MapElementState {
 		}
 
 		Marble marble = (Marble) mapElement;
-		Vector3 loc = new Vector3(marble.getWorldTranslation());
+		Vector3 loc = new Vector3(marble.getTranslation());
 		Landscape.getInstance().localToWorldCoordinate(loc);
 		String str = "Location (meters): " + StringUtil.format(loc) + "\n";
 		Landscape.getInstance().worldToSphericalCoordinate(loc);
