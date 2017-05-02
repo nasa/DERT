@@ -111,7 +111,7 @@ public class Ephemeris {
 					KernelDatabase.load(path + "kernels/" + fileName[i]);
 				}
 			} catch (Exception e) {
-				System.out.println("Unable to load SPICE kernels, see log.");
+				Console.println("Unable to load SPICE kernels, see log.");
 				e.printStackTrace();
 				return;
 			}

@@ -2,7 +2,7 @@
 <project name="DERT_native" basedir=".">
 	
 <!-- Create natives jar file for Mac. -->
-	<target name="mac">
+	<target name="osx">
 		<delete dir="libnative" />
 		<mkdir dir="libnative"/>
 		<copy file="libgeo/libgeo.jnilib" todir="libnative" />
