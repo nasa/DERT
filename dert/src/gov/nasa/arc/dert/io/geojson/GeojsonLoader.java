@@ -406,7 +406,7 @@ public class GeojsonLoader {
 	}
 	
 	public void translate(double[] coordinate) {
-		Projection projection = Landscape.getInstance().getSpatialReferenceSystem().getProjection();
+		Projection projection = srs.getProjection();
 		if (coordinate.length == 3)
 			projection.sphericalToWorld(coordinate);
 		else {

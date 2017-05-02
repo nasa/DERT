@@ -123,7 +123,8 @@ public class LandscapeChooserDialog extends AbstractDialog {
 						file = new File(fileChooser.getCurrentDirectory(), str);
 						file.mkdirs();
 						fileChooser.rescanCurrentDirectory();
-						fileChooser.setSelectedFiles(new File[] { file });
+// Can't seem to get the following line to work
+//						fileChooser.setSelectedFile(file);
 					}
 					catch (Exception e) {
 						OptionDialog.showErrorMessageDialog((Window)fileChooser.getTopLevelAncestor(), "Error creating landscape "+str+".");
