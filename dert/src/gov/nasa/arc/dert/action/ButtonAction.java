@@ -2,12 +2,14 @@ package gov.nasa.arc.dert.action;
 
 import gov.nasa.arc.dert.icon.Icons;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.UIManager;
 
 /**
  * Helper class for building UI buttons.
@@ -32,6 +34,8 @@ public abstract class ButtonAction extends JButton {
 			setBorder(BorderFactory.createEmptyBorder());
 		}
 		setBorderPainted(border);
+		Color bgCol = UIManager.getColor("Panel.background");
+		setBackground(new Color(bgCol.getRed(), bgCol.getGreen(), bgCol.getBlue()));
 		setToolTipText(toolTipText);
 		setIcon(Icons.getImageIcon(iconFileName));
 		addActionListener(new ActionListener() {

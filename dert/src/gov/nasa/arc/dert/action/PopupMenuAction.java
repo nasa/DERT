@@ -21,6 +21,7 @@ public abstract class PopupMenuAction extends JButton {
 		setFont(getFont().deriveFont(Font.BOLD, 14));
 		setBorderPainted(false);
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		setContentAreaFilled(false);
 		if (icon == null) {
 			setText(label);
 		} else {
