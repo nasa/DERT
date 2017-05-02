@@ -586,7 +586,6 @@ public class Path extends Node implements MotionListener, Tool, ViewDependent {
 			addWaypoint(loc, -1);
 		} else {
 			addWaypoint(loc, currentIndex + 1);
-			currentIndex++;
 		}
 	}
 

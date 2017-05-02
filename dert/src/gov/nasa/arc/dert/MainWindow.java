@@ -443,7 +443,7 @@ public class MainWindow extends JFrame {
 		mapElementsOnTopAction.setState(World.getInstance().isMapElementsOnTop());
 		menu.add(mapElementsOnTopAction);
 
-		CheckboxMenuItem toolHiddenDashedAction = new CheckboxMenuItem("Show Tool Hidden Lines As Dashes");
+		CheckboxMenuItem toolHiddenDashedAction = new CheckboxMenuItem("Show Hidden Lines As Dashes");
 		toolHiddenDashedAction.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent event) {
