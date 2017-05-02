@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/spice.jar" sourcepath="libspice/spice_src.jar"/>
-	<classpathentry kind="lib" path="lib/natives_macosx.jar"/>
 	<classpathentry kind="lib" path="lib/ardor3d-animation-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/ardor3d-awt-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/ardor3d-core-1.0-SNAPSHOT.jar" sourcepath="source/ardor3d-core-1.0-SNAPSHOT-sources.jar"/>
@@ -16,5 +15,6 @@
 	<classpathentry kind="lib" path="lib/ardor3d-ui-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/guava-19.0.jar"/>
 	<classpathentry kind="lib" path="lib/jogamp-fat.jar"/>
+	<classpathentry kind="lib" path="lib/natives_linux.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -105,8 +105,8 @@
 //		fprintf(stderr, "getTIFFFieldString %d %d\n", tag, val);
 		if ( !val )
 			return(0);
-		count = strlen((char*)val);
 		if ( n > 0 ) {
+			count = strlen((char*)val);
 //			fprintf(stderr, "getTIFFFieldString %d %d %d %s\n", tag, n, count, (char*)val);
 			jstring str = (*env)->NewStringUTF(env, (char*)val);
 			(*env)->SetObjectArrayElement(env, value, 0, str);
