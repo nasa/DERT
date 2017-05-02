@@ -19,11 +19,12 @@ The directory may be placed anywhere but should remain intact. Do not move or re
 DERT may be installed in a central location for multiple users. 
 Put the dert directory in the user's path. The path to dert should not contain any spaces.
 
-As mentioned above the release requires Java 1.8. The dert command uses the default java.
+As mentioned above the release requires the Java 1.8 JRE. The dert command uses the default java.
 Mac users may need to install the Java JDK to set the default Java JRE.
 Mac users may run the command "/usr/libexec/java_home -V" to see what they have installed.
 If you do not have the default java set to 1.8 or later but have it on your system, you may
-edit the dert and layerfactory scripts to put 1.8 in your path.
+edit the dert and layerfactory scripts to put 1.8 in your path. You must then use the dert script
+for execution.
  
 You may also edit the dert script to change the memory allocation (see below).
 
@@ -34,9 +35,11 @@ the kernels subdirectory of the dert directory is empty or absent.
 
 EXECUTION:
 
-To execute DERT on a Mac double-click on the dert application or run the dert script found in the installation directory
+Mac: Double-click on the dert application or run the dert script found in the installation directory
 (if you don't have Java 1.8 set as the default).
-To execute DERT on Linux, run the dert script found in the installation directory.
+
+Linux: Run the dert script found in the installation directory.
+
 See the user guide for more information.
 
 To execute LayerFactory run the layerfactory script found in the installation directory.
@@ -47,7 +50,7 @@ MEMORY ALLOCATION:
 
 The maximum memory allocation for DERT is set to 2 GB and LayerFactory is set to 8 GB.
 Java will try to allocate this much virtual memory.
-The maximum memory can be modified by changing MAX_MEM in the dert and layerfactory scripts.
+The maximum memory can be modified in the dert and layerfactory scripts by changing MAX_MEM.
 To change the Mac app, right-click on dert.app, select "Show Package Contents" from the context menu.
 Open the Contents directory and double-click on Info.plist to edit.
 Open JVMOptions and change the -Xmx memory option. Save.
