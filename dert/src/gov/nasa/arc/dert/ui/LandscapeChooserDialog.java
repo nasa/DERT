@@ -160,6 +160,12 @@ public class LandscapeChooserDialog extends AbstractDialog {
 		setLastPath(fileChooser.getCurrentDirectory().getAbsolutePath());
 		return (landscapePath != null);
 	}
+	
+	@Override
+	public boolean cancelPressed() {
+		landscapePath = null;
+		return(super.cancelPressed());
+	}
 
 	public String getLandscape() {
 		return (landscapePath);
