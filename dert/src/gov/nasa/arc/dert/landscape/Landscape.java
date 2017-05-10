@@ -704,9 +704,6 @@ public class Landscape extends Node {
 	 * @param enable
 	 */
 	public void enableLayers(boolean enable) {
-		if (layerManager.layersEnabled == enable) {
-			return;
-		}
 		layerManager.enableLayers(enable);
 		quadTree.markDirty(DirtyType.RenderState);
 	}

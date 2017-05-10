@@ -211,15 +211,10 @@ public class LayerManager {
 				}
 			}
 			// set all non-assigned layers to "none"
-			noLayersSelected = true;
 			for (int i = 0; i < visibleLayers.size(); ++i) {
 				if (visibleLayers.get(i) == null)
 					visibleLayers.set(i, new LayerInfo("None", "none", i));
-				else
-					noLayersSelected = false;
 			}
-			if (noLayersSelected)
-				shadingFromSurface = true;
 		}
 		else {
 			for (int i=0; i<visibleLayers.size(); ++i) {
@@ -361,6 +356,7 @@ public class LayerManager {
 
 	private void createLayers() {
 		Layer[] newList = new Layer[NUM_LAYERS];
+		noLayersSelected = true;
 		for (int i = 0; i < visibleLayers.size(); ++i) {
 			if (visibleLayers.get(i).type == LayerType.none) {
 				newList[i] = null;
@@ -384,6 +380,7 @@ public class LayerManager {
 					newList[i] = createLayer(visibleLayers.get(i), source, i);
 					newList[i].blendFactor = visibleLayers.get(i).opacity*visibleLayers.get(i).show;
 				}
+				noLayersSelected = false;
 			}
 		}
 		// dispose of the layers we didn't reuse
@@ -394,6 +391,9 @@ public class LayerManager {
 			}
 		}
 		layers = newList;
+		
+		if (noLayersSelected)
+			shadingFromSurface = true;
 
 		// create the layer effects shaders
 		layerEffects = new LayerEffects(layers, layerEffects);
@@ -446,7 +446,7 @@ public class LayerManager {
 	 * @param enable
 	 */
 	public void enableLayers(boolean enable) {
-		layerEffects.layersEnabled = enable & !noLayersSelected;
+		layerEffects.layersEnabled = enable && !noLayersSelected;
 		layersEnabled = enable;
 	}
 

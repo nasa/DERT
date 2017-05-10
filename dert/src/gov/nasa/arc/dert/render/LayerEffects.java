@@ -83,7 +83,7 @@ public class LayerEffects extends GLSLShaderObjectsState {
 	public boolean gridEnabled;
 
 	// show layers
-	public boolean layersEnabled = true;
+	public boolean layersEnabled = false;
 
 	// layer contribution to overall color
 	public float[] blendFactor;
