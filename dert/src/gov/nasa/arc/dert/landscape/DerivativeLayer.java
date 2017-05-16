@@ -160,6 +160,7 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 		Vector2 coord = new Vector2();
 		Vector3 normal = new Vector3();
 		int k = 0;
+		float pixelScale = Landscape.getInstance().getPixelScale();
 		for (int i = 0; i < dataSize; ++i) {
 			k = i * 2;
 			float alpha = colors.get(i * 4 + 3);
@@ -168,19 +169,19 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 				switch (type) {
 				case Elevation:
 					z = vertex.get(i * 3 + 2);
-					colorMap.getTextureCoordinate(z, coord);
+					colorMap.getTextureCoordinate(z/pixelScale, coord);
 					texCoords.put(k, coord.getXf()).put(k + 1, coord.getYf());
 					break;
 				case Slope:
 					normal.set(normals.get(i * 3), normals.get(i * 3 + 1), normals.get(i * 3 + 2));
 					z = (float) MathUtil.getSlopeFromNormal(normal);
-					colorMap.getTextureCoordinate(z, coord);
+					colorMap.getTextureCoordinate(z/pixelScale, coord);
 					texCoords.put(k, coord.getXf()).put(k + 1, coord.getYf());
 					break;
 				case Aspect:
 					normal.set(normals.get(i * 3), normals.get(i * 3 + 1), normals.get(i * 3 + 2));
 					z = (float) MathUtil.getAspectFromNormal(normal);
-					colorMap.getTextureCoordinate(z, coord);
+					colorMap.getTextureCoordinate(z/pixelScale, coord);
 					texCoords.put(k, coord.getXf()).put(k + 1, coord.getYf());
 					break;
 				}

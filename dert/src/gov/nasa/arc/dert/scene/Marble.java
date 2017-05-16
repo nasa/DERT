@@ -106,6 +106,7 @@ public class Marble extends FigureMarker implements MapElement {
 			update(camera);
 		}
 		state.updateText();
+		updateGeometricState(0);
 	}
 	
 	public void landscapeChanged(QuadTree quadTree) {

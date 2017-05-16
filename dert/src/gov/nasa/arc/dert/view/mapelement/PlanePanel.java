@@ -138,8 +138,8 @@ public class PlanePanel extends MapElementBasePanel {
 			val *= step;
 			fmt = Landscape.format;
 		}
-		else
-			step = 1;
+//		else
+//			step = 1;
 		
 		compList.add(new JLabel("Scale Dip Axis", SwingConstants.RIGHT));
 		lengthSpinner = new DoubleSpinner(val, min, max, step, false, fmt) {

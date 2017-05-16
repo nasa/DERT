@@ -46,8 +46,8 @@ public class PlaneState extends ToolState {
 	// Color map
 	public String colorMapName = Plane.defaultColorMap;
 	public boolean gradient;
-	public double minimum = 0;
-	public double maximum = 100;
+	public double minimum = Double.NaN;
+	public double maximum = Double.NaN;
 
 	// The display panel for the elevation difference map
 	protected transient ContourScenePanel panel;

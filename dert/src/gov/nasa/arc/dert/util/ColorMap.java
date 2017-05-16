@@ -149,8 +149,18 @@ public class ColorMap {
 		};
 		listeners = new ArrayList<ColorMapListener>();
 		this.gradient = gradient;
-		baseMinimum = Math.floor(baseMin);
-		baseMaximum = Math.ceil(baseMax);
+		if ((baseMax-baseMin) < 1) {
+			double n = (int)Math.floor(Math.log10(baseMin))-2;
+			double d = Math.pow(10,  n);
+			baseMinimum = ((int)Math.floor(baseMin/d))*d;
+			n = (int)Math.floor(Math.log10(baseMax))-2;
+			d = Math.pow(10,  n);
+			baseMaximum = ((int)Math.ceil(baseMax/d))*d;
+		}
+		else {
+			baseMinimum = Math.floor(baseMin);
+			baseMaximum = Math.ceil(baseMax);
+		}
 		baseRange = baseMaximum - baseMinimum;
 		loadFromFile();
 		// the first time the min/max argument will be NaN (from LayerInfo)
