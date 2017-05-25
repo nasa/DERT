@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.io.geojson.json;
 
 
+
 /**
  * Provides a GeoJSON MultiPoint object.
  *
@@ -27,6 +28,11 @@ public class MultiPoint extends Geometry {
 				coordinate[i][p] = ((Double)pos[p]).doubleValue();
 			}
 		}
+	}
+	
+	public MultiPoint(double[][] coordinate) {
+		super(GeojsonType.MultiPoint);
+		this.coordinate = coordinate;
 	}
 
 	/**

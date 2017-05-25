@@ -27,15 +27,24 @@ public class GeoJsonFeature extends GeoJsonObject {
 
 		// create the geometry object for this feature
 		jObj = jsonObject.getJsonObject("geometry");
-		geometry = Geometry.createGeometry(jObj);
+		if (jObj != null)
+			geometry = Geometry.createGeometry(jObj);
+	}
+	
+	public GeoJsonFeature(String id, HashMap<String,Object> properties, Geometry geometry) {
+		this.id = id;
+		if (properties == null)
+			properties = new HashMap<String, Object>();
+		this.properties = properties;
+		this.geometry = geometry;
 	}
 
 	private void createProperties(JsonObject jObj) {
+		properties = new HashMap<String, Object>();
 		if (jObj == null) {
 			return;
 		}
 		String[] key = jObj.getKeys();
-		properties = new HashMap<String, Object>();
 		for (int i = 0; i < key.length; ++i) {
 			Object val = jObj.get(key[i]);
 			if (!(val instanceof Object[]))

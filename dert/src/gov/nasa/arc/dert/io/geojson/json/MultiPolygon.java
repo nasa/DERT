@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.io.geojson.json;
 
 
+
 /**
  * Provides a GeoJSON MultiPolygon object.
  *
@@ -37,6 +38,11 @@ public class MultiPolygon extends Geometry {
 				}
 			}
 		}
+	}
+	
+	public MultiPolygon(double[][][][] coordinate) {
+		super(GeojsonType.MultiPolygon);
+		this.coordinate = coordinate;
 	}
 
 	/**
