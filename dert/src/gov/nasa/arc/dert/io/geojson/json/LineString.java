@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.io.geojson.json;
 
 
+
 /**
  * Provides a GeoJSON LineString Geometry object.
  *
@@ -29,6 +30,11 @@ public class LineString extends Geometry {
 			for (int p = 0; p < posLength; ++p)
 				coordinate[i][p] = ((Double)pos[p]).doubleValue();
 		}
+	}
+	
+	public LineString(double[][] coordinate) {
+		super(GeojsonType.LineString);
+		this.coordinate = coordinate;
 	}
 
 	/**

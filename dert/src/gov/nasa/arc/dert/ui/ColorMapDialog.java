@@ -93,8 +93,9 @@ public class ColorMapDialog extends AbstractDialog {
 		});
 		compList.add(gradient);
 		compList.add(new JLabel("Maximum", SwingConstants.RIGHT));
-		maxSpinner = new DoubleSpinner(defaultMax, defaultMin, upperLimit, Landscape.defaultCellSize / 100.0, false,
-			Landscape.format) {
+		int n = (int)Math.log10(Math.abs(upperLimit-defaultMin));
+		double step = Math.pow(10, n)/100;
+		maxSpinner = new DoubleSpinner(defaultMax, defaultMin, upperLimit, step, false, Landscape.format) {
 			@Override
 			public void stateChanged(ChangeEvent event) {
 				super.stateChanged(event);
@@ -106,8 +107,9 @@ public class ColorMapDialog extends AbstractDialog {
 		compList.add(maxSpinner);
 
 		compList.add(new JLabel("Minimum", SwingConstants.RIGHT));
-		minSpinner = new DoubleSpinner(defaultMin, lowerLimit, defaultMax, Landscape.defaultCellSize / 100.0, false,
-			Landscape.format) {
+		n = (int)Math.log10(Math.abs(defaultMax-lowerLimit));
+		step = Math.pow(10, n)/100;
+		minSpinner = new DoubleSpinner(defaultMin, lowerLimit, defaultMax, step, false, Landscape.format) {
 			@Override
 			public void stateChanged(ChangeEvent event) {
 				super.stateChanged(event);

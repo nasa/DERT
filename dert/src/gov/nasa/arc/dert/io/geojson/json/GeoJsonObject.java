@@ -9,6 +9,10 @@ public class GeoJsonObject {
 
 	// Bounding box
 	protected double[] bbox;
+	
+	public GeoJsonObject() {
+		// nothing here
+	}
 
 	/**
 	 * Constructor

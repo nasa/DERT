@@ -22,6 +22,11 @@ public class Point extends Geometry {
 			coordinate[i] = ((Double)coordArray[i]).doubleValue();
 		}
 	}
+	
+	public Point(double[] coordinate) {
+		super(GeojsonType.Point);
+		this.coordinate = coordinate;
+	}
 
 	/**
 	 * Get coordinates.

@@ -337,8 +337,8 @@ public class QuadTreeFactory {
 		// load the image layers as textures
 		TextureState textureState = new TextureState();
 		for (int i = 0; i < layerList.length; ++i) {
+			Texture texture = null;
 			if (layerList[i] != null) {
-				Texture texture = null;
 				if (mesh.isEmpty()) {
 					// this is an empty quad tree tile (just for padding)
 					texture = getEmptyTexture();
@@ -355,10 +355,10 @@ public class QuadTreeFactory {
 						texture = getEmptyTexture();
 					}
 				}
-				if (texture != null) {
-					textureState.setTexture(texture, i);
-				}
 			}
+			else if (i == 0)
+				texture = getEmptyTexture();
+			textureState.setTexture(texture, i);
 		}
 		textureState.setEnabled(layersEnabled);
 		mesh.setRenderState(textureState);

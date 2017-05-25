@@ -98,6 +98,7 @@ public class Plane extends Node implements Tool, ViewDependent {
 	private Vector3 lowerBound, upperBound;
 	private Vector3 tmp0, tmp1;
 	private Matrix3 rotMat;
+	private double pixelSize;
 	
 	// For display
 	private PlanePanel planePanel;
@@ -110,6 +111,8 @@ public class Plane extends Node implements Tool, ViewDependent {
 	public Plane(PlaneState pState) {
 		super(pState.name);
 		this.state = pState;
+		
+		pixelSize = Math.max(Landscape.getInstance().getPixelWidth(), Landscape.getInstance().getPixelLength());
 
 		this.size = state.size;
 		this.labelVisible = state.labelVisible;
@@ -120,9 +123,9 @@ public class Plane extends Node implements Tool, ViewDependent {
 		this.widthScale = state.widthScale;
 		p0Loc = new Vector3(state.p0);
 		p1Loc = new Vector3(state.p1);
-		p1Loc.setX(p1Loc.getX() + 0.0001);
+		p1Loc.setX(p1Loc.getX() + pixelSize);
 		p2Loc = new Vector3(state.p2);
-		p2Loc.setY(p2Loc.getY() + 0.0001);
+		p2Loc.setY(p2Loc.getY() + pixelSize);
 		p3Loc = new Vector3();
 		normal = new Vector3();
 		centroid = new Vector3();
@@ -706,10 +709,10 @@ public class Plane extends Node implements Tool, ViewDependent {
 	 * @param minMaxElev
 	 * @return
 	 */
-	public int[] getElevationDifference(int size, float[][] diff, float[] minMaxElev) {
+	public int[] getElevationDifference(int imageSize, float[][] diff, float[] minMaxElev) {
 		updatePlane();
 		updatePolygon();
-
+		
 		// get plane vertices
 		Vector3[] vertex = new Vector3[5];
 		vertex[0] = new Vector3(p0Loc);
@@ -731,8 +734,8 @@ public class Plane extends Node implements Tool, ViewDependent {
 		}
 
 		// determine sample size
-		double sampleWidth = (upperBound.getX() - lowerBound.getX()) / size;
-		double sampleLength = (upperBound.getY() - lowerBound.getY()) / size;
+		double sampleWidth = (upperBound.getX() - lowerBound.getX()) / imageSize;
+		double sampleLength = (upperBound.getY() - lowerBound.getY()) / imageSize;
 		sampleWidth = Math.max(sampleWidth, Landscape.getInstance().getPixelWidth());
 		sampleLength = Math.max(sampleLength, Landscape.getInstance().getPixelLength());
 		double sampleSize = Math.max(sampleWidth, sampleLength);
@@ -804,8 +807,8 @@ public class Plane extends Node implements Tool, ViewDependent {
 		rotMat.fromAngleNormalAxis(-Math.PI / 2, normal);
 		rotMat.applyPost(dipDir, strikeDir);
 		strikeDir.normalizeLocal();
-		strikeDir.multiplyLocal(widthScale);
-		dipDir.multiplyLocal(lengthScale);
+		strikeDir.multiplyLocal(widthScale*pixelSize);
+		dipDir.multiplyLocal(lengthScale*pixelSize);
 		
 		if (planePanel != null)
 			planePanel.updateStrikeAndDip(strike, dip);

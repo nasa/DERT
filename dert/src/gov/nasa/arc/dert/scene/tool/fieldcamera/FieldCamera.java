@@ -93,6 +93,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	private Node mountingNode, geomNode, viewDependentNode;
 	private BillboardNode billboard;
 	private ImageQuad imageQuad;
+	private Sphere base;
 
 	// Camera
 	private BasicCamera basicCamera;
@@ -147,7 +148,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 
 		// camera stand
 //		Sphere base = new Sphere("_base", 50, 50, 0.25f);
-		Sphere base = new Sphere("_base", 50, 50, pixelScale);
+		base = new Sphere("_base", 50, 50, pixelScale);
 		base.setModelBound(new BoundingBox());
 		attachChild(base);
 		lineSegment = new LineSegment("_post", p0, p1);
@@ -160,7 +161,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 
 		// camera box
 		geomNode = new Node("_geometry");
-//		box = new Box("_box", new Vector3(), 0.25, 0.25, 0.25);
+//		box = new Box("_box", new Vector3(), 1, 1, 1);
 		box = new Box("_box", new Vector3(), pixelScale, pixelScale, pixelScale);
 		box.setModelBound(new BoundingBox());
 		geomNode.attachChild(box);
@@ -293,8 +294,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 			setElevation(fieldCameraInfo.tripodTilt);
 		if (!Double.isNaN(state.height)) 
 			setHeight(state.height);
-		else if (pixelScale >= 1)
-			setHeight(fieldCameraInfo.tripodHeight);
 		else
 			setHeight(pixelScale*fieldCameraInfo.tripodHeight);
 		return(true);
@@ -416,6 +415,8 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		geomNode.updateGeometricState(0);
 		lineSegment.getSceneHints().setCullHint(CullHint.Always);
 		lineSegment.updateGeometricState(0);
+		base.getSceneHints().setCullHint(CullHint.Always);
+		base.updateGeometricState(0);
 	}
 
 	/**
@@ -426,6 +427,8 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		geomNode.updateGeometricState(0);
 		lineSegment.getSceneHints().setCullHint(CullHint.Inherit);
 		lineSegment.updateGeometricState(0);
+		base.getSceneHints().setCullHint(CullHint.Inherit);
+		base.updateGeometricState(0);
 	}
 
 	public Node getGeometryNode() {

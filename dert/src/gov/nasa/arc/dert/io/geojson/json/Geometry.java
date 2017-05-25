@@ -12,6 +12,10 @@ public abstract class Geometry extends GeoJsonObject {
 	}
 	
 	public GeojsonType type;
+	
+	public Geometry(GeojsonType type) {
+		this.type = type;
+	}
 
 	/**
 	 * Constructor

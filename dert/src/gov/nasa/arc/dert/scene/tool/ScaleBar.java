@@ -30,6 +30,7 @@ import com.ardor3d.image.TextureStoreFormat;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.state.TextureState;
+import com.ardor3d.scenegraph.hint.TextureCombineMode;
 import com.ardor3d.util.TextureKey;
 import com.ardor3d.util.geom.BufferUtils;
 
@@ -106,21 +107,24 @@ public class ScaleBar extends FigureMarker implements Tool {
 		if (shape != null)
 			contents.detachChild(shape);
 		shape = Shape.createShape("_geometry", ShapeType.rod, cellCount, (float)radius, (float)size*cellCount);
-		SpatialUtil.setPickHost(shape, this);
-		shape.getSceneHints().setCastsShadows(false);
-		contents.attachChild(shape);
-		label.setTranslation(new Vector3(0, 2.5*radius, 0));
-		if (autoLabel)
-			label.setText(getName()+" = "+String.format(Landscape.stringFormat, (size*cellCount)).trim());
 		
 		TextureState tState = new TextureState();
 		tState.setTexture(getTexture());
 		tState.setEnabled(true);
 		shape.getGeometry().setRenderState(tState);
+		shape.getGeometry().getSceneHints().setTextureCombineMode(TextureCombineMode.Replace);
+		shape.getSceneHints().setCastsShadows(false);
+		contents.attachChild(shape);
+		
+		label.setTranslation(new Vector3(0, 2.5*radius, 0));
+		if (autoLabel)
+			label.setText(getName()+" = "+String.format(Landscape.stringFormat, (size*cellCount)).trim());
 
 		updateGeometricState(0, true);
 		updateWorldTransform(true);
 		updateWorldBound(true);
+		
+		SpatialUtil.setPickHost(shape, this);
 	}
 
 	@Override
@@ -207,8 +211,9 @@ public class ScaleBar extends FigureMarker implements Tool {
 		
 		ByteBuffer buffer = BufferUtils.createByteBuffer(cellCount*4*4*4);
 		int[] col = new int[2];
-		col[0] = MathUtil.bytes2Int((byte)color.getAlpha(), (byte)color.getBlue(),
-			(byte)color.getGreen(), (byte)color.getRed());
+		Color wcolor = Color.WHITE;
+		col[0] = MathUtil.bytes2Int((byte)wcolor.getAlpha(), (byte)wcolor.getBlue(),
+			(byte)wcolor.getGreen(), (byte)wcolor.getRed());
 		Color bcolor = Color.BLACK;
 		col[1] = MathUtil.bytes2Int((byte)bcolor.getAlpha(), (byte)bcolor.getBlue(),
 			(byte)bcolor.getGreen(), (byte)bcolor.getRed());

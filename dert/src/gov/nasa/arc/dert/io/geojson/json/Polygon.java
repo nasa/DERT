@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.io.geojson.json;
 
 
+
 /**
  * Provides a GeoJSON Polygon object.
  *
@@ -32,6 +33,11 @@ public class Polygon extends Geometry {
 				}
 			}
 		}
+	}
+	
+	public Polygon(double[][][] coordinate) {
+		super(GeojsonType.Polygon);
+		this.coordinate = coordinate;
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.io.geojson.json;
 
 
+
 /**
  * Provides a GeoJSON MultiLineString object.
  *
@@ -32,6 +33,11 @@ public class MultiLineString extends Geometry {
 				}
 			}
 		}
+	}
+	
+	public MultiLineString(double[][][] coordinate) {
+		super(GeojsonType.MultiLineString);
+		this.coordinate = coordinate;
 	}
 
 	/**
