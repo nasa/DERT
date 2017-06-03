@@ -130,8 +130,8 @@ public class FigurePanel extends MapElementBasePanel {
 		shapeCombo.setSelectedItem(figure.getShapeType());
 		autoScaleButton.setSelected(figure.isAutoScale());
 		surfaceButton.setSelected(figure.isSurfaceNormalVisible());
-		azSpinner.setValue(figure.getAzimuth());
-		tiltSpinner.setValue(figure.getTilt());
+		azSpinner.setValueNoChange(figure.getAzimuth());
+		tiltSpinner.setValueNoChange(figure.getTilt());
 	}
 
 }
