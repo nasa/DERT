@@ -53,7 +53,7 @@ public class ViewpointMenuAction extends PopupMenuAction {
 	protected void fillMenu(PopupMenu menu) {
 		ViewpointController controller = Dert.getWorldView().getScenePanel().getViewpointController();
 		ViewpointMode currentMode = controller.getViewpoint().getMode();
-		nominal = new CheckBoxMenuItemAction("Nominal") {			
+		nominal = new CheckBoxMenuItemAction("Model-centric") {			
 			@Override
 			protected void run() {
 				setMode(ViewpointMode.Nominal);
@@ -73,7 +73,7 @@ public class ViewpointMenuAction extends PopupMenuAction {
 		};
 		map.setState(currentMode == ViewpointMode.Map);
 		menu.add(map);
-		hike = new CheckBoxMenuItemAction("Hike") {			
+		hike = new CheckBoxMenuItemAction("First-person") {			
 			@Override
 			protected void run() {
 				setMode(ViewpointMode.Hike);
