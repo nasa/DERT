@@ -60,6 +60,7 @@ public class ProjectionInfo {
 	public String gcsCitation; // documentation
 
 	// fields for a projected file
+	// If not set, some of these are maintained as NaN
 	public int pcsCode; // Projected Coordinate System code, usually EPSG, 32767
 						// = user defined
 	public int projCode; // Projection code, usually EPSG, 32767 = user defined
@@ -219,7 +220,7 @@ public class ProjectionInfo {
 			.getIntegerValue(properties, "ProjectionInfo.CoordTransformCode", true, 0, false);
 		stdParallel1 = StringUtil.getDoubleValue(properties, "ProjectionInfo.StdParallel1", false, Double.NaN, false);
 		poleLat = (int)(Math.signum(stdParallel1)*90);
-		stdParallel2 = StringUtil.getDoubleValue(properties, "ProjectionInfo.StdParallel1", false, Double.NaN, false);
+		stdParallel2 = StringUtil.getDoubleValue(properties, "ProjectionInfo.StdParallel2", false, Double.NaN, false);
 		naturalOriginLon = StringUtil.getDoubleValue(properties, "ProjectionInfo.NaturalOriginLon", false, Double.NaN,
 			false);
 		naturalOriginLat = StringUtil.getDoubleValue(properties, "ProjectionInfo.NaturalOriginLat", false, Double.NaN,
@@ -502,60 +503,71 @@ public class ProjectionInfo {
 	 */
 	public String getProj4String() {
 		String proj = null;
+		double falseE = falseEasting;
+		if (Double.isNaN(falseE))
+			falseE = 0;
+		double falseN = falseNorthing;
+		if (Double.isNaN(falseN))
+			falseN = 0;
 		if (coordTransformCode != 0) {
 			switch (coordTransformCode) {
 			case GeoKey.Code_CT_AlbersEqualArea:
 				proj = "+proj=aea" + " +lat_1=" + stdParallel1 + " +lat_2=" + stdParallel2 + " +lat_0="
-					+ naturalOriginLat + " +lon_0=" + naturalOriginLon + " +x_0=" + falseEasting + " +y_0="
-					+ falseNorthing;
+					+ naturalOriginLat + " +lon_0=" + naturalOriginLon + " +x_0=" + falseE + " +y_0="
+					+ falseN;
 				break;
 			case GeoKey.Code_CT_AzimuthalEquidistant:
-				proj = "+proj=aeqd" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
-					+ " +y_0=" + falseNorthing;
+				proj = "+proj=aeqd" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseE
+					+ " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_CassiniSoldner:
 				proj = "+proj=cass" + " +lat_0=" + naturalOriginLat + " +lon_0=" + naturalOriginLon + " +x_0="
-					+ falseEasting + " +y_0=" + falseNorthing;
+					+ falseE + " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_CylindricalEqualArea:
 				proj = "+proj=cea" + " +lon_0=" + naturalOriginLon + " +lat_ts=" + stdParallel1 + " +x_0="
-					+ falseEasting + " +y_0=" + falseNorthing;
+					+ falseE + " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_EquidistantConic:
 				proj = "+proj=eqdc" + " +lat_1=" + stdParallel1 + " +lat_2=" + stdParallel2 + " +lat_0="
-					+ naturalOriginLat + " +lon_0=" + naturalOriginLon + " +x_0=" + falseEasting + " +y_0="
-					+ falseNorthing;
+					+ naturalOriginLat + " +lon_0=" + naturalOriginLon + " +x_0=" + falseE + " +y_0="
+					+ falseN;
 				break;
 			case GeoKey.Code_CT_Equirectangular:
-				proj = "+proj=eqc" + " +lat_0=0 +lat_ts=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
-					+ " +y_0=" + falseNorthing;
+				proj = "+proj=eqc" + " +lat_0=0 +lat_ts=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseE
+					+ " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_TransverseMercator:
 				proj = "+proj=tmerc" + " +lat_0=" + naturalOriginLat + " +lon_0=" + naturalOriginLon + " +k="
-					+ scaleAtNaturalOrigin + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
+					+ scaleAtNaturalOrigin + " +x_0=" + falseE + " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_Gnomonic:
-				proj = "+proj=gnom" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
-					+ " +y_0=" + falseNorthing;
+				proj = "+proj=gnom" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseE
+					+ " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_ObliqueMercator:
 				proj = "+proj=omerc" + " +lat_0=" + centerLat + " +lonc=" + centerLon + " +alpha=" + azimuth + " +k_0="
-					+ scaleAtCenter + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
+					+ scaleAtCenter + " +x_0=" + falseE + " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_LambertAzimEqualArea:
-				proj = "+proj=laea" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
-					+ " +y_0=" + falseNorthing;
+				proj = "+proj=laea" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseE
+					+ " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_LambertConfConic_Helmert:
 				proj = "+proj=lcc" + " +lat_0=" + naturalOriginLat + " +lon_0=" + naturalOriginLon + " +k="
-					+ scaleAtNaturalOrigin + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
+					+ scaleAtNaturalOrigin + " +x_0=" + falseE + " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_LambertConfConic_2SP:
+				double lon0 = naturalOriginLon;
+				if (Double.isNaN(lon0))
+					lon0 = falseOriginLon;
+				if (Double.isNaN(lon0))
+					lon0 = 0;
 				proj = "+proj=lcc" + " +lat_1=" + stdParallel1 + " +lat_2=" + stdParallel2 + " +lat_0="
-					+ falseOriginLat + " +lon_0=" + falseOriginLon + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
+					+ falseOriginLat + " +lon_0=" + lon0 + " +x_0=" + falseE + " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_Mercator:
-				proj = "+proj=merc" + " +lon_0=" + naturalOriginLon + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
+				proj = "+proj=merc" + " +lon_0=" + naturalOriginLon + " +x_0=" + falseE + " +y_0=" + falseN;
 				if (!Double.isNaN(stdParallel1))
 					proj += " +lat_ts="+stdParallel1;
 				else if (!Double.isNaN(scaleAtNaturalOrigin))
@@ -564,37 +576,37 @@ public class ProjectionInfo {
 					proj += " +lat_ts=0.0";					
 				break;
 			case GeoKey.Code_CT_MillerCylindrical:
-				proj = "+proj=mill" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
-					+ " +y_0=" + falseNorthing;
+				proj = "+proj=mill" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseE
+					+ " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_NewZealandMapGrid:
-				proj = "+proj=nzmg" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
-					+ " +y_0=" + falseNorthing;
+				proj = "+proj=nzmg" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseE
+					+ " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_ObliqueStereographic:
 				proj = "+proj=sterea" + " +lat_0=" + naturalOriginLat + " +lon_0=" + naturalOriginLon + " +k="
-					+ scaleAtNaturalOrigin + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
+					+ scaleAtNaturalOrigin + " +x_0=" + falseE + " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_Orthographic:
-				proj = "+proj=ortho" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseEasting
-					+ " +y_0=" + falseNorthing;
+				proj = "+proj=ortho" + " +lat_0=" + centerLat + " +lon_0=" + centerLon + " +x_0=" + falseE
+					+ " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_PolarStereographic:
 				proj = "+proj=stere" + " +lat_ts=" + naturalOriginLat + " +lat_0="+poleLat + " +lon_0=" + naturalOriginLon
-					+ " +k_0=" + scaleAtNaturalOrigin + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
+					+ " +k_0=" + scaleAtNaturalOrigin + " +x_0=" + falseE + " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_Polyconic:
 				proj = "+proj=stere" + " +lat_0=" + naturalOriginLat + " +lon_0=" + naturalOriginLon + " +x_0="
-					+ falseEasting + " +y_0=" + falseNorthing;
+					+ falseE + " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_Robinson:
-				proj = "+proj=stere" + " +lon_0=" + centerLon + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
+				proj = "+proj=stere" + " +lon_0=" + centerLon + " +x_0=" + falseE + " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_Sinusoidal:
-				proj = "+proj=sinu" + " +lon_0=" + centerLon + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
+				proj = "+proj=sinu" + " +lon_0=" + centerLon + " +x_0=" + falseE + " +y_0=" + falseN;
 				break;
 			case GeoKey.Code_CT_VanDerGrinten:
-				proj = "+proj=vandg" + " +lon_0=" + centerLon + " +x_0=" + falseEasting + " +y_0=" + falseNorthing;
+				proj = "+proj=vandg" + " +lon_0=" + centerLon + " +x_0=" + falseE + " +y_0=" + falseN;
 				break;
 			}
 			if (proj != null)

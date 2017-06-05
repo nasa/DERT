@@ -66,6 +66,7 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 		this.cellSize = state.size;
 		this.color = state.color;
 		this.lineWidth = state.lineWidth;
+		this.zOff = state.zOff;
 		offset = new Vector3();
 		setLocation(state.location, false);
 

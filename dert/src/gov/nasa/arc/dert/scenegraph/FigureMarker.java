@@ -57,9 +57,10 @@ public class FigureMarker extends Marker {
 	 * @param type
 	 */
 	public void setShape(ShapeType type) {
-		if (shape != null) {
+		if (shapeType == type)
+			return;
+		if (shape != null)
 			contents.detachChild(shape);
-		}
 		shapeType = type;
 		shape = Shape.createShape("_geometry", shapeType, (float)size);
 		shape.updateWorldBound(true);
