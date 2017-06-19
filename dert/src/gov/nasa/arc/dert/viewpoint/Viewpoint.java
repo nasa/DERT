@@ -819,8 +819,7 @@ public class Viewpoint
 			camera.setMaxNearPlane(Float.MAX_VALUE);
 			if (this.mode == ViewpointMode.Map)
 				set(oldVP, false);
-			else
-				this.mode = mode;
+			this.mode = mode;
 		}
 		changed.set(true);
 		return(true);
