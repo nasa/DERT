@@ -15,6 +15,8 @@ import javax.swing.JButton;
  *
  */
 public abstract class PopupMenuAction extends JButton {
+	
+	private PopupMenu menu;
 
 	public PopupMenuAction(String toolTipText, String label, ImageIcon icon) {
 		super();
@@ -28,10 +30,11 @@ public abstract class PopupMenuAction extends JButton {
 			setIcon(icon);
 		}
 		setToolTipText(toolTipText);
+		menu = new PopupMenu();
 		addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				final PopupMenu menu = new PopupMenu();
+				menu.removeAll();
 				fillMenu(menu);
 				add(menu);
 				EventQueue.invokeLater(new Runnable() {
