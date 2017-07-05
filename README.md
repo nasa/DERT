@@ -16,7 +16,7 @@ Prebuilt releases are available on the [releases](https://github.com/nasa/DERT/r
 
 ## Contributions
 
-DERT v1.0 is currently undergoing beta testing and we are not adding contributors at this time.  However, we could use help with the testing. If you are interested, you can test DERT by running the examples in the user guide. Please let us know of any issues you find by submitting them to this site.
+We are not adding contributors at this time.  However, we welcome your feedback. Please let us know of any issues you find by submitting them to this site.
 
 ## LICENSE
 
