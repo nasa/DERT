@@ -96,8 +96,33 @@ public abstract class BasicScene implements Scene {
 			renderer.clearBuffers(Renderer.BUFFER_COLOR_AND_DEPTH);
 			int x = (int)(width - dertImage.getWidth()) / 2;
 			int y = (int)(height - dertImage.getHeight()) / 2;
-			((JoglRendererDouble) renderer).drawImage(x, y, dertImage.getWidth(), dertImage.getHeight(), 1.0f,
-				GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, dertImage.getData(0));
+			switch (dertImage.getDataFormat()) {
+			case BGR:
+				((JoglRendererDouble) renderer).drawImage(x, y, dertImage.getWidth(), dertImage.getHeight(), 1.0f,
+						GL.GL_BGR, GL.GL_UNSIGNED_BYTE, dertImage.getData(0));
+				break;
+			case BGRA:
+				((JoglRendererDouble) renderer).drawImage(x, y, dertImage.getWidth(), dertImage.getHeight(), 1.0f,
+						GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, dertImage.getData(0));
+				break;
+			case RGB:
+				((JoglRendererDouble) renderer).drawImage(x, y, dertImage.getWidth(), dertImage.getHeight(), 1.0f,
+						GL.GL_RGB, GL.GL_UNSIGNED_BYTE, dertImage.getData(0));
+				break;
+			case RGBA:
+				((JoglRendererDouble) renderer).drawImage(x, y, dertImage.getWidth(), dertImage.getHeight(), 1.0f,
+						GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, dertImage.getData(0));
+			case Luminance:
+				((JoglRendererDouble) renderer).drawImage(x, y, dertImage.getWidth(), dertImage.getHeight(), 1.0f,
+						GL.GL_LUMINANCE, GL.GL_UNSIGNED_BYTE, dertImage.getData(0));
+				break;
+			case LuminanceAlpha:
+				((JoglRendererDouble) renderer).drawImage(x, y, dertImage.getWidth(), dertImage.getHeight(), 1.0f,
+						GL.GL_LUMINANCE_ALPHA, GL.GL_UNSIGNED_BYTE, dertImage.getData(0));
+				break;
+			default:
+				break;
+			}
 		}
 		else {
 			render(renderer);

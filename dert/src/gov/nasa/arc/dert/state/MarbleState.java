@@ -54,7 +54,7 @@ public class MarbleState extends MapElementState {
 	 * Update the data displayed in the Marble view
 	 */
 	public void updateText() {
-		Dert.getMainWindow().updateMarbleLocationField();
+		Dert.getMainWindow().getToolPanel().updateMarbleLocationField();
 
 		View view = viewData.getView();
 		if (view == null) {

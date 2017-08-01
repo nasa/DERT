@@ -66,6 +66,8 @@ public class Dert {
 	public static String SPLASH_SCREEN = "html/images/dert.png";
 	public static String LOG_NAME = "dert.log";
 	public static String MAIN_TITLE = "Desktop Exploration of Remote Terrain";
+	
+	public static String version;
 
 	// Main application window
 	protected static MainWindow mainWindow;
@@ -81,6 +83,8 @@ public class Dert {
 
 	// Application properties
 	protected static Properties dertProperties;
+	
+	protected String[] args;
 
 	// Operating system flags
 	static {
@@ -99,7 +103,9 @@ public class Dert {
 	public static void main(String[] args) {
 
 		// Start DERT.
-		new Dert(args);
+		Dert dert = new Dert(args);
+		BasicScene.imagePath = path + SPLASH_SCREEN;
+		dert.initialize();
 	}
 
 	/**
@@ -108,6 +114,7 @@ public class Dert {
 	 * @param args
 	 */
 	public Dert(String[] args) {
+		this.args = args;
 
 		// Find the path to the executable.
 		String pathStr = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -126,15 +133,18 @@ public class Dert {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		// Make it possible to use multiple OpenGL contexts in Ardor3D.
-		System.setProperty("ardor3d.useMultipleContexts", "true");
 
-		// Initialize global path related fields.
 		path = pathStr;
+		
+	}
+	
+	protected void initialize() {
 		ColorMap.location = path;
 		ImageBoard.defaultImagePath = path + "html/images/defaultimage.png";
-		BasicScene.imagePath = path + SPLASH_SCREEN;
 		Proj4.setProjPath(path + "proj");
+		
+		// Make it possible to use multiple OpenGL contexts in Ardor3D.
+		System.setProperty("ardor3d.useMultipleContexts", "true");
 
 		// Load default and session properties.
 		installDertProperties();
@@ -174,7 +184,7 @@ public class Dert {
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 
 		// Initialize main window and console.
-		createMainWindows(pathStr, args);
+		createMainWindows(args);
 		createFont();
 		
 		Console.println("OpenGL Vendor: " + SceneCanvas.openGLVendor);
@@ -220,7 +230,7 @@ public class Dert {
 	 * @param args
 	 *            the command line arguments
 	 */
-	protected void createMainWindows(String pathStr, String[] args) {
+	protected void createMainWindows(String[] args) {
 
 		// Get the default configuration.
 		Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
@@ -228,8 +238,11 @@ public class Dert {
 		// Create the main and console windows.
 		SceneFramework.createInstance();
 		mainWindow = new MainWindow(MAIN_TITLE, path, args, dertProperties);
+		fillToolPanel();
+		mainWindow.setVisible(true);
 		consoleView = (ConsoleView) currentConfig.consoleState.open(false);
 		consoleWindow = (JDialog) currentConfig.consoleState.getViewData().getViewWindow();
+		mainWindow.requestFocus();
 
 		// Sleep a second to let the main view be completely realized so its
 		// glContext may be shared.
@@ -238,6 +251,11 @@ public class Dert {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	protected void fillToolPanel() {
+		ToolPanel toolPanel = mainWindow.getToolPanel();
+		toolPanel.populate();
 	}
 	
 	protected void createFont() {	
@@ -291,6 +309,7 @@ public class Dert {
 				dertProperties.load(new FileInputStream(file));
 			}
 
+			version = dertProperties.getProperty("Dert.Version");
 			SceneFramework.millisBetweenFrames = StringUtil.getIntegerValue(dertProperties, "MillisBetweenFrames", true, 33, false);
 			World.defaultStereoEyeSeparation = StringUtil.getDoubleValue(dertProperties, "Stereo.eyeSeparation", false, World.defaultStereoEyeSeparation, false);
 			World.defaultStereoFocalDistance = StringUtil.getDoubleValue(dertProperties, "Stereo.focalDistance", false, World.defaultStereoFocalDistance, false);

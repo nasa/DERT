@@ -370,7 +370,7 @@ public class Viewpoint
 		updateFromCamera();
 		camera.setClippingPlanes(sceneBounds, true);
 		updateCrosshair();
-		Dert.getMainWindow().updateCompass(azimuth);
+		Dert.getMainWindow().getToolPanel().updateCompass(azimuth);
 		updateOverlay();
 		changed.set(true);
 //		System.err.println("ViewpointNode.reset B: sceneBounds="+sceneBounds+" closestDistance="+closestDistance+" hikeMode="+hikeMode);
@@ -573,7 +573,7 @@ public class Viewpoint
 		updateCrosshair();
 		updateOverlay();
 		changed.set(true);
-		Dert.getMainWindow().updateCompass(azimuth);
+		Dert.getMainWindow().getToolPanel().updateCompass(azimuth);
 	}
 
 	/**
@@ -596,7 +596,7 @@ public class Viewpoint
 		updateCrosshair();
 		updateOverlay();
 		changed.set(true);
-		Dert.getMainWindow().updateCompass(azimuth);
+		Dert.getMainWindow().getToolPanel().updateCompass(azimuth);
 	}
 
 	/**

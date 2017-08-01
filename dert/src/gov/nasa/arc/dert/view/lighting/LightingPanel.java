@@ -267,7 +267,7 @@ public class LightingPanel extends JPanel {
 		}
 		lighting.enableHeadlight(headlightButton.isSelected());
 		lighting.setLampMode(lampButton.isSelected());
-		Dert.getMainWindow().updateLightIcon();
+		Dert.getMainWindow().getToolPanel().updateLightIcon();
 		World.getInstance().getMarble().setSolarDirection(lighting.getLightDirection());
 		World.getInstance().markDirty(DirtyType.RenderState);
 	}

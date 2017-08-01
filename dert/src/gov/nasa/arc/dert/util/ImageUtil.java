@@ -113,6 +113,7 @@ public class ImageUtil {
 //			byteBuffer = ByteBuffer.allocateDirect(buffer.length * 4);
 			FloatBuffer floatBuffer = byteBuffer.asFloatBuffer();
 			floatBuffer.put(buffer);
+			floatBuffer.rewind();
 			if (flip) {
 				doFlip(byteBuffer, width * pixelBytes, height);
 			}
@@ -124,6 +125,7 @@ public class ImageUtil {
 //			byteBuffer = ByteBuffer.allocateDirect(buffer.length * 2);
 			ShortBuffer shortBuffer = byteBuffer.asShortBuffer();
 			shortBuffer.put(buffer);
+			shortBuffer.rewind();
 			if (flip) {
 				doFlip(byteBuffer, width * pixelBytes, height);
 			}
@@ -135,6 +137,7 @@ public class ImageUtil {
 //			byteBuffer = ByteBuffer.allocateDirect(buffer.length * 2);
 			ShortBuffer shortBuffer = byteBuffer.asShortBuffer();
 			shortBuffer.put(buffer);
+			shortBuffer.rewind();
 			if (flip) {
 				doFlip(byteBuffer, width * pixelBytes, height);
 			}
@@ -147,6 +150,7 @@ public class ImageUtil {
 			byteBuffer = BufferUtils.createByteBuffer(buffer.length);
 //			byteBuffer = ByteBuffer.allocateDirect(buffer.length);
 			byteBuffer.put(buffer);
+			byteBuffer.rewind();
 			if (flip) {
 				doFlip(byteBuffer, scanWidth, height);
 			}
@@ -360,13 +364,13 @@ public class ImageUtil {
 		try {
 			BufferedImage bImage = ImageIO.read(new File(imagePath));
 			if (bImage == null) {
-				System.out.println("Unable to read image.");
+				System.out.println("Unable to read image "+imagePath+".");
 				return (null);
 			}
 			Image image = convertToArdor3DImage(bImage, flipIt);
 			return (image);
 		} catch (Exception e) {
-			System.out.println("Unable to read image, see log.");
+			System.out.println("Unable to read image "+imagePath+", see log.");
 			e.printStackTrace();
 			return (null);
 		}

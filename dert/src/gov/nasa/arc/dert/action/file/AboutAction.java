@@ -10,21 +10,20 @@ import gov.nasa.arc.dert.action.MenuItemAction;
  */
 public class AboutAction extends MenuItemAction {
 
-	protected String version;
-
 	/**
 	 * Constructor
 	 * 
-	 * @param aboutStr
+	 * @param version
+	 * @param name
 	 */
-	public AboutAction(String version) {
+	public AboutAction() {
 		super("About DERT");
-		this.version = version;
 	}
 
 	@Override
-	public void run() {		
-		AboutBox aboutBox = new AboutBox(Dert.getMainWindow(), version, "DERT");
+	public void run() {	
+		String heading = "Desktop Exploration of Remote Terrain (DERT), version "+Dert.version+"\nIntelligent Systems Division, NASA Ames Research Center\n\n";
+		AboutBox aboutBox = new AboutBox(Dert.getMainWindow(), "DERT", heading);
 		aboutBox.open();
 	}
 

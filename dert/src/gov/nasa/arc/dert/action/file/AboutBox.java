@@ -20,9 +20,8 @@ public class AboutBox extends TextDialog {
 	 * @param vrsn
 	 * @param del
 	 */
-	public AboutBox(Frame parent, String version, String title) {
-		super(parent, "About "+title, 650, 450, false, false, true);
-		String aboutStr = "Desktop Exploration of Remote Terrain (DERT), version "+version+"\nIntelligent Systems Division, NASA Ames Research Center\n\n";
+	public AboutBox(Frame parent, String name, String heading) {
+		super(parent, "About "+name, 650, 450, false, false, true);
 		try {
 			URL url = AboutAction.class.getResource("About.txt");
 			InputStream is = url.openStream();
@@ -30,11 +29,11 @@ public class AboutBox extends TextDialog {
 			char[] text = new char[8192];
 			int n = reader.read(text);
 			is.close();
-			aboutStr += new String(text, 0, n);
+			heading += new String(text, 0, n);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		setText(aboutStr);
+		setText(heading);
 	}
 	
 	@Override
