@@ -238,7 +238,7 @@ public class Dert {
 		// Create the main and console windows.
 		SceneFramework.createInstance();
 		mainWindow = new MainWindow(MAIN_TITLE, path, args, dertProperties);
-		fillToolPanel();
+		mainWindow.setToolPanel(createToolPanel());
 		mainWindow.setVisible(true);
 		consoleView = (ConsoleView) currentConfig.consoleState.open(false);
 		consoleWindow = (JDialog) currentConfig.consoleState.getViewData().getViewWindow();
@@ -253,9 +253,10 @@ public class Dert {
 		}
 	}
 	
-	protected void fillToolPanel() {
-		ToolPanel toolPanel = mainWindow.getToolPanel();
+	protected ToolPanel createToolPanel() {
+		ToolPanel toolPanel = new ToolPanel();
 		toolPanel.populate();
+		return(toolPanel);
 	}
 	
 	protected void createFont() {	

@@ -73,8 +73,8 @@ public class MainWindow extends JFrame {
 		setLayout(new BorderLayout());
 
 		// Tool Panel
-		toolPanel = new ToolPanel();
-		add(toolPanel, BorderLayout.NORTH);
+//		toolPanel = new ToolPanel();
+//		add(toolPanel, BorderLayout.NORTH);
 		currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
 
 		// Create the worldview.
@@ -88,6 +88,11 @@ public class MainWindow extends JFrame {
 	
 	public String getTitleString() {
 		return(title);
+	}
+	
+	public void setToolPanel(ToolPanel toolPanel) {
+		this.toolPanel = toolPanel;
+		add(toolPanel, BorderLayout.NORTH);
 	}
 	
 	public ToolPanel getToolPanel() {
