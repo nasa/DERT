@@ -2,8 +2,10 @@ package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.util.StateUtil;
+import gov.nasa.arc.dert.view.View;
+import gov.nasa.arc.dert.view.mapelement.MapElementsView;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * State object for MapElementsView.
@@ -24,13 +26,13 @@ public class MapElementsState extends PanelState {
 	 * Constructor
 	 */
 	public MapElementsState() {
-		super(PanelType.MapElements, "DERT Map Elements", new ViewData(-1, -1, 350, ViewData.DEFAULT_WINDOW_HEIGHT, false));
+		super("MapElements", "DERT Map Elements", new ViewData(350, ViewData.DEFAULT_WINDOW_HEIGHT, false));
 	}
 	
 	/**
 	 * Constructor for hash map.
 	 */
-	public MapElementsState(HashMap<String,Object> map) {
+	public MapElementsState(Map<String,Object> map) {
 		super(map);
 		lastMapElementName = StateUtil.getString(map, "LastMapElementName", null);
 		String str = StateUtil.getString(map, "LastMapElementType", null);
@@ -53,8 +55,8 @@ public class MapElementsState extends PanelState {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		map.put("LastMapElementName", lastMapElementName);
 		if (lastMapElementType != null)
 			map.put("LastMapElementType", lastMapElementType.toString());
@@ -103,6 +105,11 @@ public class MapElementsState extends PanelState {
 		String str = super.toString();
 		str += " LastMapElement="+lastMapElementName+","+lastMapElementType;
 		return(str);
+	}
+	
+	@Override
+	protected View createView() {
+		return(new MapElementsView(this));
 	}
 
 }

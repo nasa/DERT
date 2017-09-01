@@ -21,7 +21,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -50,9 +49,6 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 	private CoordTextField seekText, fovLocationText;
 	private DoubleTextField distanceText;
 
-	// Cross hair visibility
-	private JCheckBox crosshair;
-
 	private Vector3 seekPoint = new Vector3();
 	private Vector3 coord = new Vector3();
 
@@ -71,18 +67,7 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 		JPanel controlPanel = new JPanel(new GridLayout(3, 1));
 
 		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout(1, 7, 10, 0));
-
-		crosshair = new JCheckBox("Xhair");
-		crosshair.setSelected(fieldCameraScene.isCrosshairVisible());
-		crosshair.setToolTipText("display crosshair");
-		crosshair.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				fieldCameraScene.setCrosshairVisible(crosshair.isSelected());
-			}
-		});
-		panel.add(crosshair);
+		panel.setLayout(new GridLayout(1, 6, 10, 0));
 
 		panel.add(new JLabel("Pan", SwingConstants.RIGHT));
 		azSpinner = new DoubleSpinner(instInfo.tripodPan, instInfo.panRange[0], instInfo.panRange[1], 1, true) {
@@ -162,7 +147,7 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 		seekText = new CoordTextField(20, "pointing coordinates", seekPoint, Landscape.format, true) {
 			@Override
 			public void doChange(ReadOnlyVector3 seekPoint) {
-				Vector3 angle = fieldCamera.seek(seekPoint);
+				Vector3 angle = fieldCamera.getSyntheticCameraNode().getAzElAngles(seekPoint);
 				double az = Math.toDegrees(angle.getX());
 				if (az > 180)
 					az -= 360;
@@ -178,7 +163,7 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 		distanceButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				double dist = fieldCamera.getDistanceToSurface();
+				double dist = fieldCamera.getSyntheticCameraNode().getDistanceToSurface();
 				distanceText.setValue(dist);
 			}
 		});
@@ -253,7 +238,7 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 	 * Update the FOV text fields.
 	 */
 	public void updateFOV() {
-		BasicCamera cam = fieldCamera.getCamera();
+		BasicCamera cam = fieldCamera.getSyntheticCameraNode().getCamera();
 		coord.set(cam.getLocation());
 		Landscape.getInstance().localToWorldCoordinate(coord);
 		fovLocationText.setValue(coord);
@@ -272,7 +257,7 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 	
 	@Override
 	public void resize(int x, int y, int width, int height) {
-		BasicCamera cam = fieldCamera.getCamera();
+		BasicCamera cam = fieldCamera.getSyntheticCameraNode().getCamera();
 		super.resize(x, y, width, height);
 		int[] vp = cam.getViewport();
 		canvasRenderer.setClipRectangle(new Rectangle2(vp[0], vp[1], vp[2], vp[3]));

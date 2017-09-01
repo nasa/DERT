@@ -2,9 +2,12 @@ package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.util.StateUtil;
+import gov.nasa.arc.dert.view.View;
+import gov.nasa.arc.dert.view.viewpoint.ViewpointView;
 import gov.nasa.arc.dert.viewpoint.ViewpointStore;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -19,14 +22,14 @@ public class ViewpointState extends PanelState {
 	 * Constructor
 	 */
 	public ViewpointState() {
-		super(PanelType.Viewpoint, "DERT Viewpoint", new ViewData(-1, -1, 525, 300, false));
+		super("Viewpoint", "DERT Viewpoint", new ViewData(525, 300, false));
 		viewpointList = new Vector<ViewpointStore>();
 	}
 	
 	/**
 	 * Constructor from hash map
 	 */
-	public ViewpointState(HashMap<String,Object> map) {
+	public ViewpointState(Map<String,Object> map) {
 		super(map);
 		int n = StateUtil.getInteger(map, "ViewpointCount", 0);
 		viewpointList = new Vector<ViewpointStore>();
@@ -38,8 +41,8 @@ public class ViewpointState extends PanelState {
 	 * Save contents to a HashMap
 	 */
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		viewpointList = Dert.getWorldView().getScenePanel().getViewpointController().getViewpointList();
 		map.put("ViewpointCount", new Integer(viewpointList.size()));
 		for (int i=0; i<viewpointList.size(); ++i)
@@ -53,6 +56,11 @@ public class ViewpointState extends PanelState {
 		for (int i=0; i<viewpointList.size(); ++i)
 			str += viewpointList.get(i);
 		return(str);
+	}
+	
+	@Override
+	protected View createView() {
+		return(new ViewpointView((ViewpointState) this));
 	}
 
 }

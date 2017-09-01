@@ -8,7 +8,7 @@ import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.fieldcamera.FieldCameraView;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -41,7 +41,7 @@ public class FieldCameraState extends ToolState {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.FieldCamera), MapElementState.Type.FieldCamera, "Camera", 1,
 			FieldCamera.defaultColor, FieldCamera.defaultLabelVisible);
-		viewData = new ViewData(-1, -1, 600, 500, false);
+		viewData = new ViewData(600, 500, false);
 		viewData.setVisible(true);
 		fieldCameraDef = FieldCamera.defaultDefinition;
 		fovVisible = FieldCamera.defaultFovVisible;
@@ -55,7 +55,7 @@ public class FieldCameraState extends ToolState {
 	/**
 	 * Constructor for hash map.
 	 */
-	public FieldCameraState(HashMap<String,Object> map) {
+	public FieldCameraState(Map<String,Object> map) {
 		super(map);
 		crosshairVisible = StateUtil.getBoolean(map, "CrosshairVisible", false);
 		location = StateUtil.getVector3(map, "Location", Vector3.ZERO);
@@ -103,19 +103,15 @@ public class FieldCameraState extends ToolState {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
-		if (viewData != null) {
-			FieldCameraView fcv = (FieldCameraView) viewData.getView();
-			if (fcv != null)
-				crosshairVisible = fcv.isCrosshairVisible();
-		}
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		if (mapElement != null) {
 			FieldCamera fieldCamera = (FieldCamera) mapElement;
 			location = new Vector3(fieldCamera.getTranslation());
 			fieldCameraDef = fieldCamera.getFieldCameraDefinition();
-			fovVisible = fieldCamera.isFovVisible();
-			lineVisible = fieldCamera.isLookAtLineVisible();
+			fovVisible = fieldCamera.getSyntheticCameraNode().isFovVisible();
+			lineVisible = fieldCamera.getSyntheticCameraNode().isSiteLineVisible();
+			crosshairVisible = fieldCamera.getSyntheticCameraNode().isCrosshairVisible();
 			azimuth = fieldCamera.getAzimuth();
 			tilt = fieldCamera.getElevation();
 			height = fieldCamera.getHeight();
@@ -148,7 +144,8 @@ public class FieldCameraState extends ToolState {
 	
 	protected void createView() {
 		setView(new FieldCameraView((FieldCameraState) this));
-		viewData.createWindow(Dert.getMainWindow(), "DERT "+name, X_OFFSET, Y_OFFSET);
+//		viewData.createWindow(Dert.getMainWindow(), "DERT "+name, X_OFFSET, Y_OFFSET);
+		viewData.createWindow(Dert.getMainWindow(), "DERT "+name);
 	}
 	
 	@Override

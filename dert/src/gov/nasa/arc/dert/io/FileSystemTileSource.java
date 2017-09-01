@@ -273,30 +273,51 @@ public class FileSystemTileSource implements TileSource {
 	@Override
 	public synchronized String getKey(double x, double y, double worldWidth, double worldLength) {
 		String key = "";
-		return (getKey(depthTree, x, y, key, worldWidth / 2, worldLength / 2));
+		return (getKey(depthTree, x, y, key, worldWidth / 2, worldLength / 2, -1));
 	}
 
-	private String getKey(DepthTree depthTree, double x, double y, String key, double width, double length) {
+	/**
+	 * Given an X,Y coordinate and level, find the key of the tile that contains
+	 * that coordinate.
+	 * 
+	 * @param x
+	 *            , y the coordinate
+	 * @param worldWidth
+	 *            , worldHeight the physical dimensions of the source
+	 * @return the key string
+	 */
+	@Override
+	public synchronized String getKey(double x, double y, double worldWidth, double worldLength, int lvl) {
+		String key = "";
+		return (getKey(depthTree, x, y, key, worldWidth / 2, worldLength / 2, lvl));
+	}
+
+	private String getKey(DepthTree depthTree, double x, double y, String key, double width, double length, int lvl) {
 		if (depthTree.child == null) {
-			return (key);
+			if (lvl > 0)
+				return(null);
+			else
+				return (key);
 		}
+		if (lvl == 0)
+			return(key);	
 		double w = width / 2;
 		double l = length / 2;
 		if (x < 0) {
 			if (y >= 0) {
 				depthTree = depthTree.child[0];
-				return (getKey(depthTree, x + w, y - l, key + "/" + 1, w, l));
+				return (getKey(depthTree, x + w, y - l, key + "/" + 1, w, l, lvl-1));
 			} else {
 				depthTree = depthTree.child[2];
-				return (getKey(depthTree, x + w, y + l, key + "/" + 3, w, l));
+				return (getKey(depthTree, x + w, y + l, key + "/" + 3, w, l, lvl-1));
 			}
 		} else {
 			if (y >= 0) {
 				depthTree = depthTree.child[1];
-				return (getKey(depthTree, x - w, y - l, key + "/" + 2, w, l));
+				return (getKey(depthTree, x - w, y - l, key + "/" + 2, w, l, lvl-1));
 			} else {
 				depthTree = depthTree.child[3];
-				return (getKey(depthTree, x - w, y + l, key + "/" + 4, w, l));
+				return (getKey(depthTree, x - w, y + l, key + "/" + 4, w, l, lvl-1));
 			}
 		}
 	}

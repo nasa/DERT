@@ -6,7 +6,7 @@ import gov.nasa.arc.dert.scene.tool.RadialGrid;
 import gov.nasa.arc.dert.util.StateUtil;
 
 import java.awt.Color;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -105,7 +105,7 @@ public class GridState extends ToolState {
 	/**
 	 * Constructor for hash map.
 	 */
-	public GridState(HashMap<String,Object> map) {
+	public GridState(Map<String,Object> map) {
 		super(map);
 		rings = StateUtil.getInteger(map, "Rings", 0);
 		columns = StateUtil.getInteger(map, "Columns", 0);
@@ -116,8 +116,8 @@ public class GridState extends ToolState {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		if (mapElement != null) {
 			if (mapElementType == MapElementState.Type.RadialGrid) {
 				rings = ((RadialGrid) mapElement).getRings();

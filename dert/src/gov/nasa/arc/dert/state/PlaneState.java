@@ -16,7 +16,7 @@ import gov.nasa.arc.dert.view.mapelement.NotesDialog;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -81,13 +81,13 @@ public class PlaneState extends ToolState {
 			lengthScale *= s;
 			widthScale *= s;
 		}
-		viewData = new ViewData(-1, -1, 550, 400, false);
+		viewData = new ViewData(550, 400, false);
 	}
 	
 	/**
 	 * Constructor for hash map.
 	 */
-	public PlaneState(HashMap<String,Object> map) {
+	public PlaneState(Map<String,Object> map) {
 		super(map);
 		p0 = StateUtil.getVector3(map, "P0", Vector3.ZERO);
 		p1 = StateUtil.getVector3(map, "P1", Vector3.ZERO);
@@ -138,8 +138,8 @@ public class PlaneState extends ToolState {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		if (mapElement != null) {
 			Plane plane = (Plane) mapElement;
 			p0 = new Vector3(plane.getPoint(0));
@@ -186,7 +186,8 @@ public class PlaneState extends ToolState {
 	@Override
 	public void createView() {
 		setView(new ContourView(this));
-		viewData.createWindow(Dert.getMainWindow(), name + " Elevation Difference Map", X_OFFSET, Y_OFFSET);
+//		viewData.createWindow(Dert.getMainWindow(), name + " Elevation Difference Map", X_OFFSET, Y_OFFSET);
+		viewData.createWindow(Dert.getMainWindow(), name + " Elevation Difference Map");
 	}
 	
 	@Override

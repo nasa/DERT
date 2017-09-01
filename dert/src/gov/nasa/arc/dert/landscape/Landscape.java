@@ -83,7 +83,7 @@ public class Landscape extends Node {
 	// a scene graph node to hold a translated quad tree so it can be scaled
 	private Node contents;
 
-	// minimum Z value, the Z value at the edge of the landscape
+	// minimum Z value, maximum Z value
 	private double minZ, maxZ;
 
 	// surface mesh color
@@ -98,6 +98,9 @@ public class Landscape extends Node {
 
 	// scale factor for millimeter scale landscapes
 	private float pixelScale = 1;
+	
+	// bounds of the landscape
+	private double[] bounds;
 
 	// blocks sunlight from underneath landscape while shadows are enabled
 //	private Mesh sunBlock;
@@ -149,6 +152,13 @@ public class Landscape extends Node {
 		baseMapLevel = baseLayer.getNumberOfLevels() - 1;
 		worldWidth = baseLayer.getRasterWidth() * pixelWidth;
 		worldLength = baseLayer.getRasterLength() * pixelLength;
+		bounds = new double[6];
+		bounds[0] = -worldWidth/2;
+		bounds[3] = worldWidth/2;
+		bounds[1] = -worldLength/2;
+		bounds[4] = worldLength/2;
+		bounds[2] = minZ;
+		bounds[5] = maxZ;
 		textureState = new TextureState();
 		textureState.setEnabled(true);
 		setRenderState(textureState);
@@ -586,6 +596,26 @@ public class Landscape extends Node {
 	 */
 	public double getElevationAtHighestLevel(double x, double y) {
 		String key = source.getKey(x, y, worldWidth, worldLength);
+		if (key == null) {
+			return (Double.NaN);
+		}
+		QuadTree qt = factory.getQuadTree(key);
+		if (qt == null) {
+			return (Double.NaN);
+		}
+//		return (qt.getElevationNearestNeighbor(x, y));
+		return (qt.getElevation(x, y));
+	}
+
+	/**
+	 * Get the elevation at the given X,Y coordinate from the specified level
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public double getElevation(double x, double y, int level) {
+		String key = source.getKey(x, y, worldWidth, worldLength, level);
 		if (key == null) {
 			return (Double.NaN);
 		}
@@ -1162,5 +1192,9 @@ public class Landscape extends Node {
 			vertex[(n - 1) * 3 + 2] = (float) getElevation(p1.getX(), p1.getY());
 		}
 		return (n * 3);
+	}
+	
+	public double[] getBounds() {
+		return(bounds);
 	}
 }

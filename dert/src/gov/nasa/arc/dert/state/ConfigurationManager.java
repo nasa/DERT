@@ -42,6 +42,11 @@ public class ConfigurationManager {
 
 	// A thread for loading a configuration
 	private Thread configThread;
+	
+	private StateFactory stateFactory;
+	
+	private String currentConfigHome;
+	private boolean saveConfigToStash;
 
 	/**
 	 * Create the ConfigurationManager
@@ -49,9 +54,10 @@ public class ConfigurationManager {
 	 * @param properties
 	 * @return
 	 */
-	public static ConfigurationManager createInstance(Properties properties) {
+	public static ConfigurationManager createInstance(Properties properties, StateFactory stateFactory) {
 		if (INSTANCE == null) {
-			INSTANCE = new ConfigurationManager(properties);
+			INSTANCE = new ConfigurationManager(properties, stateFactory);
+			INSTANCE.currentConfig = new Configuration((String) null);
 		}
 		return (INSTANCE);
 	}
@@ -66,30 +72,14 @@ public class ConfigurationManager {
 	}
 
 	/**
-	 * Get the configuration file path given the configuration name
-	 * 
-	 * @param configStr
-	 * @return
-	 */
-	public String getConfigFilePath(String configStr) {
-		int p = configStr.indexOf(':');
-		if (p > 0) {
-			File f = new File(configStr.substring(0, p), "dert" + File.separator + "config" + File.separator
-				+ configStr.substring(p + 1) + ".xml");
-			return (f.getAbsolutePath());
-		}
-		return (null);
-
-	}
-
-	/**
 	 * Constructor
 	 * 
 	 * @param properties
 	 */
-	protected ConfigurationManager(Properties properties) {
+	protected ConfigurationManager(Properties properties, StateFactory stateFactory) {
+		this.stateFactory = stateFactory;
+		saveConfigToStash = StringUtil.getBooleanValue(properties, "SaveToStashOnly", false, false);
 		loadRecent(properties);
-		currentConfig = new Configuration((String) null);
 	}
 
 	/**
@@ -123,7 +113,7 @@ public class ConfigurationManager {
 	 */
 	public boolean saveCurrentConfigurationAs(boolean force) {
 		if (currentConfig.toString().equals("Untitled") || force) {
-			String[] configName = getConfigList(currentConfig.getLandscapePath());
+			String[] configName = getConfigList(currentConfigHome);
 			String label = OptionDialog.showSingleInputDialog(Dert.getMainWindow(), "Please enter a name for the current configuration.", "");
 			if (label == null) {
 				return (false);
@@ -151,10 +141,7 @@ public class ConfigurationManager {
 	 * Save the current configuration.
 	 */
 	public void saveConfiguration(Configuration dertConfig) {
-		File file = new File(dertConfig.getLandscapePath(), "dert");
-		file = new File(file, "config");
-		if (!file.exists())
-			file.mkdirs();
+		File file = new File(currentConfigHome, "config");
 		HashMap<String, Object> savedState = dertConfig.save();
 		try {
 			file = new File(file, dertConfig.label);
@@ -168,6 +155,66 @@ public class ConfigurationManager {
 			e.printStackTrace();
 		}
 		Console.println("Saved configuration to "+dertConfig.label);
+	}
+	
+	private boolean setConfigHome(String landscapePath) {
+		if (saveConfigToStash) {
+			currentConfigHome = Dert.getUserPath();
+			return(true);
+		}		
+		boolean saveLocal = false;
+		File file = new File(landscapePath);
+		// Landscape is on a server
+		if (landscapePath.toLowerCase().startsWith("http"))
+			saveLocal = true;
+		// Landscape is on local host
+		else {
+			// Is there an existing dert subdirectory?
+			if (!isWritable(file, "dert"))
+				saveLocal = true;
+			else {
+				file = new File(file, "dert");
+				if (!isWritable(file, "config"))
+					saveLocal = true;
+				else if (!isWritable(file, "colormap"))
+					saveLocal = true;
+				else if (!isWritable(file, "camera"))
+					saveLocal = true;
+			}
+		}
+		
+		// Landscape dert subdirectories are writable.
+		if (!saveLocal) {
+			currentConfigHome = file.getAbsolutePath();
+			return(true);
+		}
+		
+		file = new File(Dert.getUserPath());
+		if (!isWritable(file, "config")) {
+			Console.println("Unable to write to stash config subdirectory.");
+			return(false);
+		}
+		if (!isWritable(file, "colormap")) {
+			Console.println("Unable to write to stash colormap subdirectory.");
+			return(false);
+		}
+		if (!isWritable(file, "camera")) {
+			Console.println("Unable to write to stash camera subdirectory.");
+			return(false);
+		}
+		currentConfigHome = Dert.getUserPath();
+		return(true);
+	}
+	
+	private boolean isWritable(File parent, String child) {
+		File c = new File(parent, child);
+		if (!c.exists()) {
+			if (!c.mkdirs())
+				return(false);
+		}
+		else if (!c.canWrite())
+			return(false);
+		return(true);
 	}
 
 
@@ -193,8 +240,14 @@ public class ConfigurationManager {
 	public Configuration loadConfiguration(String configPath) {
 		Configuration config = null;
 		try {
-			int p = configPath.lastIndexOf("/dert/");
-			String landPath = configPath.substring(0, p);
+			String landPath = null;
+			// Configuration is in landscape, derive landscape path from config path.
+			// This way we can move/copy a configuration to a different landscape.
+			if (!configPath.startsWith(Dert.getUserPath())) {
+				int p = configPath.lastIndexOf("/dert/");
+				landPath = configPath.substring(0, p);
+			}
+			
 			File file = new File(configPath).getCanonicalFile();
 			if (file.exists()) {
 				Console.println("Loading configuration from " + file.getAbsolutePath());
@@ -203,7 +256,8 @@ public class ConfigurationManager {
 				ois.close();
 				if (obj instanceof HashMap<?,?>) {
 					config = new Configuration((HashMap<String,Object>)obj);
-					config.setLandscapePath(landPath);
+					if (landPath != null)
+						config.setLandscapePath(landPath);
 					addRecent(configPath);
 				} else {
 					OptionDialog.showErrorMessageDialog(Dert.getMainWindow(), "Configuration for " + landPath + " is invalid.");
@@ -224,6 +278,12 @@ public class ConfigurationManager {
 	 * @param config
 	 */
 	public void setCurrentConfiguration(Configuration config) {
+		String landscapePath = config.getLandscapePath();
+		if (!setConfigHome(landscapePath)) {
+			Console.println("Unable to set the current configuration to "+config);
+			return;
+		}
+		
 		// Perform UI operations on UI event thread
 		if (currentConfig != null) {
 			try {
@@ -240,19 +300,8 @@ public class ConfigurationManager {
 		}
 		CoordAction.listenerList.clear();
 		currentConfig = config;
-		String landscapePath = config.getLandscapePath();
-		File dertFile = new File(landscapePath, "dert");
-		String configLocation = dertFile.getAbsolutePath();
-		File f = new File(dertFile, "colormap");
-		if (!f.exists()) {
-			f.mkdirs();
-		}
-		f = new File(dertFile, "camera");
-		if (!f.exists()) {
-			f.mkdirs();
-		}
-		ColorMap.setConfigLocation(configLocation);
-		FieldCameraInfoManager.getInstance().setConfigLocation(configLocation);
+		ColorMap.setConfigLocation(currentConfigHome);
+		FieldCameraInfoManager.getInstance().setConfigLocation(currentConfigHome);
 
 		// create the world
 		World world = currentConfig.worldState.createWorld(landscapePath, currentConfig);
@@ -269,7 +318,8 @@ public class ConfigurationManager {
 					// setup the main virtual world view
 					Dert.getWorldView().setState(currentConfig.worldState);
 					currentConfig.worldState.setView(Dert.getWorldView());
-					currentConfig.worldState.viewData.setViewWindow(Dert.getMainWindow(), true, 20, 20);
+//					currentConfig.worldState.viewData.setViewWindow(Dert.getMainWindow(), true, 20, 20);
+					currentConfig.worldState.viewData.setViewWindow(Dert.getMainWindow(), true);
 				}
 			});
 			EventQueue.invokeLater(new Runnable() {
@@ -278,7 +328,8 @@ public class ConfigurationManager {
 					// set up the console
 					Dert.getConsoleView().setState(currentConfig.consoleState);
 					currentConfig.consoleState.setView(Dert.getConsoleView());
-					currentConfig.consoleState.viewData.setViewWindow(Dert.getConsoleWindow(), true, 20, 600);
+//					currentConfig.consoleState.viewData.setViewWindow(Dert.getConsoleWindow(), true, 20, 600);
+					currentConfig.consoleState.viewData.setViewWindow(Dert.getConsoleWindow(), true);
 				}
 			});
 			EventQueue.invokeLater(new Runnable() {
@@ -311,20 +362,12 @@ public class ConfigurationManager {
 	}
 
 	/**
-	 * Get the list of Configurations for the given landscape.
+	 * Get the list of configurations.
 	 * 
-	 * @param landscapePath
-	 * @return
+	 * @return list of configuration names
 	 */
-	public String[] getConfigList(String landscapePath) {
-		File dertFile = new File(landscapePath, "dert");
-		File file = new File(dertFile, "config");
-		if (!file.exists()) {
-			return (new String[0]);
-		}
-		if (!file.isDirectory()) {
-			return (new String[0]);
-		}
+	public String[] getConfigList(String configPath) {
+		File file = new File(configPath, "config");
 		String[] list = file.list();
 		if (list == null) {
 			return (new String[0]);
@@ -374,19 +417,26 @@ public class ConfigurationManager {
 		for (int i = 0; i < maxRecent; ++i) {
 			String configPath = properties.getProperty("RecentConfig." + i);
 			if (configPath != null) {
-				if (!configPath.contains("dert/config")) {
+				if (!configPath.contains("/config/")) {
 					continue;
 				}
 				File file = new File(configPath);
 				if (!file.exists()) {
 					continue;
 				}
-				int p = configPath.indexOf("dert");
-				String name = configPath.substring(0, p);
-				name = StringUtil.getLabelFromFilePath(name);
-				String config = StringUtil.getLabelFromFilePath(configPath);
-				name += ":" + config;
-				recentConfigMap.put(name, configPath);
+				String uPath = Dert.getUserPath();
+				if (configPath.startsWith(uPath)) {
+					String name = StringUtil.getLabelFromFilePath(configPath);
+					recentConfigMap.put(name, configPath);
+				}
+				else {
+					int p = configPath.indexOf("dert");
+					String name = configPath.substring(0, p);
+					name = StringUtil.getLabelFromFilePath(name);
+					String config = StringUtil.getLabelFromFilePath(configPath);
+					name += ":" + config;
+					recentConfigMap.put(name, configPath);
+				}
 			}
 		}
 	}
@@ -431,10 +481,11 @@ public class ConfigurationManager {
 		configThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				saveCurrentConfiguration();
-				Configuration config = loadConfiguration(configPath);
-				if (config != null) {
-					setCurrentConfiguration(config);
+				if (saveCurrentConfiguration()) {
+					Configuration config = loadConfiguration(configPath);
+					if (config != null) {
+						setCurrentConfiguration(config);
+					}
 				}
 				configThread = null;
 			}
@@ -463,6 +514,10 @@ public class ConfigurationManager {
 			}
 		});
 		configThread.start();
+	}
+	
+	public StateFactory getStateFactory() {
+		return(stateFactory);
 	}
 
 }

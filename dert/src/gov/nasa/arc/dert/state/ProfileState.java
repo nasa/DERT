@@ -9,7 +9,7 @@ import gov.nasa.arc.dert.view.graph.Graph;
 import gov.nasa.arc.dert.view.graph.GraphView;
 
 import java.awt.Color;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -39,7 +39,7 @@ public class ProfileState extends ToolState {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.Profile), MapElementState.Type.Profile, "Profile",
 			Profile.defaultSize, Profile.defaultColor, Profile.defaultLabelVisible);
-		viewData = new ViewData(-1, -1, ViewData.DEFAULT_WINDOW_WIDTH, 300, false);
+		viewData = new ViewData(ViewData.DEFAULT_WINDOW_WIDTH, 300, false);
 		viewData.setVisible(true);
 		p0 = new Vector3(position);
 		p1 = new Vector3(Landscape.getInstance().getCenter());
@@ -56,7 +56,7 @@ public class ProfileState extends ToolState {
 	/**
 	 * Constructor for hash map
 	 */
-	public ProfileState(HashMap<String,Object> map) {
+	public ProfileState(Map<String,Object> map) {
 		super(map);
 		p0 = StateUtil.getVector3(map, "P0", Vector3.ZERO);
 		p1 = StateUtil.getVector3(map, "P1", Vector3.ZERO);
@@ -92,8 +92,8 @@ public class ProfileState extends ToolState {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		if (mapElement != null) {
 			Profile profile = (Profile) mapElement;
 			p0 = new Vector3(profile.getEndpointA());
@@ -169,7 +169,8 @@ public class ProfileState extends ToolState {
 	
 	protected void createView() {
 		setView(new GraphView(this));
-		viewData.createWindow(Dert.getMainWindow(), name + " Graph", X_OFFSET, Y_OFFSET);
+//		viewData.createWindow(Dert.getMainWindow(), name + " Graph", X_OFFSET, Y_OFFSET);
+		viewData.createWindow(Dert.getMainWindow(), name + " Graph");
 	}
 	
 	@Override

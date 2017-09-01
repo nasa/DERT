@@ -5,7 +5,7 @@ import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.util.StateUtil;
 
 import java.awt.Color;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -40,7 +40,7 @@ public abstract class LandmarkState extends MapElementState {
 	/**
 	 * Constructor for hash map.
 	 */
-	public LandmarkState(HashMap<String,Object> map) {
+	public LandmarkState(Map<String,Object> map) {
 		super(map);
 		position = StateUtil.getVector3(map, "Position", Vector3.ZERO);
 	}
@@ -59,8 +59,8 @@ public abstract class LandmarkState extends MapElementState {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		if (mapElement != null) {
 			Movable mov = (Movable) mapElement;
 			position = new Vector3(mov.getLocation());

@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.View;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Provides a serialized object for persisting the state of DERT components.
@@ -14,7 +15,7 @@ public class State {
 
 	// Types of State object
 	public static enum StateType {
-		Console, World, Panel, MapElement
+		Console, World, Panel, MapElement, Actor
 	}
 
 	// State name
@@ -39,7 +40,7 @@ public class State {
 		this.viewData = viewData;
 	}
 	
-	public State(HashMap<String,Object> map) {
+	public State(Map<String,Object> map) {
 		name = StateUtil.getString(map, "Name", null);
 		if (name == null)
 			throw new NullPointerException("State has no name.");
@@ -53,7 +54,7 @@ public class State {
 	/**
 	 * Save contents (called before Configuration is closed)
 	 */
-	public HashMap<String,Object> save() {
+	public Map<String,Object> save() {
 		HashMap<String,Object> map = new HashMap<String,Object>();
 		map.put("Name", name);
 		map.put("Type", type.toString());

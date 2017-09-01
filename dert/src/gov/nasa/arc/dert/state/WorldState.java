@@ -15,6 +15,7 @@ import gov.nasa.arc.dert.viewpoint.ViewpointStore;
 
 import java.awt.Color;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Provides a state object for the World.
@@ -51,8 +52,8 @@ public class WorldState extends State {
 	 * 
 	 * @param name
 	 */
-	public WorldState(String name) {
-		super(name, StateType.World, new ViewData(20, 20, 960, 600, false));
+	public WorldState() {
+		super(null, StateType.World, new ViewData(20, 20, 960, 600, false));
 		surfaceColor = Color.WHITE;
 		time = System.currentTimeMillis();
 		viewData.setVisible(true);
@@ -60,7 +61,7 @@ public class WorldState extends State {
 		layerManager = new LayerManager();
 	}
 	
-	public WorldState(HashMap<String,Object> map) {
+	public WorldState(Map<String,Object> map) {
 		super(map);
 		useLonLat = StateUtil.getBoolean(map, "UseLonLat", false);
 		surfaceColor = StateUtil.getColor(map, "SurfaceColor", Color.WHITE);
@@ -150,8 +151,8 @@ public class WorldState extends State {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		
 		map.put("Lighting", lighting.saveAsHashMap());
 		map.put("LayerManager", layerManager.saveAsHashMap());

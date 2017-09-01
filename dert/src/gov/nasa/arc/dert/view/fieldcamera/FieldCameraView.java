@@ -26,16 +26,6 @@ public class FieldCameraView extends PanelView {
 	}
 
 	/**
-	 * Get cross hair visibility
-	 * 
-	 * @return
-	 */
-	public boolean isCrosshairVisible() {
-		FieldCameraScene scene = (FieldCameraScene) panel.getScene();
-		return (scene.isCrosshairVisible());
-	}
-
-	/**
 	 * Close the view
 	 */
 	@Override

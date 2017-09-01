@@ -4,9 +4,7 @@ import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.render.Viewshed;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Tool;
-import gov.nasa.arc.dert.scenegraph.HiddenLine;
 import gov.nasa.arc.dert.scenegraph.ImageQuad;
 import gov.nasa.arc.dert.scenegraph.LineSegment;
 import gov.nasa.arc.dert.scenegraph.Marker;
@@ -17,7 +15,6 @@ import gov.nasa.arc.dert.state.FieldCameraState;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.util.ImageUtil;
-import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.UIUtil;
@@ -31,16 +28,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Icon;
 
 import com.ardor3d.bounding.BoundingBox;
-import com.ardor3d.bounding.BoundingSphere;
-import com.ardor3d.bounding.BoundingVolume;
 import com.ardor3d.image.Texture;
-import com.ardor3d.intersection.PickData;
-import com.ardor3d.intersection.PickingUtil;
-import com.ardor3d.intersection.PrimitivePickResults;
 import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Matrix3;
-import com.ardor3d.math.Ray3;
-import com.ardor3d.math.Vector2;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -51,12 +41,9 @@ import com.ardor3d.renderer.state.MaterialState.ColorMaterial;
 import com.ardor3d.renderer.state.MaterialState.MaterialFace;
 import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.Node;
-import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.extension.BillboardNode;
-import com.ardor3d.scenegraph.extension.CameraNode;
 import com.ardor3d.scenegraph.hint.CullHint;
-import com.ardor3d.scenegraph.hint.PickingHint;
 import com.ardor3d.scenegraph.shape.Box;
 import com.ardor3d.scenegraph.shape.Sphere;
 
@@ -85,23 +72,16 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 
 	// Camera Definition
 	private FieldCameraInfo fieldCameraInfo;
-	private String fieldCameraDef;
 
 	// Field Camera Box
 	private Mesh box;
-	private CameraNode cameraNode;
-	private Node mountingNode, geomNode, viewDependentNode;
+	private Node viewDependentNode;
 	private BillboardNode billboard;
 	private ImageQuad imageQuad;
 	private Sphere base;
-
-	// Camera
-	private BasicCamera basicCamera;
-	private BoundingSphere sceneBounds = new BoundingSphere(10, new Vector3());
-	private Vector3 oldTranslation = new Vector3();
-	private Matrix3 oldRotation = new Matrix3();
-	private double fovX;
-	private double aspect;
+	
+	// Field Camera node
+	private SyntheticCameraNode cameraNode;
 
 	// Pan and tilt
 	private double height, panValue, tiltValue;
@@ -112,12 +92,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	private Vector3 p0 = new Vector3(), p1 = new Vector3();
 	private LineSegment lineSegment;
 
-	// Frustum and LookAtLine
-	private FrustumPyramid frustum;
-	private HiddenLine lookAtLine;
-	private double lineLength;
-	private boolean fovVisible;
-
 	// Attributes
 	private ColorRGBA colorRGBA;
 	private ColorRGBA highlightColorRGBA;
@@ -127,9 +101,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	// scale factor for viewpoint resizing
 	private double scale = 1, oldScale = 1;
 	private RasterText label;
-
-	// Center of scene
-	private int centerX, centerY;
 
 	// Map element state
 	private FieldCameraState state;
@@ -142,38 +113,26 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		this.state = state;
 		if (state.location != null)
 			setLocation(state.location, false);
-		basicCamera = new BasicCamera(1, 1);
+		fieldCameraInfo = FieldCameraInfoManager.getInstance().getFieldCameraInfo(state.fieldCameraDef);
 		
 		pixelScale = (float)Landscape.getInstance().getPixelWidth();
 
 		// camera stand
-//		Sphere base = new Sphere("_base", 50, 50, 0.25f);
 		base = new Sphere("_base", 50, 50, pixelScale);
 		base.setModelBound(new BoundingBox());
 		attachChild(base);
 		lineSegment = new LineSegment("_post", p0, p1);
 		attachChild(lineSegment);
-
-		// mounting node to set orientation relative to OpenGL default axes
-		mountingNode = new Node("_mounting");
-		Matrix3 rotX = new Matrix3().fromAngleNormalAxis(Math.PI / 2, Vector3.UNIT_X);
-		mountingNode.setRotation(rotX);
-
+		
+		// FieldCamera node
+		cameraNode = new SyntheticCameraNode(fieldCameraInfo);
+		cameraNode.setFovVisible(state.fovVisible);
+		cameraNode.setSiteLineVisible(state.lineVisible);
+		
 		// camera box
-		geomNode = new Node("_geometry");
-//		box = new Box("_box", new Vector3(), 1, 1, 1);
 		box = new Box("_box", new Vector3(), pixelScale, pixelScale, pixelScale);
 		box.setModelBound(new BoundingBox());
-		geomNode.attachChild(box);
-
-		fovVisible = state.fovVisible;
-
-		// create lookat line
-		lookAtLine = new HiddenLine("_line", Vector3.ZERO, new Vector3(0, 0, -1));
-		lookAtLine.setModelBound(new BoundingBox());
-		setLookAtLineLength(2 * Landscape.getInstance().getWorldBound().getRadius());
-		setLookAtLineVisible(state.lineVisible);
-		geomNode.attachChild(lookAtLine);
+		cameraNode.getGeometryNode().attachChild(box);
 
 		// special billboard for spotting fieldCamera from far away
 		viewDependentNode = new Node("_viewDependent");
@@ -188,33 +147,12 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		label.setTranslation(0, 1.3, 0);
 		label.setVisible(state.labelVisible);
 		billboard.attachChild(label);
-//		viewDependentNode.setTranslation(0.0, 0.25, 0.0);
 		viewDependentNode.setTranslation(0.0, pixelScale, 0.0);
-		geomNode.attachChild(viewDependentNode);
-
-		// the camera for this fieldCamera
-		cameraNode = new CameraNode() {
-			@Override
-			public void updateWorldTransform(boolean recurse) {
-				super.updateWorldTransform(recurse);
-				double farPlane = MathUtil.distanceToSphere(sceneBounds, basicCamera.getLocation(), basicCamera.getDirection());
-				basicCamera.setFrustumFar(farPlane);
-				changed.set(!(oldTranslation.equals(getWorldTranslation()) && oldRotation.equals(getWorldRotation())));
-				oldTranslation.set(getWorldTranslation());
-				oldRotation.set(getWorldRotation());
-				setLookAtLineLength(0.8 * farPlane);
-				if (frustum.isVisible())
-					frustum.updateVertices(0.8*farPlane);
-			}
-		};
-		cameraNode.setCamera(basicCamera);
-
-		mountingNode.attachChild(cameraNode);
-		mountingNode.attachChild(geomNode);
+		cameraNode.getGeometryNode().attachChild(viewDependentNode);
 
 		// tilt and pan
 		tilt = new Node("_tilt");
-		tilt.attachChild(mountingNode);
+		tilt.attachChild(cameraNode);
 		pan = new Node("_pan");
 		pan.attachChild(tilt);
 		attachChild(pan);
@@ -222,17 +160,13 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		// initialize other fields
 		setColor(state.color);
 
-		setFieldCameraDefinition(state.fieldCameraDef);
+		setAzElHgt(fieldCameraInfo);
 		
 		changed.set(true);
 
 		state.setMapElement(this);
 
 		getSceneHints().setRenderBucketType(RenderBucketType.Transparent);
-	}
-	
-	public void setHiddenDashed(boolean hiddenDashed) {
-		lookAtLine.enableDash(hiddenDashed);
 	}
 
 	/**
@@ -241,6 +175,10 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	@Override
 	public MapElementState getState() {
 		return (state);
+	}
+	
+	public void setHiddenDashed(boolean hiddenDashed) {
+		cameraNode.setHiddenDashed(hiddenDashed);
 	}
 
 	/**
@@ -258,32 +196,16 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 * @param fieldCameraDef
 	 * @return
 	 */
-	public boolean setFieldCameraDefinition(String fieldCameraDef) {
-		if ((this.fieldCameraDef != null) && this.fieldCameraDef.equals(fieldCameraDef)) {
+	public boolean setFieldCameraDefinition(FieldCameraInfo fieldCameraInfo) {
+		if (this.fieldCameraInfo.name.equals(fieldCameraInfo.name))
 			return(false);
-		}
-		this.fieldCameraDef = fieldCameraDef;
-		fieldCameraInfo = FieldCameraInfoManager.getInstance().getFieldCameraInfo(fieldCameraDef);
-		fovX = fieldCameraInfo.fovX;
-		aspect = fieldCameraInfo.fovX / fieldCameraInfo.fovY;
-		basicCamera.setFovX(fovX);
-		basicCamera.setAspect(aspect);
-		basicCamera.setFrustumFar(Landscape.getInstance().getWorldBound().getRadius());
-
-		if (frustum != null) {
-			geomNode.detachChild(frustum);
-		}
-//		double fovWid = Math.sin(Math.toRadians(fieldCameraInfo.fovX));
-//		double fovHgt = fovWid/aspect;
-//		frustum = new FrustumPyramid("_frustum", fovWid, fovHgt, 1, fieldCameraInfo.color);
-		frustum = new FrustumPyramid("_frustum", basicCamera, fieldCameraInfo.color);
-		frustum.getSceneHints().setAllPickingHints(false);
-//		setFovLength(fovLength);
-		setFovVisible(fovVisible);
-		geomNode.attachChild(frustum);
-
-		mountingNode.setTranslation(fieldCameraInfo.mountingOffset);
+		cameraNode.setTranslation(fieldCameraInfo.mountingOffset);		
+		cameraNode.setFieldCameraDefinition(fieldCameraInfo);
+		setAzElHgt(fieldCameraInfo);
+		return(true);
+	}
 		
+	private void setAzElHgt(FieldCameraInfo fieldCameraInfo) {		
 		if (!Double.isNaN(state.azimuth)) 
 			setAzimuth(state.azimuth);
 		else
@@ -296,7 +218,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 			setHeight(state.height);
 		else
 			setHeight(pixelScale*fieldCameraInfo.tripodHeight);
-		return(true);
 	}
 
 	/**
@@ -305,94 +226,11 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 * @return
 	 */
 	public String getFieldCameraDefinition() {
-		return (fieldCameraDef);
+		return (fieldCameraInfo.name);
 	}
 
 	public ReadOnlyColorRGBA getColorRGBA() {
 		return (colorRGBA);
-	}
-
-	public BasicCamera getCamera() {
-		return (basicCamera);
-	}
-
-	private void setLookAtLineLength(double length) {
-		if (lineLength == length) {
-			return;
-		}
-		lineLength = length;
-		lookAtLine.setScale(1, 1, length);
-	}
-
-	/**
-	 * Get FOV visibility
-	 * 
-	 * @return
-	 */
-	public boolean isFovVisible() {
-		return (frustum.isVisible());
-	}
-
-	/**
-	 * Set FOV visibility
-	 * 
-	 * @param enable
-	 */
-	public void setFovVisible(boolean enable) {
-		frustum.getSceneHints().setCullHint(enable ? CullHint.Inherit : CullHint.Always);
-		frustum.markDirty(DirtyType.RenderState);
-		fovVisible = enable;
-	}
-
-	/**
-	 * Set lookAt line visibility
-	 * 
-	 * @param enable
-	 */
-	public void setLookAtLineVisible(boolean enable) {
-		lookAtLine.getSceneHints().setCullHint(enable ? CullHint.Inherit : CullHint.Always);
-		lookAtLine.markDirty(DirtyType.RenderState);
-	}
-
-	/**
-	 * Get lookAt line visibility
-	 * 
-	 * @return
-	 */
-	public boolean isLookAtLineVisible() {
-		return (SpatialUtil.isDisplayed(lookAtLine));
-	}
-
-	/**
-	 * Set the bounds of the scene for computing clipping planes
-	 */
-	public void setSceneBounds() {
-		BoundingVolume bounds = World.getInstance().getRoot().getWorldBound();
-		sceneBounds.setRadius(bounds.getRadius());
-		sceneBounds.setCenter(bounds.getCenter());
-		basicCamera.setClippingPlanes(sceneBounds, true);
-		basicCamera.setFrustumNear(0.1);
-		double farPlane = MathUtil.distanceToSphere(World.getInstance().getRoot().getWorldBound(),
-			basicCamera.getLocation(), basicCamera.getDirection());
-		basicCamera.setFrustumFar(farPlane);
-	}
-
-	/**
-	 * Resize the camera
-	 * 
-	 * @param width
-	 * @param height
-	 */
-	public void resize(int width, int height) {
-		if ((width == 0) || (height == 0)) {
-			return;
-		}
-		if (basicCamera == null) {
-			return;
-		}
-		basicCamera.resize(width, height);
-		centerX = width / 2;
-		centerY = height / 2;
 	}
 
 	/**
@@ -411,8 +249,8 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 * Cull camera parts
 	 */
 	public void cull() {
-		geomNode.getSceneHints().setCullHint(CullHint.Always);
-		geomNode.updateGeometricState(0);
+		cameraNode.getGeometryNode().getSceneHints().setCullHint(CullHint.Always);
+		cameraNode.getGeometryNode().updateGeometricState(0);
 		lineSegment.getSceneHints().setCullHint(CullHint.Always);
 		lineSegment.updateGeometricState(0);
 		base.getSceneHints().setCullHint(CullHint.Always);
@@ -423,37 +261,16 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	 * Show camera parts
 	 */
 	public void uncull() {
-		geomNode.getSceneHints().setCullHint(CullHint.Inherit);
-		geomNode.updateGeometricState(0);
+		cameraNode.getGeometryNode().getSceneHints().setCullHint(CullHint.Inherit);
+		cameraNode.getGeometryNode().updateGeometricState(0);
 		lineSegment.getSceneHints().setCullHint(CullHint.Inherit);
 		lineSegment.updateGeometricState(0);
 		base.getSceneHints().setCullHint(CullHint.Inherit);
 		base.updateGeometricState(0);
 	}
 
-	public Node getGeometryNode() {
-		return (geomNode);
-	}
-
-	/**
-	 * Get distance from focal point to surface
-	 * 
-	 * @return
-	 */
-	public double getDistanceToSurface() {
-		getSceneHints().setPickingHint(PickingHint.Pickable, false);
-		Vector3 position = new Vector3();
-		Vector3 normal = new Vector3();
-		Vector2 mousePos = new Vector2(centerX, centerY);
-		Ray3 pickRay = new Ray3();
-		basicCamera.getPickRay(mousePos, false, pickRay);
-		Spatial spat = World.getInstance().select(pickRay, position, normal, null, true);
-		getSceneHints().setPickingHint(PickingHint.Pickable, true);
-		if (spat == null) {
-			return (Double.NaN);
-		} else {
-			return (basicCamera.getLocation().distance(position));
-		}
+	public SyntheticCameraNode getSyntheticCameraNode() {
+		return (cameraNode);
 	}
 
 	/**
@@ -470,20 +287,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 	@Override
 	public void setLabelVisible(boolean visible) {
 		label.setVisible(visible);
-	}
-
-	/**
-	 * Point camera at given coordinate
-	 * 
-	 * @param point
-	 * @return
-	 */
-	public Vector3 seek(ReadOnlyVector3 point) {
-		Vector3 dir = new Vector3(point);
-		dir.subtractLocal(basicCamera.getLocation());
-		dir.normalizeLocal();
-		Vector3 angle = MathUtil.directionToAzEl(dir, null);
-		return (angle);
 	}
 
 	private double convertLon(double value) {
@@ -671,6 +474,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 			materialState.setEnabled(true);
 			setRenderState(materialState);
 		}
+		cameraNode.setColor(color);
 		setMaterialState();
 		markDirty(DirtyType.RenderState);
 	}
@@ -692,34 +496,6 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 			imageQuad.setTexture(nominalTexture);
 			materialState.setEmissive(MaterialFace.FrontAndBack, colorRGBA);
 		}
-	}
-
-	/**
-	 * Get distance from camera focal point to surface
-	 * 
-	 * @param locale
-	 * @return
-	 */
-	public float getDistanceToSurface(World locale) {
-		getSceneHints().setPickingHint(PickingHint.Pickable, false);
-		PrimitivePickResults pr = new PrimitivePickResults();
-		Vector3 racPos = new Vector3(getWorldTranslation());
-		ReadOnlyVector3 vpDir = cameraNode.getCamera().getDirection();
-		Vector3 racDir = new Vector3((float) vpDir.getX(), (float) vpDir.getY(), (float) vpDir.getZ());
-		final Ray3 mouseRay = new Ray3(racPos, racDir);
-		pr.clear();
-		pr.setCheckDistance(true);
-		PickingUtil.findPick(locale, mouseRay, pr);
-		if (pr.getNumber() == 0) {
-			return (Float.NaN);
-		}
-		PickData pd = pr.getPickData(0);
-		if (pd != null) {
-			double dist = pd.getIntersectionRecord().getClosestDistance();
-			return ((float) dist);
-		}
-
-		return (Float.NaN);
 	}
 
 	/**

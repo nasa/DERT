@@ -8,7 +8,7 @@ import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.mapelement.FeatureSetView;
 
 import java.awt.Color;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Provides a state object for a FeatureSet.
@@ -37,7 +37,7 @@ public class FeatureSetState extends MapElementState {
 		this.labelProp = labelProp;
 		this.ground = ground;
 		this.lineWidth = FeatureSet.defaultLineWidth;
-		viewData = new ViewData(-1, -1, 400, 350, false);
+		viewData = new ViewData(400, 350, false);
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class FeatureSetState extends MapElementState {
 	/**
 	 * Constructor for hash map
 	 */
-	public FeatureSetState(HashMap<String,Object> map) {
+	public FeatureSetState(Map<String,Object> map) {
 		super(map);
 		filePath = StateUtil.getString(map, "FilePath", null);
 		labelProp = StateUtil.getString(map, "LabelProperty", null);
@@ -97,8 +97,8 @@ public class FeatureSetState extends MapElementState {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		if (mapElement != null) {
 			FeatureSet featureSet = (FeatureSet) mapElement;
 			filePath = featureSet.getFilePath();
@@ -148,6 +148,7 @@ public class FeatureSetState extends MapElementState {
 			fsv.setMapElement(f);
 		}
 		setView(fsv);
-		viewData.createWindow(Dert.getMainWindow(), name+" View", X_OFFSET, Y_OFFSET);
+//		viewData.createWindow(Dert.getMainWindow(), name+" View", X_OFFSET, Y_OFFSET);
+		viewData.createWindow(Dert.getMainWindow(), name+" View");
 	}
 }

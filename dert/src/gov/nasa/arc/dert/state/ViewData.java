@@ -22,9 +22,10 @@ public class ViewData {
 	
 	public static int DEFAULT_WINDOW_WIDTH = 800;
 	public static int DEFAULT_WINDOW_HEIGHT = 600;
+	public static int DEFAULT_WINDOW_OFFSET = 30;
 
 	// Window dimensions
-	private int windowX = -1, windowY = -1, windowWidth = DEFAULT_WINDOW_WIDTH, windowHeight = DEFAULT_WINDOW_HEIGHT;
+	private int windowX = -DEFAULT_WINDOW_OFFSET, windowY = -DEFAULT_WINDOW_OFFSET, windowWidth = DEFAULT_WINDOW_WIDTH, windowHeight = DEFAULT_WINDOW_HEIGHT;
 
 	// Indicates visibility
 	private boolean visible;
@@ -38,6 +39,17 @@ public class ViewData {
 	// The associated view
 	protected transient Window viewWindow;
 	protected transient View view;
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param windowWidth
+	 * @param windowHeight
+	 * @param onTop
+	 */
+	public ViewData(int windowWidth, int windowHeight, boolean onTop) {
+		this(-DEFAULT_WINDOW_OFFSET, -DEFAULT_WINDOW_OFFSET, windowWidth, windowHeight, onTop);
+	}
 
 	/**
 	 * Constructor
@@ -134,15 +146,28 @@ public class ViewData {
 	 * @param defaultX
 	 * @param defaultY
 	 */
-	public void setViewWindow(Window window, boolean setBounds, int defaultX, int defaultY) {
-		this.viewWindow = window;
+//	public void setViewWindow(Window window, boolean setBounds, int defaultX, int defaultY) {
+//		this.viewWindow = window;
+//		if ((viewWindow != null) && setBounds) {
+//			if (windowX < 0) {
+//				windowX = defaultX;
+//			}
+//			if (windowY < 0) {
+//				windowY = defaultY;
+//			}
+//			window.setLocation(windowX, windowY);
+//			if (packIt) {
+//				window.pack();
+//				windowWidth = window.getWidth();
+//				windowHeight = window.getHeight();
+//			} else {
+//				window.setSize(windowWidth, windowHeight);
+//			}
+//		}
+//	}
+	public void setViewWindow(Window window, boolean setBounds) {
+		viewWindow = window;
 		if ((viewWindow != null) && setBounds) {
-			if (windowX < 0) {
-				windowX = defaultX;
-			}
-			if (windowY < 0) {
-				windowY = defaultY;
-			}
 			window.setLocation(windowX, windowY);
 			if (packIt) {
 				window.pack();
@@ -242,7 +267,8 @@ public class ViewData {
 	 * @param yOffset
 	 * @return
 	 */
-	public Window createWindow(Frame parent, String title, int xOffset, int yOffset) {
+//	public Window createWindow(Frame parent, String title, int xOffset, int yOffset) {
+	public Window createWindow(Frame parent, String title) {
 		JDialog dialog = null;
 		if (isOnTop()) {
 			dialog = new JDialog(parent);
@@ -260,9 +286,14 @@ public class ViewData {
 		dialog.setLayout(new BorderLayout());
 		dialog.getContentPane().add((Component) view, BorderLayout.CENTER);
 		Point point = parent.getLocation();
-		xOffset += point.x;
-		yOffset += point.y;
-		setViewWindow(dialog, true, xOffset, yOffset);
+		if ((windowX < 0) || (windowY < 0)) {
+			windowX = Math.abs(windowX)+point.x;
+			windowY = Math.abs(windowY)+point.y;
+		}
+//		xOffset += point.x;
+//		yOffset += point.y;
+//		setViewWindow(dialog, true, xOffset, yOffset);
+		setViewWindow(dialog, true);
 		return (dialog);
 	}
 
@@ -275,7 +306,8 @@ public class ViewData {
 			view.close();
 		Window window = viewWindow;
 		setView(null);
-		setViewWindow(null, false, 0, 0);
+//		setViewWindow(null, false, 0, 0);
+		setViewWindow(null, false);
 		if (window == null)
 			return;
 		window.setVisible(false);

@@ -4,7 +4,7 @@ import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
-import gov.nasa.arc.dert.state.PanelState.PanelType;
+import gov.nasa.arc.dert.state.StateFactory.DefaultState;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.mapelement.MapElementsView;
@@ -12,6 +12,7 @@ import gov.nasa.arc.dert.view.surfaceandlayers.SurfaceAndLayersView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JTextField;
 
@@ -21,22 +22,9 @@ import javax.swing.JTextField;
  */
 public class Configuration {
 
-	// States for views
-	public final PanelState helpState;
-	public final PanelState surfAndLayerState;
-	public final MapElementsState mapElementsState;
-	public final PanelState colorBarsState;
-	public final PanelState lightingState;
-	public final PanelState lightPosState;
-	public final ViewpointState viewPtState;
-	public final AnimationState animationState;
-	public final PanelState consoleState;
-
-	// The world state
+	// Default states
+	public final ConsoleState consoleState;
 	public final WorldState worldState;
-
-	// The marble state
-	public final MarbleState marbleState;
 
 	// States for MapElements
 	public ArrayList<MapElementState> mapElementStateList;
@@ -48,7 +36,10 @@ public class Configuration {
 	protected int[] mapElementCount;
 
 	// The path to the landscape where this configuration is stored
-	protected transient String landscapePath;
+	protected String landscapePath;
+	
+	// General maps
+	protected ConcurrentHashMap<String, State> stateMap;
 
 	/**
 	 * Constructor
@@ -56,170 +47,58 @@ public class Configuration {
 	 * @param label
 	 */
 	public Configuration(String label) {
-		this.label = label;
-		worldState = new WorldState((String)null);
-		consoleState = new PanelState(PanelType.Console, "DERT Console", new ViewData(-1, 624, 960, 250, false));
+		this.label = label;		
+		
+		stateMap = new ConcurrentHashMap<String, State>();
+		
+		StateFactory stateFactory = ConfigurationManager.getInstance().getStateFactory();
+		worldState = (WorldState)stateFactory.createState(DefaultState.WorldState);
+		stateMap.put("WorldState", worldState);
+		consoleState = (ConsoleState)stateFactory.createState(DefaultState.ConsoleState);
 		consoleState.viewData.setVisible(true);
-		helpState = new PanelState(PanelType.Help, "DERT Help", new ViewData(-1, -1, ViewData.DEFAULT_WINDOW_WIDTH, ViewData.DEFAULT_WINDOW_HEIGHT, false));
-		mapElementsState = new MapElementsState();
-		surfAndLayerState = new PanelState(PanelType.SurfaceAndLayers, "DERT Surface and Layers", new ViewData(-1, -1, 375, 600, false));
-		lightingState = new PanelState(PanelType.Lighting, "DERT Lighting and Shadows", new ViewData(-1, -1, -1, -1, false));
-		viewPtState = new ViewpointState();
-		animationState = new AnimationState();
-		lightPosState = new PanelState(PanelType.LightPosition, "DERT Light Position", new ViewData(-1, -1, -1, -1, false));
-		colorBarsState = new PanelState(PanelType.ColorBars, "DERT Color Bars", new ViewData(-1, -1, 700, 200, false));
-		marbleState = new MarbleState();
+		stateMap.put("ConsoleState", consoleState);
+		stateMap.put("HelpState", stateFactory.createState(DefaultState.HelpState));
+		stateMap.put("MapElementsState", stateFactory.createState(DefaultState.MapElementsState));
+		stateMap.put("SurfaceAndLayerState", stateFactory.createState(DefaultState.SurfaceAndLayersState));
+		stateMap.put("LightingState", stateFactory.createState(DefaultState.LightingState));
+		stateMap.put("ViewpointState", stateFactory.createState(DefaultState.ViewpointState));
+		stateMap.put("AnimationState", stateFactory.createState(DefaultState.AnimationState));
+		stateMap.put("LightPositionState", stateFactory.createState(DefaultState.LightPositionState));
+		stateMap.put("ColorBarsState", stateFactory.createState(DefaultState.ColorBarsState));
+		stateMap.put("MarbleState", stateFactory.createState(DefaultState.MarbleState));
+		
 		mapElementStateList = new ArrayList<MapElementState>();
 		mapElementCount = new int[MapElementState.Type.values().length];
 	}
 	
 	public Configuration(HashMap<String,Object> map) {
-		label = StateUtil.getString(map, "Label", null);
-		mapElementCount = (int[])map.get("MapElementCount");
-		consoleState = new PanelState((HashMap<String,Object>)map.get("ConsoleState"));
-		marbleState = new MarbleState((HashMap<String,Object>)map.get("MarbleState"));
-		worldState = new WorldState((HashMap<String,Object>)map.get("WorldState"));
-		helpState = new PanelState((HashMap<String,Object>)map.get("HelpState"));
-		surfAndLayerState = new PanelState((HashMap<String,Object>)map.get("SurfaceAndLayerState"));
-		mapElementsState = new MapElementsState((HashMap<String,Object>)map.get("MapElementsState"));
-		colorBarsState = new PanelState((HashMap<String,Object>)map.get("ColorBarsState"));
-		lightingState = new PanelState((HashMap<String,Object>)map.get("LightingState"));
-		lightPosState = new PanelState((HashMap<String,Object>)map.get("LightPositionState"));
-		viewPtState = new ViewpointState((HashMap<String,Object>)map.get("ViewpointState"));
-		animationState = new AnimationState((HashMap<String,Object>)map.get("AnimationState"));
+		
+		label = StateUtil.getString(map, "Label", null);				
+		
+		stateMap = new ConcurrentHashMap<String, State>();
+		
+		DefaultState[] dState = DefaultState.values();
+		
+		StateFactory stateFactory = ConfigurationManager.getInstance().getStateFactory();
+		for (int i=0; i<dState.length; ++i) {
+			State s = stateFactory.createState(dState[i].toString(), (HashMap<String,Object>)map.get(dState[i].toString()));
+			if (s == null)
+				throw new IllegalStateException("Missing "+dState[i]);
+			stateMap.put(dState[i].toString(), s);
+		}
+		worldState = (WorldState)stateMap.get("WorldState");
+		consoleState = (ConsoleState)stateMap.get("ConsoleState");
 
+		mapElementCount = (int[])map.get("MapElementCount");
 		int n = StateUtil.getInteger(map, "MapElementStateCount", 0);
 		mapElementStateList = new ArrayList<MapElementState>();
 		for (int i = 0; i < n; ++i) {
 			HashMap<String,Object> meMap = (HashMap<String,Object>)map.get("MapElementState"+i);
-			String str = StateUtil.getString(meMap, "MapElementType", null);
-			if (str != null) {
-				try {
-					MapElementState.Type type = MapElementState.Type.valueOf(str);
-					if (type != null)
-						switch (type) {
-						case Placemark:
-							mapElementStateList.add(new PlacemarkState(meMap));
-							break;
-						case Figure:
-							mapElementStateList.add(new FigureState(meMap));
-							break;
-						case Billboard:
-							mapElementStateList.add(new ImageBoardState(meMap));
-							break;
-						case FeatureSet:
-							mapElementStateList.add(new FeatureSetState(meMap));
-							break;
-						case Path:
-							mapElementStateList.add(new PathState(meMap));
-							break;
-						case Plane:
-							mapElementStateList.add(new PlaneState(meMap));
-							break;
-						case CartesianGrid:
-							mapElementStateList.add(new GridState(meMap));
-							break;
-						case RadialGrid:
-							mapElementStateList.add(new GridState(meMap));
-							break;
-						case Profile:
-							mapElementStateList.add(new ProfileState(meMap));
-							break;
-						case FieldCamera:
-							mapElementStateList.add(new FieldCameraState(meMap));
-							break;
-						case Waypoint:
-							mapElementStateList.add(new WaypointState(meMap));
-							break;
-						case Marble:
-							mapElementStateList.add(new MarbleState(meMap));
-							break;
-						case Scale:
-							mapElementStateList.add(new ScaleBarState(meMap));
-							break;
-						case Feature:
-							break;
-						}
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+			MapElementState meState = stateFactory.createMapElementState(meMap);
+			if (meState != null)
+				mapElementStateList.add(meState);
 		}
 		
-	}
-	
-	public boolean isEqualTo(Configuration that) {
-		if (!this.label.equals(that.label)) {
-			System.err.println("Configuration labels not eaual ("+this.label+","+that.label+")");
-			return(false);
-		}
-		if (this.mapElementCount.length != that.mapElementCount.length) {
-			System.err.println("Configuration map element counts not equal ("+this.mapElementCount.length+","+that.mapElementCount.length+")");
-			return(false);
-		}
-		for (int i=0; i<mapElementCount.length; ++i)
-			if (this.mapElementCount[i] != that.mapElementCount[i]) {
-				System.err.println("Configuration map element count "+i+" not equal ("+this.mapElementCount[i]+","+that.mapElementCount[i]+")");
-				return(false);
-			}
-		if (!this.consoleState.isEqualTo(that.consoleState)) { 
-			System.err.println("Configuration console state not equal");
-			return(false);
-		}
-		if (!this.marbleState.isEqualTo(that.marbleState)) {
-			System.err.println("Configuration marble state not equal");
-			return(false);
-		}
-		if (!this.worldState.isEqualTo(that.worldState)) {
-			System.err.println("Configuration world state not equal");
-			return(false);
-		}
-		if (!this.helpState.isEqualTo(that.helpState)) {
-			System.err.println("Configuration world state not equal");
-			return(false);
-		}
-		if (!this.surfAndLayerState.isEqualTo(that.surfAndLayerState)) {
-			System.err.println("Configuration surface and layer state not equal");
-			return(false);
-		}
-		if (!this.mapElementsState.isEqualTo(that.mapElementsState)) {
-			System.err.println("Configuration map elements state not equal");
-			return(false);
-		}
-		if (!this.colorBarsState.isEqualTo(that.colorBarsState)) {
-			System.err.println("Configuration color bars state not equal");
-			return(false);
-		}
-		if (!this.lightingState.isEqualTo(that.lightingState)) {
-			System.err.println("Configuration lighting state not equal");
-			return(false);
-		}
-		if (!this.lightPosState.isEqualTo(that.lightPosState)) {
-			System.err.println("Configuration light position state not equal");
-			return(false);
-		}
-		if (!this.viewPtState.isEqualTo(that.viewPtState)) {
-			System.err.println("Configuration viewpoint state not equal");
-			return(false);
-		}
-		if (!this.animationState.isEqualTo(that.animationState)) {
-			System.err.println("Configuration animation state not equal");
-			return(false);
-		}
-		if (this.mapElementStateList.size() != that.mapElementStateList.size()) {
-			System.err.println("Configuration map elements state list size not equal");
-			return(false);
-		}
-		for (int i=0; i<this.mapElementStateList.size(); ++i) {
-			MapElementState mps0 = this.mapElementStateList.get(i);
-			MapElementState mps1 = that.mapElementStateList.get(i);
-			if (!mps0.isEqualTo(mps1)) {
-				System.err.println("Configuration map element state "+i+" not equal");
-				return(false);
-			}
-		}
-		return(true);
 	}
 
 	/**
@@ -353,20 +232,14 @@ public class Configuration {
 		HashMap<String,Object> map = new HashMap<String,Object>();
 		
 		map.put("Label", label);
-		map.put("MapElementCount", mapElementCount);
+		map.put("LandscapePath", landscapePath);
 		
-		map.put("WorldState", worldState.save());
-		map.put("HelpState", helpState.save());
-		map.put("SurfaceAndLayerState", surfAndLayerState.save());
-		map.put("MapElementsState", mapElementsState.save());
-		map.put("ColorBarsState", colorBarsState.save());
-		map.put("LightingState", lightingState.save());
-		map.put("LightPositionState", lightPosState.save());
-		map.put("ViewpointState", viewPtState.save());
-		map.put("AnimationState", animationState.save());
-		map.put("ConsoleState", consoleState.save());
-		map.put("MarbleState", marbleState.save());
+		Object[] key = stateMap.keySet().toArray();
+		for (int i=0; i<key.length; ++i) {
+			map.put((String)key[i], stateMap.get(key[i]).save());
+		}
 
+		map.put("MapElementCount", mapElementCount);
 		map.put("MapElementStateCount", new Integer(mapElementStateList.size()));
 		for (int i = 0; i < mapElementStateList.size(); ++i)
 			map.put("MapElementState"+i, mapElementStateList.get(i).save());		
@@ -447,14 +320,16 @@ public class Configuration {
 	 * Close all views
 	 */
 	public void closeViews() {
-		helpState.viewData.close();
-		surfAndLayerState.viewData.close();
-		mapElementsState.viewData.close();
-		colorBarsState.viewData.close();
-		lightingState.viewData.close();
-		lightPosState.viewData.close();
-		viewPtState.viewData.close();
-		animationState.viewData.close();
+		
+		Object[] key = stateMap.keySet().toArray();
+		for (int i=0; i<key.length; ++i) {
+			if (key[i].equals("WorldState"))
+				continue;
+			ViewData viewData = stateMap.get(key[i]).viewData;
+			if (viewData != null)
+				viewData.close();
+		}
+		
 		for (int i = 0; i < mapElementStateList.size(); ++i) {
 			State state = mapElementStateList.get(i);
 			ViewData viewData = state.viewData;
@@ -468,14 +343,14 @@ public class Configuration {
 	 * Open all views
 	 */
 	public void openViews() {
-		helpState.open(false);
-		surfAndLayerState.open(false);
-		mapElementsState.open(false);
-		colorBarsState.open(false);
-		lightingState.open(false);
-		lightPosState.open(false);
-		viewPtState.open(false);
-		animationState.open(false);
+		
+		Object[] key = stateMap.keySet().toArray();
+		for (int i=0; i<key.length; ++i) {
+			State state = stateMap.get(key[i]);
+			if ((state.viewData != null) && state.viewData.isVisible())
+				state.open(false);
+		}
+		
 		for (int i = 0; i < mapElementStateList.size(); ++i) {
 			MapElementState state = mapElementStateList.get(i);
 			state.open(false);
@@ -488,7 +363,8 @@ public class Configuration {
 	 * @return
 	 */
 	public SurfaceAndLayersView getSurfaceAndLayersView() {
-		return ((SurfaceAndLayersView) surfAndLayerState.viewData.view);
+		SurfaceAndLayersState state = (SurfaceAndLayersState)getState(DefaultState.SurfaceAndLayersState.toString());
+		return ((SurfaceAndLayersView) state.viewData.view);
 	}
 
 	/**
@@ -497,6 +373,19 @@ public class Configuration {
 	 * @return
 	 */
 	public MapElementsView getMapElementsView() {
-		return ((MapElementsView) mapElementsState.viewData.view);
+		MapElementsState state = (MapElementsState)getState(DefaultState.MapElementsState.toString());
+		return ((MapElementsView) state.viewData.view);
+	}
+	
+	public void addState(String key, State state) {
+		stateMap.put(key, state);
+	}
+	
+	public void removeState(String key) {
+		stateMap.remove(key);
+	}
+	
+	public State getState(String key) {
+		return(stateMap.get(key));
 	}
 }

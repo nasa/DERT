@@ -6,7 +6,9 @@ import gov.nasa.arc.dert.action.MenuItemAction;
 import gov.nasa.arc.dert.action.PopupMenuAction;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.state.AnimationState;
 import gov.nasa.arc.dert.state.ConfigurationManager;
+import gov.nasa.arc.dert.state.ViewpointState;
 import gov.nasa.arc.dert.viewpoint.Viewpoint.ViewpointMode;
 
 import java.awt.PopupMenu;
@@ -90,7 +92,8 @@ public class ViewpointMenuAction extends PopupMenuAction {
 		MenuItemAction viewpointListAction = new MenuItemAction("Open Viewpoint List") {
 			@Override
 			public void run() {
-				ConfigurationManager.getInstance().getCurrentConfiguration().viewPtState.open(true);
+				ViewpointState vpState = (ViewpointState)ConfigurationManager.getInstance().getCurrentConfiguration().getState("ViewpointState");
+				vpState.open(true);
 			}
 		};
 		menu.add(viewpointListAction);
@@ -98,7 +101,8 @@ public class ViewpointMenuAction extends PopupMenuAction {
 		MenuItemAction animationAction = new MenuItemAction("Open Animation Control Panel") {
 			@Override
 			public void run() {
-				ConfigurationManager.getInstance().getCurrentConfiguration().animationState.open(true);
+				AnimationState aState = (AnimationState)ConfigurationManager.getInstance().getCurrentConfiguration().getState("AnimationState");
+				aState.open(true);
 			}
 		};
 		menu.add(animationAction);

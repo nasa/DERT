@@ -24,6 +24,7 @@ import gov.nasa.arc.dert.scenegraph.FigureMarker;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.scenegraph.LineStrip;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
+import gov.nasa.arc.dert.state.FeatureSetState;
 import gov.nasa.arc.dert.state.FeatureState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.view.Console;
@@ -31,6 +32,7 @@ import gov.nasa.arc.dert.view.Console;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +54,6 @@ import com.ardor3d.util.geom.BufferUtils;
 public class GeojsonLoader {
 
 	private String filePath;
-	private String labelProp;
 	private double minZ, maxZ;
 	private Vector3 coord = new Vector3();
 	private double[] dcoord = new double[3];
@@ -68,11 +69,10 @@ public class GeojsonLoader {
 	 * @param srs
 	 *            the spatial reference system to be used for coordinates
 	 */
-	public GeojsonLoader(SpatialReferenceSystem srs, String elevAttrName, String labelProp, boolean ground, float size, float lineWidth) {
+	public GeojsonLoader(SpatialReferenceSystem srs, String elevAttrName, boolean ground, float size, float lineWidth) {
 		this.srs = srs;
 		this.elevAttrName = elevAttrName;
 		this.ground = ground;
-		this.labelProp = labelProp;
 		this.size = size;
 		this.lineWidth = lineWidth;
 	}
@@ -110,6 +110,35 @@ public class GeojsonLoader {
 	}
 
 	/**
+	 * Load a GeoJSON file
+	 * 
+	 * @param filePath
+	 *            path to the file
+	 * @return a GeoJSON object
+	 */
+	public GeoJsonObject load(InputStream inputStream) {
+		this.filePath = null;
+		try {
+			JsonReader jsonReader = Json.createReader(inputStream);
+			JsonObject root = jsonReader.readObject();
+			jsonReader.close();
+			inputStream.close();
+			String type = root.getString("type");
+			GeoJsonObject groot = null;
+			if (type.equals("FeatureCollection")) {
+				groot = new GeoJsonFeatureCollection(root);
+			} else if (type.equals("Feature")) {
+				groot = new GeoJsonFeature(root);
+			}
+			return (groot);
+		} catch (Exception e) {
+			Console.println("Unable to load GeoJSON input stream, see log.");
+			e.printStackTrace();
+		}
+		return (null);
+	}
+
+	/**
 	 * Convert a GeoJsonObject to a FeatureSet
 	 * 
 	 * @param gjRoot
@@ -125,7 +154,10 @@ public class GeojsonLoader {
 	 *            the elevation attribute name (from gdaldem)
 	 * @return the FeatureSet
 	 */
-	public FeatureSet geoJsonToArdor3D(GeoJsonObject gjRoot, FeatureSet root, Color color) {
+	public Node geoJsonToArdor3D(GeoJsonObject gjRoot, FeatureSet root, String labelProp) {
+		Color color = root.getColor();
+		if (labelProp == null)
+			labelProp = ((FeatureSetState)root.getState()).labelProp;
 					
 		// Minimum landscape elevation
 		landscapeMinZ = 0;
@@ -133,24 +165,27 @@ public class GeojsonLoader {
 			landscapeMinZ = Landscape.getInstance().getMinimumElevation();
 
 		int count = 0;
+		Node result = null;
 		if (gjRoot instanceof GeoJsonFeature) {
 			GeoJsonFeature gjFeature = (GeoJsonFeature) gjRoot;
-			Feature feature = geojsonFeatureToArdor3D(gjFeature, color, count);
+			Feature feature = geojsonFeatureToArdor3D(gjFeature, color, labelProp, count);
 			if (feature != null) {
 				root.attachChild(feature);
 				count++;
 			}
+			result = feature;
 		} else if (gjRoot instanceof GeoJsonFeatureCollection) {
 			GeoJsonFeatureCollection collection = (GeoJsonFeatureCollection) gjRoot;
 			ArrayList<GeoJsonFeature> featureList = collection.getFeatureList();
 			for (int i = 0; i < featureList.size(); ++i) {
 				GeoJsonFeature gjFeature = featureList.get(i);
-				Feature feature = geojsonFeatureToArdor3D(gjFeature, color, count);
+				Feature feature = geojsonFeatureToArdor3D(gjFeature, color, labelProp, count);
 				if (feature != null) {
 					root.attachChild(feature);
 					count++;
 				}
 			}
+			result = root;
 		}
 		Collections.sort(root.getChildren(), new Comparator<Spatial>() {
 			public int compare(Spatial spat1, Spatial spat2) {
@@ -165,10 +200,10 @@ public class GeojsonLoader {
 			Console.println("Found " + count + " features for GeoJSON file " + filePath + ".");
 		else
 			System.out.println("Found " + count + " features for GeoJSON file " + filePath + ".");
-		return (root);
+		return (result);
 	}
 
-	private Feature geojsonFeatureToArdor3D(GeoJsonFeature gjFeature, Color color, int count) {
+	private Feature geojsonFeatureToArdor3D(GeoJsonFeature gjFeature, Color color, String labelProp, int count) {
 		minZ = Double.MAX_VALUE;
 		maxZ = -Double.MAX_VALUE;
 		Geometry geometry = gjFeature.getGeometry();

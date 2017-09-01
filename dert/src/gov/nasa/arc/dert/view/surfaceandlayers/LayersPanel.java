@@ -67,7 +67,7 @@ public class LayersPanel extends GroupPanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				LayerConfigurationDialog dialog = new LayerConfigurationDialog((Dialog) state.getViewData().getViewWindow());
-				if (dialog.open()) {
+				if (dialog.open() != null) {
 					updateVisibleLayers();
 					Landscape.getInstance().resetLayers();
 				}

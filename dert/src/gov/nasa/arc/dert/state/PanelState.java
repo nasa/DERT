@@ -2,32 +2,17 @@ package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.util.StateUtil;
-import gov.nasa.arc.dert.view.ColorBarView;
-import gov.nasa.arc.dert.view.ConsoleView;
-import gov.nasa.arc.dert.view.HelpView;
 import gov.nasa.arc.dert.view.View;
-import gov.nasa.arc.dert.view.lighting.LightPositionView;
-import gov.nasa.arc.dert.view.lighting.LightingView;
-import gov.nasa.arc.dert.view.mapelement.MapElementsView;
-import gov.nasa.arc.dert.view.surfaceandlayers.SurfaceAndLayersView;
-import gov.nasa.arc.dert.view.viewpoint.AnimationView;
-import gov.nasa.arc.dert.view.viewpoint.ViewpointView;
 
 import java.awt.Window;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Base class for state objects based on AWT or Swing panels.
  *
  */
-public class PanelState extends State {
+public abstract class PanelState extends State {
 
-	// Types of views
-	public static enum PanelType {
-		Console, Help, ColorBars, SurfaceAndLayers, Lighting, LightPosition, MapElements, Viewpoint, Animation
-	}
-
-	public PanelType type;
 	public String title;
 
 	/**
@@ -37,21 +22,16 @@ public class PanelState extends State {
 	 * @param title
 	 * @param viewData
 	 */
-	public PanelState(PanelType type, String title, ViewData viewData) {
-		super(type.toString(), StateType.Panel, viewData);
-		this.type = type;
+	public PanelState(String name, String title, ViewData viewData) {
+		super(name, StateType.Panel, viewData);
 		this.title = title;
 	}
 	
 	/**
 	 * Constructor from hash map.
 	 */
-	public PanelState(HashMap<String,Object> map) {
+	public PanelState(Map<String,Object> map) {
 		super(map);
-		String str = StateUtil.getString(map, "PanelType", null);
-		if (str == null)
-			throw new NullPointerException("Panel has no type.");
-		type = PanelType.valueOf(str);
 		title = StateUtil.getString(map, "PanelTitle", "");
 	}
 	
@@ -64,8 +44,6 @@ public class PanelState extends State {
 			return(false);
 		if (!this.title.equals(that.title)) 
 			return(false);
-		if (this.type != that.type) 
-			return(false);
 		return(true);
 	}
 
@@ -73,9 +51,8 @@ public class PanelState extends State {
 	 * Save contents
 	 */
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
-		map.put("PanelType", type.toString());
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		map.put("PanelTitle", title);
 		return(map);
 	}
@@ -98,52 +75,23 @@ public class PanelState extends State {
 			window.setVisible(true);
 			return (view);
 		}
-		int xOffset = 20;
-		int yOffset = 20;
+//		int xOffset = 20;
+//		int yOffset = 20;
 		if (view == null) {
-			switch (type) {
-			case Help:
-				view = new HelpView(this);
-				break;
-			case ColorBars:
-				view = new ColorBarView(this);
-				break;
-			case Console:
-				view = new ConsoleView(this);
-				window = Dert.getConsoleWindow();
-				xOffset = 0;
-				yOffset = 600;
-				break;
-			case MapElements:
-				view = new MapElementsView((MapElementsState) this);
-				break;
-			case Lighting:
-				view = new LightingView(this);
-				break;
-			case LightPosition:
-				view = new LightPositionView(this);
-				break;
-			case SurfaceAndLayers:
-				view = new SurfaceAndLayersView(this);
-				break;
-			case Viewpoint:
-				view = new ViewpointView((ViewpointState) this);
-				break;
-			case Animation:
-				view = new AnimationView((AnimationState) this);
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown panel type " + type);
-			}
+			view = createView();
 			setView(view);
 		}
-		if (window == null) {
-			window = viewData.createWindow(Dert.getMainWindow(), title, xOffset, yOffset);
-		} else {
-			viewData.setViewWindow(window, true, xOffset, yOffset);
-		}
+		window = viewData.createWindow(Dert.getMainWindow(), title);
+//		if (window == null) {
+//			window = viewData.createWindow(Dert.getMainWindow(), title, xOffset, yOffset);
+//		} else {
+//			viewData.setViewWindow(window, true, xOffset, yOffset);
+//			viewData.setViewWindow(window, true);
+//		}
 		window.setVisible(true);
 		return (view);
 	}
+	
+	protected abstract View createView();
 
 }

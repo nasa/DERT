@@ -22,7 +22,7 @@ import javax.swing.SwingConstants;
 public class FieldCameraPanel extends MapElementBasePanel {
 
 	// Controls
-	private JCheckBox fovCheckBox, lineCheckBox;
+	private JCheckBox fovCheckBox, lineCheckBox, crosshairCheckBox;
 	private JComboBox defCombo;
 
 	// FieldCamera
@@ -40,6 +40,7 @@ public class FieldCameraPanel extends MapElementBasePanel {
 	@Override
 	protected void addFields(ArrayList<Component> compList) {
 		super.addFields(compList);
+		fieldCamera = (FieldCamera)mapElement;
 		
 		compList.add(new JLabel("Definition", SwingConstants.RIGHT));
 		String[] names = FieldCameraInfoManager.getInstance().getFieldCameraNames();
@@ -49,7 +50,7 @@ public class FieldCameraPanel extends MapElementBasePanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				String fieldCameraDef = (String) defCombo.getSelectedItem();
-				if (fieldCamera.setFieldCameraDefinition(fieldCameraDef)) {
+				if (fieldCamera.setFieldCameraDefinition(FieldCameraInfoManager.getInstance().getFieldCameraInfo(fieldCameraDef))) {
 					FieldCameraView view = (FieldCameraView)fieldCamera.getState().getViewData().getView();
 					if (view != null)
 						view.setRange(fieldCamera.getFieldCameraInfo());					
@@ -58,24 +59,36 @@ public class FieldCameraPanel extends MapElementBasePanel {
 		});
 		compList.add(defCombo);
 
+		compList.add(new JLabel("Crosshair", SwingConstants.RIGHT));
+		crosshairCheckBox = new JCheckBox("visible");
+		crosshairCheckBox.setSelected(fieldCamera.getSyntheticCameraNode().isCrosshairVisible());
+		crosshairCheckBox.setToolTipText("display crosshair");
+		crosshairCheckBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				fieldCamera.getSyntheticCameraNode().setCrosshairVisible(crosshairCheckBox.isSelected());
+			}
+		});
+		compList.add(crosshairCheckBox);
+
 		compList.add(new JLabel("Field of View", SwingConstants.RIGHT));
 		fovCheckBox = new JCheckBox("visible");
 		fovCheckBox.setToolTipText("display the field of view frustum");
 		fovCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				fieldCamera.setFovVisible(fovCheckBox.isSelected());
+				fieldCamera.getSyntheticCameraNode().setFovVisible(fovCheckBox.isSelected());
 			}
 		});
 		compList.add(fovCheckBox);
 
-		compList.add(new JLabel("Line to Look At", SwingConstants.RIGHT));
+		compList.add(new JLabel("Site Line", SwingConstants.RIGHT));
 		lineCheckBox = new JCheckBox("visible");
 		lineCheckBox.setToolTipText("display a line to the lookat point");
 		lineCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				fieldCamera.setLookAtLineVisible(lineCheckBox.isSelected());
+				fieldCamera.getSyntheticCameraNode().setSiteLineVisible(lineCheckBox.isSelected());
 			}
 		});
 		compList.add(lineCheckBox);
@@ -87,8 +100,9 @@ public class FieldCameraPanel extends MapElementBasePanel {
 		fieldCamera = (FieldCamera) mapElement;
 		setLocation(locationText, locLabel, fieldCamera.getTranslation());
 		defCombo.setSelectedItem(fieldCamera.getFieldCameraDefinition());
-		fovCheckBox.setSelected(fieldCamera.isFovVisible());
-		lineCheckBox.setSelected(fieldCamera.isLookAtLineVisible());
+		fovCheckBox.setSelected(fieldCamera.getSyntheticCameraNode().isFovVisible());
+		lineCheckBox.setSelected(fieldCamera.getSyntheticCameraNode().isSiteLineVisible());
+		crosshairCheckBox.setSelected(fieldCamera.getSyntheticCameraNode().isCrosshairVisible());
 	}
 
 }

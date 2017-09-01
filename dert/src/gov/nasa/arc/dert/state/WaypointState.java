@@ -6,7 +6,7 @@ import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.mapelement.EditDialog;
 
 import java.awt.Color;
-import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.Icon;
 
@@ -48,7 +48,7 @@ public class WaypointState extends MapElementState {
 	/**
 	 * Constructor from hash map.
 	 */
-	public WaypointState(HashMap<String,Object> map) {
+	public WaypointState(Map<String,Object> map) {
 		super(map);
 		location = StateUtil.getVector3(map, "Location", null);
 		if (location == null)
@@ -64,8 +64,8 @@ public class WaypointState extends MapElementState {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		if (mapElement != null) {
 			Waypoint waypoint = (Waypoint) mapElement;
 			location = new Vector3(waypoint.getLocation());

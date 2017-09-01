@@ -14,6 +14,7 @@ import gov.nasa.arc.dert.viewpoint.FlyThroughParameters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
 
@@ -57,7 +58,7 @@ public class PathState extends ToolState {
 		labelType = Path.defaultLabelType;
 		lineWidth = Path.defaultLineWidth;
 		waypointsVisible = Path.defaultWaypointsVisible;
-		viewData = new ViewData(-1, -1, -1, -1, true);
+		viewData = new ViewData(-1, -1, true);
 		pointList = new ArrayList<WaypointState>();
 		WaypointState wp = new WaypointState(0, position, name + ".", Path.defaultSize, color, labelVisible, locked);
 		pointList.add(wp);
@@ -67,7 +68,7 @@ public class PathState extends ToolState {
 	/**
 	 * Constructor for hash map.
 	 */
-	public PathState(HashMap<String,Object> map) {
+	public PathState(Map<String,Object> map) {
 		super(map);
 		bodyType = Path.stringToBodyType(StateUtil.getString(map, "BodyType", null));
 		labelType = Path.stringToLabelType(StateUtil.getString(map, "LabelType", null));
@@ -108,8 +109,8 @@ public class PathState extends ToolState {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		if (mapElement != null) {
 			Path path = (Path) mapElement;
 			getWaypointList();
@@ -212,7 +213,8 @@ public class PathState extends ToolState {
 	public void createView() {
 		PathView view = new PathView(this, refElev, volMethod);
 		setView(view);
-		viewData.createWindow(Dert.getMainWindow(), name + " View", X_OFFSET, Y_OFFSET);
+//		viewData.createWindow(Dert.getMainWindow(), name + " View", X_OFFSET, Y_OFFSET);
+		viewData.createWindow(Dert.getMainWindow(), name + " View");
 	}
 
 	@Override

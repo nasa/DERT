@@ -32,6 +32,7 @@ import gov.nasa.arc.dert.scenegraph.text.BitmapFont;
 import gov.nasa.arc.dert.scenegraph.text.Text;
 import gov.nasa.arc.dert.state.Configuration;
 import gov.nasa.arc.dert.state.ConfigurationManager;
+import gov.nasa.arc.dert.state.StateFactory;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.Console;
@@ -106,6 +107,17 @@ public class Dert {
 		Dert dert = new Dert(args);
 		BasicScene.imagePath = path + SPLASH_SCREEN;
 		dert.initialize();
+
+		// If a configuration has been passed in the command line, open it.
+		String configPath = null;
+		for (int i = 0; i < args.length - 1; ++i) {
+			if (args[i].toLowerCase().equals("-config")) {
+				configPath = args[i + 1];
+				break;
+			}
+		}
+		if (configPath != null)
+			ConfigurationManager.getInstance().openConfiguration(configPath);
 	}
 
 	/**
@@ -176,7 +188,7 @@ public class Dert {
 		}
 
 		// Create singletons.
-		ConfigurationManager.createInstance(dertProperties);
+		ConfigurationManager.createInstance(dertProperties, new StateFactory());
 		FieldCameraInfoManager.createInstance(path);
 
 		// Always create heavy weight menus (this must be set before creating
@@ -203,23 +215,6 @@ public class Dert {
 		
 		// Load SPICE libraries and kernels
 		Ephemeris.createInstance(path, dertProperties);
-
-		// If a configuration has been passed in the command line, open it.
-		String configStr = null;
-		for (int i = 0; i < args.length - 1; ++i) {
-			if (args[i].toLowerCase().equals("-config")) {
-				configStr = args[i + 1];
-				break;
-			}
-		}
-		if (configStr != null) {
-			String configPath = ConfigurationManager.getInstance().getConfigFilePath(configStr);
-			if (configPath != null) {
-				ConfigurationManager.getInstance().openConfiguration(configPath);
-			} else {
-				ConfigurationManager.getInstance().createConfiguration(configStr);
-			}
-		}
 	}
 
 	/**
@@ -282,7 +277,9 @@ public class Dert {
 		try {
 			// Load properties from file with executable.
 			File file = new File(path, "dert.properties");
-			dertProperties.load(new FileInputStream(file));
+			FileInputStream propStream = new FileInputStream(file);
+			dertProperties.load(propStream);
+			propStream.close();
 
 			// Create the user's DERT_HOME directory if it doesn't exist.
 			userPath = dertProperties.getProperty("StashPath", "$user.home");
@@ -302,12 +299,16 @@ public class Dert {
 			// Add preferences from user's dertstash directory.
 			file = new File(userPath, "prefs.properties");
 			if (file.exists()) {
-				dertProperties.load(new FileInputStream(file));
+				propStream = new FileInputStream(file);
+				dertProperties.load(propStream);
+				propStream.close();
 			}
 			// Add recent configs from user's dertstash directory.
 			file = new File(userPath, "recents.properties");
 			if (file.exists()) {
-				dertProperties.load(new FileInputStream(file));
+				propStream = new FileInputStream(file);
+				dertProperties.load(propStream);
+				propStream.close();
 			}
 
 			version = dertProperties.getProperty("Dert.Version");
@@ -397,6 +398,10 @@ public class Dert {
 	 */
 	public static String getUserPath() {
 		return (userPath);
+	}
+	
+	public static Properties getProperties() {
+		return(dertProperties);
 	}
 
 	/**

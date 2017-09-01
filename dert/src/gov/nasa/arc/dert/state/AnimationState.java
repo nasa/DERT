@@ -2,11 +2,12 @@ package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.util.StateUtil;
+import gov.nasa.arc.dert.view.View;
 import gov.nasa.arc.dert.view.viewpoint.AnimationView;
 import gov.nasa.arc.dert.viewpoint.FlyThroughParameters;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * State object for ViewpointView.
@@ -21,7 +22,7 @@ public class AnimationState extends PanelState {
 	 * Constructor
 	 */
 	public AnimationState() {
-		super(PanelType.Animation, "DERT Animation", new ViewData(-1, -1, 525, 300, false));
+		super("Animation", "DERT Animation", new ViewData(-1, -1, 525, 300, false));
 		flyParams = new FlyThroughParameters();
 		subjectId = -1;
 	}
@@ -29,7 +30,7 @@ public class AnimationState extends PanelState {
 	/**
 	 * Constructor from hash map
 	 */
-	public AnimationState(HashMap<String,Object> map) {
+	public AnimationState(Map<String,Object> map) {
 		super(map);
 		flyParams = FlyThroughParameters.fromArray((double[])map.get("FlyParams"));
 		flyParams.imageSequencePath = StateUtil.getString(map, "ImageSequencePath", null);
@@ -40,8 +41,8 @@ public class AnimationState extends PanelState {
 	 * Save contents to a HashMap
 	 */
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		AnimationView av = (AnimationView)viewData.view;
 		if (av != null) {
 			flyParams = av.getViewpointFlyParams();
@@ -90,6 +91,11 @@ public class AnimationState extends PanelState {
 		String str = super.toString();
 		str += flyParams;
 		return(str);
+	}
+	
+	@Override
+	protected View createView() {
+		return(new AnimationView(this));
 	}
 
 }

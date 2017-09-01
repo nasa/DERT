@@ -708,4 +708,9 @@ public class ColorMap {
 	public String toString() {
 		return(name+" "+minimum+" "+maximum);
 	}
+	
+	public static Color getColor(ColorType type) {
+		int index = type.ordinal();
+		return(new Color(COLOR_VALUE[index][0], COLOR_VALUE[index][1], COLOR_VALUE[index][2], COLOR_VALUE[index][3]));
+	}
 }

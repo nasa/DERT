@@ -4,9 +4,7 @@ import gov.nasa.arc.dert.util.StringUtil;
 
 import java.util.Properties;
 
-import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
-import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.math.type.ReadOnlyVector3;
 
 /**
@@ -15,7 +13,6 @@ import com.ardor3d.math.type.ReadOnlyVector3;
  */
 public class FieldCameraInfo {
 
-	protected static float[] defaultColor = { 1, 1, 1, 1 };
 	protected static double[] defaultMountingOffset = { 0, 0, 0 };
 	protected static double[] defaultHeightRange = { 0, 10 };
 	protected static double[] defaultPanRange = { -180, 180 };
@@ -24,25 +21,24 @@ public class FieldCameraInfo {
 	public double fovX, fovY;
 	public int pixelWidth, pixelHeight;
 	public double tripodHeight, tripodPan, tripodTilt;
-	public ReadOnlyColorRGBA color;
 	public ReadOnlyVector3 mountingOffset;
 	public double[] panRange;
 	public double[] tiltRange;
 	public double[] heightRange;
 	public boolean frustumVisible, footprintVisible;
+	public String name;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param properties
 	 */
-	public FieldCameraInfo(Properties properties) {
+	public FieldCameraInfo(String name, Properties properties) {
+		this.name = name;
 		fovX = StringUtil.getDoubleValue(properties, "FovDegreesWidth", true, 45, false);
 		fovY = StringUtil.getDoubleValue(properties, "FovDegreesHeight", true, 45, false);
 		pixelWidth = StringUtil.getIntegerValue(properties, "FovPixelWidth", true, 1024, false);
 		pixelHeight = StringUtil.getIntegerValue(properties, "FovPixelHeight", true, 1024, false);
-		float[] farray = StringUtil.getFloatArray(properties, "Color", defaultColor, false);
-		color = new ColorRGBA(farray[0], farray[1], farray[2], farray[3]);
 		double[] darray = StringUtil.getDoubleArray(properties, "MountingOffset", defaultMountingOffset, false);
 		mountingOffset = new Vector3(darray[0], darray[1], darray[2]);
 

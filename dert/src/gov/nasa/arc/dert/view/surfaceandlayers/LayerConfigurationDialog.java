@@ -228,7 +228,7 @@ public class LayerConfigurationDialog extends AbstractDialog {
 	public boolean okPressed() {
 		LayerManager layerManager = Landscape.getInstance().getLayerManager();
 		layerManager.setLayerSelection(visibleLayers, availableLayers);
-		result = true;
+		result = new Boolean(true);
 		return (true);
 	}
 

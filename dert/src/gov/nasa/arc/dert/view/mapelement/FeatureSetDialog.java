@@ -36,7 +36,6 @@ public class FeatureSetDialog
 		super(parent, "New Feature Set", true, true);
 	}
 	
-
 	@Override
 	protected void build() {
 		super.build();

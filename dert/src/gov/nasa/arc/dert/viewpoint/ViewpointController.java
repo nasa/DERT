@@ -8,6 +8,7 @@ import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scenegraph.Ray3WithLine;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.PathState;
+import gov.nasa.arc.dert.state.ViewpointState;
 import gov.nasa.arc.dert.viewpoint.Viewpoint.ViewpointMode;
 
 import java.awt.EventQueue;
@@ -75,7 +76,8 @@ public class ViewpointController {
 	 * Constructor
 	 */
 	public ViewpointController() {
-		Vector<ViewpointStore> vpList = ConfigurationManager.getInstance().getCurrentConfiguration().viewPtState.viewpointList;
+		ViewpointState vpState = (ViewpointState)ConfigurationManager.getInstance().getCurrentConfiguration().getState("ViewpointState");
+		Vector<ViewpointStore> vpList = vpState.viewpointList;
 		viewpointList = new Vector<ViewpointStore>(vpList.size());
 		for (int i=0; i<vpList.size(); ++i)
 			viewpointList.addElement(vpList.elementAt(i));

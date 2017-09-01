@@ -10,7 +10,7 @@ import gov.nasa.arc.dert.view.View;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
 
@@ -39,7 +39,7 @@ public class ImageBoardState extends LandmarkState {
 	/**
 	 * Constructor for hash map.
 	 */
-	public ImageBoardState(HashMap<String,Object> map) {
+	public ImageBoardState(Map<String,Object> map) {
 		super(map);
 		imagePath = StateUtil.getString(map, "ImagePath", ImageBoard.defaultImagePath);
 	}
@@ -57,8 +57,8 @@ public class ImageBoardState extends LandmarkState {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		if (mapElement != null)
 			imagePath = ((ImageBoard) mapElement).getImagePath();
 		map.put("ImagePath", imagePath);

@@ -4,7 +4,7 @@ import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.util.StateUtil;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -48,7 +48,7 @@ public class FigureState extends LandmarkState {
 	/**
 	 * Constructor for hash map.
 	 */
-	public FigureState(HashMap<String,Object> map) {
+	public FigureState(Map<String,Object> map) {
 		super(map);
 		normal = StateUtil.getVector3(map, "Normal", Vector3.ZERO);
 		azimuth = StateUtil.getDouble(map, "Azimuth", Figure.defaultAzimuth);
@@ -87,8 +87,8 @@ public class FigureState extends LandmarkState {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		if (mapElement != null) {
 			Figure figure = (Figure) mapElement;
 			normal = new Vector3(figure.getNormal());

@@ -184,7 +184,7 @@ public class World extends GroupNode {
 		lighting.getLight().setTranslation(Landscape.getInstance().getWorldBound().getCenter());
 
 		// initialize the marble
-		MarbleState marbleState = ConfigurationManager.getInstance().getCurrentConfiguration().marbleState;
+		MarbleState marbleState = (MarbleState)ConfigurationManager.getInstance().getCurrentConfiguration().getState("MarbleState");
 		marble = new Marble(marbleState);
 		marble.setNormal(Vector3.UNIT_Z);
 		marble.setTranslation(Landscape.getInstance().getCenter());

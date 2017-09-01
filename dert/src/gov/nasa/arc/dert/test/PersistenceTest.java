@@ -7,6 +7,7 @@ import gov.nasa.arc.dert.scene.tool.Path.BodyType;
 import gov.nasa.arc.dert.scene.tool.Path.LabelType;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
+import gov.nasa.arc.dert.state.AnimationState;
 import gov.nasa.arc.dert.state.Configuration;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.FeatureSetState;
@@ -14,11 +15,14 @@ import gov.nasa.arc.dert.state.FieldCameraState;
 import gov.nasa.arc.dert.state.FigureState;
 import gov.nasa.arc.dert.state.GridState;
 import gov.nasa.arc.dert.state.ImageBoardState;
+import gov.nasa.arc.dert.state.MapElementState;
+import gov.nasa.arc.dert.state.MapElementsState;
 import gov.nasa.arc.dert.state.PathState;
 import gov.nasa.arc.dert.state.PlacemarkState;
 import gov.nasa.arc.dert.state.PlaneState;
 import gov.nasa.arc.dert.state.ProfileState;
 import gov.nasa.arc.dert.state.ViewData;
+import gov.nasa.arc.dert.state.ViewpointState;
 import gov.nasa.arc.dert.state.WaypointState;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.viewpoint.FlyThroughParameters;
@@ -65,7 +69,8 @@ public class PersistenceTest {
 		
 		// MapElementsState
 		Placemark placemark = new Placemark(new PlacemarkState(Vector3.ZERO));
-		config.mapElementsState.setLastMapElement(placemark);
+		MapElementsState meState = (MapElementsState)config.getState("MapElementsState");
+		meState.setLastMapElement(placemark);
 		
 		// ViewpointState
 		ViewpointStore store = new ViewpointStore();
@@ -83,10 +88,12 @@ public class PersistenceTest {
 		store.azimuth = 0.8;
 		store.elevation = 0.9;
 		store.magIndex = 2;
-		config.viewPtState.viewpointList.add(store);
+		ViewpointState vpState = (ViewpointState)config.getState("ViewpointState");
+		vpState.viewpointList.add(store);
 		
 		// AnimationState
-		FlyThroughParameters flyParams = config.animationState.getFlyParams();
+		AnimationState aState = (AnimationState)config.getState("AnimationState");
+		FlyThroughParameters flyParams = aState.getFlyParams();
 		flyParams.numFrames = 13;
 		flyParams.millisPerFrame = 444;
 		flyParams.pathHeight = 17;
@@ -169,8 +176,8 @@ public class PersistenceTest {
 		cm.saveConfiguration(config);
 		System.err.println("Original WorldState: "+config.worldState);
 		System.err.println("Original ConsoleState: "+config.consoleState);
-		System.err.println("Original MapElementsState: "+config.mapElementsState);
-		System.err.println("Original ViewpointState: "+config.viewPtState);
+		System.err.println("Original MapElementsState: "+meState);
+		System.err.println("Original ViewpointState: "+vpState);
 		System.err.println("Original FieldCameraState: "+fc);
 		System.err.println("Original FigureState: "+f);
 		System.err.println("Original GridState: "+g);
@@ -184,8 +191,10 @@ public class PersistenceTest {
 		Configuration newConfig = cm.loadConfiguration(testLoc+"/dert/config/Test");
 		System.err.println("Saved WorldState: "+newConfig.worldState);
 		System.err.println("Saved ConsoleState: "+newConfig.consoleState);
-		System.err.println("Saved MapElementsState: "+newConfig.mapElementsState);
-		System.err.println("Saved ViewpointState: "+newConfig.viewPtState);
+		meState = (MapElementsState)newConfig.getState("MapElementsState");
+		System.err.println("Saved MapElementsState: "+meState);
+		vpState = (ViewpointState)newConfig.getState("ViewpointState");
+		System.err.println("Saved ViewpointState: "+vpState);
 		System.err.println("Saved FieldCameraState: "+newConfig.mapElementStateList.get(0));
 		System.err.println("Saved FigureState: "+newConfig.mapElementStateList.get(1));
 		System.err.println("Saved GridState: "+newConfig.mapElementStateList.get(2));
@@ -197,9 +206,83 @@ public class PersistenceTest {
 		System.err.println("Saved PlaneState: "+newConfig.mapElementStateList.get(7));
 		System.err.println("Saved ProfileState: "+newConfig.mapElementStateList.get(8));
 		System.err.println("Saved WaypointState: "+sp.pointList.get(1));
-		if (!config.isEqualTo(newConfig)) {
+		if (!isEqualTo(config, newConfig)) {
 			System.err.println("Saved configuration is not equal to the original. Persistence test failed.");
 			return(false);
+		}
+		return(true);
+	}
+	
+	public boolean isEqualTo(Configuration config1, Configuration config2) {
+		if (!config1.toString().equals(config2.toString())) {
+			System.err.println("Configuration labels not eaual ("+config1.toString()+","+config2.toString()+")");
+			return(false);
+		}
+//		if (config1.mapElementCount.length != config2.mapElementCount.length) {
+//			System.err.println("Configuration map element counts not equal ("+config1.mapElementCount.length+","+config2.mapElementCount.length+")");
+//			return(false);
+//		}
+		MapElementState.Type[] t = MapElementState.Type.values();
+		for (int i=0; i<t.length; ++i)
+			if (config1.getMapElementCount(t[i]) != config2.getMapElementCount(t[i])) {
+				System.err.println("Configuration map element count "+i+" not equal ("+config1.getMapElementCount(t[i])+","+config2.getMapElementCount(t[i])+")");
+				return(false);
+			}
+		if (!config1.consoleState.isEqualTo(config2.consoleState)) { 
+			System.err.println("Configuration console state not equal");
+			return(false);
+		}
+		if (!config1.getState("MarbleState").isEqualTo(config2.getState("MarbleState"))) {
+			System.err.println("Configuration marble state not equal");
+			return(false);
+		}
+		if (!config1.worldState.isEqualTo(config2.worldState)) {
+			System.err.println("Configuration world state not equal");
+			return(false);
+		}
+		if (!config1.getState("HelpState").isEqualTo(config2.getState("HelpState"))) {
+			System.err.println("Configuration world state not equal");
+			return(false);
+		}
+		if (!config1.getState("SurfaceAndLayersState").isEqualTo(config2.getState("SurfaceAndLayersState"))) {
+			System.err.println("Configuration surface and layer state not equal");
+			return(false);
+		}
+		if (!config1.getState("MapElementsState").isEqualTo(config2.getState("MapElementsState"))) {
+			System.err.println("Configuration map elements state not equal");
+			return(false);
+		}
+		if (!config1.getState("ColorBarsState").isEqualTo(config2.getState("ColorBarsState"))) {
+			System.err.println("Configuration color bars state not equal");
+			return(false);
+		}
+		if (!config1.getState("LightingState").isEqualTo(config2.getState("LightingState"))) {
+			System.err.println("Configuration lighting state not equal");
+			return(false);
+		}
+		if (!config1.getState("LightPositionState").isEqualTo(config2.getState("LightPositionState"))) {
+			System.err.println("Configuration light position state not equal");
+			return(false);
+		}
+		if (!config1.getState("ViewpointState").isEqualTo(config2.getState("ViewpointState"))) {
+			System.err.println("Configuration viewpoint state not equal");
+			return(false);
+		}
+		if (!config1.getState("AnimationState").isEqualTo(config2.getState("AnimationState"))) {
+			System.err.println("Configuration animation state not equal");
+			return(false);
+		}
+		if (config1.mapElementStateList.size() != config2.mapElementStateList.size()) {
+			System.err.println("Configuration map elements state list size not equal");
+			return(false);
+		}
+		for (int i=0; i<config1.mapElementStateList.size(); ++i) {
+			MapElementState mps0 = config1.mapElementStateList.get(i);
+			MapElementState mps1 = config2.mapElementStateList.get(i);
+			if (!mps0.isEqualTo(mps1)) {
+				System.err.println("Configuration map element state "+i+" not equal");
+				return(false);
+			}
 		}
 		return(true);
 	}

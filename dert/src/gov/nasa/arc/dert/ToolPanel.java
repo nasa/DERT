@@ -19,9 +19,16 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.lighting.Lighting;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tapemeasure.ActivateTapeMeasureAction;
+import gov.nasa.arc.dert.state.ColorBarsState;
 import gov.nasa.arc.dert.state.Configuration;
 import gov.nasa.arc.dert.state.ConfigurationManager;
+import gov.nasa.arc.dert.state.HelpState;
+import gov.nasa.arc.dert.state.LightPositionState;
+import gov.nasa.arc.dert.state.LightingState;
+import gov.nasa.arc.dert.state.MapElementsState;
+import gov.nasa.arc.dert.state.MarbleState;
 import gov.nasa.arc.dert.state.State;
+import gov.nasa.arc.dert.state.SurfaceAndLayersState;
 import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.view.Console;
@@ -34,9 +41,11 @@ import java.awt.CheckboxMenuItem;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Menu;
+import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -140,7 +149,8 @@ public class ToolPanel
 			@Override
 			public void run() {
 				Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
-				currentConfig.helpState.open(true);
+				HelpState state = (HelpState)currentConfig.getState("HelpState");
+				state.open(true);
 			}
 		};
 		add(helpAction);
@@ -157,7 +167,8 @@ public class ToolPanel
 			@Override
 			public void run() {
 				Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
-				currentConfig.surfAndLayerState.open(true);
+				SurfaceAndLayersState state = (SurfaceAndLayersState)currentConfig.getState("SurfaceAndLayersState");
+				state.open(true);
 			}
 		};
 		surfaceAndLayersAction.setEnabled(false);
@@ -168,7 +179,8 @@ public class ToolPanel
 			@Override
 			public void run() {
 				Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
-				currentConfig.mapElementsState.open(true);
+				MapElementsState state = (MapElementsState)currentConfig.getState("MapElementsState");
+				state.open(true);
 			}
 		};
 		mapElementsAction.setEnabled(false);
@@ -179,7 +191,8 @@ public class ToolPanel
 			@Override
 			public void run() {
 				Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
-				currentConfig.colorBarsState.open(true);
+				ColorBarsState state = (ColorBarsState)currentConfig.getState("ColorBarsState");
+				state.open(true);
 			}
 		};
 		colorbarAction.setEnabled(false);
@@ -207,7 +220,8 @@ public class ToolPanel
 			@Override
 			public void run() {
 				Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
-				currentConfig.lightingState.open(true);
+				LightingState state = (LightingState)currentConfig.getState("LightingState");
+				state.open(true);
 			}
 		};
 		lightingAndShadowsAction.setEnabled(false);
@@ -218,7 +232,8 @@ public class ToolPanel
 			@Override
 			public void run() {
 				Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
-				currentConfig.lightPosState.open(true);
+				LightPositionState state = (LightPositionState)currentConfig.getState("LightPositionState");
+				state.open(true);
 			}
 		};
 		lightAction.setEnabled(false);
@@ -265,7 +280,8 @@ public class ToolPanel
 			@Override
 			public void run() {
 				Configuration currentConfig = ConfigurationManager.getInstance().getCurrentConfiguration();
-				currentConfig.marbleState.open(true);
+				MarbleState state = (MarbleState)currentConfig.getState("MarbleState");
+				state.open(true);
 			}
 		};
 		marbleAction.setEnabled(false);
@@ -307,8 +323,7 @@ public class ToolPanel
 		menuItemAction.setEnabled(haveConfig);
 		fileMenu.add(menuItemAction);
 
-		menuItemAction = new DeleteConfigAction();
-		fileMenu.add(menuItemAction);
+		fileMenu.add(getDeleteMenuItem());
 
 		fileMenu.addSeparator();
 		
@@ -436,7 +451,7 @@ public class ToolPanel
 		menu.add(canvasSizeAction);
 	}
 
-	private Menu getRecentSubmenu() {
+	protected Menu getRecentSubmenu() {
 		String[] recent = ConfigurationManager.getInstance().getRecentConfigurations();
 		MenuItemAction[] menuItem = new MenuItemAction[recent.length];
 		for (int i = 0; i < recent.length; ++i) {
@@ -455,6 +470,34 @@ public class ToolPanel
 			menu.add(menuItem[i]);
 		}
 		return (menu);
+	}
+
+	protected MenuItem getDeleteMenuItem() {
+		String path = Dert.getUserPath();
+		File file = new File(path, "config");
+		if (file.exists()) {
+			String[] configNames = ConfigurationManager.getInstance().getConfigList(path);
+			if (configNames.length > 0) {
+				MenuItemAction[] menuItem = new MenuItemAction[configNames.length];
+				for (int i = 0; i < configNames.length; ++i) {
+					menuItem[i] = new MenuItemAction(configNames[i], configNames[i]) {
+						@Override
+						public void run() {
+							String[] filePath = new String[] {(String)arg};
+							DeleteConfigAction.doDelete(filePath);
+						}
+					};
+				}
+				Menu menu = new Menu("Delete Configuration");
+				for (int i = 0; i < menuItem.length; ++i) {
+					menu.add(menuItem[i]);
+				}
+				menu.addSeparator();
+				menu.add(new DeleteConfigAction("Select Landscape ..."));
+				return (menu);
+			}
+		}
+		return(new DeleteConfigAction("Delete Configuration ..."));
 	}
 
 	/**
@@ -495,7 +538,7 @@ public class ToolPanel
 		} else {
 			lightAction.setIcon(Icons.getImageIcon("sun.png"));
 		}
-		State state = ConfigurationManager.getInstance().getCurrentConfiguration().lightPosState;
+		State state = ConfigurationManager.getInstance().getCurrentConfiguration().getState("LightPositionState");
 		if (state != null) {
 			LightPositionView view = (LightPositionView) state.getViewData().getView();
 			if (view != null) {

@@ -3,7 +3,7 @@ package gov.nasa.arc.dert.state;
 import gov.nasa.arc.dert.scene.tool.Tool;
 
 import java.awt.Color;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Base class for state objects for Tools.
@@ -31,7 +31,7 @@ public abstract class ToolState extends MapElementState {
 	/**
 	 * Constructor for hash map.
 	 */
-	public ToolState(HashMap<String,Object> map) {
+	public ToolState(Map<String,Object> map) {
 		super(map);
 	}
 		

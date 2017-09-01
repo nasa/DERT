@@ -170,7 +170,7 @@ public class FieldCameraLayer extends Layer {
 		if (viewshedEnabled) {
 			// render the viewshed
 			if (texture == null) {
-				viewshed = new Viewshed(fieldCamera.getCamera(), textureUnit);
+				viewshed = new Viewshed(fieldCamera.getSyntheticCameraNode().getCamera(), textureUnit);
 				texture = viewshed.getTexture();
 			}
 			fieldCamera.prerender(renderer, viewshed);
@@ -180,7 +180,7 @@ public class FieldCameraLayer extends Layer {
 			if (texture == null) {
 				texture = createFootprintTexture();
 			}
-			BasicCamera camera = fieldCamera.getCamera();
+			BasicCamera camera = fieldCamera.getSyntheticCameraNode().getCamera();
 			matrix.set(camera.getModelViewProjectionMatrix());
 			matrix.multiplyLocal(BIAS);
 			texture.setTextureMatrix(matrix);

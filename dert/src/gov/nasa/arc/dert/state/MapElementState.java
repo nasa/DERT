@@ -9,7 +9,7 @@ import gov.nasa.arc.dert.view.mapelement.EditDialog;
 import gov.nasa.arc.dert.view.mapelement.NotesDialog;
 
 import java.awt.Color;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Node;
@@ -88,7 +88,7 @@ public abstract class MapElementState extends State {
 	/**
 	 * Constructor from hash map.
 	 */
-	public MapElementState(HashMap<String,Object> map) {
+	public MapElementState(Map<String,Object> map) {
 		super(map);
 		annotation = StateUtil.getString(map, "Annotation", "");
 		visible = StateUtil.getBoolean(map, "Visible", true);
@@ -158,8 +158,8 @@ public abstract class MapElementState extends State {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		if (mapElement != null) {
 			name = mapElement.getName();
 			size = mapElement.getSize();

@@ -2,14 +2,15 @@ package gov.nasa.arc.dert.scene.tool.fieldcamera;
 
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.SpatialUtil;
+import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
+import java.awt.Color;
 import java.nio.FloatBuffer;
 
 import com.ardor3d.bounding.BoundingBox;
 import com.ardor3d.math.ColorRGBA;
 import com.ardor3d.math.Vector3;
-import com.ardor3d.math.type.ReadOnlyColorRGBA;
 import com.ardor3d.renderer.queue.RenderBucketType;
 import com.ardor3d.renderer.state.MaterialState;
 import com.ardor3d.scenegraph.Mesh;
@@ -65,23 +66,25 @@ public class FrustumPyramid extends Node {
 	 * @param color
 	 *            the color of the frustum.
 	 */
-	public FrustumPyramid(final String name, BasicCamera camera, ReadOnlyColorRGBA color) {
+	public FrustumPyramid(final String name, BasicCamera camera) {
 		super(name);
-		this.color = new ColorRGBA(color);
 		sides = new Mesh("_sides");
+		sides.setModelBound(new BoundingBox());
+//		sides.getSceneHints().setAllPickingHints(false);
+		
+		setCamera(camera);
 
+		getSceneHints().setNormalsMode(NormalsMode.NormalizeIfScaled);
+		getSceneHints().setRenderBucketType(RenderBucketType.Transparent);
+		attachChild(sides);
+	}
+	
+	public void setCamera(BasicCamera camera) {
         height = Math.tan(Math.toRadians(camera.getFovY()) * 0.5);
         width = height * camera.getAspect(); 
 		
 		setVertexData(camera.getFrustumFar());
 		setNormalData();
-		getSceneHints().setNormalsMode(NormalsMode.NormalizeIfScaled);
-		setColor(this.color);
-		getSceneHints().setRenderBucketType(RenderBucketType.Transparent);
-		sides.setModelBound(new BoundingBox());
-		sides.updateModelBound();
-		sides.getSceneHints().setAllPickingHints(false);
-		attachChild(sides);
 	}
 	
 	/**
@@ -89,7 +92,7 @@ public class FrustumPyramid extends Node {
 	 * 
 	 * @param length
 	 */
-	public void updateVertices(double length) {
+	public void setLength(double length) {
 		setVertexData(length);
 	}
 
@@ -98,8 +101,8 @@ public class FrustumPyramid extends Node {
 	 * 
 	 * @param color
 	 */
-	public void setColor(ReadOnlyColorRGBA color) {
-		this.color.set(color);
+	public void setColor(Color color) {
+		this.color = UIUtil.colorToColorRGBA(color);
 		MaterialState ms = new MaterialState();
 		this.color.setAlpha(0.3f);
 		ms.setDiffuse(MaterialState.MaterialFace.FrontAndBack, this.color);
@@ -190,6 +193,7 @@ public class FrustumPyramid extends Node {
 
 		verts.flip();
 		sides.getMeshData().setVertexBuffer(verts);
+		sides.updateModelBound();
 	}
 
 	/**

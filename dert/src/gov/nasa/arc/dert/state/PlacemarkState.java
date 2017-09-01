@@ -3,7 +3,7 @@ package gov.nasa.arc.dert.state;
 import gov.nasa.arc.dert.scene.landmark.Placemark;
 import gov.nasa.arc.dert.util.StateUtil;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.ardor3d.math.type.ReadOnlyVector3;
 
@@ -30,7 +30,7 @@ public class PlacemarkState extends LandmarkState {
 	/**
 	 * Constructor for hash map
 	 */
-	public PlacemarkState(HashMap<String,Object> map) {
+	public PlacemarkState(Map<String,Object> map) {
 		super(map);
 		textureIndex = StateUtil.getInteger(map, "TextureIndex", Placemark.defaultTextureIndex);
 	}
@@ -48,8 +48,8 @@ public class PlacemarkState extends LandmarkState {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		if (mapElement != null) {
 			Placemark placemark = (Placemark) mapElement;
 			textureIndex = placemark.getTextureIndex();

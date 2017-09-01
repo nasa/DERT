@@ -67,6 +67,17 @@ public interface TileSource {
 	 */
 	public String getKey(double x, double y, double worldWidth, double worldLength);
 
+	/**
+	 * Given a coordinate and level, get the id of the tile at that level
+	 * 
+	 * @param x
+	 *            , y the coordinate
+	 * @param worldWidth
+	 *            , worldLength the physical dimensions of the raster
+	 * @return
+	 */
+	public String getKey(double x, double y, double worldWidth, double worldLength, int lvl);
+
 	// public String getMaxLevel(String id);
 
 	/**

@@ -94,7 +94,7 @@ public class FieldCameraInfoManager {
 			String filename = infoMap.get(name);
 			Properties properties = new Properties();
 			properties.load(new FileInputStream(filename));
-			return (new FieldCameraInfo(properties));
+			return (new FieldCameraInfo(name, properties));
 		} catch (Exception e) {
 			e.printStackTrace();
 			Console.println("Error loading camera " + name + ".  See log.");

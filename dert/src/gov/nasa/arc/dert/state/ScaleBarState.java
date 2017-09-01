@@ -3,7 +3,7 @@ package gov.nasa.arc.dert.state;
 import gov.nasa.arc.dert.scene.tool.ScaleBar;
 import gov.nasa.arc.dert.util.StateUtil;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
@@ -53,7 +53,7 @@ public class ScaleBarState extends ToolState {
 	/**
 	 * Constructor for hash map.
 	 */
-	public ScaleBarState(HashMap<String,Object> map) {
+	public ScaleBarState(Map<String,Object> map) {
 		super(map);
 		cellCount = StateUtil.getInteger(map, "CellCount", 0);
 		radius = StateUtil.getDouble(map, "Radius", 1);
@@ -86,8 +86,8 @@ public class ScaleBarState extends ToolState {
 	}
 
 	@Override
-	public HashMap<String,Object> save() {
-		HashMap<String,Object> map = super.save();
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
 		if (mapElement != null) {
 			ScaleBar scale = (ScaleBar)mapElement;
 			cellCount = scale.getCellCount();

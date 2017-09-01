@@ -37,9 +37,9 @@ public class AboutBox extends TextDialog {
 	}
 	
 	@Override
-	public boolean open() {
+	public Object open() {
 		super.open();
 		refresh();
-		return(true);
+		return(result);
 	}
 }

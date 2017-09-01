@@ -17,8 +17,8 @@ public class DeleteConfigAction extends MenuItemAction {
 	 * Constructor
 	 * 
 	 */
-	public DeleteConfigAction() {
-		super("Delete Configuration ...");
+	public DeleteConfigAction(String title) {
+		super(title);
 	}
 
 	@Override
@@ -26,31 +26,36 @@ public class DeleteConfigAction extends MenuItemAction {
 		try {
 			// Get a list of configurations to delete.
 			String[] filePath = getFilePaths();
-			if ((filePath == null) || (filePath.length == 0)) {
-				return;
-			}
-			String label = StringUtil.getLabelFromFilePath(filePath[0]);
-			if (filePath.length > 1) {
-				label += " ...";
-			}
-
-			// Prompt user to confirm delete.
-			boolean yes = OptionDialog.showDeleteConfirmDialog(Dert.getMainWindow(), "Delete " + label + "?");
-			if (yes) {
-				for (int i = 0; i < filePath.length; ++i) {
-					ConfigurationManager.getInstance().removeConfiguration(filePath[i]);
-				}
-			}
+			doDelete(filePath);
 		} catch (Exception e) {
 			Console.println("Error deleting configuration.");
 			e.printStackTrace();
 		}
+		
 	}
 
 	protected String[] getFilePaths() {
 		ConfigFileChooserDialog chooser = new ConfigFileChooserDialog(true);
 		chooser.open();
 		return (chooser.getFilePaths());
+	}
+	
+	public static void doDelete(String[] filePath) {
+		if ((filePath == null) || (filePath.length == 0)) {
+			return;
+		}
+		String label = StringUtil.getLabelFromFilePath(filePath[0]);
+		if (filePath.length > 1) {
+			label += " ...";
+		}
+
+		// Prompt user to confirm delete.
+		boolean yes = OptionDialog.showDeleteConfirmDialog(Dert.getMainWindow(), "Delete " + label + "?");
+		if (yes) {
+			for (int i = 0; i < filePath.length; ++i) {
+				ConfigurationManager.getInstance().removeConfiguration(filePath[i]);
+			}
+		}
 	}
 
 }

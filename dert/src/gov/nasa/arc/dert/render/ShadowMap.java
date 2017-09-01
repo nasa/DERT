@@ -84,7 +84,10 @@ public class ShadowMap extends ProjectedDepthTexture {
 	 * @param center
 	 */
 	public void setCenter(ReadOnlyVector3 center) {
-		this.center.set(center);
+		if (center == null)
+			this.center.set(Landscape.getInstance().getCenter());
+		else
+			this.center.set(center);
 		target.markDirty(DirtyType.RenderState);
 	}
 

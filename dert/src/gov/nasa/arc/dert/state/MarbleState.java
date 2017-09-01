@@ -10,7 +10,7 @@ import gov.nasa.arc.dert.view.TextView;
 import gov.nasa.arc.dert.view.View;
 
 import java.awt.Color;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.ardor3d.math.Vector2;
 import com.ardor3d.math.Vector3;
@@ -30,7 +30,7 @@ public class MarbleState extends MapElementState {
 	public MarbleState() {
 		super(0, MapElementState.Type.Marble, "Marble");
 		name = "Marble";
-		viewData = new ViewData(-1, -1, 400, 200, true);
+		viewData = new ViewData(400, 200, true);
 		labelVisible = false;
 		color = Color.green;
 		size = 0.75;
@@ -39,14 +39,15 @@ public class MarbleState extends MapElementState {
 	/**
 	 * Constructor for hash map.
 	 */
-	public MarbleState(HashMap<String,Object> map) {
+	public MarbleState(Map<String,Object> map) {
 		super(map);
 	}
 
 	@Override
 	public void createView() {
 		setView(new TextView(this, false));
-		viewData.createWindow(Dert.getMainWindow(), "DERT Marble Info", X_OFFSET, Y_OFFSET);
+//		viewData.createWindow(Dert.getMainWindow(), "DERT Marble Info", X_OFFSET, Y_OFFSET);
+		viewData.createWindow(Dert.getMainWindow(), "DERT Marble Info");
 		updateText();
 	}
 
