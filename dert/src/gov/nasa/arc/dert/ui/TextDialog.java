@@ -112,6 +112,18 @@ public class TextDialog extends AbstractDialog {
 	}
 
 	/**
+	 * Append the text to the display
+	 * 
+	 * @param text
+	 */
+	public void appendText(String text) {
+		if (theText == null)
+			theText = "";
+		theText += text;
+		setText(theText);
+	}
+
+	/**
 	 * Set the message at the top of the display
 	 * 
 	 * @param msg

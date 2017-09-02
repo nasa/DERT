@@ -22,8 +22,7 @@ public class AboutAction extends MenuItemAction {
 
 	@Override
 	public void run() {	
-		String heading = "Desktop Exploration of Remote Terrain (DERT), version "+Dert.version+"\nIntelligent Systems Division, NASA Ames Research Center\n\n";
-		AboutBox aboutBox = new AboutBox(Dert.getMainWindow(), "DERT", heading);
+		AboutBox aboutBox = new AboutBox(Dert.getMainWindow(), "DERT", Dert.version);
 		aboutBox.open();
 	}
 

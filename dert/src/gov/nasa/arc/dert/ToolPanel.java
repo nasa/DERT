@@ -84,7 +84,7 @@ public class ToolPanel
 	private CoordTextField marbleLocField;
 
 	// Indicate that we have a configuration to save
-	private boolean haveConfig;
+	protected boolean haveConfig;
 	
 	// spacer for grouping buttons
 	protected String filler = "    ";
