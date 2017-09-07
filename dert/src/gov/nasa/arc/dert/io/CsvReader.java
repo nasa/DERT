@@ -26,6 +26,9 @@ public class CsvReader {
 	// The value delimiter (defaults to a comma)
 	protected String delimiter;
 
+	// Indicates that line is to be ignored (defaults to a #)
+	protected String ignore;
+
 	/**
 	 * Constructor
 	 * 
@@ -35,7 +38,7 @@ public class CsvReader {
 	 *            the first line contains column titles
 	 */
 	public CsvReader(String filename, boolean firstLineNames) {
-		this(filename, firstLineNames, ",");
+		this(filename, firstLineNames, ",", "#");
 	}
 
 	/**
@@ -48,7 +51,7 @@ public class CsvReader {
 	 * @param delimiter
 	 *            the value delimiter (defaults to comma)
 	 */
-	public CsvReader(String filename, boolean firstLineNames, String delimiter) {
+	public CsvReader(String filename, boolean firstLineNames, String delimiter, String ignore) {
 		this.filename = filename;
 		this.firstLineNames = firstLineNames;
 		this.delimiter = delimiter;
@@ -116,10 +119,14 @@ public class CsvReader {
 	 * @throws IOException
 	 */
 	public String[] readLine() throws IOException {
-		String str = reader.readLine();
-		if (str == null) {
-			return (null);
-		}
+		String str = null;
+		do {
+			str = reader.readLine();
+			if (str == null) {
+				return (null);
+			}
+		} while (!str.startsWith(ignore));
+		
 		String[] token = str.split(delimiter);
 		for (int i = 0; i < token.length; ++i) {
 			token[i] = token[i].trim();
