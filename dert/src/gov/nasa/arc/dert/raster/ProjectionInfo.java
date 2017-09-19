@@ -202,7 +202,12 @@ public class ProjectionInfo {
 		scale = StringUtil.getDoubleArray(properties, "ProjectionInfo.Scale", null, true);
 		globe = StringUtil.getStringValue(properties, "ProjectionInfo.Globe", null, true);
 		rasterWidth = StringUtil.getIntegerValue(properties, "ProjectionInfo.RasterWidth", true, 0, true);
-		rasterLength = StringUtil.getIntegerValue(properties, "ProjectionInfo.RasterLength", true, 0, true);
+		try {
+			rasterLength = StringUtil.getIntegerValue(properties, "ProjectionInfo.RasterLength", true, 0, true);
+		}
+		catch (Exception e) {
+			rasterLength = StringUtil.getIntegerValue(properties, "ProjectionInfo.RasterHeight", true, 0, true);
+		}
 
 		datumCode = StringUtil.getIntegerValue(properties, "ProjectionInfo.DatumCode", true, 0, false);
 		ellipsoidCode = StringUtil.getIntegerValue(properties, "ProjectionInfo.DatumCode", true, 0, false);
