@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * Read a comma separated value (CSV) formatted file.
@@ -13,6 +15,9 @@ public class CsvReader {
 
 	// The file to be read
 	protected String filename;
+	
+	// The input stream to be read;
+	protected InputStream inputStream;
 
 	// The reader
 	protected BufferedReader reader;
@@ -26,7 +31,7 @@ public class CsvReader {
 	// The value delimiter (defaults to a comma)
 	protected String delimiter;
 
-	// Indicates that line is to be ignored (defaults to a #)
+	// Indicates that line is to be ignored (defaults to a null)
 	protected String ignore;
 
 	/**
@@ -38,7 +43,19 @@ public class CsvReader {
 	 *            the first line contains column titles
 	 */
 	public CsvReader(String filename, boolean firstLineNames) {
-		this(filename, firstLineNames, ",", "#");
+		this(filename, firstLineNames, ",", null);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param inputStream
+	 *            the CSV file
+	 * @param firstLineNames
+	 *            the first line contains column titles
+	 */
+	public CsvReader(InputStream inputStream, boolean firstLineNames) {
+		this(inputStream, firstLineNames, ",", null);
 	}
 
 	/**
@@ -50,11 +67,33 @@ public class CsvReader {
 	 *            the first line contains column titles
 	 * @param delimiter
 	 *            the value delimiter (defaults to comma)
+	 * @param ignore
+	 *            if found in first column, ignore this line. (null = disabled)
 	 */
 	public CsvReader(String filename, boolean firstLineNames, String delimiter, String ignore) {
 		this.filename = filename;
 		this.firstLineNames = firstLineNames;
 		this.delimiter = delimiter;
+		this.ignore = ignore;
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param inputStream
+	 *            the CSV file
+	 * @param firstLineNames
+	 *            the first line contains column titles
+	 * @param delimiter
+	 *            the value delimiter (defaults to comma)
+	 * @param ignore
+	 *            if found in first column, ignore this line. (null = disabled)
+	 */
+	public CsvReader(InputStream inputStream, boolean firstLineNames, String delimiter, String ignore) {
+		this.inputStream = inputStream;
+		this.firstLineNames = firstLineNames;
+		this.delimiter = delimiter;
+		this.ignore = ignore;
 	}
 
 	/**
@@ -64,7 +103,10 @@ public class CsvReader {
 	 * @throws EOFException
 	 */
 	public void open() throws IOException, EOFException {
-		reader = new BufferedReader(new FileReader(filename));
+		if (filename != null)
+			reader = new BufferedReader(new FileReader(filename));
+		else
+			reader = new BufferedReader(new InputStreamReader(inputStream));
 		if (firstLineNames) {
 			String str = reader.readLine();
 			if (str == null) {
@@ -125,13 +167,21 @@ public class CsvReader {
 			if (str == null) {
 				return (null);
 			}
-		} while (!str.startsWith(ignore));
+		} while (isIgnored(str));
 		
 		String[] token = str.split(delimiter);
 		for (int i = 0; i < token.length; ++i) {
 			token[i] = token[i].trim();
 		}
 		return (token);
+	}
+		
+	private boolean isIgnored(String str) {
+		if (ignore == null)
+			return(false);
+		if (str.startsWith(ignore))
+			return(true);
+		return(false);
 	}
 
 }

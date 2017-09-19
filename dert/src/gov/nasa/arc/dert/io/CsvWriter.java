@@ -19,6 +19,9 @@ public class CsvWriter {
 
 	// Titles for columns
 	protected String columnNames;
+	
+	// The value delimiter
+	protected String delimiter;
 
 	/**
 	 * Constructor
@@ -27,10 +30,22 @@ public class CsvWriter {
 	 * @param columnName
 	 */
 	public CsvWriter(String filename, String[] columnName) {
+		this(filename, columnName, ",");
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param filename
+	 * @param columnName
+	 * @param delimiter
+	 */
+	public CsvWriter(String filename, String[] columnName, String delimiter) {
 		this.filename = filename;
+		this.delimiter = delimiter;
 		columnNames = columnName[0];
 		for (int i = 1; i < columnName.length; ++i) {
-			columnNames += "," + columnName[i];
+			columnNames += delimiter + columnName[i];
 		}
 	}
 
@@ -67,7 +82,7 @@ public class CsvWriter {
 	public void writeLine(String[] column) {
 		String str = column[0];
 		for (int i = 1; i < column.length; ++i) {
-			str += ", " + column[i];
+			str += delimiter + column[i];
 		}
 		writer.println(str);
 	}
@@ -80,7 +95,7 @@ public class CsvWriter {
 	public void writeLine(double[] column) {
 		String str = Double.toString(column[0]);
 		for (int i = 1; i < column.length; ++i) {
-			str += ", " + column[i];
+			str += delimiter + column[i];
 		}
 		writer.println(str);
 	}
@@ -93,7 +108,7 @@ public class CsvWriter {
 	public void writeLine(float[] column) {
 		String str = Float.toString(column[0]);
 		for (int i = 1; i < column.length; ++i) {
-			str += ", " + column[i];
+			str += delimiter + column[i];
 		}
 		writer.println(str);
 	}
@@ -106,7 +121,7 @@ public class CsvWriter {
 	public void writeLine(long time, double[] column) {
 		String str = Long.toString(time);
 		for (int i = 0; i < column.length; ++i) {
-			str += ", " + column[i];
+			str += delimiter + column[i];
 		}
 		writer.println(str);
 	}
@@ -119,7 +134,7 @@ public class CsvWriter {
 	public void writeLine(long time, float[] column) {
 		String str = Long.toString(time);
 		for (int i = 0; i < column.length; ++i) {
-			str += ", " + column[i];
+			str += delimiter + column[i];
 		}
 		writer.println(str);
 	}
@@ -131,9 +146,9 @@ public class CsvWriter {
 	 */
 	public void writeLine(long time, String type, float[] column) {
 		String str = Long.toString(time);
-		str += ", " + type;
+		str += delimiter + type;
 		for (int i = 0; i < column.length; ++i) {
-			str += ", " + column[i];
+			str += delimiter + column[i];
 		}
 		writer.println(str);
 	}

@@ -14,11 +14,12 @@ public interface TileSource {
 	/**
 	 * Connect to this source with a username and password.
 	 * 
+	 * @param location
 	 * @param userName
 	 * @param password
 	 * @return true if successful
 	 */
-	public boolean connect(String userName, String password);
+	public boolean connect(String location, String userName, String password);
 
 	/**
 	 * Get the properties from a layer.properties file.

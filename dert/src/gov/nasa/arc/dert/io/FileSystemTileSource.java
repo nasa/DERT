@@ -9,9 +9,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,15 +40,15 @@ public class FileSystemTileSource implements TileSource {
 	 * 
 	 * @param dirName
 	 */
-	public FileSystemTileSource(String dirName) {
-		this.dirName = dirName;
+	public FileSystemTileSource() {
 	}
 
 	/**
 	 * Use this method to see if the directory exists.
 	 */
 	@Override
-	public boolean connect(String userName, String password) {
+	public boolean connect(String location, String userName, String password) {
+		dirName = location;
 		File file = new File(dirName);
 		try {
 			file = file.getCanonicalFile();
@@ -330,13 +327,24 @@ public class FileSystemTileSource implements TileSource {
 		if (depthTree != null) {
 			return (depthTree);
 		}
-		String depthFileName = dirName + "/dert/depth.obj";
-		final File depthFile = new File(depthFileName);
+//		String depthFileName = dirName + "/dert/depth.obj";
+//		final File depthFile = new File(depthFileName);
+//		if (depthFile.exists()) {
+//			try {
+//				ObjectInputStream inStream = new ObjectInputStream(new FileInputStream(depthFile));
+//				depthTree = (DepthTree) inStream.readObject();
+//				inStream.close();
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				System.out.println("Error reading depth tree file.");
+//				depthTree = null;
+//			}
+//		}
+		final String depthFileName = dirName + "/dert/depthtree.txt";
+		File depthFile = new File(depthFileName);
 		if (depthFile.exists()) {
 			try {
-				ObjectInputStream inStream = new ObjectInputStream(new FileInputStream(depthFile));
-				depthTree = (DepthTree) inStream.readObject();
-				inStream.close();
+				depthTree = DepthTree.load(depthFileName);
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("Error reading depth tree file.");
@@ -351,15 +359,13 @@ public class FileSystemTileSource implements TileSource {
 				dTree.id = "";
 				fillDepthTree(dTree, "", "elevation");
 				depthTree = dTree;
-				Console.println("complete.");
+				Console.println(" complete.");
 				Thread thread = new Thread(new Runnable() {
 					@Override
 					public void run() {
 						Thread.yield();
 						try {
-							ObjectOutputStream outStream = new ObjectOutputStream(new FileOutputStream(depthFile));
-							outStream.writeObject(depthTree);
-							outStream.close();
+							DepthTree.store(depthTree, depthFileName);
 						} catch (Exception e) {
 							e.printStackTrace();
 							Console.println("Error writing depth tree file.");
