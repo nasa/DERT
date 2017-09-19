@@ -86,11 +86,13 @@ public class FeatureSet extends GroupNode implements MapElement, ViewDependent {
 		this.state = state;
 		state.setMapElement(this);
 		// Load the vector file into an Ardor3D object.
-		GeojsonLoader jsonLoader = new GeojsonLoader(srs, elevAttrName, ground, size, lineWidth);
-		GeoJsonObject gjRoot = jsonLoader.load(filePath);
-		jsonLoader.geoJsonToArdor3D(gjRoot, this, state.labelProp);
-		if (getNumberOfChildren() == 0) {
-			throw new IllegalStateException("No vectors found.");
+		if (filePath != null) {
+			GeojsonLoader jsonLoader = new GeojsonLoader(srs, elevAttrName, ground, size, lineWidth);
+			GeoJsonObject gjRoot = jsonLoader.load(filePath);
+			jsonLoader.geoJsonToArdor3D(gjRoot, this, state.labelProp);
+			if (getNumberOfChildren() == 0) {
+				throw new IllegalStateException("No vectors found.");
+			}
 		}
 		setLabelVisible(state.labelVisible);
 		getSceneHints().setCullHint(CullHint.Dynamic);
