@@ -42,7 +42,7 @@ public abstract class AbstractDialog extends JDialog {
 	protected int width, height;
 
 	/**
-	 * Constuctor
+	 * Constructor
 	 * 
 	 * @param parent
 	 * @param title
@@ -157,7 +157,7 @@ public abstract class AbstractDialog extends JDialog {
 	protected abstract boolean okPressed();
 
 	protected boolean cancelPressed() {
-		result = false;
+		result = null;
 		return (true);
 	}
 
