@@ -578,7 +578,7 @@ public class ColorMap {
 
 	private void loadFromFile() {
 		String filename = mapMap.get(name);
-		CsvReader reader = new CsvReader(filename, false, "[, :\t]");
+		CsvReader reader = new CsvReader(filename, false, "[, :\t]", null);
 		ArrayList<String[]> tokenList = new ArrayList<String[]>();
 		String[] token = null;
 		try {
