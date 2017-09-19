@@ -111,7 +111,7 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		Landscape.getInstance().update(viewpoint.getCamera());
 		// has the viewpoint changed?
 		boolean viewpointChanged = viewpoint.changed.getAndSet(false);
-		// if either the viewpoint or landscape changed, update the other view dependent objects
+		// if the viewpoint changed, update the other view dependent objects
 		if (viewpointChanged) {
 			for (int i = 0; i < viewDependentList.size(); ++i) {
 				viewDependentList.get(i).update(viewpoint.getCamera());
