@@ -116,8 +116,11 @@ public class Dert {
 				break;
 			}
 		}
-		if (configPath != null)
-			ConfigurationManager.getInstance().openConfiguration(configPath);
+		if (configPath != null) {
+			Configuration config = ConfigurationManager.getInstance().loadConfiguration(configPath);
+			if (config != null)
+				ConfigurationManager.getInstance().openConfiguration(config);
+		}
 	}
 
 	/**

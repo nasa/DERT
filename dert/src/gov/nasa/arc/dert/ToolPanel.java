@@ -460,7 +460,9 @@ public class ToolPanel
 				public void run() {
 					String configPath = ConfigurationManager.getInstance().getRecentConfigurationPath((String) arg);
 					if (configPath != null) {
-						ConfigurationManager.getInstance().openConfiguration(configPath);
+						Configuration config = ConfigurationManager.getInstance().loadConfiguration(configPath);
+						if (config != null)
+							ConfigurationManager.getInstance().openConfiguration(config);
 					}
 				}
 			};
