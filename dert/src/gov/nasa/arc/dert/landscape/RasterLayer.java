@@ -74,7 +74,12 @@ public class RasterLayer extends Layer {
 		numLevels = StringUtil.getIntegerValue(properties, "NumberOfLevels", true, 0, true);
 		tileWidth = StringUtil.getIntegerValue(properties, "TileWidth", true, 0, true);
 		tileWidth1 = tileWidth + 1;
-		tileLength = StringUtil.getIntegerValue(properties, "TileLength", true, 0, true);
+		try {
+			tileLength = StringUtil.getIntegerValue(properties, "TileLength", true, 0, true);
+		}
+		catch (Exception e) {
+			tileLength = StringUtil.getIntegerValue(properties, "TileHeight", true, 0, true);
+		}
 		tileLength1 = tileLength + 1;
 		numTiles = StringUtil.getIntegerValue(properties, "NumberOfTiles", true, 0, true);
 		switch (layerType) {

@@ -334,7 +334,7 @@ public class QuadTree extends Node {
 			QuadTreeFactory factory = Landscape.getInstance().getFactory();
 			// get the children
 			int count = factory.loadQuadTrees(getName(), this, qt, false);
-			// we are at the highest resolution already?
+			// now at the highest resolution
 			if (count < 0) {
 				highestLevel = true;
 			} else if (count == 4) {
