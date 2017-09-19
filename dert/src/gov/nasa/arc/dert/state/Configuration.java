@@ -4,6 +4,7 @@ import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.scene.tool.Waypoint;
+import gov.nasa.arc.dert.state.State.StateType;
 import gov.nasa.arc.dert.state.StateFactory.DefaultState;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.util.StringUtil;
@@ -23,8 +24,8 @@ import javax.swing.JTextField;
 public class Configuration {
 
 	// Default states
-	public final ConsoleState consoleState;
-	public final WorldState worldState;
+	public ConsoleState consoleState;
+	public WorldState worldState;
 
 	// States for MapElements
 	public ArrayList<MapElementState> mapElementStateList;
@@ -325,6 +326,8 @@ public class Configuration {
 		for (int i=0; i<key.length; ++i) {
 			if (key[i].equals("WorldState"))
 				continue;
+			if (key[i].equals("ConsoleState"))
+				continue;
 			ViewData viewData = stateMap.get(key[i]).viewData;
 			if (viewData != null)
 				viewData.close();
@@ -387,5 +390,16 @@ public class Configuration {
 	
 	public State getState(String key) {
 		return(stateMap.get(key));
+	}
+	
+	public void initializeActors() {
+		Object[] key = stateMap.keySet().toArray();
+		for (int i=0; i<key.length; ++i) {
+			State state = stateMap.get((String)key[i]);
+			if (state.type == StateType.Actor) {
+				ActorState aState = (ActorState)state;
+				aState.initialize();
+			}
+		}
 	}
 }

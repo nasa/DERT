@@ -344,7 +344,8 @@ public class ConfigurationManager {
 				public void run() {
 					// Update main window
 					Dert.getMainWindow().setConfiguration(currentConfig);
-
+					currentConfig.worldState.initWorld();
+					currentConfig.initializeActors();
 				}
 			});
 		} catch (Exception e) {
@@ -474,19 +475,35 @@ public class ConfigurationManager {
 		return (recentConfigMap.get(key));
 	}
 
-	public void openConfiguration(final String configPath) {
+//	public void openConfiguration(final String configPath) {
+//		if (configThread != null) {
+//			return;
+//		}
+//		configThread = new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				if (saveCurrentConfiguration()) {
+//					Configuration config = loadConfiguration(configPath);
+//					if (config != null) {
+//						setCurrentConfiguration(config);
+//					}
+//				}
+//				configThread = null;
+//			}
+//		});
+//		configThread.start();
+//	}
+
+	public void openConfiguration(final Configuration config) {
 		if (configThread != null) {
 			return;
 		}
+		if (!saveCurrentConfiguration())
+			return;
 		configThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				if (saveCurrentConfiguration()) {
-					Configuration config = loadConfiguration(configPath);
-					if (config != null) {
-						setCurrentConfiguration(config);
-					}
-				}
+				setCurrentConfiguration(config);
 				configThread = null;
 			}
 		});
@@ -499,22 +516,22 @@ public class ConfigurationManager {
 	 * @param landPath
 	 * @return
 	 */
-	public void createConfiguration(final String landPath) {
-		if (configThread != null) {
-			return;
-		}
-		configThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				saveCurrentConfiguration();
-				Configuration newConfig = new Configuration("Untitled");
-				newConfig.setLandscapePath(landPath);
-				setCurrentConfiguration(newConfig);
-				configThread = null;
-			}
-		});
-		configThread.start();
-	}
+//	public void createConfiguration(final String landPath) {
+//		if (configThread != null) {
+//			return;
+//		}
+//		configThread = new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				saveCurrentConfiguration();
+//				Configuration newConfig = new Configuration("Untitled");
+//				newConfig.setLandscapePath(landPath);
+//				setCurrentConfiguration(newConfig);
+//				configThread = null;
+//			}
+//		});
+//		configThread.start();
+//	}
 	
 	public StateFactory getStateFactory() {
 		return(stateFactory);

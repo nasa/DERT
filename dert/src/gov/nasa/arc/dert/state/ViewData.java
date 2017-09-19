@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.state;
 
+import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.view.View;
 
@@ -168,6 +169,11 @@ public class ViewData {
 	public void setViewWindow(Window window, boolean setBounds) {
 		viewWindow = window;
 		if ((viewWindow != null) && setBounds) {
+			if ((windowX < 0) || (windowY < 0)) {
+				Point point = Dert.getMainWindow().getLocation();
+				windowX = Math.abs(windowX)+point.x;
+				windowY = Math.abs(windowY)+point.y;
+			}
 			window.setLocation(windowX, windowY);
 			if (packIt) {
 				window.pack();
@@ -285,11 +291,6 @@ public class ViewData {
 		dialog.setIconImage(Icons.getImage("dert_24.png"));
 		dialog.setLayout(new BorderLayout());
 		dialog.getContentPane().add((Component) view, BorderLayout.CENTER);
-		Point point = parent.getLocation();
-		if ((windowX < 0) || (windowY < 0)) {
-			windowX = Math.abs(windowX)+point.x;
-			windowY = Math.abs(windowY)+point.y;
-		}
 //		xOffset += point.x;
 //		yOffset += point.y;
 //		setViewWindow(dialog, true, xOffset, yOffset);

@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.io.FileSystemTileSource;
+import gov.nasa.arc.dert.io.TileSource;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.LayerManager;
 import gov.nasa.arc.dert.lighting.Lighting;
@@ -40,12 +41,13 @@ public class WorldState extends State {
 	public boolean useLonLat;
 
 	// Persisted components
-	private Lighting lighting;
-	private LayerManager layerManager;
+	protected Lighting lighting;
+	protected LayerManager layerManager;
 
 	// Transient components
-	private transient World world;
-	private transient FileSystemTileSource tileSource;
+	protected transient World world;
+	protected transient TileSource tileSource;
+	protected transient String username, password;
 
 	/**
 	 * Constructor
@@ -59,6 +61,9 @@ public class WorldState extends State {
 		viewData.setVisible(true);
 		lighting = new Lighting();
 		layerManager = new LayerManager();
+		tileSource = new FileSystemTileSource();
+		username = "dert";
+		password = "dert";
 	}
 	
 	public WorldState(Map<String,Object> map) {
@@ -71,6 +76,9 @@ public class WorldState extends State {
 		lighting = new Lighting((HashMap<String,Object>)map.get("Lighting"));
 		layerManager = new LayerManager((HashMap<String,Object>)map.get("LayerManager"));
 		hiddenDashed = StateUtil.getBoolean(map, "HiddenDashed", World.defaultHiddenDashed);
+		tileSource = new FileSystemTileSource();
+		username = "dert";
+		password = "dert";
 	}
 	
 	@Override
@@ -117,8 +125,7 @@ public class WorldState extends State {
 	 * @return the world
 	 */
 	public World createWorld(String landscapeName, Configuration config) {
-		tileSource = new FileSystemTileSource(landscapeName);
-		if (!tileSource.connect("dert", "dert")) {
+		if (!tileSource.connect(landscapeName, username, password)) {
 			return (null);
 		}
 		String[][] layerInfo = tileSource.getLayerInfo();
@@ -173,6 +180,10 @@ public class WorldState extends State {
 		map.put("HiddenDashed", new Boolean(world.isHiddenDashed()));
 		
 		return(map);
+	}
+	
+	public void initWorld() {
+		// nothing here
 	}
 
 }
