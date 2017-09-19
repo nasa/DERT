@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.action.file;
 
 import gov.nasa.arc.dert.action.MenuItemAction;
+import gov.nasa.arc.dert.state.Configuration;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.view.Console;
 
@@ -28,10 +29,15 @@ public class OpenConfigAction extends MenuItemAction {
 			File file = new File(filePath);
 			if (file.isDirectory()) {
 				// landscape - create a new configuration
-				ConfigurationManager.getInstance().createConfiguration(filePath);
+				Configuration newConfig = new Configuration("Untitled");
+				newConfig.setLandscapePath(filePath);
+//				ConfigurationManager.getInstance().createConfiguration(filePath);
+				ConfigurationManager.getInstance().openConfiguration(newConfig);
 			} else {
 				// existing configuration
-				ConfigurationManager.getInstance().openConfiguration(filePath);
+				Configuration config = ConfigurationManager.getInstance().loadConfiguration(filePath);
+				if (config != null)
+					ConfigurationManager.getInstance().openConfiguration(config);
 			}
 		} catch (Exception e) {
 			Console.println("Unable to open worldview.  See log.");
