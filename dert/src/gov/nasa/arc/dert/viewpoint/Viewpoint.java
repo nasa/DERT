@@ -25,6 +25,7 @@ import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.Camera.ProjectionMode;
 import com.ardor3d.renderer.queue.RenderBucketType;
 import com.ardor3d.scenegraph.Node;
+import com.ardor3d.scenegraph.Spatial;
 
 /**
  * Carries the main camera for the WorldView.
@@ -119,17 +120,43 @@ public class Viewpoint
 	}
 
 	/**
+	 * Move close to and point at the given spatial.
+	 * 
+	 * @param spatial
+	 */
+	public void seek(Spatial spatial) {
+		if (spatial instanceof MapElement)
+			seek((MapElement)spatial);
+		else {
+			spatial.updateWorldTransform(true);
+			spatial.updateWorldBound(true);
+			BoundingVolume bv = spatial.getWorldBound();
+			double distance = Double.NaN;
+			if (bv != null) {
+				seekPoint.set(bv.getCenter());
+				distance = bv.getRadius()*5;
+			}
+			else {
+				seekPoint.set(spatial.getWorldTranslation());
+				distance = Landscape.defaultCellSize;
+			}
+			seekTo(seekPoint, distance);		
+		}
+	}
+
+	/**
 	 * Move close to and point at the given map element.
 	 * 
 	 * @param mapElement
 	 */
-	public void seek(final MapElement mapElement) {
-		
+	public void seek(MapElement mapElement) {
 		double distance = mapElement.getSeekPointAndDistance(seekPoint);
-		if (Double.isNaN(distance)) {
+		if (Double.isNaN(distance))
 			return;
-		}
-		
+		seekTo(seekPoint, distance);		
+	}
+	
+	private void seekTo(Vector3 seekPoint, double distance) {
 		direction.set(camera.getDirection());
 		location.set(seekPoint);
 		location.subtractLocal(direction.multiplyLocal(distance));
