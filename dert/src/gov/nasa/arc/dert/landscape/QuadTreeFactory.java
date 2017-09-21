@@ -51,9 +51,6 @@ public class QuadTreeFactory {
 	// The base layer
 	private RasterLayer baseLayer;
 
-	// The QuadTree tile cache
-	private QuadTreeCache quadTreeCache;
-
 	// Threading service
 	private ExecutorService executor;
 
@@ -63,7 +60,7 @@ public class QuadTreeFactory {
 	// Layers are showing
 	private boolean layersEnabled = true;
 
-	// Pixel scale factor for millimeter scale landscapes
+	// Pixel scale factor for millimeter scale terrains
 	private double pixelScale;
 
 	// Dimensions
@@ -75,8 +72,12 @@ public class QuadTreeFactory {
 	// A texture for empty tiles
 	private Texture emptyTexture;
 
-	// The dimensions of the entire landscape
-	private double worldWidth, worldLength;
+	// The dimensions of the entire terrain
+	private double terrainWidth, terrainLength;
+	
+	private int bytesPerTile;
+	
+	private String label;
 
 	/**
 	 * Constructor
@@ -86,7 +87,8 @@ public class QuadTreeFactory {
 	 * @param layerList
 	 * @param pixelScale
 	 */
-	public QuadTreeFactory(TileSource source, RasterLayer baseLayer, Layer[] layerList, double pixelScale) {
+	public QuadTreeFactory(String label, TileSource source, RasterLayer baseLayer, Layer[] layerList, double pixelScale) {
+		this.label = label;
 		this.source = source;
 		this.layerList = layerList;
 		this.baseLayer = baseLayer;
@@ -94,17 +96,16 @@ public class QuadTreeFactory {
 		this.tileWidth = baseLayer.getTileWidth();
 		this.tileLength = baseLayer.getTileLength();
 		ProjectionInfo projInfo = baseLayer.getProjectionInfo();
-		worldWidth = baseLayer.getRasterWidth() * projInfo.scale[0] * pixelScale;
-		worldLength = baseLayer.getRasterLength() * projInfo.scale[1] * pixelScale;
+		terrainWidth = baseLayer.getRasterWidth() * projInfo.scale[0] * pixelScale;
+		terrainLength = baseLayer.getRasterLength() * projInfo.scale[1] * pixelScale;
 		missingFillValue = baseLayer.getFillValue();
 
-		int bytesPerTile = baseLayer.getBytesPerTile()*14+(tileLength*4);
+		bytesPerTile = baseLayer.getBytesPerTile()*14+(tileLength*4);
 		for (int i = 0; i < layerList.length; ++i) {
 			if (layerList[i] != null) {
 				bytesPerTile += layerList[i].getBytesPerTile();
 			}
 		}
-		quadTreeCache = new QuadTreeCache(bytesPerTile);
 
 		executor = Executors.newFixedThreadPool(5);
 	}
@@ -114,8 +115,7 @@ public class QuadTreeFactory {
 	 */
 	public void dispose() {
 		executor.shutdown();
-		quadTreeCache.dispose();
-		quadTreeCache = null;
+		QuadTreeCache.getInstance().clear(label);
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class QuadTreeFactory {
 	 */
 	public QuadTree getQuadTree(String key, QuadTree parent, ReadOnlyVector3 p, double pixelWidth, double pixelLength,
 		int level, int quadrant, boolean wait) {
-		QuadTree quadTree = quadTreeCache.getQuadTree(key);
+		QuadTree quadTree = QuadTreeCache.getInstance().getQuadTree(label+key);
 		if (quadTree == null) {
 			quadTree = createQuadTree(key, parent, p, pixelWidth, pixelLength, level, quadrant, wait);
 		}
@@ -149,7 +149,7 @@ public class QuadTreeFactory {
 	 * @return
 	 */
 	public QuadTree getQuadTree(String key) {
-		QuadTree quadTree = quadTreeCache.getQuadTree(key);
+		QuadTree quadTree = QuadTreeCache.getInstance().getQuadTree(label+key);
 		if (quadTree != null) {
 			return (quadTree);
 		}
@@ -158,8 +158,8 @@ public class QuadTreeFactory {
 		Vector3 p = keyToTileCenter(key);
 		int level = keyToLevel(key);
 		double s = Math.pow(2, level);
-		double pixelWidth = (worldWidth / tileWidth) / s;
-		double pixelLength = (worldLength / tileLength) / s;
+		double pixelWidth = (terrainWidth / tileWidth) / s;
+		double pixelLength = (terrainLength / tileLength) / s;
 		quadTree = createQuadTree(key, null, p, pixelWidth, pixelLength, level, q, true);
 		return (quadTree);
 	}
@@ -177,8 +177,8 @@ public class QuadTreeFactory {
 			return (p);
 		}
 		double n = Math.pow(2, token.length);
-		double w = worldWidth / n;
-		double l = worldLength / n;
+		double w = terrainWidth / n;
+		double l = terrainLength / n;
 		int q = Integer.valueOf(token[token.length - 1]);
 		switch (q) {
 		case 1:
@@ -199,7 +199,7 @@ public class QuadTreeFactory {
 
 	/**
 	 * Given a key, find the OpenGl coordinates relative to the center of the
-	 * landscape
+	 * terrain
 	 * 
 	 * @param key
 	 * @return
@@ -210,8 +210,8 @@ public class QuadTreeFactory {
 		if (token.length <= 1) {
 			return (p);
 		}
-		double w = worldWidth;
-		double l = worldLength;
+		double w = terrainWidth;
+		double l = terrainLength;
 		for (int i = 0; i < token.length; ++i) {
 			w /= 2;
 			l /= 2;
@@ -307,9 +307,9 @@ public class QuadTreeFactory {
 		// create the quad tree tile and put it in the cache as a place holder
 		// while we load the contents
 		// this keeps us from starting another load operation for this tile
-		final QuadTree qt = new QuadTree(key, p, level, quadrant, pixelWidth, pixelLength);
+		final QuadTree qt = new QuadTree(key, p, level, quadrant, pixelWidth, pixelLength, bytesPerTile);
 		qt.createTestPoints(keyToTestPointCenter(key), tileWidth, tileLength);
-		quadTreeCache.putQuadTree(key, qt);
+		QuadTreeCache.getInstance().putQuadTree(label+key, qt);
 
 		// load the quad tree mesh contents
 		if (key.equals("") || wait) {
@@ -689,6 +689,65 @@ public class QuadTreeFactory {
 		return (result);
 	}
 
+	private Object[] getRangeVertices(String key, double width, double pixelWidth, double height, double pixelLength) {
+		float[] store = new float[3];
+
+		// Get the base layer tile data
+		QuadTreeTile tile = baseLayer.getTile(key);
+		if (tile == null) {
+			return (null);
+		}
+		int dataSize = tile.width * tile.length;
+		FloatBuffer data = tile.raster.asFloatBuffer();
+
+		// create vertex and color buffers
+		FloatBuffer vertex = BufferUtils.createFloatBuffer(dataSize * 3);
+		FloatBuffer colors = BufferUtils.createFloatBuffer(dataSize * 4);
+
+		// fill buffers
+		int cb = 0;
+		int ce = tile.width - 1;
+		int rb = 0;
+		int re = tile.length - 1;
+
+		int k = 0;
+		boolean empty = true;
+
+		float y = (float) height / 2;
+		for (int r = rb; r <= re; ++r) {
+			float x = -(float) width / 2;
+			for (int c = cb; c <= ce; ++c) {
+				float z = data.get(k);
+				// fill missing value vertices with missing value color
+				if (Float.isNaN(z)) {
+					z = missingFillValue;
+					colors.put(0).put(0).put(0).put(0);
+				} else {
+					colors.put(rgba[0]).put(rgba[1]).put(rgba[2]).put(rgba[3]);
+					empty = false;
+				}
+				((RangeLayer)baseLayer).imageToWorld(x, y, z, store);
+				vertex.put(store[0]).put(store[1]).put((float) (store[2] * pixelScale));
+				k++;
+				x += pixelWidth;
+			}
+			y -= pixelLength;
+		}
+		vertex.flip();
+		colors.flip();
+
+		// get normals
+		FloatBuffer normals = createNormals(vertex, tile.length, tile.width, dataSize);
+
+		// return results
+		Object[] result = new Object[4];
+		result[0] = vertex;
+		result[1] = colors;
+		result[2] = normals;
+		result[3] = new Boolean(empty);
+		return (result);
+	}
+
 	private FloatBuffer createNormals(FloatBuffer vertex, int rows, int cols, int dataSize) {
 		// compute normal for each face
 		float[] face = new float[3];
@@ -758,6 +817,6 @@ public class QuadTreeFactory {
 	 */
 	public void setSurfaceColor(Color surfaceColor) {
 		rgba = UIUtil.colorToFloatArray(surfaceColor);
-		quadTreeCache.updateSurfaceColor(rgba);
+		QuadTreeCache.getInstance().updateSurfaceColor(rgba);
 	}
 }

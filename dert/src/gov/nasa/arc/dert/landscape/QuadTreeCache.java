@@ -7,6 +7,8 @@ public class QuadTreeCache {
 	// The maximum amount of memory for the cache (in bytes)
 	public static long MAX_CACHE_MEMORY = 400000000l;
 	public static int MAX_CLEANUP_COUNT = 100;
+	
+	private static QuadTreeCache INSTANCE;
 
 	// A hash map to keep track of QuadTree tiles
 	protected HashMap<String, QuadTree> quadTreeMap;
@@ -14,17 +16,22 @@ public class QuadTreeCache {
 	// The number of cache cleanups since the last garbage collection
 	protected int cleanupCount;
 
-	// The maximum cache size (in quad trees)
-	protected long maxCacheSize;
+	// The maximum cache size (in bytes)
+	protected long cacheSize;
+	
+	public static QuadTreeCache getInstance() {
+		if (INSTANCE == null)
+			INSTANCE = new QuadTreeCache();
+		return(INSTANCE);
+	}
 
 	/**
 	 * Constructor
 	 * 
 	 * @param bytesPerTile
 	 */
-	public QuadTreeCache(int bytesPerTile) {
+	protected QuadTreeCache() {
 		quadTreeMap = new HashMap<String, QuadTree>();
-		maxCacheSize = MAX_CACHE_MEMORY / bytesPerTile;
 	}
 
 	/**
@@ -52,12 +59,32 @@ public class QuadTreeCache {
 //		System.err.println("QuadTreeCache.putQuadTree ."+key+".");
 		quadTree.timestamp = System.currentTimeMillis();
 		quadTreeMap.put(key, quadTree);
+		cacheSize += quadTree.getSize();
 		cleanUpCache();
+	}
+	
+	public synchronized void clear() {
+		quadTreeMap.clear();
+		System.gc();
+		cacheSize = 0;
+		cleanupCount = 0;		
+	}
+	
+	public synchronized void clear(String label) {
+		Object[] key = new Object[quadTreeMap.size()];
+		key = quadTreeMap.keySet().toArray(key);
+		for (int i=0; i<key.length; ++i) {
+			System.err.println("QuadTreeCache.clear "+label+" ."+key+".");
+			if (((String)key[i]).startsWith(label)) {
+				QuadTree qt = quadTreeMap.remove(key[i]);
+				cacheSize -= qt.getSize();
+			}
+		}
 	}
 
 	protected void cleanUpCache() {
 		// not full yet
-		if (quadTreeMap.size() < maxCacheSize) {
+		if (cacheSize < MAX_CACHE_MEMORY) {
 			return;
 		}
 		// get the oldest QuadTree not in use
@@ -89,6 +116,7 @@ public class QuadTreeCache {
 			throw new IllegalStateException("Unable to clean up quad tree cache.  All tiles are in use. Increase maximum cache size.");
 		// remove the oldest item if not in use
 		QuadTree qt = quadTreeMap.remove(oldestKey);
+		cacheSize -= qt.getSize();
 		qt.dispose();
 		qt = null;
 		cleanupCount++;

@@ -125,6 +125,7 @@ public abstract class Layer {
 			return (false);
 		case elevation:
 		case field:
+		case range:
 			return (false);
 		case colorimage:
 		case grayimage:
@@ -146,6 +147,7 @@ public abstract class Layer {
 		case elevation:
 		case colorimage:
 		case grayimage:
+		case range:
 			return (false);
 		case derivative:
 		case field:

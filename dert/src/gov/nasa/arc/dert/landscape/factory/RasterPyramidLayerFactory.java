@@ -108,6 +108,7 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 		case derivative:
 			break;
 		case elevation:
+		case range:
 			bytesPerPixel = 4;
 			break;
 		case field:
@@ -343,6 +344,7 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			break;
 		case elevation:
 		case field:
+		case range:
 			raster.setMissingValuesToNaN(missingValue, minimumSampleValue, maximumSampleValue);
 			padded.set(Float.NaN);
 			break;
@@ -391,6 +393,7 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 		case derivative:
 			break;
 		case elevation:
+		case range:
 			rasterFile.loadHeightMap(raster);
 			this.dataType = DataType.Float;
 			return (raster);
@@ -455,6 +458,7 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			break;
 		case elevation:
 		case field:
+		case range:
 		case grayimage:
 			raster.get(rasterTop, rasterLeft, rasterTWidth, rasterTLength, bbuf, tileTop, tileLeft, tWidth, kernelSize);
 			break;
@@ -500,6 +504,7 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			break;
 		case elevation:
 		case field:
+		case range:
 			float[][] fArray = (float[][]) raster;
 			bbArray = new byte[fArray[0].length * 4];
 			bbuf = ByteBuffer.wrap(bbArray);
@@ -549,6 +554,7 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			break;
 		case elevation:
 		case field:
+		case range:
 			FloatBuffer fbuf = bbuf.asFloatBuffer();
 			fbuf.position(row * wid);
 			for (int c = 0; c < wid; ++c) {
@@ -588,6 +594,7 @@ public class RasterPyramidLayerFactory extends PyramidLayerFactory {
 			break;
 		case elevation:
 		case field:
+		case range:
 			FloatBuffer fbuf = bbuf.asFloatBuffer();
 			for (int r = 0; r < hgt; ++r) {
 				int c = r * wid + col;

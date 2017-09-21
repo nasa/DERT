@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class LayerInfo implements Comparable<LayerInfo> {
 
 	public static enum LayerType {
-		none, elevation, colorimage, grayimage, field, footprint, viewshed, derivative
+		none, elevation, colorimage, grayimage, field, footprint, viewshed, derivative, range
 	}
 
 	// Name of the layer, presented in the UI

@@ -102,6 +102,7 @@ public abstract class PyramidLayerFactory {
 			break;
 		case elevation:
 		case field:
+		case range:
 			FloatBuffer fbuf = bbuf.asFloatBuffer();
 			int fl = fbuf.limit();
 			for (int i = 0; i < fl; ++i) {
@@ -216,6 +217,7 @@ public abstract class PyramidLayerFactory {
 				break;
 			case elevation:
 			case field:
+			case range:
 				// core PNG does not support 32 bit or floating point
 				// write it as a 4 byte color
 				bImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);

@@ -60,7 +60,7 @@ public class Configuration {
 		stateMap.put("ConsoleState", consoleState);
 		stateMap.put("HelpState", stateFactory.createState(DefaultState.HelpState));
 		stateMap.put("MapElementsState", stateFactory.createState(DefaultState.MapElementsState));
-		stateMap.put("SurfaceAndLayerState", stateFactory.createState(DefaultState.SurfaceAndLayersState));
+		stateMap.put("SurfaceAndLayersState", stateFactory.createState(DefaultState.SurfaceAndLayersState));
 		stateMap.put("LightingState", stateFactory.createState(DefaultState.LightingState));
 		stateMap.put("ViewpointState", stateFactory.createState(DefaultState.ViewpointState));
 		stateMap.put("AnimationState", stateFactory.createState(DefaultState.AnimationState));

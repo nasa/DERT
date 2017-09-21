@@ -90,6 +90,7 @@ public class RasterLayer extends Layer {
 			break;
 		case elevation:
 		case field:
+		case range:
 			numBytes = 4;
 			break;
 		case colorimage:
@@ -205,6 +206,7 @@ public class RasterLayer extends Layer {
 				break;
 			case elevation:
 			case field:
+			case range:
 				dataType = DataType.Float;
 				break;
 			case colorimage:

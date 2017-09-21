@@ -71,6 +71,9 @@ public class QuadTree extends Node {
 
 	// Pixel dimensions
 	protected double pixelWidth, pixelLength;
+	
+	// Size of this quad tree object in bytes
+	protected int sizeInBytes;
 
 	/**
 	 * Constructor
@@ -85,7 +88,7 @@ public class QuadTree extends Node {
 	 * @param level
 	 * @param quadrant
 	 */
-	public QuadTree(String name, ReadOnlyVector3 p, int level, int quadrant, double pixelWidth, double pixelLength) {
+	public QuadTree(String name, ReadOnlyVector3 p, int level, int quadrant, double pixelWidth, double pixelLength, int sizeInBytes) {
 		super(name);
 		camLoc = new Vector3();
 		lookAt = new Vector3();
@@ -98,6 +101,7 @@ public class QuadTree extends Node {
 		this.quadrant = quadrant;
 		this.pixelWidth = pixelWidth;
 		this.pixelLength = pixelLength;
+		this.sizeInBytes = sizeInBytes;
 		setTranslation(p);
 	}
 
@@ -161,6 +165,10 @@ public class QuadTree extends Node {
 	 */
 	public synchronized QuadTreeMesh getMesh() {
 		return (mesh);
+	}
+	
+	public int getSize() {
+		return(sizeInBytes);
 	}
 
 	/**
