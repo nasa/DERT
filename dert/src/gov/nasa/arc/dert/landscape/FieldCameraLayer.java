@@ -1,9 +1,12 @@
 package gov.nasa.arc.dert.landscape;
 
-import gov.nasa.arc.dert.landscape.LayerInfo.LayerType;
 import gov.nasa.arc.dert.render.Viewshed;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
+import gov.nasa.arc.dert.terrain.Layer;
+import gov.nasa.arc.dert.terrain.LayerInfo;
+import gov.nasa.arc.dert.terrain.QuadTreeTile;
+import gov.nasa.arc.dert.terrain.LayerInfo.LayerType;
 import gov.nasa.arc.dert.util.ImageUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 

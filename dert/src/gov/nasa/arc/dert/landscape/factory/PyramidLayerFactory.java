@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.landscape.factory;
 
-import gov.nasa.arc.dert.landscape.LayerInfo.LayerType;
 import gov.nasa.arc.dert.raster.ProjectionInfo;
+import gov.nasa.arc.dert.terrain.LayerInfo.LayerType;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -102,7 +102,6 @@ public abstract class PyramidLayerFactory {
 			break;
 		case elevation:
 		case field:
-		case range:
 			FloatBuffer fbuf = bbuf.asFloatBuffer();
 			int fl = fbuf.limit();
 			for (int i = 0; i < fl; ++i) {
@@ -217,7 +216,6 @@ public abstract class PyramidLayerFactory {
 				break;
 			case elevation:
 			case field:
-			case range:
 				// core PNG does not support 32 bit or floating point
 				// write it as a 4 byte color
 				bImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);

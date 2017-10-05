@@ -291,6 +291,7 @@ public class ConfigurationManager {
 					@Override
 					public void run() {
 						currentConfig.closeViews();
+						currentConfig.dispose();
 					}
 				});
 			} catch (Exception e) {

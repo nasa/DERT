@@ -2,9 +2,9 @@ package gov.nasa.arc.dert.view.surfaceandlayers;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.landscape.LayerManager;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.state.State;
+import gov.nasa.arc.dert.terrain.LayerManager;
 import gov.nasa.arc.dert.ui.ColorSelectionPanel;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
 import gov.nasa.arc.dert.ui.GBCHelper;

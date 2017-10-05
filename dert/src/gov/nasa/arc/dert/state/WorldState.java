@@ -3,12 +3,12 @@ package gov.nasa.arc.dert.state;
 import gov.nasa.arc.dert.io.FileSystemTileSource;
 import gov.nasa.arc.dert.io.TileSource;
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.landscape.LayerManager;
 import gov.nasa.arc.dert.lighting.Lighting;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.featureset.FeatureSets;
 import gov.nasa.arc.dert.scene.landmark.Landmarks;
 import gov.nasa.arc.dert.scene.tool.Tools;
+import gov.nasa.arc.dert.terrain.LayerManager;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.view.world.WorldView;
@@ -151,7 +151,8 @@ public class WorldState extends State {
 
 	@Override
 	public void dispose() {
-		world.dispose();
+		if (world != null)
+			world.dispose();
 		world = null;
 		tileSource = null;
 		System.gc();

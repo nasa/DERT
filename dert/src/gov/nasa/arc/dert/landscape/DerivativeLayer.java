@@ -1,5 +1,9 @@
 package gov.nasa.arc.dert.landscape;
 
+import gov.nasa.arc.dert.terrain.Layer;
+import gov.nasa.arc.dert.terrain.LayerInfo;
+import gov.nasa.arc.dert.terrain.QuadTreeTile;
+import gov.nasa.arc.dert.terrain.RasterLayer;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.ColorMapListener;
 import gov.nasa.arc.dert.util.MathUtil;
@@ -55,9 +59,9 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 		this.type = type;
 		colorMap = layerInfo.colorMap;
 		dataSource = source;
-		numLevels = dataSource.numLevels;
-		numTiles = dataSource.numTiles;
-		bytesPerTile = (dataSource.tileWidth + 1) * (dataSource.tileLength + 1) * 8;
+		numLevels = dataSource.getNumberOfLevels();
+		numTiles = dataSource.getNumberOfTiles();
+		bytesPerTile = (dataSource.getTileWidth() + 1) * (dataSource.getTileLength() + 1) * 8;
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.scenegraph;
 
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.landscape.QuadTree;
+import gov.nasa.arc.dert.terrain.QuadTree;
 import gov.nasa.arc.dert.util.UIUtil;
 
 import java.awt.Color;

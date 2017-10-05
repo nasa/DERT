@@ -2,9 +2,9 @@ package gov.nasa.arc.dert.view.surfaceandlayers;
 
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.landscape.LayerInfo;
-import gov.nasa.arc.dert.landscape.LayerInfo.LayerType;
-import gov.nasa.arc.dert.landscape.LayerManager;
+import gov.nasa.arc.dert.terrain.LayerInfo;
+import gov.nasa.arc.dert.terrain.LayerManager;
+import gov.nasa.arc.dert.terrain.LayerInfo.LayerType;
 import gov.nasa.arc.dert.ui.IntSpinner;
 
 import java.awt.FlowLayout;

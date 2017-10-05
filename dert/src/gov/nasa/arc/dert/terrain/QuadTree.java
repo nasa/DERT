@@ -1,5 +1,6 @@
-package gov.nasa.arc.dert.landscape;
+package gov.nasa.arc.dert.terrain;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 

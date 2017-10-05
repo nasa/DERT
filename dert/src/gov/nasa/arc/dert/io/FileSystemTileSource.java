@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.io;
 
-import gov.nasa.arc.dert.landscape.QuadTreeTile;
 import gov.nasa.arc.dert.raster.RasterFile.DataType;
+import gov.nasa.arc.dert.terrain.QuadTreeTile;
 import gov.nasa.arc.dert.util.ImageUtil;
 import gov.nasa.arc.dert.view.Console;
 

@@ -1,6 +1,9 @@
-package gov.nasa.arc.dert.landscape;
+package gov.nasa.arc.dert.terrain;
 
 import gov.nasa.arc.dert.io.TileSource;
+import gov.nasa.arc.dert.landscape.DerivativeLayer;
+import gov.nasa.arc.dert.landscape.FieldCameraLayer;
+import gov.nasa.arc.dert.landscape.FieldLayer;
 import gov.nasa.arc.dert.raster.ProjectionInfo;
 import gov.nasa.arc.dert.render.SharedTexture2D;
 import gov.nasa.arc.dert.util.MathUtil;
@@ -689,65 +692,6 @@ public class QuadTreeFactory {
 		return (result);
 	}
 
-	private Object[] getRangeVertices(String key, double width, double pixelWidth, double height, double pixelLength) {
-		float[] store = new float[3];
-
-		// Get the base layer tile data
-		QuadTreeTile tile = baseLayer.getTile(key);
-		if (tile == null) {
-			return (null);
-		}
-		int dataSize = tile.width * tile.length;
-		FloatBuffer data = tile.raster.asFloatBuffer();
-
-		// create vertex and color buffers
-		FloatBuffer vertex = BufferUtils.createFloatBuffer(dataSize * 3);
-		FloatBuffer colors = BufferUtils.createFloatBuffer(dataSize * 4);
-
-		// fill buffers
-		int cb = 0;
-		int ce = tile.width - 1;
-		int rb = 0;
-		int re = tile.length - 1;
-
-		int k = 0;
-		boolean empty = true;
-
-		float y = (float) height / 2;
-		for (int r = rb; r <= re; ++r) {
-			float x = -(float) width / 2;
-			for (int c = cb; c <= ce; ++c) {
-				float z = data.get(k);
-				// fill missing value vertices with missing value color
-				if (Float.isNaN(z)) {
-					z = missingFillValue;
-					colors.put(0).put(0).put(0).put(0);
-				} else {
-					colors.put(rgba[0]).put(rgba[1]).put(rgba[2]).put(rgba[3]);
-					empty = false;
-				}
-				((RangeLayer)baseLayer).imageToWorld(x, y, z, store);
-				vertex.put(store[0]).put(store[1]).put((float) (store[2] * pixelScale));
-				k++;
-				x += pixelWidth;
-			}
-			y -= pixelLength;
-		}
-		vertex.flip();
-		colors.flip();
-
-		// get normals
-		FloatBuffer normals = createNormals(vertex, tile.length, tile.width, dataSize);
-
-		// return results
-		Object[] result = new Object[4];
-		result[0] = vertex;
-		result[1] = colors;
-		result[2] = normals;
-		result[3] = new Boolean(empty);
-		return (result);
-	}
-
 	private FloatBuffer createNormals(FloatBuffer vertex, int rows, int cols, int dataSize) {
 		// compute normal for each face
 		float[] face = new float[3];
@@ -817,6 +761,6 @@ public class QuadTreeFactory {
 	 */
 	public void setSurfaceColor(Color surfaceColor) {
 		rgba = UIUtil.colorToFloatArray(surfaceColor);
-		QuadTreeCache.getInstance().updateSurfaceColor(rgba);
+		QuadTreeCache.getInstance().updateSurfaceColor(label, rgba);
 	}
 }

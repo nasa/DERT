@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.scene.tool.fieldcamera;
 
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.render.Viewshed;
 import gov.nasa.arc.dert.scene.tool.Tool;
 import gov.nasa.arc.dert.scenegraph.ImageQuad;
@@ -14,6 +13,7 @@ import gov.nasa.arc.dert.scenegraph.text.Text.AlignType;
 import gov.nasa.arc.dert.state.FieldCameraState;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
+import gov.nasa.arc.dert.terrain.QuadTree;
 import gov.nasa.arc.dert.util.ImageUtil;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;

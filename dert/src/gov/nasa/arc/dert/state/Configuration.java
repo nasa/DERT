@@ -402,4 +402,12 @@ public class Configuration {
 			}
 		}
 	}
+	
+	public void dispose() {
+		Object[] key = stateMap.keySet().toArray();
+		for (int i=0; i<key.length; ++i) {
+			State state = stateMap.get((String)key[i]);
+			state.dispose();
+		}
+	}
 }

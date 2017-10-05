@@ -1,4 +1,4 @@
-package gov.nasa.arc.dert.landscape;
+package gov.nasa.arc.dert.terrain;
 
 import gov.nasa.arc.dert.raster.RasterFile.DataType;
 

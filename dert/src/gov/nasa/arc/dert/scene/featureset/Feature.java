@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.scene.featureset;
 
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
 import gov.nasa.arc.dert.scenegraph.LineStrip;
@@ -10,6 +9,7 @@ import gov.nasa.arc.dert.scenegraph.Marker;
 import gov.nasa.arc.dert.state.FeatureState;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
+import gov.nasa.arc.dert.terrain.QuadTree;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.view.world.GroundEdit;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;

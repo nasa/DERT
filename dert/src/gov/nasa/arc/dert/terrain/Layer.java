@@ -1,6 +1,6 @@
-package gov.nasa.arc.dert.landscape;
+package gov.nasa.arc.dert.terrain;
 
-import gov.nasa.arc.dert.landscape.LayerInfo.LayerType;
+import gov.nasa.arc.dert.terrain.LayerInfo.LayerType;
 
 import java.util.Properties;
 
@@ -125,7 +125,6 @@ public abstract class Layer {
 			return (false);
 		case elevation:
 		case field:
-		case range:
 			return (false);
 		case colorimage:
 		case grayimage:
@@ -147,7 +146,6 @@ public abstract class Layer {
 		case elevation:
 		case colorimage:
 		case grayimage:
-		case range:
 			return (false);
 		case derivative:
 		case field:

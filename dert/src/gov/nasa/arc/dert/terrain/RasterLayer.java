@@ -1,4 +1,4 @@
-package gov.nasa.arc.dert.landscape;
+package gov.nasa.arc.dert.terrain;
 
 import gov.nasa.arc.dert.io.TileSource;
 import gov.nasa.arc.dert.raster.ProjectionInfo;
@@ -90,7 +90,6 @@ public class RasterLayer extends Layer {
 			break;
 		case elevation:
 		case field:
-		case range:
 			numBytes = 4;
 			break;
 		case colorimage:
@@ -206,7 +205,6 @@ public class RasterLayer extends Layer {
 				break;
 			case elevation:
 			case field:
-			case range:
 				dataType = DataType.Float;
 				break;
 			case colorimage:

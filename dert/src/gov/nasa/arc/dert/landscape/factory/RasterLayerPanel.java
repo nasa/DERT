@@ -1,9 +1,9 @@
 package gov.nasa.arc.dert.landscape.factory;
 
-import gov.nasa.arc.dert.landscape.LayerInfo.LayerType;
 import gov.nasa.arc.dert.raster.RasterFile;
 import gov.nasa.arc.dert.raster.geotiff.GTIF;
 import gov.nasa.arc.dert.raster.pds.PDS;
+import gov.nasa.arc.dert.terrain.LayerInfo.LayerType;
 import gov.nasa.arc.dert.ui.GBCHelper;
 import gov.nasa.arc.dert.ui.LandscapeChooserDialog;
 import gov.nasa.arc.dert.util.FileHelper;

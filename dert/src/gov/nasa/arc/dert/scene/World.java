@@ -261,6 +261,7 @@ public class World extends GroupNode {
 	 * Dispose of resources (landscape and lighting)
 	 */
 	public void dispose() {
+		SceneGraphManager.getSceneGraphManager().removeDirtyEventListener(dirtyEventHandler);
 		Landscape.getInstance().dispose();
 		lighting.dispose();
 		if (ruler != null)

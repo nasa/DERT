@@ -1,8 +1,8 @@
 package gov.nasa.arc.dert.render;
 
-import gov.nasa.arc.dert.landscape.QuadTreeMesh;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.scenegraph.Movable;
+import gov.nasa.arc.dert.terrain.QuadTreeMesh;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

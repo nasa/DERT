@@ -1,4 +1,4 @@
-package gov.nasa.arc.dert.landscape;
+package gov.nasa.arc.dert.terrain;
 
 import gov.nasa.arc.dert.io.TileSource;
 import gov.nasa.arc.dert.raster.ProjectionInfo;

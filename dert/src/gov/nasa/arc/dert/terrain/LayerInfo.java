@@ -1,4 +1,4 @@
-package gov.nasa.arc.dert.landscape;
+package gov.nasa.arc.dert.terrain;
 
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.StateUtil;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class LayerInfo implements Comparable<LayerInfo> {
 
 	public static enum LayerType {
-		none, elevation, colorimage, grayimage, field, footprint, viewshed, derivative, range
+		none, elevation, colorimage, grayimage, field, footprint, viewshed, derivative
 	}
 
 	// Name of the layer, presented in the UI

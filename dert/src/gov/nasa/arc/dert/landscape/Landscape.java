@@ -5,6 +5,9 @@ import gov.nasa.arc.dert.raster.SpatialReferenceSystem;
 import gov.nasa.arc.dert.scene.tool.CartesianGrid;
 import gov.nasa.arc.dert.scene.tool.RadialGrid;
 import gov.nasa.arc.dert.scene.tool.ScaleBar;
+import gov.nasa.arc.dert.terrain.LayerManager;
+import gov.nasa.arc.dert.terrain.QuadTree;
+import gov.nasa.arc.dert.terrain.Terrain;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.view.Console;
 

@@ -2,7 +2,6 @@ package gov.nasa.arc.dert.scene.tool;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.landscape.QuadTree;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.state.FieldCameraState;
@@ -12,6 +11,7 @@ import gov.nasa.arc.dert.state.PlaneState;
 import gov.nasa.arc.dert.state.ProfileState;
 import gov.nasa.arc.dert.state.ScaleBarState;
 import gov.nasa.arc.dert.state.ToolState;
+import gov.nasa.arc.dert.terrain.QuadTree;
 
 import java.util.ArrayList;
 import java.util.Properties;

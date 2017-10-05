@@ -1,12 +1,12 @@
 package gov.nasa.arc.dert.landscape.factory;
 
-import gov.nasa.arc.dert.landscape.LayerInfo.LayerType;
 import gov.nasa.arc.dert.raster.ProjectionInfo;
 import gov.nasa.arc.dert.raster.SpatialReferenceSystem;
 import gov.nasa.arc.dert.render.JoglRendererDouble;
 import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.state.FeatureSetState;
+import gov.nasa.arc.dert.terrain.LayerInfo.LayerType;
 import gov.nasa.arc.dert.util.StringUtil;
 
 import java.awt.Color;

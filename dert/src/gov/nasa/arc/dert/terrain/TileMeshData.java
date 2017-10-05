@@ -1,4 +1,4 @@
-package gov.nasa.arc.dert.landscape;
+package gov.nasa.arc.dert.terrain;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

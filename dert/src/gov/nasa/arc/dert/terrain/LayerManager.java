@@ -1,11 +1,14 @@
-package gov.nasa.arc.dert.landscape;
+package gov.nasa.arc.dert.terrain;
 
 import gov.nasa.arc.dert.io.TileSource;
+import gov.nasa.arc.dert.landscape.DerivativeLayer;
+import gov.nasa.arc.dert.landscape.FieldCameraLayer;
+import gov.nasa.arc.dert.landscape.FieldLayer;
 import gov.nasa.arc.dert.landscape.DerivativeLayer.DerivativeType;
-import gov.nasa.arc.dert.landscape.LayerInfo.LayerType;
 import gov.nasa.arc.dert.render.LayerEffects;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.state.ConfigurationManager;
+import gov.nasa.arc.dert.terrain.LayerInfo.LayerType;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.util.StringUtil;

@@ -1,4 +1,4 @@
-package gov.nasa.arc.dert.landscape;
+package gov.nasa.arc.dert.terrain;
 
 import java.util.HashMap;
 
@@ -6,7 +6,7 @@ public class QuadTreeCache {
 
 	// The maximum amount of memory for the cache (in bytes)
 	public static long MAX_CACHE_MEMORY = 400000000l;
-	public static int MAX_CLEANUP_COUNT = 100;
+	public static int MAX_CLEANUP_COUNT = 1000;
 	
 	private static QuadTreeCache INSTANCE;
 
@@ -74,7 +74,6 @@ public class QuadTreeCache {
 		Object[] key = new Object[quadTreeMap.size()];
 		key = quadTreeMap.keySet().toArray(key);
 		for (int i=0; i<key.length; ++i) {
-			System.err.println("QuadTreeCache.clear "+label+" ."+key+".");
 			if (((String)key[i]).startsWith(label)) {
 				QuadTree qt = quadTreeMap.remove(key[i]);
 				cacheSize -= qt.getSize();
@@ -138,12 +137,14 @@ public class QuadTreeCache {
 	 * 
 	 * @param rgba
 	 */
-	public synchronized void updateSurfaceColor(float[] rgba) {
+	public synchronized void updateSurfaceColor(String label, float[] rgba) {
 		Object[] key = new Object[quadTreeMap.size()];
 		key = quadTreeMap.keySet().toArray(key);
 		for (int i = 0; i < key.length; ++i) {
-			QuadTree item = quadTreeMap.get(key[i]);
-			item.getMesh().updateSurfaceColor(rgba);
+			if (((String)key[i]).startsWith(label)) {
+				QuadTree item = quadTreeMap.get(key[i]);
+				item.getMesh().updateSurfaceColor(rgba);
+			}
 		}
 	}
 }
