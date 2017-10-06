@@ -116,9 +116,10 @@ public class QuadTreeCache {
 		// remove the oldest item if not in use
 		QuadTree qt = quadTreeMap.remove(oldestKey);
 		cacheSize -= qt.getSize();
+//		System.err.println("QuadTreeCache.cleanUpCache "+cleanupCount+" "+qt+" "+cacheSize+" "+MAX_CACHE_MEMORY+" "+qt.getSize());
 		qt.dispose();
 		qt = null;
-		cleanupCount++;
+		cleanupCount ++;
 		if (cleanupCount == MAX_CLEANUP_COUNT) {
 			System.gc();
 			cleanupCount = 0;

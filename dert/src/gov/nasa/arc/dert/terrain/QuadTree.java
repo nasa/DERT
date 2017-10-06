@@ -59,7 +59,8 @@ public class QuadTree extends Node {
 
 	// Points in the quad tree used to determine if it should be merged or split
 	// Coordinates are relative to the landscape center
-	private Vector3[] testPoint;
+	private Vector3[] cornerPoint;
+	private Vector3 centerPoint;
 //
 //	// Copy of edge vertices for stitching
 //	private float[][] edge;
@@ -113,16 +114,16 @@ public class QuadTree extends Node {
 	 * 
 	 * @param p
 	 */
-	public synchronized void createTestPoints(ReadOnlyVector3 p, double tileWidth, double tileLength) {
+	public synchronized void createCornerPoints(ReadOnlyVector3 p, double tileWidth, double tileLength) {
 		double width = tileWidth * pixelWidth / 2;
 		double length = tileLength * pixelLength / 2;
 		// create test points
-		testPoint = new Vector3[5];
-		testPoint[0] = new Vector3(p.getX() - width, p.getY() - length, p.getZ());
-		testPoint[1] = new Vector3(p.getX() + width, p.getY() - length, p.getZ());
-		testPoint[2] = new Vector3(p.getX() + width, p.getY() + length, p.getZ());
-		testPoint[3] = new Vector3(p.getX() - width, p.getY() + length, p.getZ());
-		testPoint[4] = new Vector3(p);
+		cornerPoint = new Vector3[4];
+		cornerPoint[0] = new Vector3(p.getX() - width, p.getY() - length, p.getZ());
+		cornerPoint[1] = new Vector3(p.getX() + width, p.getY() - length, p.getZ());
+		cornerPoint[2] = new Vector3(p.getX() + width, p.getY() + length, p.getZ());
+		cornerPoint[3] = new Vector3(p.getX() - width, p.getY() + length, p.getZ());
+		centerPoint = new Vector3(p);
 	}
 
 	/**
@@ -141,21 +142,21 @@ public class QuadTree extends Node {
 		// update test point Z values
 		FloatBuffer vertexBuffer = mesh.getMeshData().getVertexBuffer();
 		if (mesh.isEmpty()) {
-			for (int i = 0; i < testPoint.length; ++i) {
-				testPoint[i].setZ(vertexBuffer.get(2));
-			}
+			for (int i = 0; i < cornerPoint.length; ++i)
+				cornerPoint[i].setZ(vertexBuffer.get(2));
+			centerPoint.setZ(vertexBuffer.get(2));
 		} else {
 			double minZ = Landscape.getInstance().getMinimumElevation();
 			// lower left
-			testPoint[0].setZ(vertexBuffer.get(tileLength * tWidth * 3 + 2) - minZ);
+			cornerPoint[0].setZ(vertexBuffer.get(tileLength * tWidth * 3 + 2) - minZ);
 			// lower right
-			testPoint[1].setZ(vertexBuffer.get((tileLength * tWidth + tileWidth) * 3 + 2) - minZ);
+			cornerPoint[1].setZ(vertexBuffer.get((tileLength * tWidth + tileWidth) * 3 + 2) - minZ);
 			// upper right
-			testPoint[2].setZ(vertexBuffer.get(tileWidth * 3 + 2) - minZ);
+			cornerPoint[2].setZ(vertexBuffer.get(tileWidth * 3 + 2) - minZ);
 			// upper left
-			testPoint[3].setZ(vertexBuffer.get(2) - minZ);
+			cornerPoint[3].setZ(vertexBuffer.get(2) - minZ);
 			// center
-			testPoint[4].setZ(vertexBuffer.get((tWidth * tileLength / 2 + tileWidth / 2) * 3 + 2) - minZ);
+			centerPoint.setZ(vertexBuffer.get((tWidth * tileLength / 2 + tileWidth / 2) * 3 + 2) - minZ);
 		}
 	}
 
@@ -180,19 +181,19 @@ public class QuadTree extends Node {
 	 * @return
 	 */
 	public final boolean contains(double x, double y) {
-		if (testPoint == null) {
+		if (cornerPoint == null) {
 			return (false);
 		}
-		if (x < testPoint[0].getX()) {
+		if (x < cornerPoint[0].getX()) {
 			return (false);
 		}
-		if (x > testPoint[2].getX()) {
+		if (x > cornerPoint[2].getX()) {
 			return (false);
 		}
-		if (y < testPoint[0].getY()) {
+		if (y < cornerPoint[0].getY()) {
 			return (false);
 		}
-		if (y > testPoint[2].getY()) {
+		if (y > cornerPoint[2].getY()) {
 			return (false);
 		}
 		return (true);
@@ -473,12 +474,10 @@ public class QuadTree extends Node {
 		if (!inUse) {
 			return(false);
 		}
+		
+		boolean isCulled = camera.isCulled(this);
 
-//		if (camera.isCulled(this)) {
-//			return(false);
-//		}
-
-		Vector3[] tPoint = getTestPoints();
+		Vector3[] tPoint = getCornerPoints();
 
 		if (tPoint == null) {
 			return(false);
@@ -492,33 +491,8 @@ public class QuadTree extends Node {
 			minDist = camLoc.distance(lookAt);
 			closest.set(lookAt);
 		}
-		for (int i = 0; i < tPoint.length; ++i) {
-			double d = camLoc.distance(tPoint[i]);
-			if (d < minDist) {
-				minDist = d;
-				closest.set(tPoint[i]);
-//				if (contains(tPoint[i].getX(), camLoc.getY())) {
-//					int c = getColumn(tPoint[i].getX());
-//					int r = getRow(camLoc.getY());
-//					mesh.getVertex(c, r, tmpVec);
-//					d = camLoc.distance(tmpVec);
-//					if (d < minDist) {
-//						minDist = d;
-//						closest.set(tmpVec);
-//					}
-//				}
-//				if (contains(camLoc.getX(), tPoint[i].getY())) {
-//					int c = getColumn(camLoc.getX());
-//					int r = getRow(tPoint[i].getY());
-//					mesh.getVertex(c, r, tmpVec);
-//					d = camLoc.distance(tmpVec);
-//					if (d < minDist) {
-//						minDist = d;
-//						closest.set(tmpVec);
-//					}
-//				}
-			}
-		}
+		if (camLoc.distance(centerPoint) < minDist)
+			closest.set(centerPoint);
 
 		// get the pixel size at the closest point
 		double pixSize = camera.getPixelSizeAt(closest, true);
@@ -532,7 +506,7 @@ public class QuadTree extends Node {
 
 		// greater than the pixel size of this tile, we can go to a coarser
 		// resolution by merging
-		if (pixSize >= pixelWidth) {
+		if ((pixSize >= pixelWidth) || isCulled) {
 			// only merge if we have split
 			if (child != null) {
 				merge();
@@ -674,8 +648,8 @@ public class QuadTree extends Node {
 	 * 
 	 * @return
 	 */
-	public Vector3[] getTestPoints() {
-		return (testPoint);
+	public Vector3[] getCornerPoints() {
+		return (cornerPoint);
 	}
 
 	/**
@@ -693,7 +667,7 @@ public class QuadTree extends Node {
 				}
 			}
 		} else {
-			return (mesh.getElevationBilinear(x - testPoint[0].getX(), y - testPoint[0].getY()));
+			return (mesh.getElevationBilinear(x - cornerPoint[0].getX(), y - cornerPoint[0].getY()));
 		}
 		return (Float.NaN);
 	}
@@ -713,7 +687,7 @@ public class QuadTree extends Node {
 				}
 			}
 		} else {
-			return (mesh.getElevationNearestNeighbor(x - testPoint[0].getX(), y - testPoint[0].getY()));
+			return (mesh.getElevationNearestNeighbor(x - cornerPoint[0].getX(), y - cornerPoint[0].getY()));
 		}
 		return (Float.NaN);
 	}
@@ -734,8 +708,8 @@ public class QuadTree extends Node {
 				}
 			}
 		} else {
-			return (mesh.getNormal((int) Math.floor((x - testPoint[0].getX()) / pixelWidth),
-					mesh.getTileLength()-(int)Math.floor((y - testPoint[0].getY()) / pixelLength), store));
+			return (mesh.getNormal((int) Math.floor((x - cornerPoint[0].getX()) / pixelWidth),
+					mesh.getTileLength()-(int)Math.floor((y - cornerPoint[0].getY()) / pixelLength), store));
 		}
 		return (false);
 	}

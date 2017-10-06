@@ -103,7 +103,7 @@ public class QuadTreeFactory {
 		terrainLength = baseLayer.getRasterLength() * projInfo.scale[1] * pixelScale;
 		missingFillValue = baseLayer.getFillValue();
 
-		bytesPerTile = baseLayer.getBytesPerTile()*14+(tileLength*4);
+		bytesPerTile = (tileWidth*tileLength*14+2*tileWidth+2*tileLength)*4;
 		for (int i = 0; i < layerList.length; ++i) {
 			if (layerList[i] != null) {
 				bytesPerTile += layerList[i].getBytesPerTile();
@@ -311,7 +311,7 @@ public class QuadTreeFactory {
 		// while we load the contents
 		// this keeps us from starting another load operation for this tile
 		final QuadTree qt = new QuadTree(key, p, level, quadrant, pixelWidth, pixelLength, bytesPerTile);
-		qt.createTestPoints(keyToTestPointCenter(key), tileWidth, tileLength);
+		qt.createCornerPoints(keyToTestPointCenter(key), tileWidth, tileLength);
 		QuadTreeCache.getInstance().putQuadTree(label+key, qt);
 
 		// load the quad tree mesh contents

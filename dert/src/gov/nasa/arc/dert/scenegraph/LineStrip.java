@@ -69,7 +69,7 @@ public class LineStrip extends Line {
 	 * @return
 	 */
 	public boolean intersects(QuadTree quadTree) {
-		Vector3[] testPoints = quadTree.getTestPoints();
+		Vector3[] testPoints = quadTree.getCornerPoints();
 		BoundingBox bbox = (BoundingBox) getWorldBound();
 		// check for overlap or quadtree is completely inside linestrip bbox
 		for (int i = 0; i < testPoints.length; ++i) {
