@@ -141,10 +141,8 @@ public class BitmapFont {
 		gl.glGetIntegerv(GL2ES2.GL_UNPACK_SKIP_ROWS, skiprows, 0);
 		gl.glGetIntegerv(GL2ES2.GL_UNPACK_SKIP_PIXELS, skippixels, 0);
 		gl.glGetIntegerv(GL.GL_UNPACK_ALIGNMENT, alignment, 0);
-		/* Little endian machines (DEC Alpha for example) could
-		   benefit from setting GL_UNPACK_LSB_FIRST to GL_TRUE
-		   instead of GL_FALSE, but this would require changing the
-		   generated bitmaps too. */
+
+		// set modes
 		gl.glPixelStorei(GL2GL3.GL_UNPACK_SWAP_BYTES, GL.GL_FALSE);
 		gl.glPixelStorei(GL2GL3.GL_UNPACK_LSB_FIRST, GL.GL_FALSE);
 		gl.glPixelStorei(GL2ES2.GL_UNPACK_ROW_LENGTH, 0);
