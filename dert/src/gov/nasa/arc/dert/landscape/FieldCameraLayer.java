@@ -5,8 +5,9 @@ import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.terrain.Layer;
 import gov.nasa.arc.dert.terrain.LayerInfo;
-import gov.nasa.arc.dert.terrain.QuadTreeTile;
 import gov.nasa.arc.dert.terrain.LayerInfo.LayerType;
+import gov.nasa.arc.dert.terrain.QuadKey;
+import gov.nasa.arc.dert.terrain.QuadTreeTile;
 import gov.nasa.arc.dert.util.ImageUtil;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
@@ -108,7 +109,7 @@ public class FieldCameraLayer extends Layer {
 	}
 
 	@Override
-	public QuadTreeTile getTile(String key) {
+	public QuadTreeTile getTile(QuadKey key) {
 		return (null);
 	}
 
@@ -118,7 +119,7 @@ public class FieldCameraLayer extends Layer {
 	}
 
 	@Override
-	public Texture getTexture(String key, Texture store) {
+	public Texture getTexture(QuadKey key, Texture store) {
 		return (null);
 	}
 

@@ -68,7 +68,7 @@ public abstract class Layer {
 	 * @param id
 	 * @return
 	 */
-	public abstract QuadTreeTile getTile(String id);
+	public abstract QuadTreeTile getTile(QuadKey qKey);
 
 	/**
 	 * Get the properties for this layer
@@ -84,7 +84,7 @@ public abstract class Layer {
 	 * @param store
 	 * @return
 	 */
-	public abstract Texture getTexture(String key, Texture store);
+	public abstract Texture getTexture(QuadKey key, Texture store);
 
 	/**
 	 * Get number of tiles

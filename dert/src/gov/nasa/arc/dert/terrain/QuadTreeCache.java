@@ -28,41 +28,40 @@ public class QuadTreeCache {
 	/**
 	 * Constructor
 	 * 
-	 * @param bytesPerTile
 	 */
 	protected QuadTreeCache() {
 		quadTreeMap = new HashMap<String, QuadTree>();
 	}
 
 	/**
-	 * Given a key, return the associated QuadTree Update the timestamp.
+	 * Given a key, return the associated QuadTree and update its timestamp.
 	 * 
 	 * @param key
-	 * @return
+	 * @return the QuadTree
 	 */
 	public synchronized QuadTree getQuadTree(String key) {
-//		System.err.println("QuadTreeCache.getQuadTree ."+key+".");
 		QuadTree quadTree = quadTreeMap.get(key);
-		if (quadTree != null) {
+		if (quadTree != null)
 			quadTree.timestamp = System.currentTimeMillis();
-		}
-		return (quadTree);
+		return(quadTree);
 	}
 
 	/**
-	 * Place a QuadTree in the cache Update the timestamp
+	 * Place a QuadTree in the cache. and set its timestamp
 	 * 
 	 * @param key
 	 * @param quadTree
 	 */
 	public synchronized void putQuadTree(String key, QuadTree quadTree) {
-//		System.err.println("QuadTreeCache.putQuadTree ."+key+".");
 		quadTree.timestamp = System.currentTimeMillis();
 		quadTreeMap.put(key, quadTree);
 		cacheSize += quadTree.getSize();
 		cleanUpCache();
 	}
 	
+	/**
+	 * Clear the entire cache.
+	 */
 	public synchronized void clear() {
 		quadTreeMap.clear();
 		System.gc();
@@ -70,6 +69,10 @@ public class QuadTreeCache {
 		cleanupCount = 0;		
 	}
 	
+	/**
+	 * Clear those QuadTrees from the cache that have names that start with a string.
+	 * @param label the string
+	 */
 	public synchronized void clear(String label) {
 		Object[] key = new Object[quadTreeMap.size()];
 		key = quadTreeMap.keySet().toArray(key);
@@ -127,16 +130,17 @@ public class QuadTreeCache {
 	}
 
 	/**
-	 * Empty the cache
+	 * Dispose of the cache
 	 */
 	public synchronized void dispose() {
-		quadTreeMap.clear();
+		clear();
 	}
 
 	/**
 	 * Update the surface color for all elements in the cache
 	 * 
-	 * @param rgba
+	 * @param label identifier
+	 * @param rgba color
 	 */
 	public synchronized void updateSurfaceColor(String label, float[] rgba) {
 		Object[] key = new Object[quadTreeMap.size()];

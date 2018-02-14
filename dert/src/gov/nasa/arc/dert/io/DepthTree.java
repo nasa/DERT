@@ -16,12 +16,12 @@ import java.util.Comparator;
  */
 public class DepthTree implements Serializable {
 
-	public String id;
+	public String key;
 	public DepthTree[] child;
 
 	@Override
 	public String toString() {
-		return (id);
+		return (key);
 	}
 	
 	public static DepthTree load(String filePath)
@@ -85,7 +85,7 @@ public class DepthTree implements Serializable {
 	
 	protected static DepthTree createLeaf(int index, String[][] token) {
 		DepthTree dt = new DepthTree();
-		dt.id = token[index][1].trim();
+		dt.key = token[index][1].trim();
 		for (int i=0; i<4; ++i) {
 			int ii = Integer.valueOf(token[index][i+2]);
 			if (ii >= 0) {
@@ -125,7 +125,7 @@ public class DepthTree implements Serializable {
 	private static int addLeaf(DepthTree depthTree, int index, ArrayList<String[]> leafList) {
 		String[] token = new String[6];
 		token[0] = Integer.toString(index);
-		token[1] = depthTree.id;
+		token[1] = depthTree.key;
 		leafList.add(token);
 		if (depthTree.child == null) {
 			token[2] = "-1";

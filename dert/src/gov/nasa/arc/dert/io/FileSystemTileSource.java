@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.io;
 
 import gov.nasa.arc.dert.raster.RasterFile.DataType;
+import gov.nasa.arc.dert.terrain.QuadKey;
 import gov.nasa.arc.dert.terrain.QuadTreeTile;
 import gov.nasa.arc.dert.util.ImageUtil;
 import gov.nasa.arc.dert.view.Console;
@@ -26,7 +27,7 @@ import com.ardor3d.image.Image;
  */
 public class FileSystemTileSource implements TileSource {
 
-	// Quad tree structure of existing tile ids
+	// Quad tree structure of existing tile keys
 	private DepthTree depthTree;
 
 	// Landscape directory
@@ -135,15 +136,15 @@ public class FileSystemTileSource implements TileSource {
 	 * Get the path to the landscape
 	 */
 	@Override
-	public String getPath() {
+	public String getLandscapePath() {
 		return (dirName);
 	}
 
-	private boolean tileExists(String layerName, String id) {
+	private boolean tileExists(String layerName, String key) {
 		if (depthTree != null) {
-			return (tileExists(id, depthTree));
+			return (tileExists(key, depthTree));
 		}
-		String fileName = layerPath(layerName) + id + "/0.png";
+		String fileName = layerPath(layerName) + key + "/0.png";
 		File file = new File(fileName);
 		try {
 			if (file.getCanonicalFile().exists()) {
@@ -162,22 +163,22 @@ public class FileSystemTileSource implements TileSource {
 	 *            the tile id
 	 */
 	@Override
-	public boolean tileExists(String id) {
-		return (tileExists(id, depthTree));
+	public boolean tileExists(String key) {
+		return (tileExists(key, depthTree));
 	}
 
-	private boolean tileExists(String id, DepthTree dTree) {
-		if (id.equals(dTree.id)) {
+	private boolean tileExists(String key, DepthTree dTree) {
+		if (key.equals(dTree.key)) {
 			return (true);
 		}
-		if (!id.startsWith(dTree.id)) {
+		if (!key.startsWith(dTree.key)) {
 			return (false);
 		}
 		if (dTree.child == null) {
 			return (false);
 		}
 		for (int i = 0; i < dTree.child.length; ++i) {
-			if (tileExists(id, dTree.child[i])) {
+			if (tileExists(key, dTree.child[i])) {
 				return (true);
 			}
 		}
@@ -185,9 +186,9 @@ public class FileSystemTileSource implements TileSource {
 	}
 
 	@Override
-	public QuadTreeTile getTile(String layerName, String id, DataType dataType) {
-		if (tileExists(layerName, id)) {
-			return (getTilePng(layerName, id, dataType));
+	public QuadTreeTile getTile(String layerName, QuadKey qKey, DataType dataType) {
+		if (tileExists(layerName, qKey.toString())) {
+			return (getTilePng(layerName, qKey, dataType));
 		}
 		return (null);
 	}
@@ -195,9 +196,9 @@ public class FileSystemTileSource implements TileSource {
 	/**
 	 * Given a layer and an id, load the contents of the tile.
 	 */
-	public QuadTreeTile getTilePng(String layerName, String id, DataType dataType) {
+	public QuadTreeTile getTilePng(String layerName, QuadKey qKey, DataType dataType) {
 		try {
-			String fileName = layerPath(layerName) + id + "/0.png";
+			String fileName = layerPath(layerName) + qKey + "/0.png";
 			File file = new File(fileName).getCanonicalFile();
 			BufferedImage bImage = ImageIO.read(file);
 			if (bImage != null) {
@@ -207,7 +208,7 @@ public class FileSystemTileSource implements TileSource {
 					DataBufferByte dBuf = (DataBufferByte) bImage.getData().getDataBuffer();
 					byte[] bytes = dBuf.getData();
 					ByteBuffer bBuf = ByteBuffer.wrap(bytes);
-					QuadTreeTile tile = new QuadTreeTile(bBuf, id, bImage.getWidth(), bImage.getHeight(), dataType,
+					QuadTreeTile tile = new QuadTreeTile(bBuf, qKey, bImage.getWidth(), bImage.getHeight(), dataType,
 						numBands);
 					return (tile);
 				}
@@ -218,43 +219,26 @@ public class FileSystemTileSource implements TileSource {
 					dataType = DataType.UnsignedInteger;
 				}
 				Image image = ImageUtil.convertToArdor3DImage(bImage, false);
-				QuadTreeTile tile = new QuadTreeTile(image, id, dataType);
+				QuadTreeTile tile = new QuadTreeTile(image, qKey, dataType);
 				return (tile);
 			}
 		} catch (Exception e) {
-			System.out.println("Unable to read tile " + id + ", see log.");
+			System.out.println("Unable to read tile " + qKey + ", see log.");
 			e.printStackTrace();
 		}
 		return (null);
 	}
 
 	protected synchronized void fillDepthTree(DepthTree dTree, String path, String layerName) {
-		String id = path + "/";
-		if (tileExists(layerName, id + "1")) {
+		String key = path + "/";
+		if (tileExists(layerName, key + "1")) {
 			// if one child exists they should all exist
 			dTree.child = new DepthTree[] { new DepthTree(), new DepthTree(), new DepthTree(), new DepthTree() };
 			for (int i = 0; i < dTree.child.length; ++i) {
-				dTree.child[i].id = id + (i + 1);
-				fillDepthTree(dTree.child[i], id + (i + 1), layerName);
+				dTree.child[i].key = key + (i + 1);
+				fillDepthTree(dTree.child[i], key + (i + 1), layerName);
 			}
 		}
-	}
-
-	public synchronized String getMaxLevel(String id) {
-		String[] token = id.split("/");
-		DepthTree dTree = depthTree;
-		String newId = "";
-		for (int i = 0; i < token.length; ++i) {
-			if (!token[i].isEmpty()) {
-				if (dTree.child == null) {
-					return (newId);
-				}
-				int index = Integer.valueOf(token[i]) - 1;
-				dTree = dTree.child[index];
-				newId += "/" + token[i];
-			}
-		}
-		return (newId);
 	}
 
 	/**
@@ -268,9 +252,8 @@ public class FileSystemTileSource implements TileSource {
 	 * @return the key string
 	 */
 	@Override
-	public synchronized String getKey(double x, double y, double worldWidth, double worldLength) {
-		String key = "";
-		return (getKey(depthTree, x, y, key, worldWidth / 2, worldLength / 2, -1));
+	public synchronized QuadKey getKey(double x, double y, double worldWidth, double worldLength) {
+		return (getKey(depthTree, x, y, new ArrayList<Byte>(), worldWidth / 2, worldLength / 2, -1));
 	}
 
 	/**
@@ -284,37 +267,40 @@ public class FileSystemTileSource implements TileSource {
 	 * @return the key string
 	 */
 	@Override
-	public synchronized String getKey(double x, double y, double worldWidth, double worldLength, int lvl) {
-		String key = "";
-		return (getKey(depthTree, x, y, key, worldWidth / 2, worldLength / 2, lvl));
+	public synchronized QuadKey getKey(double x, double y, double worldWidth, double worldLength, int lvl) {
+		return (getKey(depthTree, x, y, new ArrayList<Byte>(), worldWidth / 2, worldLength / 2, lvl));
 	}
 
-	private String getKey(DepthTree depthTree, double x, double y, String key, double width, double length, int lvl) {
+	private QuadKey getKey(DepthTree depthTree, double x, double y, ArrayList<Byte> qList, double width, double length, int lvl) {
 		if (depthTree.child == null) {
 			if (lvl > 0)
 				return(null);
 			else
-				return (key);
+				return (new QuadKey(qList));
 		}
 		if (lvl == 0)
-			return(key);	
+			return(new QuadKey(qList));	
 		double w = width / 2;
 		double l = length / 2;
 		if (x < 0) {
 			if (y >= 0) {
 				depthTree = depthTree.child[0];
-				return (getKey(depthTree, x + w, y - l, key + "/" + 1, w, l, lvl-1));
+				qList.add(new Byte((byte)1));
+				return (getKey(depthTree, x + w, y - l, qList, w, l, lvl-1));
 			} else {
 				depthTree = depthTree.child[2];
-				return (getKey(depthTree, x + w, y + l, key + "/" + 3, w, l, lvl-1));
+				qList.add(new Byte((byte)3));
+				return (getKey(depthTree, x + w, y + l, qList, w, l, lvl-1));
 			}
 		} else {
 			if (y >= 0) {
 				depthTree = depthTree.child[1];
-				return (getKey(depthTree, x - w, y - l, key + "/" + 2, w, l, lvl-1));
+				qList.add(new Byte((byte)2));
+				return (getKey(depthTree, x - w, y - l, qList, w, l, lvl-1));
 			} else {
 				depthTree = depthTree.child[3];
-				return (getKey(depthTree, x - w, y + l, key + "/" + 4, w, l, lvl-1));
+				qList.add(new Byte((byte)4));
+				return (getKey(depthTree, x - w, y + l, qList, w, l, lvl-1));
 			}
 		}
 	}
@@ -327,19 +313,6 @@ public class FileSystemTileSource implements TileSource {
 		if (depthTree != null) {
 			return (depthTree);
 		}
-//		String depthFileName = dirName + "/dert/depth.obj";
-//		final File depthFile = new File(depthFileName);
-//		if (depthFile.exists()) {
-//			try {
-//				ObjectInputStream inStream = new ObjectInputStream(new FileInputStream(depthFile));
-//				depthTree = (DepthTree) inStream.readObject();
-//				inStream.close();
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//				System.out.println("Error reading depth tree file.");
-//				depthTree = null;
-//			}
-//		}
 		final String depthFileName = dirName + "/dert/depthtree.txt";
 		File depthFile = new File(depthFileName);
 		if (depthFile.exists()) {
@@ -356,7 +329,7 @@ public class FileSystemTileSource implements TileSource {
 			if (tileExists("elevation", "")) {
 				Console.print("Filling depth tree. This may take a bit for large landscapes . . .");
 				DepthTree dTree = new DepthTree();
-				dTree.id = "";
+				dTree.key = "";
 				fillDepthTree(dTree, "", "elevation");
 				depthTree = dTree;
 				Console.println(" complete.");

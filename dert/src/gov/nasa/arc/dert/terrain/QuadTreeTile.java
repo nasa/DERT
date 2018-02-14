@@ -19,7 +19,7 @@ public class QuadTreeTile {
 	private Image image;
 
 	// The key for the tile (file path)
-	public String key;
+	public QuadKey key;
 
 	// The tile dimensions
 	public int width, length;
@@ -40,7 +40,7 @@ public class QuadTreeTile {
 	 * @param dataType
 	 * @param bytesPerPixel
 	 */
-	public QuadTreeTile(ByteBuffer raster, String key, int width, int length, DataType dataType, int bytesPerPixel) {
+	public QuadTreeTile(ByteBuffer raster, QuadKey key, int width, int length, DataType dataType, int bytesPerPixel) {
 		this.raster = raster;
 		this.key = key;
 		this.width = width;
@@ -56,7 +56,7 @@ public class QuadTreeTile {
 	 * @param key
 	 * @param dataType
 	 */
-	public QuadTreeTile(Image image, String key, DataType dataType) {
+	public QuadTreeTile(Image image, QuadKey key, DataType dataType) {
 		this.raster = image.getData(0);
 		this.key = key;
 		this.width = image.getWidth();

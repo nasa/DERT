@@ -32,8 +32,6 @@ import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.renderer.IndexMode;
 import com.ardor3d.renderer.state.CullState;
 import com.ardor3d.renderer.state.TextureState;
-import com.ardor3d.scenegraph.Mesh;
-import com.ardor3d.scenegraph.MeshData;
 import com.ardor3d.scenegraph.hint.NormalsMode;
 import com.ardor3d.util.TextureKey;
 import com.ardor3d.util.geom.BufferUtils;
@@ -85,6 +83,7 @@ public class QuadTreeFactory {
 	/**
 	 * Constructor
 	 * 
+	 * @param label
 	 * @param source
 	 * @param baseLayer
 	 * @param layerList
@@ -125,24 +124,19 @@ public class QuadTreeFactory {
 	 * Get a QuadTree
 	 * 
 	 * @param key
-	 * @param parent
-	 * @param p
-	 *            QuadTree will be translated to this point
+	 * @param p	QuadTree will be translated to this point
 	 * @param pixelWidth
 	 * @param pixelLength
-	 * @param level
-	 * @param quadrant
-	 * @param wait
-	 *            wait for tile source to load the data
+	 * @param wait	wait for tile source to load the data
 	 * @return
 	 */
-	public QuadTree getQuadTree(String key, QuadTree parent, ReadOnlyVector3 p, double pixelWidth, double pixelLength,
-		int level, int quadrant, boolean wait) {
+	public QuadTree getQuadTree(QuadKey key, ReadOnlyVector3 p, double pixelWidth, double pixelLength, boolean wait) {
 		QuadTree quadTree = QuadTreeCache.getInstance().getQuadTree(label+key);
-		if (quadTree == null) {
-			quadTree = createQuadTree(key, parent, p, pixelWidth, pixelLength, level, quadrant, wait);
-		}
-		return (quadTree);
+		if (quadTree == null)
+			quadTree = createQuadTree(key, p, pixelWidth, pixelLength, wait);
+		if (quadTree.getMesh() != null)
+			return (quadTree);
+		return(null);
 	}
 
 	/**
@@ -151,38 +145,36 @@ public class QuadTreeFactory {
 	 * @param key
 	 * @return
 	 */
-	public QuadTree getQuadTree(String key) {
+	public QuadTree getQuadTree(QuadKey key) {
 		QuadTree quadTree = QuadTreeCache.getInstance().getQuadTree(label+key);
-		if (quadTree != null) {
-			return (quadTree);
+		if (quadTree == null) {
+			Vector3 p = keyToTileCenter(key);
+			double s = Math.pow(2, key.getLevel());
+			double pixelWidth = (terrainWidth / tileWidth) / s;
+			double pixelLength = (terrainLength / tileLength) / s;
+			createQuadTree(key, p, pixelWidth, pixelLength, true);
 		}
-
-		int q = Integer.valueOf(key.substring(key.length() - 1, key.length())) - 1;
-		Vector3 p = keyToTileCenter(key);
-		int level = keyToLevel(key);
-		double s = Math.pow(2, level);
-		double pixelWidth = (terrainWidth / tileWidth) / s;
-		double pixelLength = (terrainLength / tileLength) / s;
-		quadTree = createQuadTree(key, null, p, pixelWidth, pixelLength, level, q, true);
-		return (quadTree);
+		else if (quadTree.getMesh() != null)
+			return(quadTree);
+		return (null);
 	}
 
 	/**
-	 * Given a key, get the translation from the parent center
+	 * Given a key, get the offset from the parent center
 	 * 
 	 * @param key
 	 * @return
 	 */
-	private Vector3 keyToTileCenter(String key) {
+	private Vector3 keyToTileCenter(QuadKey key) {
 		Vector3 p = new Vector3();
-		String[] token = key.split("/");
-		if (token.length <= 1) {
+		byte[] path = key.getPath();
+		if (path.length < 1) {
 			return (p);
 		}
-		double n = Math.pow(2, token.length);
+		double n = Math.pow(2, path.length);
 		double w = terrainWidth / n;
 		double l = terrainLength / n;
-		int q = Integer.valueOf(token[token.length - 1]);
+		int q = key.getQuadrant();
 		switch (q) {
 		case 1:
 			p.set(p.getX() - w, p.getY() + l, 0);
@@ -207,115 +199,92 @@ public class QuadTreeFactory {
 	 * @param key
 	 * @return
 	 */
-	private Vector3 keyToTestPointCenter(String key) {
+	private Vector3 keyToTestPointCenter(QuadKey qp) {
 		Vector3 p = new Vector3();
-		String[] token = key.split("/");
-		if (token.length <= 1) {
+		byte[] path = qp.getPath();
+		if (path.length <= 1) {
 			return (p);
 		}
-		double w = terrainWidth;
-		double l = terrainLength;
-		for (int i = 0; i < token.length; ++i) {
+		double w = terrainWidth/2;
+		double l = terrainLength/2;
+		for (int i = 0; i < path.length; ++i) {
 			w /= 2;
 			l /= 2;
-			if (!token[i].isEmpty()) {
-				int q = Integer.valueOf(token[i]);
-				switch (q) {
-				case 1:
-					p.set(p.getX() - w, p.getY() + l, 0);
-					break;
-				case 2:
-					p.set(p.getX() + w, p.getY() + l, 0);
-					break;
-				case 3:
-					p.set(p.getX() - w, p.getY() - l, 0);
-					break;
-				case 4:
-					p.set(p.getX() + w, p.getY() - l, 0);
-					break;
-				}
+			switch (path[i]) {
+			case 1:
+				p.set(p.getX() - w, p.getY() + l, 0);
+				break;
+			case 2:
+				p.set(p.getX() + w, p.getY() + l, 0);
+				break;
+			case 3:
+				p.set(p.getX() - w, p.getY() - l, 0);
+				break;
+			case 4:
+				p.set(p.getX() + w, p.getY() - l, 0);
+				break;
 			}
 		}
 		return (p);
 	}
-
+	
 	/**
-	 * Given a key, find the level
+	 * Indicate if a QuadTree with the give key has children.
 	 * 
-	 * @param key
-	 * @return
+	 * @param quadKey
+	 * @return have children
 	 */
-	private int keyToLevel(String key) {
-		String[] token = key.split("/");
-		return (token.length - 1);
+	public boolean childrenExist(QuadKey quadKey) {
+		return(source.tileExists(quadKey+File.separator+"1"));
 	}
 
 	/**
-	 * Load the 4 child QuadTrees of the given parent.
+	 * Get the 4 child QuadTrees of the given parent out of the cache.
+	 * If not all 4 children are present in the cache, return null.
 	 * 
-	 * @param name
+	 * @param qp
 	 * @param parent
-	 * @param qt
 	 * @param wait
-	 * @return the number of loaded QuadTrees
+	 * @return the QuadTrees or null if not all are present in the cache
 	 */
-	public int loadQuadTrees(String name, QuadTree parent, QuadTree[] qt, boolean wait) {
-		// no children, we are at the highest level
-		name += File.separator;
-		if (!source.tileExists(name + "1")) {
-			return (-1);
-		}
+	public QuadTree[] getQuadTreeChildren(QuadKey qp, QuadTree parent, boolean wait) {
 
 		// load the quadtrees
 		double pixelWidth = parent.pixelWidth / 2;
 		double pixelLength = parent.pixelLength / 2;
 		double xCenter = parent.pixelWidth * tileWidth / 4;
 		double yCenter = parent.pixelLength * tileLength / 4;
-		int qtCount = 0;
-		qt[0] = getQuadTree(name + "1", parent, new Vector3(-xCenter, yCenter, 0), pixelWidth, pixelLength,
-			parent.level + 1, 0, wait);
-		if (qt[0].getMesh() != null) {
-			qtCount++;
-		}
-		qt[1] = getQuadTree(name + "2", parent, new Vector3(xCenter, yCenter, 0), pixelWidth, pixelLength,
-			parent.level + 1, 1, wait);
-		if (qt[1].getMesh() != null) {
-			qtCount++;
-		}
-		qt[2] = getQuadTree(name + "3", parent, new Vector3(-xCenter, -yCenter, 0), pixelWidth, pixelLength,
-			parent.level + 1, 2, wait);
-		if (qt[2].getMesh() != null) {
-			qtCount++;
-		}
-		qt[3] = getQuadTree(name + "4", parent, new Vector3(xCenter, -yCenter, 0), pixelWidth, pixelLength,
-			parent.level + 1, 3, wait);
-		if (qt[3].getMesh() != null) {
-			qtCount++;
-		}
-		if (qtCount == 4) {
-			for (int i = 0; i < 4; ++i) {
-				qt[i].inUse = true;
-			}
-			qt[0].setNeighbors(null, null, qt[1], qt[2]);
-			qt[1].setNeighbors(qt[0], null, null, qt[3]);
-			qt[2].setNeighbors(null, qt[0], qt[3], null);
-			qt[3].setNeighbors(qt[2], qt[1], null, null);
-		}
-		return (qtCount);
+		int count = 0;
+		QuadTree[] qt = new QuadTree[4];
+		qt[0] = getQuadTree(qp.createChild(1), new Vector3(-xCenter, yCenter, 0), pixelWidth, pixelLength, wait);
+		if (qt[0] != null)
+			count ++;
+		qt[1] = getQuadTree(qp.createChild(2), new Vector3(xCenter, yCenter, 0), pixelWidth, pixelLength, wait);
+		if (qt[1] != null)
+			count ++;
+		qt[2] = getQuadTree(qp.createChild(3), new Vector3(-xCenter, -yCenter, 0), pixelWidth, pixelLength, wait);
+		if (qt[2] != null)
+			count ++;
+		qt[3] = getQuadTree(qp.createChild(4), new Vector3(xCenter, -yCenter, 0), pixelWidth, pixelLength, wait);
+		if (qt[3] != null)
+			count ++;
+		if (count == 4)
+			return(qt);
+		else
+			return(null);
 	}
 
-	private QuadTree createQuadTree(String key, QuadTree parent, ReadOnlyVector3 p, final double pixelWidth,
-		final double pixelLength, int level, int quadrant, boolean wait) {
+	private QuadTree createQuadTree(QuadKey key, ReadOnlyVector3 p, double pixelWidth, double pixelLength, boolean wait) {
 
 		// create the quad tree tile and put it in the cache as a place holder
 		// while we load the contents
 		// this keeps us from starting another load operation for this tile
-		final QuadTree qt = new QuadTree(key, p, level, quadrant, pixelWidth, pixelLength, bytesPerTile);
+		final QuadTree qt = new QuadTree(key, p, pixelWidth, pixelLength, bytesPerTile);
 		qt.createCornerPoints(keyToTestPointCenter(key), tileWidth, tileLength);
 		QuadTreeCache.getInstance().putQuadTree(label+key, qt);
 
 		// load the quad tree mesh contents
-		if (key.equals("") || wait) {
+		if (wait) {
 			loadQuadTreeContents(qt);
 		} else {
 			Runnable runnable = new Runnable() {
@@ -327,12 +296,12 @@ public class QuadTreeFactory {
 			};
 			executor.execute(runnable);
 		}
-		return (qt);
+		return(qt);
 	}
 
 	private void loadQuadTreeContents(QuadTree qt) {
 		// load the mesh
-		QuadTreeMesh mesh = getMesh(qt.getName(), qt.pixelWidth, qt.pixelLength);
+		QuadTreeMesh mesh = getMesh(qt.getKey(), qt.pixelWidth, qt.pixelLength);
 		if (mesh == null) {
 			return;
 		}
@@ -346,14 +315,14 @@ public class QuadTreeFactory {
 					// this is an empty quad tree tile (just for padding)
 					texture = getEmptyTexture();
 				} else if (layerList[i] instanceof DerivativeLayer) {
-					texture = ((DerivativeLayer) layerList[i]).getTexture(qt.getName(), null);
+					texture = ((DerivativeLayer) layerList[i]).getTexture(qt.getKey(), null);
 					((DerivativeLayer) layerList[i]).createColorMapTextureCoords(mesh, i);
 				} else if (layerList[i] instanceof FieldLayer) {
-					texture = ((FieldLayer) layerList[i]).getTexture(qt.getName(), null);
-					((FieldLayer) layerList[i]).createColorMapTextureCoords(qt.getName(), mesh, i);
+					texture = ((FieldLayer) layerList[i]).getTexture(qt.getKey(), null);
+					((FieldLayer) layerList[i]).createColorMapTextureCoords(qt.getKey(), mesh, i);
 				} else if (!(layerList[i] instanceof FieldCameraLayer)) {
 					// load the texture
-					texture = getTexture(qt.getName(), i, null);
+					texture = getTexture(qt.getKey(), i, null);
 					if (texture == null) {
 						texture = getEmptyTexture();
 					}
@@ -395,7 +364,7 @@ public class QuadTreeFactory {
 		return (emptyTexture);
 	}
 
-	private Texture getTexture(String key, int tUnit, Texture texture) {
+	private Texture getTexture(QuadKey key, int tUnit, Texture texture) {
 		if (layerList[tUnit] == null) {
 			return (null);
 		}
@@ -411,94 +380,7 @@ public class QuadTreeFactory {
 		return (texture);
 	}
 
-	/**
-	 * Create a mesh to act as a light block when the sun is below the horizon.
-	 * 
-	 * @param width
-	 * @param length
-	 * @param height
-	 * @return
-	 */
-	public Mesh createSunBlockMesh(double width, double length, double height) {
-		float wid = (float) width / 2;
-		float len = (float) length / 2;
-		float hgt = (float) height / 2;
-		// vertices
-		FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(40 * 3);
-		FloatBuffer normalBuffer = BufferUtils.createFloatBuffer(40 * 3);
-		FloatBuffer colorBuffer = BufferUtils.createFloatBuffer(40 * 4);
-		FloatBuffer texCoordBuffer = BufferUtils.createFloatBuffer(40 * 2);
-
-		// bottom
-		float[] vertex = new float[] { -wid, -len, -hgt, -wid, len, -hgt, wid, len, -hgt, -wid, -len, -hgt, wid, len,
-			-hgt, wid, -len, -hgt };
-		float[] normal = new float[] { 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1 };
-		float[] tCoord = new float[] { 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0 };
-		vertexBuffer.put(vertex);
-		normalBuffer.put(normal);
-		texCoordBuffer.put(tCoord);
-
-		// side 1
-		vertex = new float[] { -wid, -len, -hgt, -wid, len, -hgt, -wid, len, hgt, -wid, -len, -hgt, -wid, len, hgt,
-			-wid, len, hgt };
-		normal = new float[] { -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 };
-		vertexBuffer.put(vertex);
-		normalBuffer.put(normal);
-		texCoordBuffer.put(tCoord);
-
-		// side 2
-		vertex = new float[] { -wid, len, -hgt, -wid, len, hgt, wid, len, hgt, -wid, len, -hgt, wid, len, hgt, wid,
-			len, -hgt };
-		normal = new float[] { 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0 };
-		vertexBuffer.put(vertex);
-		normalBuffer.put(normal);
-		texCoordBuffer.put(tCoord);
-
-		// side 3
-		vertex = new float[] { wid, -len, hgt, wid, len, hgt, wid, len, -hgt, wid, -len, hgt, wid, len, -hgt, wid,
-			-len, -hgt };
-		normal = new float[] { 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 };
-		vertexBuffer.put(vertex);
-		normalBuffer.put(normal);
-		texCoordBuffer.put(tCoord);
-
-		// side 4
-		vertex = new float[] { -wid, -len, -hgt, -wid, -len, hgt, wid, -len, hgt, -wid, -len, -hgt, wid, -len, hgt,
-			wid, -len, -hgt };
-		normal = new float[] { 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0 };
-		vertexBuffer.put(vertex);
-		normalBuffer.put(normal);
-		texCoordBuffer.put(tCoord);
-
-		for (int i = 0; i < 40; ++i) {
-			colorBuffer.put(missingColor.getRed()).put(missingColor.getGreen()).put(missingColor.getBlue())
-				.put(missingColor.getAlpha());
-		}
-
-		vertexBuffer.flip();
-		normalBuffer.flip();
-		colorBuffer.flip();
-		texCoordBuffer.flip();
-
-		Mesh mesh = new Mesh("_sunblock");
-		MeshData meshData = new MeshData();
-		meshData.setVertexBuffer(vertexBuffer);
-		meshData.setNormalBuffer(normalBuffer);
-		meshData.setTextureBuffer(texCoordBuffer, 0);
-		meshData.setColorBuffer(colorBuffer);
-		mesh.setMeshData(meshData);
-
-		mesh.getSceneHints().setNormalsMode(NormalsMode.NormalizeIfScaled);
-		CullState cullState = new CullState();
-		cullState.setCullFace(CullState.Face.Back);
-		cullState.setEnabled(true);
-		mesh.setRenderState(cullState);
-		mesh.setModelBound(new BoundingBox());
-		mesh.updateModelBound();
-		return (mesh);
-	}
-
-	private QuadTreeMesh getEmptyMesh(String key, FloatBuffer vertices, double pixelWidth, double pixelLength) {
+	private QuadTreeMesh getEmptyMesh(QuadKey key, FloatBuffer vertices, double pixelWidth, double pixelLength) {
 		// vertices
 		FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(4 * 3);
 		vertexBuffer.put(vertices.get(0)).put(vertices.get(1)).put(vertices.get(2));
@@ -543,17 +425,10 @@ public class QuadTreeFactory {
 		mesh.setMeshData(createTileMeshData(vertexBuffer, texCoordBuffer, colorBuffer, indexBuffer, indexLengths,
 			normalBuffer, IndexMode.TriangleStrip));
 
-		mesh.getSceneHints().setNormalsMode(NormalsMode.NormalizeIfScaled);
-		CullState cullState = new CullState();
-		cullState.setCullFace(CullState.Face.Back);
-		cullState.setEnabled(true);
-		mesh.setRenderState(cullState);
-		mesh.setModelBound(new BoundingBox());
-		mesh.updateModelBound();
 		return (mesh);
 	}
 
-	private QuadTreeMesh getMesh(String key, double pixelWidth, double pixelLength) {
+	private QuadTreeMesh getMesh(QuadKey key, double pixelWidth, double pixelLength) {
 		// vertices, normals, and colors
 		Object[] result = getVertices(key, pixelWidth * tileWidth, pixelWidth, pixelLength * tileLength, pixelLength);
 		if (result == null) {
@@ -563,21 +438,25 @@ public class QuadTreeFactory {
 		FloatBuffer colorBuffer = (FloatBuffer) result[1];
 		FloatBuffer normalBuffer = (FloatBuffer) result[2];
 		boolean empty = (Boolean) result[3];
+		
+		QuadTreeMesh mesh = null;
 
 		// all NaNs
 		if (empty) {
-			return (getEmptyMesh(key, vertexBuffer, pixelWidth, pixelLength));
+			mesh = getEmptyMesh(key, vertexBuffer, pixelWidth, pixelLength);
 		}
+		else {
 
-		// vertex indices
-		result = getIndices(vertexBuffer);
-		IntBuffer indexBuffer = (IntBuffer) result[0];
-		int[] indexLengths = (int[]) result[1];
-		FloatBuffer texCoordBuffer = getTexCoords(key);
+			// vertex indices
+			result = getIndices(vertexBuffer);
+			IntBuffer indexBuffer = (IntBuffer) result[0];
+			int[] indexLengths = (int[]) result[1];
+			FloatBuffer texCoordBuffer = getTexCoords();
 
-		QuadTreeMesh mesh = new QuadTreeMesh("_mesh_"+key, tileWidth, tileLength, pixelWidth, pixelLength);
-		mesh.setMeshData(createTileMeshData(vertexBuffer, texCoordBuffer, colorBuffer, indexBuffer, indexLengths,
-			normalBuffer, IndexMode.TriangleStrip));
+			mesh = new QuadTreeMesh("_mesh_"+key, tileWidth, tileLength, pixelWidth, pixelLength);
+			mesh.setMeshData(createTileMeshData(vertexBuffer, texCoordBuffer, colorBuffer, indexBuffer, indexLengths,
+					normalBuffer, IndexMode.TriangleStrip));
+		}
 
 		mesh.getSceneHints().setNormalsMode(NormalsMode.NormalizeIfScaled);
 		CullState cullState = new CullState();
@@ -586,7 +465,6 @@ public class QuadTreeFactory {
 		mesh.setRenderState(cullState);
 		mesh.setModelBound(new BoundingBox());
 		mesh.updateModelBound();
-		mesh.cacheEdges();
 		return (mesh);
 	}
 	
@@ -596,7 +474,7 @@ public class QuadTreeFactory {
 				normalBuffer, indexMode));
 	}
 
-	private FloatBuffer getTexCoords(String key) {
+	private FloatBuffer getTexCoords() {
 		int tWidth = tileWidth + 1;
 		int tLength = tileLength + 1;
 		int size = tWidth * tLength * 2;
@@ -635,7 +513,7 @@ public class QuadTreeFactory {
 		return (result);
 	}
 
-	private Object[] getVertices(String key, double width, double pixelWidth, double height, double pixelLength) {
+	private Object[] getVertices(QuadKey key, double width, double pixelWidth, double height, double pixelLength) {
 
 		// Get the base layer tile data
 		QuadTreeTile tile = baseLayer.getTile(key);
@@ -694,7 +572,6 @@ public class QuadTreeFactory {
 
 	private FloatBuffer createNormals(FloatBuffer vertex, int rows, int cols, int dataSize) {
 		// compute normal for each face
-		float[] face = new float[3];
 		float[] nrml = new float[dataSize * 3];
 		byte[] cnt = new byte[dataSize];
 		Vector3 norm = new Vector3();
@@ -709,27 +586,40 @@ public class QuadTreeFactory {
 			for (int c = 0; c < cols - 1; ++c) {
 				k = r * cols + c;
 				i = k * 3;
-				// top triangle for counterclockwise quad where vertex is upper
-				// left corner
 				v0.set(vertex.get(i), vertex.get(i + 1), vertex.get(i + 2));
 				v1.set(vertex.get(i + n), vertex.get(i + n + 1), vertex.get(i + n + 2));
 				v2.set(vertex.get(i + 3), vertex.get(i + 4), vertex.get(i + 5));
 				MathUtil.createNormal(norm, v0, v1, v2, work);
-				face[0] = norm.getXf();
-				face[1] = norm.getYf();
-				face[2] = norm.getZf();
-				addFace(k, nrml, face, cnt);
-				addFace(k + 1, nrml, face, cnt);
-				addFace(k + cols, nrml, face, cnt);
-				// bottom triangle for quad
-				v0.set(vertex.get(i + n + 3), vertex.get(i + n + 4), vertex.get(i + n + 5));
-				MathUtil.createNormal(norm, v2, v1, v0, work);
-				face[0] = norm.getXf();
-				face[1] = norm.getYf();
-				face[2] = norm.getZf();
-				addFace(k + 1, nrml, face, cnt);
-				addFace(k + cols, nrml, face, cnt);
-				addFace(k + cols + 1, nrml, face, cnt);
+				addFace(k, nrml, norm, cnt);
+			}
+			for (int c = 1; c < cols; ++c) {
+				k = r * cols + c;
+				i = k * 3;
+				v0.set(vertex.get(i-3), vertex.get(i-2), vertex.get(i-1));
+				v1.set(vertex.get(i+n), vertex.get(i+n+1), vertex.get(i+n+2));
+				v2.set(vertex.get(i), vertex.get(i + 1), vertex.get(i + 2));
+				MathUtil.createNormal(norm, v0, v1, v2, work);
+				addFace(k, nrml, norm, cnt);
+			}
+		}
+		for (int r = 1; r < rows; ++r) {
+			for (int c = 0; c < cols - 1; ++c) {
+				k = r * cols + c;
+				i = k * 3;
+				v0.set(vertex.get(i - n), vertex.get(i - n + 1), vertex.get(i - n + 2));
+				v1.set(vertex.get(i), vertex.get(i + 1), vertex.get(i + 2));
+				v2.set(vertex.get(i + 3), vertex.get(i + 4), vertex.get(i + 5));
+				MathUtil.createNormal(norm, v0, v1, v2, work);
+				addFace(k, nrml, norm, cnt);
+			}
+			for (int c = 1; c < cols; ++c) {
+				k = r * cols + c;
+				i = k * 3;
+				v0.set(vertex.get(i), vertex.get(i + 1), vertex.get(i + 2));
+				v1.set(vertex.get(i-n), vertex.get(i-n+1), vertex.get(i-n+2));
+				v2.set(vertex.get(i-3), vertex.get(i-2), vertex.get(i-1));
+				MathUtil.createNormal(norm, v0, v1, v2, work);
+				addFace(k, nrml, norm, cnt);
 			}
 		}
 		// normal for vertex is average of surrounding faces
@@ -746,11 +636,11 @@ public class QuadTreeFactory {
 		return (normal);
 	}
 
-	private void addFace(int index, float[] nrml, float[] face, byte[] cnt) {
+	private void addFace(int index, float[] nrml, Vector3 norm, byte[] cnt) {
 		int i = index * 3;
-		nrml[i] += face[0];
-		nrml[i + 1] += face[1];
-		nrml[i + 2] += face[2];
+		nrml[i] += norm.getXf();
+		nrml[i + 1] += norm.getYf();
+		nrml[i + 2] += norm.getZf();
 		cnt[index]++;
 	}
 

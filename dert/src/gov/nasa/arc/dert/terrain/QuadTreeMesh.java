@@ -1,5 +1,7 @@
 package gov.nasa.arc.dert.terrain;
 
+import gov.nasa.arc.dert.terrain.QuadTree.Side;
+
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.List;
@@ -10,6 +12,7 @@ import com.ardor3d.renderer.state.RenderState;
 import com.ardor3d.renderer.state.RenderState.StateType;
 import com.ardor3d.renderer.state.TextureState;
 import com.ardor3d.scenegraph.Mesh;
+import com.ardor3d.scenegraph.MeshData;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.util.TextureKey;
 import com.ardor3d.util.TextureManager;
@@ -36,6 +39,9 @@ public class QuadTreeMesh extends Mesh {
 	// Copy of edge normals for stitching
 	private Vector3[][] nrml;
 
+	// Fields used for interpolation of edge normals.
+	private Vector3 n0, n1, n2;
+
 	/**
 	 * Constructor
 	 * 
@@ -53,6 +59,9 @@ public class QuadTreeMesh extends Mesh {
 		this.pixelLength = pixelLength;
 		tWidth = tileWidth + 1;
 		tLength = tileLength + 1;
+		n0 = new Vector3();
+		n1 = new Vector3();
+		n2 = new Vector3();
 	}
 
 	public int getTileWidth() {
@@ -392,7 +401,7 @@ public class QuadTreeMesh extends Mesh {
 		markDirty(DirtyType.RenderState);
 	}
 	
-	public void cacheEdges() {
+	private void cacheEdges() {
 		edge = new float[4][];
 		// cache edge elevations
 		// left
@@ -400,46 +409,209 @@ public class QuadTreeMesh extends Mesh {
 		for (int i = 0; i < tLength; ++i) {
 			edge[0][i] = getElevation(0, i);
 		}
-		// top
-		edge[1] = new float[tWidth];
-		for (int i = 0; i < tWidth; ++i) {
-			edge[1][i] = getElevation(i, 0);
-		}
 		// right
-		edge[2] = new float[tLength];
+		edge[1] = new float[tLength];
 		for (int i = 0; i < tLength; ++i) {
-			edge[2][i] = getElevation(tileWidth, i);
+			edge[1][i] = getElevation(tileWidth, i);
 		}
 		// bottom
+		edge[2] = new float[tWidth];
+		for (int i = 0; i < tWidth; ++i) {
+			edge[2][i] = getElevation(i, tileLength);
+		}
+		// top
 		edge[3] = new float[tWidth];
 		for (int i = 0; i < tWidth; ++i) {
-			edge[3][i] = getElevation(i, tileLength);
+			edge[3][i] = getElevation(i, 0);
 		}
 
 		// cache edge normals
 		FloatBuffer normalBuffer = getMeshData().getNormalBuffer();
-		nrml = new Vector3[2][];
+		nrml = new Vector3[4][];
 		// left
 		nrml[0] = new Vector3[tLength];
 		for (int i = 0; i < tLength; ++i) {
 			int ii = i * tWidth * 3;
 			nrml[0][i] = new Vector3(normalBuffer.get(ii), normalBuffer.get(ii + 1), normalBuffer.get(ii + 2));
 		}
-		// top
-		nrml[1] = new Vector3[tWidth];
-		for (int i = 0; i < tWidth; ++i) {
-			int ii = i * 3;
+		// right
+		nrml[1] = new Vector3[tLength];
+		int w = tWidth-1;
+		for (int i = 0; i < tLength; ++i) {
+			int ii = (i*tWidth+w) * 3;
 			nrml[1][i] = new Vector3(normalBuffer.get(ii), normalBuffer.get(ii + 1), normalBuffer.get(ii + 2));
 		}
+		//bottom
+		nrml[2] = new Vector3[tWidth];
+		w = tWidth*(tLength-1);
+		for (int i = 0; i < tWidth; ++i) {
+			int ii = (w+i) * 3;
+			nrml[2][i] = new Vector3(normalBuffer.get(ii), normalBuffer.get(ii + 1), normalBuffer.get(ii + 2));
+		}
+		// top
+		nrml[3] = new Vector3[tWidth];
+		for (int i = 0; i < tWidth; ++i) {
+			int ii = i * 3;
+			nrml[3][i] = new Vector3(normalBuffer.get(ii), normalBuffer.get(ii + 1), normalBuffer.get(ii + 2));
+		}
+	}
+	
+	public synchronized final float[] getEdge(Side side) {
+		return(edge[side.ordinal()]);
+	}
+	
+	public synchronized final Vector3[] getNrml(Side side) {
+		return(nrml[side.ordinal()]);
+	}
 
+    /**
+     * Sets the mesh data object for this mesh.
+     * 
+     * @param meshData
+     *            the mesh data object
+     */
+	@Override
+    public synchronized void setMeshData(final MeshData meshData) {
+		super.setMeshData(meshData);
+		if (!empty)
+			cacheEdges();
+    }
+
+	public void fillEdge(Side side, int[] e, QuadTreeMesh that) {
+		int ib = e[0];
+		int ie = e[1] - ib;
+		if (ie <= 0) {
+//			System.err.println("QuadTreeMesh.fillEdge fill count <= 0 between " + getName()+" "+that.getName());
+			return;
+		}
+		int nw = tileWidth / ie;
+		int nh = tileLength / ie;
+		int i = ib;
+		double ww = 1.0 / nw;
+		double wh = 1.0 / nh;
+		float[] adjacentEdge;
+		Vector3[] adjacentNormal;
+		switch (side) {
+		case Left:
+			// get other tile edge data
+			adjacentEdge = that.getEdge(Side.Right);
+			adjacentNormal = that.getNrml(Side.Right);
+			
+			for (int j = 0; j < tLength; j += nh) {
+				// fill every nth pixel of this tile with vertex from the other tile
+				setElevation(0, j, adjacentEdge[i]);
+				that.setElevation(tileWidth, i, adjacentEdge[i]);
+				// fill every nth pixel of this tile with normal from the other tile
+				setNormal(0, j, adjacentNormal[i]);
+				that.setNormal(tileWidth, i, adjacentNormal[i]);
+				i++;
+			}
+			// interpolate new values in this tile
+			for (int j = 0; j < tileLength; j += nh) {
+				double el0 = getElevation(0, j);
+				getNormal(0, j, n0);
+				double el1 = getElevation(0, j+nh);
+				getNormal(0, j + nh, n1);
+				for (int k = 1; k < nh; ++k) {
+					double el = el0 + k * wh * (el1-el0);
+					interpolateNormal(n0, n1, n2, k * wh);
+					setElevation(0, j + k, (float)el);
+					setNormal(0, j + k, n2);
+				}
+			}
+			break;
+		case Right:
+			// get original data from other tile
+			adjacentEdge = that.getEdge(Side.Left);
+			adjacentNormal = that.getNrml(Side.Left);
+			
+			for (int j = 0; j < tLength; j += nh) {
+				// fill every nth pixel of this tile with vertex from the other tile
+				setElevation(tileWidth, j, adjacentEdge[i]);
+				that.setElevation(0, i, adjacentEdge[i]);
+				// fill every nth pixel of this tile with normal from other tile
+				setNormal(tileWidth, j, adjacentNormal[i]);
+				that.setNormal(0, i, adjacentNormal[i]);
+				i++;
+			}
+			for (int j = 0; j < tileLength; j += nh) {
+				double el0 = getElevation(tileWidth, j);
+				getNormal(tileWidth, j, n0);
+				double el1 = getElevation(tileWidth, j + nh) - el0;
+				getNormal(tileWidth, j + nh, n1);
+				for (int k = 1; k < nh; ++k) {
+					double el = el0 + k * wh * el1;
+					interpolateNormal(n0, n1, n2, k * wh);
+					setElevation(tileWidth, j + k, (float)el);
+					setNormal(tileWidth, j + k, n2);
+				}
+			}
+			break;
+		case Bottom:
+			adjacentEdge = that.getEdge(Side.Top);
+			adjacentNormal = that.getNrml(Side.Top);
+			for (int j = 0; j < tWidth; j += nw) {
+				// fill every nth pixel of this tile with vertex from the other tile
+				setElevation(j, tileLength, adjacentEdge[i]);
+				that.setElevation(i, 0, adjacentEdge[i]);
+				// fill every nth pixel of this tile with normal from other tile
+				setNormal(j, tileLength, adjacentNormal[i]);
+				that.setNormal(i, 0, adjacentNormal[i]);
+				i++;
+			}
+			for (int j = 0; j < tileWidth; j += nw) {
+				double el0 = getElevation(j, tileLength);
+				getNormal(j, tileLength, n0);
+				double el1 = getElevation(j + nw, tileLength) - el0;
+				getNormal(j + nw, tileLength, n1);
+				for (int k = 1; k < nw; ++k) {
+					double el = el0 + k * ww * el1;
+					interpolateNormal(n0, n1, n2, k * ww);
+					setElevation(j + k, tileLength, (float)el);
+					setNormal(j + k, tileLength, n2);
+				}
+			}
+			break;
+		case Top:
+			adjacentEdge = that.getEdge(Side.Bottom);
+			adjacentNormal = that.getNrml(Side.Bottom);
+			
+			for (int j = 0; j < tWidth; j += nw) {
+				// fill every nth pixel of this tile with vertex from the other tile
+				setElevation(j, 0, adjacentEdge[i]);
+				that.setElevation(i, tileLength, adjacentEdge[i]);
+				// fill every nth pixel of this tile with normal from other tile
+				setNormal(j, 0, adjacentNormal[i]);
+				that.setNormal(i, tileLength, adjacentNormal[i]);
+				i++;
+			}
+			for (int j = 0; j < tileWidth; j += nw) {
+				double el0 = getElevation(j, 0);
+				getNormal(j, 0, n0);
+				double el1 = getElevation(j + nw, 0) - el0;
+				getNormal(j + nw, 0, n1);
+				for (int k = 1; k < nw; ++k) {
+					double el = el0 + k * ww * el1;
+					interpolateNormal(n0, n1, n2, k * ww);
+					setElevation(j + k, 0, (float)el);
+					setNormal(j + k, 0, n2);
+				}
+			}
+			break;
+		}
+	}
+
+	private void interpolateNormal(Vector3 n0, Vector3 n1, Vector3 result, double weight) {
+		result.set(n0);
+		result.subtractLocal(n1);
+		result.multiplyLocal(weight);
+		result.addLocal(n1);
 	}
 	
-	public final float[] getEdge(int index) {
-		return(edge[index]);
-	}
-	
-	public final Vector3[] getNrml(int index) {
-		return(nrml[index]);
-	}
+//	@Override
+//	public void render(final Renderer renderer, final MeshData meshData) {
+//		System.err.println("QuadTreeMesh.render "+getName());
+//		super.render(renderer, meshData);
+//	}
 
 }

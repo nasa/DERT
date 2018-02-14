@@ -4,7 +4,6 @@ import gov.nasa.arc.dert.action.edit.BackgroundColorDialog;
 import gov.nasa.arc.dert.ephemeris.Ephemeris;
 import gov.nasa.arc.dert.landscape.DerivativeLayer;
 import gov.nasa.arc.dert.landscape.FieldLayer;
-import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.lighting.Lighting;
 import gov.nasa.arc.dert.raster.proj.Proj4;
 import gov.nasa.arc.dert.render.BasicScene;
@@ -33,6 +32,7 @@ import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.StateFactory;
 import gov.nasa.arc.dert.terrain.QuadTree;
 import gov.nasa.arc.dert.terrain.QuadTreeCache;
+import gov.nasa.arc.dert.terrain.Terrain;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.Console;
@@ -328,8 +328,8 @@ public class Dert {
 			ViewpointController.mouseScrollDirection = StringUtil.getIntegerValue(dertProperties,
 				"MouseScrollDirection", false, -1, false);
 			BackgroundColorDialog.setPredefinedBackgroundColors(dertProperties);
-			Landscape.MAX_LEVELS = StringUtil.getIntegerValue(dertProperties, "Landscape.MaximumLevels", true,
-				Landscape.MAX_LEVELS, false);
+			Terrain.MAX_LEVELS = StringUtil.getIntegerValue(dertProperties, "Landscape.MaximumLevels", true,
+					Terrain.MAX_LEVELS, false);
 			Axes.TIC_PIXELS = StringUtil.getIntegerValue(dertProperties, "Profile.tickInterval", true, 60, false);
 
 			// Get map element preferences.

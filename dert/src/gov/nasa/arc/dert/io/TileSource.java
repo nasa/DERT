@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.io;
 
 import gov.nasa.arc.dert.raster.RasterFile.DataType;
+import gov.nasa.arc.dert.terrain.QuadKey;
 import gov.nasa.arc.dert.terrain.QuadTreeTile;
 
 import java.util.Properties;
@@ -31,12 +32,12 @@ public interface TileSource {
 	public Properties getProperties(String layerName);
 
 	/**
-	 * Given the tile id, return if it exists.
+	 * Given the tile key, return if it exists.
 	 * 
 	 * @param id
 	 * @return
 	 */
-	public boolean tileExists(String id);
+	public boolean tileExists(String key);
 
 	/**
 	 * Get a tile.
@@ -46,9 +47,7 @@ public interface TileSource {
 	 * @param dataType
 	 * @return the tile
 	 */
-	public QuadTreeTile getTile(String layerName, String id, DataType dataType);
-
-	// public byte[] getTileBytes(String layerName, String id, byte[] bytes);
+	public QuadTreeTile getTile(String layerName, QuadKey id, DataType dataType);
 
 	/**
 	 * Get information about all the layers in the landscape
@@ -66,7 +65,7 @@ public interface TileSource {
 	 *            , worldLength the physical dimensions of the raster
 	 * @return
 	 */
-	public String getKey(double x, double y, double worldWidth, double worldLength);
+	public QuadKey getKey(double x, double y, double worldWidth, double worldLength);
 
 	/**
 	 * Given a coordinate and level, get the id of the tile at that level
@@ -77,15 +76,13 @@ public interface TileSource {
 	 *            , worldLength the physical dimensions of the raster
 	 * @return
 	 */
-	public String getKey(double x, double y, double worldWidth, double worldLength, int lvl);
-
-	// public String getMaxLevel(String id);
+	public QuadKey getKey(double x, double y, double worldWidth, double worldLength, int lvl);
 
 	/**
 	 * Get the landscape path
 	 * 
 	 * @return
 	 */
-	public String getPath();
+	public String getLandscapePath();
 
 }

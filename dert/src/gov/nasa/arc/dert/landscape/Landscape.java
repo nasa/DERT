@@ -6,6 +6,7 @@ import gov.nasa.arc.dert.scene.tool.CartesianGrid;
 import gov.nasa.arc.dert.scene.tool.RadialGrid;
 import gov.nasa.arc.dert.scene.tool.ScaleBar;
 import gov.nasa.arc.dert.terrain.LayerManager;
+import gov.nasa.arc.dert.terrain.QuadKey;
 import gov.nasa.arc.dert.terrain.QuadTree;
 import gov.nasa.arc.dert.terrain.Terrain;
 import gov.nasa.arc.dert.util.MathUtil;
@@ -93,23 +94,6 @@ public class Landscape extends Terrain {
 			"Landscape size: East/West range = " + String.format(stringFormat, terrainWidth/pixelScale) + ", North/South range = " + String.format(stringFormat, terrainLength/pixelScale) + " "
 				+ ", Elevation range = " + String.format(stringFormat, (baseLayer.getMaximumValue()[0] - minZ)) + "\n");
 
-	}
-
-	/**
-	 * Initialize the landscape. Create the factory, quad tree, and layers.
-	 */
-	public void initialize() {
-		super.initialize();
-
-//		// add an invisible mesh to the landscape to block shadows when sun is
-//		// underneath the landscape
-//		double z = edgeZ - minZ;
-//		sunBlock = factory.createSunBlockMesh(worldWidth, worldLength, z);
-//		System.err.println("Landscape.initialize "+minZ+" "+z);
-//		sunBlock.setTranslation(0, 0, minZ + z / 2);
-//		sunBlock.getSceneHints().setCullHint(CullHint.Always);
-//		// sunBlock.getSceneHints().setRenderBucketType(RenderBucketType.Transparent);
-//		contents.attachChild(sunBlock);
 	}
 
 	/**
@@ -282,7 +266,7 @@ public class Landscape extends Terrain {
 	 * @return
 	 */
 	public double getElevationAtHighestLevel(double x, double y) {
-		String key = source.getKey(x, y, terrainWidth, terrainLength);
+		QuadKey key = source.getKey(x, y, terrainWidth, terrainLength);
 		if (key == null) {
 			return (Double.NaN);
 		}
@@ -290,7 +274,6 @@ public class Landscape extends Terrain {
 		if (qt == null) {
 			return (Double.NaN);
 		}
-//		return (qt.getElevationNearestNeighbor(x, y));
 		return (qt.getElevation(x, y));
 	}
 
@@ -302,7 +285,7 @@ public class Landscape extends Terrain {
 	 * @return
 	 */
 	public double getElevation(double x, double y, int level) {
-		String key = source.getKey(x, y, terrainWidth, terrainLength, level);
+		QuadKey key = source.getKey(x, y, terrainWidth, terrainLength, level);
 		if (key == null) {
 			return (Double.NaN);
 		}
@@ -310,7 +293,6 @@ public class Landscape extends Terrain {
 		if (qt == null) {
 			return (Double.NaN);
 		}
-//		return (qt.getElevationNearestNeighbor(x, y));
 		return (qt.getElevation(x, y));
 	}
 
@@ -324,7 +306,7 @@ public class Landscape extends Terrain {
 	 * @return
 	 */
 	public boolean getNormalAtHighestLevel(double x, double y, Vector3 store) {
-		String key = source.getKey(x, y, terrainWidth, terrainLength);
+		QuadKey key = source.getKey(x, y, terrainWidth, terrainLength);
 		if (key == null) {
 			return (false);
 		}

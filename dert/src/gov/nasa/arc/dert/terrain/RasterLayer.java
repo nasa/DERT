@@ -194,7 +194,7 @@ public class RasterLayer extends Layer {
 		return (rasterLength);
 	}
 
-	protected QuadTreeTile readTile(String key) {
+	protected QuadTreeTile readTile(QuadKey key) {
 		try {
 			DataType dataType = DataType.Byte;
 			switch (layerType) {
@@ -236,7 +236,7 @@ public class RasterLayer extends Layer {
 	 * Get a tile with the given key (file path)
 	 */
 	@Override
-	public QuadTreeTile getTile(String key) {
+	public QuadTreeTile getTile(QuadKey key) {
 		QuadTreeTile tile = readTile(key);
 		return (tile);
 	}
@@ -249,7 +249,7 @@ public class RasterLayer extends Layer {
 		return (dataSource.getProperties(layerName));
 	}
 
-	protected Image getTextureImage(String key) {
+	protected Image getTextureImage(QuadKey key) {
 		QuadTreeTile t = getTile(key);
 		if (t == null) {
 			return (null);
@@ -264,7 +264,7 @@ public class RasterLayer extends Layer {
 	 * Given the tile key, get a tile as a texture for this layer
 	 */
 	@Override
-	public Texture getTexture(String key, Texture store) {
+	public Texture getTexture(QuadKey key, Texture store) {
 		Image image = getTextureImage(key);
 		if (image == null) {
 			return (null);

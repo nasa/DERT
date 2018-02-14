@@ -73,7 +73,6 @@ public class WorldInputHandler
 	// Helpers
 	private Vector3 lastPosition;
 	private Vector3 pickPosition = new Vector3(), pickNormal = new Vector3();
-//	private boolean lastStrictZ;
 
 	// Viewpoint
 	private ViewpointController controller;
@@ -256,6 +255,7 @@ public class WorldInputHandler
 					canvasPanel.setCursor(null);
 			}
 			lastSelection = SpatialUtil.getPickHost(spatial);
+//			System.err.println("WorldInputHandler.mousePress "+spatial);
 		}
 	}
 

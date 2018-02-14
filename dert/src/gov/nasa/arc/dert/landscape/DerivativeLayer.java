@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.landscape;
 
 import gov.nasa.arc.dert.terrain.Layer;
 import gov.nasa.arc.dert.terrain.LayerInfo;
+import gov.nasa.arc.dert.terrain.QuadKey;
 import gov.nasa.arc.dert.terrain.QuadTreeTile;
 import gov.nasa.arc.dert.terrain.RasterLayer;
 import gov.nasa.arc.dert.util.ColorMap;
@@ -65,7 +66,7 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 	}
 
 	@Override
-	public QuadTreeTile getTile(String key) {
+	public QuadTreeTile getTile(QuadKey key) {
 		return (dataSource.getTile(key));
 	}
 
@@ -75,7 +76,7 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 	}
 
 	@Override
-	public Texture getTexture(String key, Texture store) {
+	public Texture getTexture(QuadKey key, Texture store) {
 		if (colorMapTexture == null) {
 			initColormap();
 		}

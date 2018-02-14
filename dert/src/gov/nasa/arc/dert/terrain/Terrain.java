@@ -199,8 +199,8 @@ public abstract class Terrain extends Node {
 //		factory.enableLayers(layerManager.layersEnabled);
 
 		// create the top level quad tree tile
-		quadTree = factory.getQuadTree("", null, new Vector3(0, 0, 0), terrainWidth / tileWidth,
-				terrainLength / tileLength, 0, -1, false);
+		quadTree = factory.getQuadTree(new QuadKey(), new Vector3(0, 0, 0), terrainWidth / tileWidth,
+				terrainLength / tileLength, true);
 		if (quadTree == null)
 			throw new IllegalStateException("Root quadTree for "+getName()+" is empty or invalid.");
 		quadTree.inUse = true;
@@ -353,10 +353,10 @@ public abstract class Terrain extends Node {
 		boolean qtChanged = false;
 		if (quadTree != null) {
 			qtChanged = quadTree.update(camera);
-			if (qtChanged)
-				for (int i = 0; i <= baseMapLevel; ++i) {
-					quadTree.stitch(i);
-				}
+			if (qtChanged) {
+				quadTree.stitch();
+//				quadTree.isDirty();
+			}
 		}
 		return(qtChanged);
 	}

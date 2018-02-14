@@ -3,6 +3,7 @@ package gov.nasa.arc.dert.landscape;
 import gov.nasa.arc.dert.io.TileSource;
 import gov.nasa.arc.dert.terrain.Layer;
 import gov.nasa.arc.dert.terrain.LayerInfo;
+import gov.nasa.arc.dert.terrain.QuadKey;
 import gov.nasa.arc.dert.terrain.QuadTreeTile;
 import gov.nasa.arc.dert.terrain.RasterLayer;
 import gov.nasa.arc.dert.util.ColorMap;
@@ -71,7 +72,7 @@ public class FieldLayer extends Layer implements ColorMapListener {
 	}
 
 	@Override
-	public QuadTreeTile getTile(String key) {
+	public QuadTreeTile getTile(QuadKey key) {
 		return (dataSource.getTile(key));
 	}
 
@@ -81,7 +82,7 @@ public class FieldLayer extends Layer implements ColorMapListener {
 	}
 
 	@Override
-	public Texture getTexture(String key, Texture store) {
+	public Texture getTexture(QuadKey key, Texture store) {
 		if (colorMapTexture == null) {
 			initColormap();
 		}
@@ -129,13 +130,13 @@ public class FieldLayer extends Layer implements ColorMapListener {
 		Landscape.getInstance().markDirty(DirtyType.RenderState);
 	}
 	
-	public void createColorMapTextureCoords(String key, Mesh mesh, int tUnit) {
+	public void createColorMapTextureCoords(QuadKey key, Mesh mesh, int tUnit) {
 		FloatBuffer texCoords = getFloatTexCoords(key);
 		if (texCoords != null)
 			mesh.getMeshData().setTextureBuffer(texCoords, tUnit);
 	}
 	
-	private FloatBuffer getFloatTexCoords(String key) {
+	private FloatBuffer getFloatTexCoords(QuadKey key) {
 		Vector2 coord = new Vector2();
 		QuadTreeTile tile = dataSource.getTile(key);
 		FloatBuffer data = tile.raster.asFloatBuffer();

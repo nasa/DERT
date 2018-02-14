@@ -5,30 +5,36 @@ import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.Node;
 
 /**
- * A tile in the quad tree structure representing the landscape. This object
+ * An instance of QuadTree represents a tile in the landscape. It provides
+ * a node in a hierarchical quad-tree data structure. This object
  * contains a mesh that is displayed in the landscape, and a pointer to 4
- * children QuadTrees. If the children are in use, the mesh is not displayed. It
- * maintains copies of the edge vertices of the mesh to use for stitching, and a
- * timestamp. A set of test points is used to determine if a split or merge is
- * needed. It also keeps track of it neighbors for stitching purposes.
+ * child QuadTrees. When the QuadTree is split, the mesh is detached and the
+ * children are attached. When the QuadTree is merged, the children are detached
+ * and the mesh is re-attached. Each time a change occurs the meshes are stitched
+ * together with their neighbors using a set of stored edge vertices and normals.
+ * A set of corner points is maintained to aid in splitting and merging.
  *
  */
 public class QuadTree extends Node {
 
-	// The minimum number of pixels for a mesh cell size before loading a higher
-	// resolution quad tree
+	// The minimum number of screen pixels for a mesh cell
 	public static int CELL_SIZE = 4;
 
 	// Side of a quad tree
-	protected static enum Side {
-		Left, Right, Top, Bottom
+	public static enum Side {
+		Left, Right, Bottom, Top
 	}
+	
+	private static int[] adjQuadHort = {2, 1, 4, 3};
+	private static int[] adjQuadVert = {3, 4, 1, 2};
 
 	// This quad tree is in use
 	protected boolean inUse;
@@ -39,9 +45,6 @@ public class QuadTree extends Node {
 	// The mesh that will be rendered
 	protected QuadTreeMesh mesh;
 
-	// The level in the pyramid and the quadrant in the parent quad tree
-	protected int level, quadrant;
-
 	// This quad tree is at the highest resolution
 	protected boolean highestLevel;
 
@@ -49,7 +52,7 @@ public class QuadTree extends Node {
 	protected QuadTree[] child;
 
 	// Sides of the quad tree that need stitching
-	private boolean leftDirty, rightDirty, bottomDirty, topDirty;
+	private boolean[] dirty = new boolean[Side.values().length];
 
 	// The quad tree's neighbors
 	private QuadTree left, top, right, bottom;
@@ -61,21 +64,19 @@ public class QuadTree extends Node {
 	// Coordinates are relative to the landscape center
 	private Vector3[] cornerPoint;
 	private Vector3 centerPoint;
-//
-//	// Copy of edge vertices for stitching
-//	private float[][] edge;
-//
-//	// Copy of edge normals for stitching
-//	private Vector3[][] nrml;
-
-	// Fields used for interpolation of edge normals.
-	private Vector3 n0, n1, n2;
 
 	// Pixel dimensions
 	protected double pixelWidth, pixelLength;
 	
 	// Size of this quad tree object in bytes
 	protected int sizeInBytes;
+	
+	// Unique identifier for this QuadTree. Contains path in file system.
+	protected QuadKey quadKey;
+	
+	// List to hold neighbors during stitching
+	protected ArrayList<QuadTree> neighborList = new ArrayList<QuadTree>();
+	
 
 	/**
 	 * Constructor
@@ -90,21 +91,21 @@ public class QuadTree extends Node {
 	 * @param level
 	 * @param quadrant
 	 */
-	public QuadTree(String name, ReadOnlyVector3 p, int level, int quadrant, double pixelWidth, double pixelLength, int sizeInBytes) {
-		super(name);
+	public QuadTree(QuadKey qKey, ReadOnlyVector3 p, double pixelWidth, double pixelLength, int sizeInBytes) {
+		super(qKey.toString());
 		camLoc = new Vector3();
 		lookAt = new Vector3();
 		closest = new Vector3();
-		n0 = new Vector3();
-		n1 = new Vector3();
-		n2 = new Vector3();
 
-		this.level = level;
-		this.quadrant = quadrant;
+		this.quadKey = qKey;
 		this.pixelWidth = pixelWidth;
 		this.pixelLength = pixelLength;
 		this.sizeInBytes = sizeInBytes;
 		setTranslation(p);
+	}
+	
+	public QuadKey getKey() {
+		return(quadKey);
 	}
 
 	/**
@@ -114,7 +115,7 @@ public class QuadTree extends Node {
 	 * 
 	 * @param p
 	 */
-	public synchronized void createCornerPoints(ReadOnlyVector3 p, double tileWidth, double tileLength) {
+	public void createCornerPoints(ReadOnlyVector3 p, double tileWidth, double tileLength) {
 		double width = tileWidth * pixelWidth / 2;
 		double length = tileLength * pixelLength / 2;
 		// create test points
@@ -132,7 +133,6 @@ public class QuadTree extends Node {
 	 * @param mesh
 	 */
 	public synchronized void setMesh(QuadTreeMesh mesh) {
-		this.mesh = mesh;
 		attachChild(mesh);
 		updateGeometricState(0);
 		int tileWidth = mesh.getTileWidth();
@@ -158,6 +158,7 @@ public class QuadTree extends Node {
 			// center
 			centerPoint.setZ(vertexBuffer.get((tWidth * tileLength / 2 + tileWidth / 2) * 3 + 2) - minZ);
 		}
+		this.mesh = mesh;
 	}
 
 	/**
@@ -207,11 +208,37 @@ public class QuadTree extends Node {
 	 * @param right
 	 * @param bottom
 	 */
-	public void setNeighbors(QuadTree left, QuadTree top, QuadTree right, QuadTree bottom) {
+	public void setNeighbors(QuadTree left, QuadTree right, QuadTree bottom, QuadTree top) {
 		this.left = left;
 		this.top = top;
 		this.right = right;
 		this.bottom = bottom;
+		setDirty(Side.Left, (left != null));
+		setDirty(Side.Right, (right != null));
+		setDirty(Side.Bottom, (bottom != null));
+		setDirty(Side.Top, (top != null));
+	}
+	
+	private void stitch(Side side, QuadTree neighbor) {
+		if (getMesh().isEmpty()) {
+			Arrays.fill(dirty, false);
+			return;
+		}
+		if (neighbor.getMesh().isEmpty()) {
+			Arrays.fill(neighbor.dirty, false);
+			setDirty(side, false);
+			return;
+		}
+		neighborList.clear();
+		getNeighbors(side, neighbor, quadKey, neighborList);
+		for (int i=0; i<neighborList.size(); ++i) {
+			neighbor = neighborList.get(i);
+			if (neighbor.getMesh().isEmpty())
+				Arrays.fill(neighbor.dirty, false);
+			else
+				doStitch(side, neighbor);
+		}
+		setDirty(side, false);
 	}
 
 	/**
@@ -223,245 +250,203 @@ public class QuadTree extends Node {
 	 *            the quadtree
 	 */
 	private void doStitch(Side side, QuadTree that) {
-		// this and that are on the same level, fill in their own elevation
-		// values
-		if (this.level == that.level) {
-			int tileWidth = mesh.getTileWidth();
-			int tileLength = mesh.getTileLength();
+		boolean sameLevel = (this.quadKey.getLevel() == that.quadKey.getLevel());
+		// this and that are on the same level
+		if (sameLevel) {
+			int tileWidth = getMesh().getTileWidth();
+			int tileLength = getMesh().getTileLength();
 			switch (side) {
 			case Left:
-				mesh.setElevationColumn(0, mesh.getEdge(0));
-				mesh.setNormalsColumn(0, mesh.getNrml(0));
-				that.mesh.setElevationColumn(tileWidth, that.mesh.getEdge(2));
-				that.mesh.setNormalsColumn(tileWidth, mesh.getNrml(0));
-				break;
-			case Top:
-				mesh.setElevationRow(0, mesh.getEdge(1));
-				mesh.setNormalsRow(0, mesh.getNrml(1));
-				that.mesh.setElevationRow(tileLength, that.mesh.getEdge(3));
-				that.mesh.setNormalsRow(tileLength, mesh.getNrml(1));
+				getMesh().setElevationColumn(0, getMesh().getEdge(Side.Left));
+				getMesh().setNormalsColumn(0, getMesh().getNrml(Side.Left));
+				that.getMesh().setElevationColumn(tileWidth, that.getMesh().getEdge(Side.Right));
+				that.getMesh().setNormalsColumn(tileWidth, getMesh().getNrml(Side.Left));
+				setDirty(Side.Left, false);
+				that.setDirty(Side.Right, false);
 				break;
 			case Right:
-				mesh.setElevationColumn(tileWidth, mesh.getEdge(2));
-				mesh.setNormalsColumn(tileWidth, that.mesh.getNrml(0));
-				that.mesh.setElevationColumn(0, that.mesh.getEdge(0));
-				that.mesh.setNormalsColumn(0, that.mesh.getNrml(0));
+				getMesh().setElevationColumn(tileWidth, getMesh().getEdge(Side.Right));
+				getMesh().setNormalsColumn(tileWidth, getMesh().getNrml(Side.Right));
+				that.getMesh().setElevationColumn(0, that.getMesh().getEdge(Side.Left));
+				that.getMesh().setNormalsColumn(0, getMesh().getNrml(Side.Right));
+				setDirty(Side.Right, false);
+				that.setDirty(Side.Left, false);
 				break;
 			case Bottom:
-				mesh.setElevationRow(tileLength, mesh.getEdge(3));
-				mesh.setNormalsRow(tileLength, that.mesh.getNrml(1));
-				that.mesh.setElevationRow(0, that.mesh.getEdge(1));
-				that.mesh.setNormalsRow(0, that.mesh.getNrml(1));
+				getMesh().setElevationRow(tileLength, getMesh().getEdge(Side.Bottom));
+				getMesh().setNormalsRow(tileLength, getMesh().getNrml(Side.Bottom));
+				that.getMesh().setElevationRow(0, that.getMesh().getEdge(Side.Top));
+				that.getMesh().setNormalsRow(0, getMesh().getNrml(Side.Bottom));
+				setDirty(Side.Bottom, false);
+				that.setDirty(Side.Top, false);
+				break;
+			case Top:
+				getMesh().setElevationRow(0, getMesh().getEdge(Side.Top));
+				getMesh().setNormalsRow(0, getMesh().getNrml(Side.Top));
+				that.getMesh().setElevationRow(tileLength, that.getMesh().getEdge(Side.Bottom));
+				that.getMesh().setNormalsRow(tileLength, getMesh().getNrml(Side.Top));
+				setDirty(Side.Top, false);
+				that.setDirty(Side.Bottom, false);
 				break;
 			}
 		}
 		// this is higher resolution than that
 		// find the ends and do the stitching
-		else if (this.level > that.level) {
-			double[] e = findStitchEnds(this, side, that);
-			fillEdge(side, that, e);
+		else if (this.quadKey.getLevel() > that.quadKey.getLevel()) {
+			int[] e = findStitchEnds(side, that);
+			getMesh().fillEdge(side, e, that.getMesh());
+			setDirty(side, false);
 		}
-		// this is lower or equal resolution to that,
-		// shouldn't happen
-		else {
-			throw new IllegalStateException("Passed in quadtree is higher resolution than stitching quadtree.");
-		}
-	}
-
-	private void stitch(Side side, QuadTree that) {
-		// drill down
-		if (child != null) {
-			switch (side) {
-			case Left:
-				if (isStitchable(child[0])) {
-					child[0].stitch(Side.Left, that);
-				}
-				if (isStitchable(child[2])) {
-					child[2].stitch(Side.Left, that);
-				}
-				break;
-			case Top:
-				if (isStitchable(child[0])) {
-					child[0].stitch(Side.Top, that);
-				}
-				if (isStitchable(child[1])) {
-					child[1].stitch(Side.Top, that);
-				}
-				break;
-			case Right:
-				if (isStitchable(child[1])) {
-					child[1].stitch(Side.Right, that);
-				}
-				if (isStitchable(child[3])) {
-					child[3].stitch(Side.Right, that);
-				}
-				break;
-			case Bottom:
-				if (isStitchable(child[2])) {
-					child[2].stitch(Side.Bottom, that);
-				}
-				if (isStitchable(child[3])) {
-					child[3].stitch(Side.Bottom, that);
-				}
-				break;
-			}
-		}
-		// Stop here and actually do the stitching.
-		else {
-			switch (side) {
-			case Left:
-				if (leftDirty || that.rightDirty) {
-					doStitch(side, that);
-					leftDirty = false;
-				}
-				break;
-			case Top:
-				if (topDirty || that.bottomDirty) {
-					doStitch(side, that);
-					topDirty = false;
-				}
-				break;
-			case Right:
-				if (rightDirty || that.leftDirty) {
-					doStitch(side, that);
-					rightDirty = false;
-				}
-				break;
-			case Bottom:
-				if (bottomDirty || that.topDirty) {
-					doStitch(side, that);
-					bottomDirty = false;
-				}
-				break;
-			}
+		// this is lower resolution than that
+		// use that instead of this, find the ends and do the stitching
+		else if (this.quadKey.getLevel() < that.quadKey.getLevel()) {
+			side = switchSides(side);
+			int[] e = that.findStitchEnds(side, this);
+			that.getMesh().fillEdge(side, e, this.getMesh());
+			that.setDirty(side, false);
 		}
 	}
+	
+	/**
+	 * Print out if this QuadTree still has dirty sides. Used for debugging.
+	 * @return if any sides are dirty
+	 */
+	public boolean isDirty() {
+		if (child == null) {
+			if (isDirty(Side.Left))
+				System.err.println("QuadTree.isDirty LEFT "+getName());
+			if (isDirty(Side.Right))
+				System.err.println("QuadTree.isDirty RIGHT "+getName());
+			if (isDirty(Side.Bottom))
+				System.err.println("QuadTree.isDirty BOTTOM "+getName());
+			if (isDirty(Side.Top))
+				System.err.println("QuadTree.isDirty TOP "+getName());
+			return(isDirty(Side.Left) || isDirty(Side.Right) || isDirty(Side.Bottom) || isDirty(Side.Top));
+		}
+		else
+			return(child[0].isDirty() || child[1].isDirty() || child[2].isDirty() || child[3].isDirty());
+	}
+	
+	private Side switchSides(Side side) {
+		switch (side) {
+		case Left:
+			return(Side.Right);
+		case Right:
+			return(Side.Left);
+		case Bottom:
+			return(Side.Top);
+		case Top:
+			return(Side.Bottom);
+		}
+		return(null);
+	}
+	
+	private void setDirty(Side side, boolean val) {
+		dirty[side.ordinal()] = val;
+	}
+	
+	private boolean isDirty(Side side) {
+		return(dirty[side.ordinal()]);
+	}
 
-	private void split() {
-		// we are not at the highest resolution
+	/**
+	 * Splitting method.  If not at the highest level already, get the children of this QuadTree
+	 * from the cache. They are only returned if they are ready. If they are set them. 
+	 * @return true if children are set
+	 */
+	private boolean split() {
 		if (!highestLevel) {
-			final QuadTree[] qt = new QuadTree[4];
 			QuadTreeFactory factory = Landscape.getInstance().getFactory();
-			// get the children
-			int count = factory.loadQuadTrees(getName(), this, qt, false);
-			// now at the highest resolution
-			if (count < 0) {
-				highestLevel = true;
-			} else if (count == 4) {
-				setChildren(qt);
-				for (int i = 0; i < 4; ++i) {
-					World.getInstance().getMarble().landscapeChanged(child[i]);
-					World.getInstance().getLandmarks().landscapeChanged(child[i]);
-					World.getInstance().getFeatureSets().landscapeChanged(child[i]);
+			highestLevel = !factory.childrenExist(quadKey);
+			if (!highestLevel) {
+				QuadTree[] child = factory.getQuadTreeChildren(quadKey, this, false);
+				if (child != null) {
+					setChildren(child);
+					return(true);
 				}
-
-				updateGeometricState(0, true);
 			}
 		}
+		return(false);
 	}
 
-	private synchronized void setChildren(QuadTree[] qt) {
-		child = qt;
+	/**
+	 * Detach the parent mesh and attach the children.
+	 * @param child
+	 */
+	private void setChildren(QuadTree[] child) {
+		child[0].setNeighbors(left, child[1], child[2], top);
+		child[1].setNeighbors(child[0], right, child[3], top);
+		child[2].setNeighbors(left, child[3], bottom, child[0]);
+		child[3].setNeighbors(child[2], right, bottom, child[1]);
 		detachChild(mesh);
 		for (int i = 0; i < child.length; ++i) {
-			child[i].leftDirty = true;
-			child[i].rightDirty = true;
-			child[i].bottomDirty = true;
-			child[i].topDirty = true;
 			attachChild(child[i]);
+			child[i].inUse = true;
+			World.getInstance().getMarble().landscapeChanged(child[i]);
+			World.getInstance().getLandmarks().landscapeChanged(child[i]);
+			World.getInstance().getFeatureSets().landscapeChanged(child[i]);
 		}
+		Arrays.fill(dirty, false);
+		this.child = child;
 	}
 
 	/**
 	 * Remove all children from this QuadTree and re-attach its mesh.
+	 * return true if children are detached
 	 */
-	private synchronized void clearChildren() {
+	private boolean clearChildren() {
 		if (child == null) {
-			return;
+			return(false);
 		}
+		
 		for (int i = 0; i < child.length; ++i) {
 			child[i].clearChildren();
+			child[i].setNeighbors(null, null, null, null);
 			detachChild(child[i]);
 			child[i].inUse = false;
-			child[i].leftDirty = false;
-			child[i].rightDirty = false;
-			child[i].bottomDirty = false;
-			child[i].topDirty = false;
+			Arrays.fill(child[i].dirty, false);
 			child[i] = null;
 		}
 		child = null;
 		attachChild(mesh);
-		leftDirty = true;
-		rightDirty = true;
-		bottomDirty = true;
-		topDirty = true;
+		setDirty(Side.Left, (left != null));
+		setDirty(Side.Right, (right != null));
+		setDirty(Side.Bottom, (bottom != null));
+		setDirty(Side.Top, (top != null));
+		return(true);
 	}
 
 	/**
-	 * Stitch this QuadTree to its neighbors at the given level
-	 * 
-	 * @param stitchLevel
+	 * Traverse the quad tree recursively to stitch all dirty sides.
 	 */
-	public void stitch(int stitchLevel) {
-		if (child == null) {
-			if (stitchLevel == level) {
-				stitchSides();
-			}
-		} else if (stitchLevel > level) {
-			for (int i = 0; i < child.length; ++i) {
-				child[i].stitch(stitchLevel);
-			}
+	public void stitch() {
+		if (child != null)
+			for (int i=0; i<child.length; ++i)
+				child[i].stitch();
+		else {
+			if (isDirty(Side.Left) && (left != null))
+				stitch(Side.Left, left);
+			if (isDirty(Side.Right) && (right != null))
+				stitch(Side.Right, right);
+			if (isDirty(Side.Bottom) && (bottom != null))
+				stitch(Side.Bottom, bottom);
+			if (isDirty(Side.Top) && (top != null))
+				stitch(Side.Top, top);
 		}
 	}
 
 	/**
-	 * Get the neighbor on each side of this quadtree and stitch it.
+	 * Merge 4 quad trees by removing the children from a parent and restoring its mesh.
+	 * @return success
 	 */
-	private void stitchSides() {
-		if (!isStitchable(this)) {
-			return;
+	private boolean merge() {
+		boolean success = clearChildren();
+		if (success) {
+			World.getInstance().getMarble().landscapeChanged(this);
+			World.getInstance().getLandmarks().landscapeChanged(this);
+			World.getInstance().getFeatureSets().landscapeChanged(this);
 		}
-		QuadTree qt = null;
-		qt = getNeighbor(Side.Left, level, quadrant);
-		if (isStitchable(qt) && (qt.level == level)) {
-			qt.stitch(Side.Right, this);
-			leftDirty = false;
-		}
-		qt = getNeighbor(Side.Top, level, quadrant);
-		if (isStitchable(qt) && (qt.level == level)) {
-			qt.stitch(Side.Bottom, this);
-			topDirty = false;
-		}
-		qt = getNeighbor(Side.Right, level, quadrant);
-		if (isStitchable(qt) && (qt.level == level)) {
-			qt.stitch(Side.Left, this);
-			rightDirty = false;
-		}
-		qt = getNeighbor(Side.Bottom, level, quadrant);
-		if (isStitchable(qt) && (qt.level == level)) {
-			qt.stitch(Side.Top, this);
-			bottomDirty = false;
-		}
-	}
-
-	private boolean isStitchable(QuadTree qt) {
-		if (qt == null) {
-			return (false);
-		}
-		if (qt.mesh == null) {
-			return (false);
-		}
-		if (qt.mesh.isEmpty()) {
-			return (false);
-		}
-		return (true);
-	}
-
-	private void merge() {
-		clearChildren();
-		World.getInstance().getMarble().landscapeChanged(this);
-		World.getInstance().getLandmarks().landscapeChanged(this);
-		World.getInstance().getFeatureSets().landscapeChanged(this);
+		return(success);
 	}
 
 	/**
@@ -493,6 +478,13 @@ public class QuadTree extends Node {
 		}
 		if (camLoc.distance(centerPoint) < minDist)
 			closest.set(centerPoint);
+		for (int i=0; i<tPoint.length; ++i) {
+			double d = camLoc.distance(tPoint[i]);
+			if (d < minDist) {
+				minDist = d;
+				closest.set(tPoint[i]);
+			}
+		}
 
 		// get the pixel size at the closest point
 		double pixSize = camera.getPixelSizeAt(closest, true);
@@ -509,8 +501,8 @@ public class QuadTree extends Node {
 		if ((pixSize >= pixelWidth) || isCulled) {
 			// only merge if we have split
 			if (child != null) {
-				merge();
-				changed = true;
+				changed = merge();
+//				System.err.println("QuadTree.update merge "+getName()+" "+changed);
 			}
 		}
 
@@ -519,8 +511,8 @@ public class QuadTree extends Node {
 		else if (pixSize <= pixelWidth / 2) {
 			// only split if we haven't already
 			if (child == null) {
-				split();
-				changed = true;
+				changed = split();
+//				System.err.println("QuadTree.update split "+getName()+" "+changed);
 			} else {
 				for (int i = 0; i < child.length; ++i) {
 					changed |= child[i].update(camera);
@@ -536,98 +528,65 @@ public class QuadTree extends Node {
 		}
 		return(changed);
 	}
-
-	private final QuadTree getNeighbor(Side side) {
-		switch (side) {
-		case Left:
-			return (left);
-		case Top:
-			return (top);
-		case Right:
-			return (right);
-		case Bottom:
-			return (bottom);
-		}
-		throw new IllegalStateException("Unknown side " + side);
-	}
-
+	
 	/**
-	 * Given the side, level, and quadrant, get the neighboring QuadTree.
-	 * 
+	 * Get all of the neighbors that are adjacent on the given side.
 	 * @param side
-	 *            side
-	 * @param l
-	 *            level
-	 * @param q
-	 *            quadrant
-	 * @return
+	 * @param neighbor
+	 * @param qKey
+	 * @param neighborList
 	 */
-	private QuadTree getNeighbor(Side side, int l, int q) {
-		// get sibling
-		QuadTree n = getNeighbor(side);
-		// no sibling on that side, get parent's sibling
-		if (n == null) {
-			Node p = getParent();
-			if (!(p instanceof QuadTree)) {
-				return (null);
-			}
-			n = ((QuadTree) p).getNeighbor(side, l, quadrant);
+	private void getNeighbors(Side side, QuadTree neighbor, QuadKey qKey, ArrayList<QuadTree> neighborList) {
+		
+		// At the bottom of the tree, add the neighbor to the list
+		if (neighbor.child == null) {
+			neighborList.add(neighbor);
 		}
-		if (n == null) {
-			return (n);
-		}
-		if (n.level == l) {
-			return (n);
-		}
-		if (n.level < l) { // lower res, see if any children are higher level
-			if (n.child == null) {
-				return (n);
-			} else { // look at the quadrant passed in to determine the child of
-						// n
-				switch (side) {
-				case Left:
-					if (q == 0) {
-						return (n.child[1]);
-					} else if (q == 2) {
-						return (n.child[3]);
-					} else {
-						throw new IllegalStateException("Quadrant = " + q + " for left");
-					}
-				case Top:
-					if (q == 0) {
-						return (n.child[2]);
-					} else if (q == 1) {
-						return (n.child[3]);
-					} else {
-						throw new IllegalStateException("Quadrant = " + q + " for top");
-					}
-				case Right:
-					if (q == 1) {
-						return (n.child[0]);
-					} else if (q == 3) {
-						return (n.child[2]);
-					} else {
-						throw new IllegalStateException("Quadrant = " + q + " for right");
-					}
-				case Bottom:
-					if (q == 2) {
-						return (n.child[0]);
-					} else if (q == 3) {
-						return (n.child[1]);
-					} else {
-						throw new IllegalStateException("Quadrant = " + q + " for bottom");
-					}
-				}
+		// The neighbor is a higher or same resolution than this.
+		// Search its children.
+		else if (neighbor.quadKey.getLevel() >= qKey.getLevel()) {
+			switch (side) {
+			case Left:
+				getNeighbors(side, neighbor.child[1], qKey, neighborList);
+				getNeighbors(side, neighbor.child[3], qKey, neighborList);
+				break;
+			case Right:
+				getNeighbors(side, neighbor.child[0], qKey, neighborList);
+				getNeighbors(side, neighbor.child[2], qKey, neighborList);
+				break;
+			case Bottom:
+				getNeighbors(side, neighbor.child[0], qKey, neighborList);
+				getNeighbors(side, neighbor.child[1], qKey, neighborList);
+				break;
+			case Top:
+				getNeighbors(side, neighbor.child[2], qKey, neighborList);
+				getNeighbors(side, neighbor.child[3], qKey, neighborList);
+				break;
 			}
 		}
-		throw new IllegalStateException("Level " + n.level + " is higher than " + l);
+		// The neighbor has a lower resolution that this. Determine which child we are next to.
+		// Search that child.
+		else {
+			int q = qKey.getPath(neighbor.quadKey.getLevel());
+			switch (side) {
+			case Left:
+			case Right:
+				q = adjQuadHort[q-1];
+				getNeighbors(side, neighbor.child[q-1], qKey, neighborList);
+				break;
+			case Bottom:
+			case Top:
+				q = adjQuadVert[q-1];
+				getNeighbors(side, neighbor.child[q-1], qKey, neighborList);
+				break;
+			}
+		}
 	}
 
 	/**
 	 * Dispose of any resources
 	 */
 	public void dispose() {
-//		System.err.println("QuadTree.dispose "+getName());
 		inUse = false;
 		if (mesh != null)
 			mesh.dispose();
@@ -659,7 +618,7 @@ public class QuadTree extends Node {
 	 * @param y
 	 * @return NaN if outside this QuadTree
 	 */
-	public synchronized float getElevation(double x, double y) {
+	public float getElevation(double x, double y) {
 		if (child != null) {
 			for (int i = 0; i < child.length; ++i) {
 				if (child[i].contains(x, y)) {
@@ -667,7 +626,7 @@ public class QuadTree extends Node {
 				}
 			}
 		} else {
-			return (mesh.getElevationBilinear(x - cornerPoint[0].getX(), y - cornerPoint[0].getY()));
+			return (getMesh().getElevationBilinear(x - cornerPoint[0].getX(), y - cornerPoint[0].getY()));
 		}
 		return (Float.NaN);
 	}
@@ -679,7 +638,7 @@ public class QuadTree extends Node {
 	 * @param y
 	 * @return NaN, if outside this QuadTree
 	 */
-	public synchronized float getElevationNearestNeighbor(double x, double y) {
+	public float getElevationNearestNeighbor(double x, double y) {
 		if (child != null) {
 			for (int i = 0; i < child.length; ++i) {
 				if (child[i].contains(x, y)) {
@@ -700,7 +659,7 @@ public class QuadTree extends Node {
 	 * @param store
 	 * @return
 	 */
-	public synchronized boolean getNormal(double x, double y, Vector3 store) {
+	public boolean getNormal(double x, double y, Vector3 store) {
 		if (child != null) {
 			for (int i = 0; i < child.length; ++i) {
 				if (child[i].contains(x, y)) {
@@ -708,176 +667,45 @@ public class QuadTree extends Node {
 				}
 			}
 		} else {
-			return (mesh.getNormal((int) Math.floor((x - cornerPoint[0].getX()) / pixelWidth),
-					mesh.getTileLength()-(int)Math.floor((y - cornerPoint[0].getY()) / pixelLength), store));
+			return (getMesh().getNormal((int) Math.floor((x - cornerPoint[0].getX()) / pixelWidth),
+					getMesh().getTileLength()-(int)Math.floor((y - cornerPoint[0].getY()) / pixelLength), store));
 		}
 		return (false);
 	}
 
-	private void fillEdge(Side side, QuadTree that, double[] e) {
-		if (mesh == null) {
-			return;
-		}
-		int ib = (int) e[0];
-		int ie = (int) e[1];
-		if (ie == 0) {
-			System.err.println("QuadTreeMesh.fillEdge fill count = 0 for " + getName());
-			return;
-		}
-		int tileWidth = mesh.getTileWidth();
-		int tileLength = mesh.getTileLength();
-		int tWidth = tileWidth + 1;
-		int tLength = tileLength + 1;
-		int nw = tileWidth / ie;
-		int nh = tileLength / ie;
-		int i = ib;
-		float ww = 1.0f / nw;
-		float wh = 1.0f / nh;
-		float[] dataEdge;
-		Vector3[] dataNrml;
-		switch (side) {
-		case Left:
-			dataEdge = that.mesh.getEdge(2);
-			dataNrml = mesh.getNrml(0);
-			for (int j = 0; j < tLength; j += nh) {
-				mesh.setElevation(0, j, dataEdge[i]);
-				that.mesh.setNormal(tileWidth, i, dataNrml[j]);
-				i++;
-			}
-			for (int j = 0; j < tileLength; j += nh) {
-				float el0 = mesh.getElevation(0, j);
-				mesh.getNormal(0, j, n0);
-				float el1 = mesh.getElevation(0, j + nh) - el0;
-				mesh.getNormal(0, j + nh, n1);
-				for (int k = 1; k < nh; ++k) {
-					float el = el0 + k * wh * el1;
-					interpolateNormal(n0, n1, n2, k * wh);
-					mesh.setElevation(0, j + k, el);
-					mesh.setNormal(0, j + k, n2);
-				}
-			}
-			break;
-		case Top:
-			dataEdge = that.mesh.getEdge(3);
-			dataNrml = mesh.getNrml(1);
-			for (int j = 0; j < tWidth; j += nw) {
-				mesh.setElevation(j, 0, dataEdge[i]);
-				that.mesh.setNormal(i, tileLength, dataNrml[j]);
-				i++;
-			}
-			for (int j = 0; j < tileWidth; j += nw) {
-				float el0 = mesh.getElevation(j, 0);
-				mesh.getNormal(j, 0, n0);
-				float el1 = mesh.getElevation(j + nw, 0) - el0;
-				mesh.getNormal(j + nw, 0, n1);
-				for (int k = 1; k < nw; ++k) {
-					float el = el0 + k * ww * el1;
-					interpolateNormal(n0, n1, n2, k * ww);
-					mesh.setElevation(j + k, 0, el);
-					mesh.setNormal(j + k, 0, n2);
-				}
-			}
-			break;
-		case Right:
-			dataEdge = that.mesh.getEdge(0);
-			dataNrml = that.mesh.getNrml(0);
-			for (int j = 0; j < tLength; j += nh) {
-				mesh.setElevation(tileWidth, j, dataEdge[i]);
-				mesh.setNormal(tileWidth, j, dataNrml[i]);
-				i++;
-			}
-			for (int j = 0; j < tileLength; j += nh) {
-				float el0 = mesh.getElevation(tileWidth, j);
-				mesh.getNormal(tileWidth, j, n0);
-				float el1 = mesh.getElevation(tileWidth, j + nh) - el0;
-				mesh.getNormal(tileWidth, j + nh, n1);
-				for (int k = 1; k < nh; ++k) {
-					float el = el0 + k * wh * el1;
-					interpolateNormal(n0, n1, n2, k * wh);
-					mesh.setElevation(tileWidth, j + k, el);
-					mesh.setNormal(tileWidth, j + k, n2);
-				}
-			}
-			break;
-		case Bottom:
-			dataEdge = that.mesh.getEdge(1);
-			dataNrml = that.mesh.getNrml(1);
-			for (int j = 0; j < tWidth; j += nw) {
-				mesh.setElevation(j, tileLength, dataEdge[i]);
-				mesh.setNormal(j, tileLength, dataNrml[i]);
-				i++;
-			}
-			for (int j = 0; j < tileWidth; j += nw) {
-				float el0 = mesh.getElevation(j, tileLength);
-				mesh.getNormal(j, tileLength, n0);
-				float el1 = mesh.getElevation(j + nw, tileLength) - el0;
-				mesh.getNormal(j + nw, tileLength, n1);
-				for (int k = 1; k < nw; ++k) {
-					float el = el0 + k * ww * el1;
-					interpolateNormal(n0, n1, n2, k * ww);
-					mesh.setElevation(j + k, tileLength, el);
-					mesh.setNormal(j + k, tileLength, n2);
-				}
-			}
-			break;
-		}
-	}
-
-	private void interpolateNormal(Vector3 n0, Vector3 n1, Vector3 result, float weight) {
-		result.set(n0);
-		result.subtractLocal(n1);
-		result.multiplyLocal(weight);
-		result.addLocal(n1);
-	}
-
-	private double[] findStitchEnds(QuadTree qt0, Side side, QuadTree qt1) {
-		QuadTree qt = qt0;
+	/**
+	 * Find the ends of the pixels that must be stitched between two adjacent QuadTrees.
+	 * @param side
+	 * @param that
+	 * @return
+	 */
+	private int[] findStitchEnds(Side side, QuadTree that) {
 		int tileWidth = mesh.getTileWidth();
 		int tileLength = mesh.getTileLength();
 
-		// pixel step
-		double n = Math.pow(2, qt.level - qt1.level);
 		// start point
-		double j = 0;
+		int j = 0;
 		// end point
-		double k = 0;
+		int k = 0;
 		switch (side) {
 		case Left:
 		case Right:
-			k = tileLength / n;
+			j = quadKey.findYAtLevel(0, that.quadKey.getLevel(), tileLength);
+			k = quadKey.findYAtLevel(tileLength, that.quadKey.getLevel(), tileLength);
 			break;
 		case Top:
 		case Bottom:
-			k = tileWidth / n;
+			j = quadKey.findXAtLevel(0, that.quadKey.getLevel(), tileWidth);
+			k = quadKey.findXAtLevel(tileWidth, that.quadKey.getLevel(), tileWidth);
 			break;
 		}
-		while (qt.level > qt1.level) {
-			n = Math.pow(2, qt.level - qt1.level);
-			switch (side) {
-			case Left:
-				if (qt.quadrant == 2) {
-					j += tileLength / n;
-				}
-				break;
-			case Top:
-				if (qt.quadrant == 1) {
-					j += tileWidth / n;
-				}
-				break;
-			case Right:
-				if (qt.quadrant == 3) {
-					j += tileLength / n;
-				}
-				break;
-			case Bottom:
-				if (qt.quadrant == 3) {
-					j += tileWidth / n;
-				}
-				break;
-			}
-			qt = (QuadTree) qt.getParent();
-		}
-		return (new double[] { j, k });
+		return (new int[] { j, k });
+	}
+	
+	
+	@Override
+	public String toString() {
+		return(getName());
 	}
 
 }
