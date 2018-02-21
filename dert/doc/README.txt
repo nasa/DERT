@@ -1,20 +1,17 @@
 DERT
 Desktop Exploration of Remote Terrain
-2017
+2018
 
 
 SYSTEM REQUIREMENTS:
 
-DERT requires 64-bit Java 1.7 or later. However, all releases have been built with the Java 1.8 JDK
-so the Java 1.8 JRE is required. Rebuild DERT to use an earlier JRE.
-Mac OS X 10.11.6 and Red Hat Linux 6 have been tested successfully.
-
+DERT requires 64-bit Java 1.8 or later and at least 2 GB of RAM.
 A 3-button mouse is recommended.
 
 
 INSTALLATION:
 
-Install DERT by unzipping the zip file and placing the resulting directory in your desired location.
+Install DERT by unzipping the zip file and placing the resulting directory at your desired location.
 The directory may be placed anywhere but should remain intact. Do not move or rearrange any files.
 DERT may be installed in a central location for multiple users. 
 Put the dert directory in the user's path. The path to dert should not contain any spaces.
@@ -113,7 +110,7 @@ Copyright © 2002-2004 LWJGL Project All rights reserved.
 Tile Rendering Library - Brain Paul 
 Copyright © 1997-2005 Brian Paul. All Rights Reserved.
  
-OpenKODE, EGL, OpenGL , OpenGL ES1 & ES2
+OpenKODE, EGL, OpenGL, OpenGL ES1 & ES2
 Copyright © 2007-2010 The Khronos Group Inc.
  
 Cg
@@ -147,6 +144,9 @@ Copyright © 1991-1997 Silicon Graphics, Inc.
  
 PROJ.4
 Copyright © 2000, Frank Warmerdam
+
+LibJPEG - Independent JPEG Group
+Copyright © 1991-2018, Thomas G. Lane, Guido Vollbeding
  
 
 Disclaimers

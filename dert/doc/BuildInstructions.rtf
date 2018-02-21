@@ -1,6 +1,7 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf470
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
 \margl1440\margr1440\vieww10800\viewh8400\viewkind0
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
@@ -16,16 +17,17 @@ DERT is built in three steps: first the native C libraries, second for external 
 \
 DERT uses a couple of well known libraries for handling TIFF files and projections (libtiff and proj.4). These libraries are written in C and are wrapped with JNI to make them accessible to Java. Wrapping creates a shared object file (.jnilib for Mac, and .so for Linux). These files are included in the source release.  If you need to rebuild them do the following:\
 \
-If you don't have libtiff and proj.4 (libproj) installed on your system, you can download them from these sites:\
+If you don't have libtiff, libjpeg, and proj.4 (libproj) installed on your system, you can download them from these sites:\
 \
-http://download.osgeo.org/libtiff/\
-https://trac.osgeo.org/proj/\
+http://libtiff.org\
+http://www.ijg.org\
+http://proj4.org\
 \
-You will need to build both libraries.\
+Build the libraries.  The TIFF library requires the JPEG library for JPEG compression. See the section on building the software distribution at libtiff.org.\
 \
 Change directory to dert/libgeo.\
 \
-Edit Makefile to set the location of the libtiff.a, libproj.a, and the include files for both.\
+Edit Makefile to set the location of the libtiff.a, libjpeg.a, libproj.a, and the include files for both.\
 \
 Edit Makefile to change to the setup for your platform.\
 \

@@ -56,5 +56,5 @@ Proj4JNI.o: Proj4JNI.c Proj4JNI.h
 
 $(LIBGEO): GTIFJNI.o Proj4JNI.o
 	rm -f $@
-	$(GCC) $(LFLAGS) GTIFJNI.o Proj4JNI.o $(LIBDIR)/libtiff.a $(LIBDIR)/libproj.a -o $(LIBGEO) $(LIBS) -fPIC
+	$(GCC) $(LFLAGS) GTIFJNI.o Proj4JNI.o $(LIBDIR)/libtiff.a $(LIBDIR)/libjpeg.a $(LIBDIR)/libproj.a -o $(LIBGEO) $(LIBS) -fPIC
 	@echo "$@ build is complete"

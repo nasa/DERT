@@ -66,6 +66,9 @@ Copyright © 1991-1997 Silicon Graphics, Inc.
  
 PROJ.4
 Copyright © 2000, Frank Warmerdam
+
+LibJPEG - Independent JPEG Group
+Copyright © 1991-2018, Thomas G. Lane, Guido Vollbeding
  
 
 Disclaimers
