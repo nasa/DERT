@@ -1,10 +1,10 @@
 package gov.nasa.arc.dert.render;
 
-import gov.nasa.arc.dert.landscape.FieldCameraLayer;
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.terrain.Layer;
-import gov.nasa.arc.dert.terrain.QuadTreeMesh;
-import gov.nasa.arc.dert.terrain.LayerInfo.LayerType;
+import gov.nasa.arc.dert.landscape.layer.FieldCameraLayer;
+import gov.nasa.arc.dert.landscape.layer.Layer;
+import gov.nasa.arc.dert.landscape.layer.LayerInfo.LayerType;
+import gov.nasa.arc.dert.landscape.quadtree.QuadTreeMesh;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

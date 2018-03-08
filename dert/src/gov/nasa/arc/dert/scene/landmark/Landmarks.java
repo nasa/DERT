@@ -3,6 +3,7 @@ package gov.nasa.arc.dert.scene.landmark;
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.io.CsvWriter;
 import gov.nasa.arc.dert.landscape.Landscape;
+import gov.nasa.arc.dert.landscape.quadtree.QuadTree;
 import gov.nasa.arc.dert.scene.Marble;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
@@ -10,7 +11,6 @@ import gov.nasa.arc.dert.state.FigureState;
 import gov.nasa.arc.dert.state.ImageBoardState;
 import gov.nasa.arc.dert.state.LandmarkState;
 import gov.nasa.arc.dert.state.PlacemarkState;
-import gov.nasa.arc.dert.terrain.QuadTree;
 import gov.nasa.arc.dert.view.Console;
 
 import java.text.DecimalFormat;

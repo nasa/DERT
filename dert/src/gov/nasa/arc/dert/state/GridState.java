@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.state;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.tool.CartesianGrid;
 import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.scene.tool.RadialGrid;
@@ -38,7 +39,7 @@ public class GridState extends ToolState {
 	 * @return
 	 */
 	public static GridState createCartesianGridState(ReadOnlyVector3 position) {
-		GridState state = new GridState(MapElementState.Type.CartesianGrid, "CartesianGrid", CartesianGrid.defaultCellSize,
+		GridState state = new GridState(MapElementState.Type.CartesianGrid, "CartesianGrid", Landscape.defaultCellSize,
 			CartesianGrid.defaultColor, CartesianGrid.defaultLabelVisible, position,
 			CartesianGrid.defaultLineWidth);
 		state.columns = CartesianGrid.defaultColumns;
@@ -53,7 +54,7 @@ public class GridState extends ToolState {
 	 * @return
 	 */
 	public static GridState createRadialGridState(ReadOnlyVector3 position) {
-		GridState state = new GridState(MapElementState.Type.RadialGrid, "RadialGrid", RadialGrid.defaultCellSize,
+		GridState state = new GridState(MapElementState.Type.RadialGrid, "RadialGrid", Landscape.defaultCellSize,
 			RadialGrid.defaultColor, RadialGrid.defaultLabelVisible, position,
 			RadialGrid.defaultLineWidth);
 		state.rings = RadialGrid.defaultRings;

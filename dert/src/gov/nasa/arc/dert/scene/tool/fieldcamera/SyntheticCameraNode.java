@@ -1,12 +1,12 @@
 package gov.nasa.arc.dert.scene.tool.fieldcamera;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scenegraph.HiddenLine;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.view.fieldcamera.SimpleCrosshair;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.awt.Color;
 import java.util.concurrent.atomic.AtomicBoolean;

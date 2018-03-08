@@ -27,7 +27,6 @@ public class RadialGrid extends Grid {
 	public static Color defaultColor = Color.white;
 	public static int defaultRings = 5;
 	public static boolean defaultLabelVisible = false;
-	public static double defaultCellSize = 1;
 	public static boolean defaultActualCoordinates = false;
 	public static boolean defaultCompassRose = false;
 	public static float defaultLineWidth = 2;

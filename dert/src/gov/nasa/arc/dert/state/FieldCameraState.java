@@ -97,7 +97,7 @@ public class FieldCameraState extends ToolState {
 	public void dispose() {
 		if (mapElement != null) {
 			FieldCamera fieldCamera = (FieldCamera) mapElement;
-			Landscape.getInstance().removeFieldCamera(fieldCamera);
+			Landscape.getInstance().removeFieldCamera(fieldCamera.getName());
 		}
 		super.dispose();
 	}

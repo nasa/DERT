@@ -5,7 +5,7 @@
 	<classpathentry kind="lib" path="lib/spice.jar" sourcepath="libspice/spice_src.jar"/>
 	<classpathentry kind="lib" path="lib/ardor3d-animation-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/ardor3d-awt-1.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/ardor3d-core-1.0-SNAPSHOT.jar" sourcepath="/Volumes/GDrive/DERT/git/dert/source/ardor3d-core-1.0-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="lib/ardor3d-core-1.0-SNAPSHOT.jar" sourcepath="source/ardor3d-core-1.0-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="lib" path="lib/ardor3d-effects-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/ardor3d-extras-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/ardor3d-jogl-1.0-SNAPSHOT.jar" sourcepath="source/ardor3d-jogl-1.0-SNAPSHOT-sources.jar"/>

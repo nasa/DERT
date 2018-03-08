@@ -1,6 +1,6 @@
 package gov.nasa.arc.dert.scenegraph.text;
 
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
+import gov.nasa.arc.dert.camera.BasicCamera;
 
 import com.ardor3d.math.Matrix3;
 import com.ardor3d.math.Vector3;

@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.lighting;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.render.ShadowEffects;
 import gov.nasa.arc.dert.render.ShadowMap;
@@ -7,7 +8,6 @@ import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.util.StateUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.TimeUtil;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -331,8 +331,8 @@ public class Lighting {
 		if (shadowMap == null) {
 			Landscape landscape = Landscape.getInstance();
 			Vector3 smCenter = new Vector3(getRefLoc());
-			Landscape.getInstance().sphericalToLocalCoordinate(smCenter);
-			shadowMap = new ShadowMap(Landscape.getInstance().getCenter(), landscape.getWorldBound().getRadius(), World.getInstance()
+			landscape.sphericalToLocalCoordinate(smCenter);
+			shadowMap = new ShadowMap(landscape.getCenter(), landscape.getWorldBound().getRadius(), World.getInstance()
 				.getContents(), World.getInstance().getContents());
 			shadowMap.setPolygonOffsetFactor(2);
 			shadowMap.setPolygonOffsetUnits(2);

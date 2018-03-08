@@ -2,6 +2,7 @@ package gov.nasa.arc.dert.viewpoint;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.edit.CoordListener;
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;

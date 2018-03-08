@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.render;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.scene.World;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import com.ardor3d.image.Texture.DepthTextureCompareFunc;
 import com.ardor3d.renderer.Camera;

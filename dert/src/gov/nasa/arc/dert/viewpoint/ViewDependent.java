@@ -1,5 +1,7 @@
 package gov.nasa.arc.dert.viewpoint;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
+
 /**
  * Tags objects that need to be updated when the worldview viewpoint changes.
  *

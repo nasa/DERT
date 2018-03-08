@@ -1,6 +1,6 @@
 package gov.nasa.arc.dert.raster;
 
-import gov.nasa.arc.dert.raster.RasterFile.DataType;
+import gov.nasa.arc.dert.landscape.io.QuadTreeTile.DataType;
 import gov.nasa.arc.dert.util.MathUtil;
 
 import java.io.IOException;

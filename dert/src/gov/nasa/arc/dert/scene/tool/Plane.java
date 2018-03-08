@@ -1,7 +1,9 @@
 package gov.nasa.arc.dert.scene.tool;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
+import gov.nasa.arc.dert.landscape.quadtree.QuadTree;
 import gov.nasa.arc.dert.scenegraph.BillboardMarker;
 import gov.nasa.arc.dert.scenegraph.HiddenLine;
 import gov.nasa.arc.dert.scenegraph.Marker;
@@ -10,7 +12,6 @@ import gov.nasa.arc.dert.scenegraph.Movable;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
 import gov.nasa.arc.dert.state.PlaneState;
-import gov.nasa.arc.dert.terrain.QuadTree;
 import gov.nasa.arc.dert.util.ImageUtil;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.SpatialUtil;
@@ -18,7 +19,6 @@ import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.UIUtil;
 import gov.nasa.arc.dert.view.mapelement.PlanePanel;
 import gov.nasa.arc.dert.view.world.GroundEdit;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
 import java.awt.Color;

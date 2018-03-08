@@ -3,6 +3,7 @@ package gov.nasa.arc.dert.view.viewpoint;
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.ButtonAction;
 import gov.nasa.arc.dert.action.edit.CoordAction;
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.state.ViewpointState;
 import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DoubleArrayTextField;
@@ -10,7 +11,6 @@ import gov.nasa.arc.dert.ui.DoubleTextField;
 import gov.nasa.arc.dert.ui.FieldPanel;
 import gov.nasa.arc.dert.ui.OptionDialog;
 import gov.nasa.arc.dert.ui.Vector3TextField;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
 import gov.nasa.arc.dert.viewpoint.ViewpointStore;
 

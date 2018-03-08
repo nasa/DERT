@@ -1,13 +1,13 @@
 package gov.nasa.arc.dert.view.world;
 
 import gov.nasa.arc.dert.action.edit.CoordAction;
+import gov.nasa.arc.dert.camera.AnaglyphCamera;
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.lighting.Lighting;
 import gov.nasa.arc.dert.render.BasicScene;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.state.WorldState;
-import gov.nasa.arc.dert.viewpoint.AnaglyphCamera;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 import gov.nasa.arc.dert.viewpoint.Viewpoint;
 

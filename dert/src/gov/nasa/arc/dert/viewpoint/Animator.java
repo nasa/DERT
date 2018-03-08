@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.viewpoint;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.render.SceneFramework;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.view.viewpoint.AnimationPanel;
@@ -15,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.Timer;
 
 import com.ardor3d.math.Vector3;
+import com.ardor3d.renderer.Camera;
 
 /**
  * Controls the ViewpointNode with input from the InputHandler.
@@ -172,7 +174,7 @@ public class Animator {
 
 		// create a list of viewpoints from the curve
 		Vector<ViewpointStore> vpList = new Vector<ViewpointStore>();
-		BasicCamera cam = new BasicCamera((BasicCamera)viewpoint.getCamera());
+		BasicCamera cam = new BasicCamera((Camera)viewpoint.getCamera());
 		Vector3 loc = null;
 		Vector3 look = null;
 		ViewpointStore vps = null;

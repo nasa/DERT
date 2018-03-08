@@ -1,9 +1,9 @@
 package gov.nasa.arc.dert.scene.tool.fieldcamera;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.UIUtil;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.awt.Color;
 import java.nio.FloatBuffer;

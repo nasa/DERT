@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.scene.tool;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.scene.MapElement;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import javax.swing.Icon;
 

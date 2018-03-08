@@ -1,9 +1,9 @@
 package gov.nasa.arc.dert.render;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.util.ImageUtil;
 import gov.nasa.arc.dert.util.SpatialUtil;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

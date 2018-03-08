@@ -1,20 +1,20 @@
 package gov.nasa.arc.dert.scene.featureset;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.io.geojson.GeojsonLoader;
 import gov.nasa.arc.dert.io.geojson.json.GeoJsonObject;
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.raster.SpatialReferenceSystem;
+import gov.nasa.arc.dert.landscape.quadtree.QuadTree;
+import gov.nasa.arc.dert.landscape.srs.SpatialReferenceSystem;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.state.FeatureSetState;
 import gov.nasa.arc.dert.state.MapElementState;
 import gov.nasa.arc.dert.state.MapElementState.Type;
-import gov.nasa.arc.dert.terrain.QuadTree;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.world.GroundEdit;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
 import java.awt.Color;

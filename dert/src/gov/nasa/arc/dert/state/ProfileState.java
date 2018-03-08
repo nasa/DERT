@@ -36,8 +36,7 @@ public class ProfileState extends ToolState {
 	 * @param position
 	 */
 	public ProfileState(ReadOnlyVector3 position) {
-		super(ConfigurationManager.getInstance().getCurrentConfiguration()
-			.incrementMapElementCount(MapElementState.Type.Profile), MapElementState.Type.Profile, "Profile",
+		super(ConfigurationManager.getInstance().getCurrentConfiguration().incrementMapElementCount(MapElementState.Type.Profile), MapElementState.Type.Profile, "Profile",
 			Profile.defaultSize, Profile.defaultColor, Profile.defaultLabelVisible);
 		viewData = new ViewData(ViewData.DEFAULT_WINDOW_WIDTH, 300, false);
 		viewData.setVisible(true);

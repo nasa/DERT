@@ -1,6 +1,6 @@
 package gov.nasa.arc.dert.render;
 
-import gov.nasa.arc.dert.terrain.QuadTreeMesh;
+import gov.nasa.arc.dert.landscape.quadtree.QuadTreeMesh;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.SpatialPickResults;
 

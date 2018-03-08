@@ -77,7 +77,7 @@ public class CartesianGridPanel extends MapElementBasePanel {
 		});
 
 		compList.add(new JLabel("Cell Size", SwingConstants.RIGHT));
-		sizeText = new DoubleTextField(8, CartesianGrid.defaultCellSize, true, Landscape.format) {
+		sizeText = new DoubleTextField(8, Landscape.defaultCellSize, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
 				if (Double.isNaN(value)) {

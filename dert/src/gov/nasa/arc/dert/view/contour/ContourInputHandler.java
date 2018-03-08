@@ -1,8 +1,8 @@
 package gov.nasa.arc.dert.view.contour;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.render.SceneCanvas;
 import gov.nasa.arc.dert.view.InputManager;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
 
 import java.awt.Cursor;

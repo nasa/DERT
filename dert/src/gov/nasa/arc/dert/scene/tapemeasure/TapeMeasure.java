@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.scene.tapemeasure;
 
 import gov.nasa.arc.dert.action.edit.CoordListener;
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
@@ -10,7 +11,6 @@ import gov.nasa.arc.dert.ui.TextDialog;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.util.UIUtil;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.ViewDependent;
 
 import java.awt.Color;

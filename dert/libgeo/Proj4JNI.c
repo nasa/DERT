@@ -3,15 +3,15 @@
 #include "proj_config.h"
 #include "projects.h"
 
-// Header for class gov_nasa_arc_dert_raster_proj_Proj4
+// Header for class gov_nasa_arc_dert_proj_Proj4
 #include "Proj4JNI.h"
 
 	/*
-	 * Class:     gov_nasa_arc_dert_raster_proj_Proj4
+	 * Class:     gov_nasa_arc_dert_proj_Proj4
 	 * Method:    createProj4
 	 * Signature: (Ljava/lang/String;)J
 	 */
-	JNIEXPORT jlong JNICALL Java_gov_nasa_arc_dert_raster_proj_Proj4_createProj4
+	JNIEXPORT jlong JNICALL Java_gov_nasa_arc_dert_proj_Proj4_createProj4
 		(JNIEnv* env, jclass class, jstring str) {
     	const char* def = (*env)->GetStringUTFChars(env, str, NULL);
     	if ( !def )
@@ -22,11 +22,11 @@
 	}
 
 	/*
-	 * Class:     gov_nasa_arc_dert_raster_proj_Proj4
+	 * Class:     gov_nasa_arc_dert_proj_Proj4
 	 * Method:    destroyProj4
 	 * Signature: (J)V
 	 */
-	JNIEXPORT void JNICALL Java_gov_nasa_arc_dert_raster_proj_Proj4_destroyProj4
+	JNIEXPORT void JNICALL Java_gov_nasa_arc_dert_proj_Proj4_destroyProj4
 		(JNIEnv* env, jclass class, jlong handle) {
 		if ( !handle )
 			return;
@@ -35,11 +35,11 @@
 	}
 
 	/*
-	 * Class:     gov_nasa_arc_dert_raster_proj_Proj4
+	 * Class:     gov_nasa_arc_dert_proj_Proj4
 	 * Method:    transform
 	 * Signature: (JJJI[D[D[D)Ljava/lang/String;
 	 */
-	JNIEXPORT jstring JNICALL Java_gov_nasa_arc_dert_raster_proj_Proj4_transform
+	JNIEXPORT jstring JNICALL Java_gov_nasa_arc_dert_proj_Proj4_transform
 		(JNIEnv* env, jobject obj, jlong src, jlong dest, jlong pntCnt, jint offset, jdoubleArray xArray, jdoubleArray yArray, jdoubleArray zArray) {
 		jboolean isXCopy, isYCopy, isZCopy;
 		jstring errStr = NULL;
@@ -69,11 +69,11 @@
 	}
 	
 	/*
-	 * Class:     gov_nasa_arc_dert_raster_proj_Proj4
+	 * Class:     gov_nasa_arc_dert_proj_Proj4
 	 * Method:    setProjPath
 	 * Signature: (Ljava/lang/String;)V
 	 */
-	JNIEXPORT void JNICALL Java_gov_nasa_arc_dert_raster_proj_Proj4_setProjPath
+	JNIEXPORT void JNICALL Java_gov_nasa_arc_dert_proj_Proj4_setProjPath
 		(JNIEnv *env, jclass class, jstring str) {
     	const char* s = (*env)->GetStringUTFChars(env, str, NULL);
     	if ( !s )

@@ -65,7 +65,7 @@ public class RadialGridPanel extends MapElementBasePanel {
 		});
 		
 		compList.add(new JLabel("Gap Between Rings", SwingConstants.RIGHT));
-		sizeText = new DoubleTextField(8, RadialGrid.defaultCellSize, true, Landscape.format) {
+		sizeText = new DoubleTextField(8, Landscape.defaultCellSize, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
 				if (Double.isNaN(value)) {

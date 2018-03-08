@@ -1,6 +1,6 @@
 package gov.nasa.arc.dert.render;
 
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
+import gov.nasa.arc.dert.camera.BasicCamera;
 
 import java.nio.ByteBuffer;
 

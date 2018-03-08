@@ -1,5 +1,8 @@
 package gov.nasa.arc.dert.raster;
 
+import gov.nasa.arc.dert.landscape.io.QuadTreeTile.DataType;
+import gov.nasa.arc.dert.landscape.srs.ProjectionInfo;
+
 import java.io.IOException;
 
 /**
@@ -7,16 +10,6 @@ import java.io.IOException;
  *
  */
 public interface RasterFile {
-
-	/**
-	 * Designation of data type for raster file data.
-	 * 
-	 * @author lkeelyme
-	 *
-	 */
-	public static enum DataType {
-		Byte, UnsignedByte, Integer, UnsignedInteger, Short, UnsignedShort, Float, Double, Long, Unknown
-	}
 
 	/**
 	 * Open the raster file with read (r), write (w), or append (a) access.

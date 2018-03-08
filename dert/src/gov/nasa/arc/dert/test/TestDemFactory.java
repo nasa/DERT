@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.test;
 
-import gov.nasa.arc.dert.landscape.factory.LayerFactory;
-import gov.nasa.arc.dert.raster.ProjectionInfo;
+import gov.nasa.arc.dert.landscape.srs.ProjectionInfo;
+import gov.nasa.arc.dert.layerfactory.LayerFactory;
 import gov.nasa.arc.dert.raster.geotiff.GTIF;
 import gov.nasa.arc.dert.raster.geotiff.GeoKey;
 

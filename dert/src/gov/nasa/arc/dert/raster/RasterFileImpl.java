@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.raster;
 
+import gov.nasa.arc.dert.landscape.io.QuadTreeTile.DataType;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.StringUtil;
 

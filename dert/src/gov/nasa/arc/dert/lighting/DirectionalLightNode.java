@@ -1,8 +1,8 @@
 package gov.nasa.arc.dert.lighting;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.ephemeris.Ephemeris;
 import gov.nasa.arc.dert.util.MathUtil;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import com.ardor3d.light.DirectionalLight;
 import com.ardor3d.light.Light;

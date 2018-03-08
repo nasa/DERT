@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.state;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.tool.ScaleBar;
 import gov.nasa.arc.dert.util.StateUtil;
 
@@ -41,9 +42,9 @@ public class ScaleBarState extends ToolState {
 	 */
 	public ScaleBarState(ReadOnlyVector3 position) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration().incrementMapElementCount(MapElementState.Type.Scale), MapElementState.Type.Scale, "Scale",
-			ScaleBar.defaultCellSize, ScaleBar.defaultColor, ScaleBar.defaultLabelVisible);
+			Landscape.defaultCellSize/10, ScaleBar.defaultColor, ScaleBar.defaultLabelVisible);
 		location = new Vector3(position);
-		this.radius = ScaleBar.defaultRadius;
+		this.radius = Landscape.defaultCellSize/100;
 		this.cellCount = ScaleBar.defaultCellCount;
 		this.autoLabel = ScaleBar.defaultAutoLabel;
 		azimuth = ScaleBar.defaultAzimuth;

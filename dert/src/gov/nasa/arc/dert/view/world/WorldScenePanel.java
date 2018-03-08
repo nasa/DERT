@@ -1,15 +1,16 @@
 package gov.nasa.arc.dert.view.world;
 
+import gov.nasa.arc.dert.camera.AnaglyphCamera;
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.render.SceneCanvasPanel;
 import gov.nasa.arc.dert.state.State;
 import gov.nasa.arc.dert.state.WorldState;
-import gov.nasa.arc.dert.viewpoint.AnaglyphCamera;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 import gov.nasa.arc.dert.viewpoint.Viewpoint;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
 
 import java.awt.Dimension;
 
+import com.ardor3d.renderer.Camera;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.util.ReadOnlyTimer;
 
@@ -52,7 +53,7 @@ public class WorldScenePanel extends SceneCanvasPanel {
 		super.setState(state);
 		WorldState wState = (WorldState) state;
 		worldScene.setState(wState);
-		canvasRenderer.setCamera(worldScene.getCamera());
+		canvasRenderer.setCamera((Camera)worldScene.getCamera());
 		controller.setViewpointNode(worldScene.getViewpoint());
 		Dimension size = canvas.getSize();
 		inputManager.setComponentSize(size.width, size.height);
@@ -104,17 +105,17 @@ public class WorldScenePanel extends SceneCanvasPanel {
 		BasicCamera bc = viewpoint.getCamera();
 		if (stereo) {
 			if (!(bc instanceof AnaglyphCamera)) {
-				bc = new AnaglyphCamera(bc);
+				bc = new AnaglyphCamera((Camera)bc);
 				viewpoint.setCamera(bc);
-				canvasRenderer.setCamera(bc);
+				canvasRenderer.setCamera((Camera)bc);
 			}
 			((AnaglyphCamera) bc).setFocalDistance(focalDistance);
 			((AnaglyphCamera) bc).setEyeSeparation(eyeSeparation);
 		} else {
 			if (bc instanceof AnaglyphCamera) {
-				bc = new BasicCamera(bc);
+				bc = new BasicCamera((Camera)bc);
 				viewpoint.setCamera(bc);
-				canvasRenderer.setCamera(bc);
+				canvasRenderer.setCamera((Camera)bc);
 			}
 		}
 		worldScene.sceneChanged.set(true);

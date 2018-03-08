@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
+import com.ardor3d.renderer.Camera;
 import com.ardor3d.util.ReadOnlyTimer;
 
 /**
@@ -97,7 +98,7 @@ public class ContourScenePanel extends SceneCanvasPanel {
 	@Override
 	public void setState(State state) {
 		super.setState(state);
-		canvasRenderer.setCamera(contourScene.getCamera());
+		canvasRenderer.setCamera((Camera)contourScene.getCamera());
 		inputManager = new ContourInputHandler(canvas, contourScene.getCamera(), this);
 		Dimension size = canvas.getSize();
 		inputManager.setComponentSize(size.width, size.height);

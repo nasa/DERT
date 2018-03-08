@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.raster.pds;
 
-import gov.nasa.arc.dert.raster.ProjectionInfo;
+import gov.nasa.arc.dert.landscape.io.QuadTreeTile.DataType;
+import gov.nasa.arc.dert.landscape.srs.ProjectionInfo;
 import gov.nasa.arc.dert.raster.Raster;
 import gov.nasa.arc.dert.raster.RasterFileImpl;
 import gov.nasa.arc.dert.raster.pds.PdsLabel.KeyValue;

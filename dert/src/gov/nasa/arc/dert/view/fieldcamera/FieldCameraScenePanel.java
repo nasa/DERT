@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.view.fieldcamera;
 
 import gov.nasa.arc.dert.action.edit.CoordAction;
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.render.SceneCanvasPanel;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
@@ -11,7 +12,6 @@ import gov.nasa.arc.dert.ui.CoordTextField;
 import gov.nasa.arc.dert.ui.DoubleArrayTextField;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
 import gov.nasa.arc.dert.ui.DoubleTextField;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -29,6 +29,7 @@ import javax.swing.event.ChangeEvent;
 import com.ardor3d.math.Rectangle2;
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
+import com.ardor3d.renderer.Camera;
 import com.ardor3d.util.ReadOnlyTimer;
 
 /**
@@ -204,7 +205,7 @@ public class FieldCameraScenePanel extends SceneCanvasPanel {
 	@Override
 	public void initialize() {
 		super.initialize();
-		canvasRenderer.setCamera(fieldCameraScene.getCamera());
+		canvasRenderer.setCamera((Camera)fieldCameraScene.getCamera());
 	}
 	
 	public void setRange(FieldCameraInfo info) {

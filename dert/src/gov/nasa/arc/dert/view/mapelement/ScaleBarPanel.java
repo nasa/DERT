@@ -64,7 +64,7 @@ public class ScaleBarPanel extends MapElementBasePanel {
 		});
 
 		compList.add(new JLabel("Cell Size", SwingConstants.RIGHT));
-		sizeText = new DoubleTextField(8, ScaleBar.defaultCellSize, true, Landscape.format) {
+		sizeText = new DoubleTextField(8, Landscape.defaultCellSize/10, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
 				if (Double.isNaN(value)) {
@@ -76,7 +76,7 @@ public class ScaleBarPanel extends MapElementBasePanel {
 		compList.add(sizeText);
 
 		compList.add(new JLabel("Radius", SwingConstants.RIGHT));
-		radiusText = new DoubleTextField(8, ScaleBar.defaultRadius, true, Landscape.format) {
+		radiusText = new DoubleTextField(8, Landscape.defaultCellSize/100, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
 				if (Double.isNaN(value)) {

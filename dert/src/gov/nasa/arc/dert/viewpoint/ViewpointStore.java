@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.viewpoint;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.StateUtil;

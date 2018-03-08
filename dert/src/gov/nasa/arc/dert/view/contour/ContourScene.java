@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.view.contour;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.render.BasicScene;
 import gov.nasa.arc.dert.render.ColorTableEffects;
@@ -9,7 +10,6 @@ import gov.nasa.arc.dert.state.PlaneState;
 import gov.nasa.arc.dert.util.ColorMap;
 import gov.nasa.arc.dert.util.ColorMapListener;
 import gov.nasa.arc.dert.util.ImageUtil;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

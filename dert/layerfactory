@@ -19,10 +19,10 @@ dert_path=${dert_path%/*}
 if test $plat = "Darwin"
 then
 
-	java -Xms256m -Xmx${max_mem}m -classpath ${dert_path}/dert.app/Contents/Java/dert.jar:${dert_path}/dert.app/Contents/Java/natives_macosx.jar gov.nasa.arc.dert.landscape.factory.LayerFactory $*
+	java -Xms256m -Xmx${max_mem}m -classpath ${dert_path}/dert.app/Contents/Java/dert.jar:${dert_path}/dert.app/Contents/Java/natives_macosx.jar gov.nasa.arc.dert.layerfactory.LayerFactory $*
 
 else
 
-	java -Xms256m -Xmx${max_mem}m -classpath ${dert_path}/dert.jar:${dert_path}/lib/natives_linux.jar gov.nasa.arc.dert.landscape.factory.LayerFactory $*
+	java -Xms256m -Xmx${max_mem}m -classpath ${dert_path}/dert.jar:${dert_path}/lib/natives_linux.jar gov.nasa.arc.dert.layerfactory.LayerFactory $*
 
 fi

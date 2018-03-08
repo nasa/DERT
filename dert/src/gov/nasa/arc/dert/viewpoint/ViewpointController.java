@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.viewpoint;
 
 import gov.nasa.arc.dert.Dert;
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.render.SceneFramework;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
@@ -23,6 +24,7 @@ import javax.swing.Timer;
 import com.ardor3d.math.Ray3;
 import com.ardor3d.math.Vector2;
 import com.ardor3d.math.Vector3;
+import com.ardor3d.renderer.Camera;
 import com.ardor3d.scenegraph.Spatial;
 
 /**
@@ -517,7 +519,7 @@ public class ViewpointController {
 
 		// create a list of viewpoints from the curve
 		Vector<ViewpointStore> vpList = new Vector<ViewpointStore>();
-		BasicCamera cam = new BasicCamera((BasicCamera)viewpoint.getCamera());
+		BasicCamera cam = new BasicCamera((Camera)viewpoint.getCamera());
 		Vector3 loc = null;
 		Vector3 look = null;
 		ViewpointStore vps = null;

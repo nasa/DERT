@@ -1,10 +1,10 @@
 package gov.nasa.arc.dert.render;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.lighting.Lighting;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.SyntheticCameraNode;
 import gov.nasa.arc.dert.view.fieldcamera.SimpleCrosshair;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import com.ardor3d.framework.CanvasRenderer;
 import com.ardor3d.math.ColorRGBA;

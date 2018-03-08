@@ -2,8 +2,10 @@ package gov.nasa.arc.dert.test;
 
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.edit.BackgroundColorDialog;
-import gov.nasa.arc.dert.landscape.DerivativeLayer;
 import gov.nasa.arc.dert.landscape.Landscape;
+import gov.nasa.arc.dert.landscape.layer.DerivativeLayer;
+import gov.nasa.arc.dert.landscape.quadtree.QuadTree;
+import gov.nasa.arc.dert.landscape.quadtree.QuadTreeCache;
 import gov.nasa.arc.dert.lighting.Lighting;
 import gov.nasa.arc.dert.scene.featureset.FeatureSet;
 import gov.nasa.arc.dert.scene.landmark.Figure;
@@ -19,9 +21,6 @@ import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
 import gov.nasa.arc.dert.scenegraph.text.BitmapFont;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.StateFactory;
-import gov.nasa.arc.dert.terrain.QuadTree;
-import gov.nasa.arc.dert.terrain.QuadTreeCache;
-import gov.nasa.arc.dert.terrain.Terrain;
 import gov.nasa.arc.dert.util.StringUtil;
 import gov.nasa.arc.dert.view.Console;
 import gov.nasa.arc.dert.viewpoint.ViewpointController;
@@ -171,8 +170,8 @@ public class DertTest {
 			ViewpointController.mouseScrollDirection = StringUtil.getIntegerValue(dertProperties,
 				"MouseScrollDirection", false, -1, false);
 			BackgroundColorDialog.setPredefinedBackgroundColors(dertProperties);
-			Terrain.MAX_LEVELS = StringUtil.getIntegerValue(dertProperties, "Landscape.MaximumLevels", true,
-					Terrain.MAX_LEVELS, false);
+			Landscape.MAX_LEVELS = StringUtil.getIntegerValue(dertProperties, "Landscape.MaximumLevels", true,
+					Landscape.MAX_LEVELS, false);
 
 			// Get map element preferences.
 			Placemark.setDefaultsFromProperties(dertProperties);

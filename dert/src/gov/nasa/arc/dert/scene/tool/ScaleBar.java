@@ -1,5 +1,6 @@
 package gov.nasa.arc.dert.scene.tool;
 
+import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scenegraph.FigureMarker;
@@ -11,7 +12,6 @@ import gov.nasa.arc.dert.state.ScaleBarState;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.StringUtil;
-import gov.nasa.arc.dert.viewpoint.BasicCamera;
 
 import java.awt.Color;
 import java.nio.ByteBuffer;
@@ -46,8 +46,6 @@ public class ScaleBar extends FigureMarker implements Tool {
 	public static int defaultCellCount = 4;
 	public static boolean defaultLabelVisible = true;
 	public static boolean defaultAutoLabel = true;
-	public static double defaultCellSize = 1;
-	public static double defaultRadius = 1;
 	public static double defaultAzimuth = 0;
 	public static double defaultTilt = 0;
 
