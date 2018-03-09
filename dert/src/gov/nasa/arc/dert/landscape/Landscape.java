@@ -182,8 +182,7 @@ public class Landscape
 //		factory.enableLayers(layerManager.layersEnabled);
 
 		// create the top level quad tree tile
-		quadTree = factory.getQuadTree(new QuadKey(), new Vector3(0, 0, 0), terrainWidth / tileWidth,
-				terrainLength / tileLength, true);
+		quadTree = factory.getQuadTree(new QuadKey(), terrainWidth / tileWidth, terrainLength / tileLength, true);
 		if (quadTree == null)
 			throw new IllegalStateException("Root quadTree for "+getName()+" is empty or invalid.");
 		quadTree.inUse = true;

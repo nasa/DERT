@@ -129,11 +129,12 @@ public class QuadTreeMesh extends Mesh {
 		}
 		int i = r * columns + c;
 		// System.err.println("QuadTreeMesh.getElevation "+c+" "+r+" "+i+" "+tWidth+" "+vertexBuffer.limit());
-		if ((i * 3 + 2) >= vertexBuffer.limit()) {
+		int ii = i*3+2;
+		if ((ii < 0) || (ii >= vertexBuffer.limit())) {
 			throw new IllegalArgumentException(getName()+" Column = " + c + ", Row = " + r + ", Num Columns = " + columns
-				+", Num Rows = "+rows+ ", Index = " + (i * 3 + 2) + ", Limit = " + vertexBuffer.limit());
+				+", Num Rows = "+rows+ ", Index = " + ii + ", Limit = " + vertexBuffer.limit());
 		}
-		return (vertexBuffer.get(i * 3 + 2));
+		return (vertexBuffer.get(ii));
 	}
 
 	/**

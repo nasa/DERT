@@ -83,9 +83,7 @@ public class QuadTree extends Node {
 	 * @param p
 	 *            Translation point relative to the parent quad tree
 	 * @param pixelWidth
-	 * @param tileWidth
 	 * @param pixelLength
-	 * @param tileLength
 	 * @param level
 	 * @param quadrant
 	 */
@@ -113,7 +111,7 @@ public class QuadTree extends Node {
 	 * 
 	 * @param p
 	 */
-	public void createCornerPoints(ReadOnlyVector3 p, double tileWidth, double tileLength) {
+	public void createCornerPoints(ReadOnlyVector3 p, int tileWidth, int tileLength) {
 		double width = tileWidth * pixelWidth / 2;
 		double length = tileLength * pixelLength / 2;
 		// create corner points
@@ -459,9 +457,9 @@ public class QuadTree extends Node {
 		
 		boolean isCulled = camera.isCulled(this);
 
-		Vector3[] tPoint = getCornerPoints();
+//		Vector3[] tPoint = getCornerPoints();
 
-		if (tPoint == null) {
+		if (cornerPoint == null) {
 			return(false);
 		}
 
@@ -475,11 +473,11 @@ public class QuadTree extends Node {
 		}
 		if (camLoc.distance(centerPoint) < minDist)
 			closest.set(centerPoint);
-		for (int i=0; i<tPoint.length; ++i) {
-			double d = camLoc.distance(tPoint[i]);
+		for (int i=0; i<cornerPoint.length; ++i) {
+			double d = camLoc.distance(cornerPoint[i]);
 			if (d < minDist) {
 				minDist = d;
-				closest.set(tPoint[i]);
+				closest.set(cornerPoint[i]);
 			}
 		}
 
@@ -697,8 +695,7 @@ public class QuadTree extends Node {
 			break;
 		}
 		return (new int[] { j, k });
-	}
-	
+	}	
 	
 	@Override
 	public String toString() {

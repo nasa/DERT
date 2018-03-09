@@ -2,6 +2,8 @@ package gov.nasa.arc.dert.landscape.quadtree;
 
 import java.util.ArrayList;
 
+import com.ardor3d.math.Vector3;
+
 
 public class QuadKey {
 	
@@ -117,6 +119,39 @@ public class QuadKey {
 				y += tileLength/2;
 		}
 		return(y);
+	}
+
+	/**
+	 * Given a key, get the tile center relative to the center of the landscape
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public Vector3 getTileCenter(double terrainWidth, double terrainLength) {
+		Vector3 p = new Vector3();
+		if (path.length < 1)
+			return (p);
+		double wid = terrainWidth/2;
+		double len = terrainLength/2;
+		for (int i=0; i<path.length; ++i) {
+			wid /= 2;
+			len /= 2;
+			switch (path[i]) {
+			case 1:
+				p.set(p.getX() - wid, p.getY() + len, 0);
+				break;
+			case 2:
+				p.set(p.getX() + wid, p.getY() + len, 0);
+				break;
+			case 3:
+				p.set(p.getX() - wid, p.getY() - len, 0);
+				break;
+			case 4:
+				p.set(p.getX() + wid, p.getY() - len, 0);
+				break;
+			}
+		}
+		return (p);
 	}
 
 }

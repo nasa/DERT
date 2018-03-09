@@ -135,13 +135,9 @@ public class QuadTreeCache {
 	 * @param rgba color
 	 */
 	public synchronized void updateSurfaceColor(float[] rgba) {
-		Object[] key = new Object[quadTreeMap.size()];
-		key = quadTreeMap.keySet().toArray(key);
-		for (int i = 0; i < key.length; ++i) {
-//			if (((String)key[i]).startsWith(label)) {
-				QuadTree item = quadTreeMap.get(key[i]);
-				item.getMesh().updateSurfaceColor(rgba);
-//			}
-		}
+		QuadTree[] entry = new QuadTree[quadTreeMap.size()];
+		quadTreeMap.entrySet().toArray(entry);
+		for (int i = 0; i < entry.length; ++i)
+			entry[i].getMesh().updateSurfaceColor(rgba);
 	}
 }

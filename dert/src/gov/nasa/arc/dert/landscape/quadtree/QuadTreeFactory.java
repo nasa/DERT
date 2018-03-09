@@ -8,7 +8,6 @@ import gov.nasa.arc.dert.render.SharedTexture2D;
 import gov.nasa.arc.dert.util.UIUtil;
 
 import java.awt.Color;
-import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -148,10 +147,10 @@ public class QuadTreeFactory {
 	 * @param wait	wait for tile source to load the data
 	 * @return
 	 */
-	public QuadTree getQuadTree(QuadKey key, ReadOnlyVector3 p, double pixelWidth, double pixelLength, boolean wait) {
+	public QuadTree getQuadTree(QuadKey key, double pixelWidth, double pixelLength, boolean wait) {
 		QuadTree quadTree = cache.getQuadTree(key.toString());
 		if (quadTree == null)
-			quadTree = createQuadTree(key, p, pixelWidth, pixelLength, wait);
+			quadTree = createQuadTree(key, pixelWidth, pixelLength, wait);
 		if (quadTree.getMesh() != null)
 			return (quadTree);
 		return(null);
@@ -166,96 +165,24 @@ public class QuadTreeFactory {
 	public QuadTree getQuadTree(QuadKey key) {
 		QuadTree quadTree = cache.getQuadTree(key.toString());
 		if (quadTree == null) {
-			Vector3 p = keyToTileCenter(key);
 			double s = Math.pow(2, key.getLevel());
 			double pixelWidth = (terrainWidth / tileWidth) / s;
 			double pixelLength = (terrainLength / tileLength) / s;
-			quadTree = createQuadTree(key, p, pixelWidth, pixelLength, true);
+			quadTree = createQuadTree(key, pixelWidth, pixelLength, true);
 		}
-		else if (quadTree.getMesh() != null)
-			return(quadTree);
-		else
+		else if (quadTree.getMesh() == null)
 			loadQuadTreeContents(quadTree);
 		return (quadTree);
 	}
-
-	/**
-	 * Given a key, get the offset from the parent center
-	 * 
-	 * @param key
-	 * @return
-	 */
-	private Vector3 keyToTileCenter(QuadKey key) {
-		Vector3 p = new Vector3();
-		byte[] path = key.getPath();
-		if (path.length < 1) {
-			return (p);
-		}
-		double n = Math.pow(2, path.length);
-		double w = terrainWidth / n;
-		double l = terrainLength / n;
-		int q = key.getQuadrant();
-		switch (q) {
-		case 1:
-			p.set(p.getX() - w, p.getY() + l, 0);
-			break;
-		case 2:
-			p.set(p.getX() + w, p.getY() + l, 0);
-			break;
-		case 3:
-			p.set(p.getX() - w, p.getY() - l, 0);
-			break;
-		case 4:
-			p.set(p.getX() + w, p.getY() - l, 0);
-			break;
-		}
-		return (p);
-	}
-
-	/**
-	 * Given a key, find the OpenGl coordinates relative to the center of the
-	 * terrain
-	 * 
-	 * @param key
-	 * @return
-	 */
-	private Vector3 keyToTestPointCenter(QuadKey qp) {
-		Vector3 p = new Vector3();
-		byte[] path = qp.getPath();
-		if (path.length < 1) {
-			return (p);
-		}
-		double w = terrainWidth/2;
-		double l = terrainLength/2;
-		for (int i = 0; i < path.length; ++i) {
-			w /= 2;
-			l /= 2;
-			switch (path[i]) {
-			case 1:
-				p.set(p.getX() - w, p.getY() + l, 0);
-				break;
-			case 2:
-				p.set(p.getX() + w, p.getY() + l, 0);
-				break;
-			case 3:
-				p.set(p.getX() - w, p.getY() - l, 0);
-				break;
-			case 4:
-				p.set(p.getX() + w, p.getY() - l, 0);
-				break;
-			}
-		}
-		return (p);
-	}
 	
 	/**
-	 * Indicate if a QuadTree with the give key has children.
+	 * Indicate if a QuadTree with the given key has children.
 	 * 
 	 * @param quadKey
 	 * @return have children
 	 */
 	public boolean childrenExist(QuadKey quadKey) {
-		return(source.tileExists(quadKey+File.separator+"1"));
+		return(source.tileExists(quadKey.createChild(1).toString()));
 	}
 
 	/**
@@ -272,20 +199,18 @@ public class QuadTreeFactory {
 		// load the quadtrees
 		double pixelWidth = parent.pixelWidth / 2;
 		double pixelLength = parent.pixelLength / 2;
-		double xCenter = parent.pixelWidth * tileWidth / 4;
-		double yCenter = parent.pixelLength * tileLength / 4;
 		int count = 0;
 		QuadTree[] qt = new QuadTree[4];
-		qt[0] = getQuadTree(qp.createChild(1), new Vector3(-xCenter, yCenter, 0), pixelWidth, pixelLength, wait);
+		qt[0] = getQuadTree(qp.createChild(1), pixelWidth, pixelLength, wait);
 		if (qt[0] != null)
 			count ++;
-		qt[1] = getQuadTree(qp.createChild(2), new Vector3(xCenter, yCenter, 0), pixelWidth, pixelLength, wait);
+		qt[1] = getQuadTree(qp.createChild(2), pixelWidth, pixelLength, wait);
 		if (qt[1] != null)
 			count ++;
-		qt[2] = getQuadTree(qp.createChild(3), new Vector3(-xCenter, -yCenter, 0), pixelWidth, pixelLength, wait);
+		qt[2] = getQuadTree(qp.createChild(3), pixelWidth, pixelLength, wait);
 		if (qt[2] != null)
 			count ++;
-		qt[3] = getQuadTree(qp.createChild(4), new Vector3(xCenter, -yCenter, 0), pixelWidth, pixelLength, wait);
+		qt[3] = getQuadTree(qp.createChild(4), pixelWidth, pixelLength, wait);
 		if (qt[3] != null)
 			count ++;
 		if (count == 4)
@@ -293,14 +218,38 @@ public class QuadTreeFactory {
 		else
 			return(null);
 	}
+	
+	private ReadOnlyVector3 quadrantToOffset(int quadrant, double pixelWidth, double pixelLength) {
+		Vector3 p = new Vector3();
+		double w = tileWidth*pixelWidth/2;
+		double l = tileLength*pixelLength/2;
+		switch (quadrant) {
+		case 1:
+			p.set(-w, l, 0);
+			break;
+		case 2:
+			p.set(w, l, 0);
+			break;
+		case 3:
+			p.set(-w, -l, 0);
+			break;
+		case 4:
+			p.set(w, -l, 0);
+			break;
+		default:
+			break;
+		}
+		return(p);
+	}
 
-	private QuadTree createQuadTree(QuadKey key, ReadOnlyVector3 p, double pixelWidth, double pixelLength, boolean wait) {
+	private QuadTree createQuadTree(QuadKey key, double pixelWidth, double pixelLength, boolean wait) {
 
 		// create the quad tree tile and put it in the cache as a place holder
 		// while we load the contents
 		// this keeps us from starting another load operation for this tile
+		ReadOnlyVector3 p = quadrantToOffset(key.getQuadrant(), pixelWidth, pixelLength);
 		final QuadTree qt = new QuadTree(key, p, pixelWidth, pixelLength, bytesPerTile);
-		qt.createCornerPoints(keyToTestPointCenter(key), tileWidth, tileLength);
+		qt.createCornerPoints(key.getTileCenter(terrainWidth,  terrainLength), tileWidth, tileLength);
 		cache.putQuadTree(key.toString(), qt);
 
 		// load the quad tree mesh contents
