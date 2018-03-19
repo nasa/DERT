@@ -10,16 +10,19 @@ PLATFORM = macosx
 JAVA_INCLUDE = -I/System/Library/Frameworks/JavaVM.Framework/Headers
 LIBEXT = jnilib
 CFLAGS = -arch x86_64 -O2
-LFLAGS = -arch x86_64 -bundle -framework JavaVM -lz
+LFLAGS = -arch x86_64 -fPIC -bundle -framework JavaVM
 LIBS = -lz
 
 # Setup for Linux
 #PLATFORM = linux
+# Redhat include directory for JNI
 #JAVA_INCLUDE = -I/usr/lib/gcc/x86_64-redhat-linux/4.4.7/include
+# Ubuntu include directory for JNI
+#JAVA_INCLUDE = -I/usr/lib/jvm/java-8-openjdk-amd64/include -I/usr/lib/jvm/java-8-openjdk-amd64/include/linux
 #LIBEXT = so
 #CFLAGS = -O2 -fPIC
-#LFLAGS = -shared
-#LIBS = -ljpeg -lz
+#LFLAGS = -shared -fPIC
+#LIBS = -lz
 
 # Native library
 LIBGEO   = libgeo.$(LIBEXT)
@@ -56,5 +59,5 @@ Proj4JNI.o: Proj4JNI.c Proj4JNI.h
 
 $(LIBGEO): GTIFJNI.o Proj4JNI.o
 	rm -f $@
-	$(GCC) $(LFLAGS) GTIFJNI.o Proj4JNI.o $(LIBDIR)/libtiff.a $(LIBDIR)/libjpeg.a $(LIBDIR)/libproj.a -o $(LIBGEO) $(LIBS) -fPIC
+	$(GCC) $(LFLAGS) GTIFJNI.o Proj4JNI.o $(LIBDIR)/libtiff.a $(LIBDIR)/libjpeg.a $(LIBDIR)/libproj.a -o $(LIBGEO) $(LIBS)
 	@echo "$@ build is complete"
