@@ -1,8 +1,6 @@
 package gov.nasa.arc.dert.render;
 
-import gov.nasa.arc.dert.landscape.quadtree.QuadTree;
 import gov.nasa.arc.dert.landscape.quadtree.QuadTreeMesh;
-import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.scenegraph.Movable;
 
@@ -51,21 +49,11 @@ public class DirtyEventHandler implements DirtyEventListener {
 //			rootNode.updateGeometricState(0, true);
 			changed.set(true);
 			terrainChanged.set((spatial instanceof QuadTreeMesh) || terrainChanged.get());
-			if (spatial instanceof QuadTree) {
-				World.getInstance().getMarble().landscapeChanged((QuadTree)spatial);
-				World.getInstance().getLandmarks().landscapeChanged((QuadTree)spatial);
-				World.getInstance().getFeatureSets().landscapeChanged((QuadTree)spatial);
-			}
 			break;
 		case Detached:
 //			rootNode.updateGeometricState(0, true);
 			changed.set(true);
 			terrainChanged.set((spatial instanceof QuadTreeMesh) || terrainChanged.get());
-			if (spatial instanceof QuadTree) {
-				World.getInstance().getMarble().landscapeChanged((QuadTree)spatial);
-				World.getInstance().getLandmarks().landscapeChanged((QuadTree)spatial);
-				World.getInstance().getFeatureSets().landscapeChanged((QuadTree)spatial);
-			}
 			break;
 		case Bounding:
 //			rootNode.updateGeometricState(0, true);

@@ -1,6 +1,7 @@
 package gov.nasa.arc.dert.landscape.quadtree;
 
 import gov.nasa.arc.dert.camera.BasicCamera;
+import gov.nasa.arc.dert.scene.World;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -377,9 +378,9 @@ public class QuadTree extends Node {
 		for (int i = 0; i < child.length; ++i) {
 			attachChild(child[i]);
 			child[i].inUse = true;
-//			World.getInstance().getMarble().landscapeChanged(child[i]);
-//			World.getInstance().getLandmarks().landscapeChanged(child[i]);
-//			World.getInstance().getFeatureSets().landscapeChanged(child[i]);
+			World.getInstance().getMarble().landscapeChanged(child[i]);
+			World.getInstance().getLandmarks().landscapeChanged(child[i]);
+			World.getInstance().getFeatureSets().landscapeChanged(child[i]);
 		}
 		Arrays.fill(dirty, false);
 		this.child = child;
@@ -436,11 +437,11 @@ public class QuadTree extends Node {
 	 */
 	private boolean merge() {
 		boolean success = clearChildren();
-//		if (success) {
-//			World.getInstance().getMarble().landscapeChanged(this);
-//			World.getInstance().getLandmarks().landscapeChanged(this);
-//			World.getInstance().getFeatureSets().landscapeChanged(this);
-//		}
+		if (success) {
+			World.getInstance().getMarble().landscapeChanged(this);
+			World.getInstance().getLandmarks().landscapeChanged(this);
+			World.getInstance().getFeatureSets().landscapeChanged(this);
+		}
 		return(success);
 	}
 

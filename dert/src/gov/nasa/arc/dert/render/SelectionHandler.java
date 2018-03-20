@@ -45,7 +45,7 @@ public class SelectionHandler {
 	 * @param position
 	 * @param normal
 	 * @param boundsPick
-	 * @param noQuadTree
+	 * @param terrainOnly
 	 * @return
 	 */
 	public Spatial doSelection(Ray3 pickRay, Vector3 position, Vector3 normal, SpatialPickResults boundsPick,
