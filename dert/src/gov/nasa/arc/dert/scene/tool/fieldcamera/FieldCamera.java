@@ -10,7 +10,7 @@ import gov.nasa.arc.dert.scenegraph.ImageQuad;
 import gov.nasa.arc.dert.scenegraph.LineSegment;
 import gov.nasa.arc.dert.scenegraph.Marker;
 import gov.nasa.arc.dert.scenegraph.Movable;
-import gov.nasa.arc.dert.scenegraph.text.RasterText;
+import gov.nasa.arc.dert.scenegraph.text.BitmapText;
 import gov.nasa.arc.dert.scenegraph.text.Text.AlignType;
 import gov.nasa.arc.dert.state.FieldCameraState;
 import gov.nasa.arc.dert.state.MapElementState;
@@ -100,7 +100,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 
 	// scale factor for viewpoint resizing
 	private double scale = 1, oldScale = 1;
-	private RasterText label;
+	private BitmapText label;
 
 	// Map element state
 	private FieldCameraState state;
@@ -141,7 +141,7 @@ public class FieldCamera extends Movable implements Tool, ViewDependent {
 		billboard.attachChild(imageQuad);
 		SpatialUtil.setPickHost(imageQuad, this);
 		viewDependentNode.attachChild(billboard);
-		label = new RasterText("_label", state.name, AlignType.Center, true);
+		label = new BitmapText("_label", BitmapText.DEFAULT_FONT, state.name, AlignType.Center, true);
 		label.setScaleFactor(0.75f);
 		label.setColor(ColorRGBA.WHITE);
 		label.setTranslation(0, 1.3, 0);

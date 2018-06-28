@@ -16,8 +16,10 @@ import com.jogamp.opengl.GLContext;
  * A class for drawing text strings that uses GLUT bitmap string function.
  *
  */
-public class RasterText extends Text {
+public class BitmapText extends Text {
 
+	public static BitmapFont DEFAULT_FONT;
+	
 //	public static int font = GLUT.BITMAP_HELVETICA_18;
 //	public static int fontHeight = 18;
 
@@ -35,6 +37,8 @@ public class RasterText extends Text {
 	
 	protected double glutWidth;
 	
+	protected BitmapFont font;
+	
 //	static {
 //		glut = new GLUT();		
 //	}
@@ -45,8 +49,8 @@ public class RasterText extends Text {
 	 * @param name
 	 * @param textString
 	 */
-	public RasterText(String name, String textString) {
-		this(name, textString, AlignType.Left, true);
+	public BitmapText(String name, BitmapFont font, String textString) {
+		this(name, font, textString, AlignType.Left, true);
 	}
 
 	/**
@@ -56,9 +60,11 @@ public class RasterText extends Text {
 	 * @param textString
 	 * @param alignment
 	 */
-	public RasterText(String name, String textString, AlignType alignment, boolean scalable) {
+	public BitmapText(String name, BitmapFont font, String textString, AlignType alignment, boolean scalable) {
 		super(name, textString, alignment);
+		this.font = font;
 		this.scalable = scalable;
+		initialize();
 	}
 
 	/**
@@ -100,20 +106,20 @@ public class RasterText extends Text {
 //	}
 	
 	public double getHeight() {
-		return(BitmapFont.getInstance().getHeight());
+		return(font.getHeight());
 	}
 
 	@Override
 	protected double getTextWidth() {
 //		System.err.println("RasterText.getWidth "+str+" "+scaleFactor+" "+glut.glutBitmapLength(font, str)+" "+(scaleFactor * glut.glutBitmapLength(font, str)));
 //		return (glut.glutBitmapLength(font, textString));
-		return (BitmapFont.getInstance().stringLength(textString));
+		return (font.stringLength(textString));
 	}
 
 	@Override
 	protected double getTextHeight() {
 //		return (fontHeight);
-		return (BitmapFont.getInstance().getHeight());
+		return (font.getHeight());
 	}
 
 	@Override
@@ -132,7 +138,7 @@ public class RasterText extends Text {
 		gl2.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 		gl2.glRasterPos3d(position.getX(), position.getY(), position.getZ());
 //		glut.glutBitmapString(font, textString);
-		BitmapFont.getInstance().drawString(textString);
+		font.drawString(textString);
 	}
 
 	@Override
@@ -142,7 +148,7 @@ public class RasterText extends Text {
 			gl2.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 			gl2.glRasterPos3d(position.getX(), position.getY(), position.getZ());
 //			glut.glutBitmapString(font, textString);
-			BitmapFont.getInstance().drawString(textString);
+			font.drawString(textString);
 		}
 	}
 

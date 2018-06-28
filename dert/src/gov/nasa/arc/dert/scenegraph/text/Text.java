@@ -62,6 +62,12 @@ public abstract class Text extends Mesh {
 		this.textString = textString;
 		this.alignment = alignment;
 		scaleFactor = 1;
+	}
+	
+	/**
+	 * Call this method in constructor of extending classes.
+	 */
+	protected void initialize() {
 		width = getTextWidth();
 		height = getTextHeight();
 		double w = getWidth() / 2.0;

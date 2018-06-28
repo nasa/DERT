@@ -4,7 +4,7 @@ import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.landscape.quadtree.QuadTree;
 import gov.nasa.arc.dert.scenegraph.HiddenLine;
 import gov.nasa.arc.dert.scenegraph.Movable;
-import gov.nasa.arc.dert.scenegraph.text.RasterText;
+import gov.nasa.arc.dert.scenegraph.text.BitmapText;
 import gov.nasa.arc.dert.scenegraph.text.Text.AlignType;
 import gov.nasa.arc.dert.state.GridState;
 import gov.nasa.arc.dert.state.MapElementState;
@@ -207,23 +207,23 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 		setTranslation(tmp);
 	}
 
-	protected RasterText createColumnText(String name, double val, double x, double y, ReadOnlyColorRGBA color) {
+	protected BitmapText createColumnText(String name, double val, double x, double y, ReadOnlyColorRGBA color) {
 		if (actualCoords) {
 			val += origin.getXf();
 		}
 		return (createText(name, val, x, y, color));
 	}
 
-	protected RasterText createRowText(String name, double val, double x, double y, ReadOnlyColorRGBA color) {
+	protected BitmapText createRowText(String name, double val, double x, double y, ReadOnlyColorRGBA color) {
 		if (actualCoords) {
 			val += origin.getYf();
 		}
 		return (createText(name, val, x, y, color));
 	}
 
-	protected RasterText createText(String name, double val, double x, double y, ReadOnlyColorRGBA color) {
+	protected BitmapText createText(String name, double val, double x, double y, ReadOnlyColorRGBA color) {
 		String textVal = String.format("%10.2f", val).trim();
-		RasterText vdt = new RasterText(name, textVal, AlignType.Center, true);
+		BitmapText vdt = new BitmapText(name, BitmapText.DEFAULT_FONT, textVal, AlignType.Center, true);
 		vdt.setScaleFactor(1);
 		vdt.getSceneHints().setCullHint(CullHint.Inherit);
 		vdt.setColor(color);
@@ -231,8 +231,8 @@ public abstract class Grid extends Movable implements Tool, ViewDependent {
 		return (vdt);
 	}
 
-	protected RasterText createText(String name, String textVal, double x, double y, ReadOnlyColorRGBA color) {
-		RasterText vdt = new RasterText(name, textVal, AlignType.Center, true);
+	protected BitmapText createText(String name, String textVal, double x, double y, ReadOnlyColorRGBA color) {
+		BitmapText vdt = new BitmapText(name, BitmapText.DEFAULT_FONT, textVal, AlignType.Center, true);
 		vdt.setScaleFactor(1);
 		vdt.getSceneHints().setCullHint(CullHint.Inherit);
 		vdt.setColor(color);

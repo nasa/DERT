@@ -163,7 +163,7 @@ public class FieldCameraLayer extends Layer {
 			fieldCamera = (FieldCamera) World.getInstance().getTools().getChild(layerInfo.name);
 		}
 		Color instCol = fieldCamera.getColor();
-		// color changed, remake the texture
+		// color changed, recreate the texture
 		if (!instCol.equals(color)) {
 			setColor(instCol);
 			if (!viewshedEnabled) {

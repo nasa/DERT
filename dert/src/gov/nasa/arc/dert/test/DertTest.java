@@ -19,6 +19,7 @@ import gov.nasa.arc.dert.scene.tool.RadialGrid;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
 import gov.nasa.arc.dert.scenegraph.text.BitmapFont;
+import gov.nasa.arc.dert.scenegraph.text.BitmapText;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.StateFactory;
 import gov.nasa.arc.dert.util.StringUtil;
@@ -141,7 +142,7 @@ public class DertTest {
 		System.err.println("Java Version: " + System.getProperty("java.version"));
 		System.err.println();
 		
-		BitmapFont.createInstance(StringUtil.getStringValue(dertProperties, "RasterText.Font", "Courier New", false), Font.BOLD, StringUtil.getIntegerValue(dertProperties, "RasterText.FontSize", true, 24, false));
+		BitmapText.DEFAULT_FONT = new BitmapFont(StringUtil.getStringValue(dertProperties, "RasterText.Font", "Courier New", false), Font.BOLD, StringUtil.getIntegerValue(dertProperties, "RasterText.FontSize", true, 24, false));
 		ConfigurationManager.createInstance(dertProperties, new StateFactory());
 		FieldCameraInfoManager.createInstance(path);
 		Console.createInstance();

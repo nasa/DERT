@@ -8,10 +8,7 @@ import gov.nasa.arc.dert.lighting.Lighting;
 import gov.nasa.arc.dert.render.BasicScene;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.state.WorldState;
-import gov.nasa.arc.dert.viewpoint.ViewDependent;
 import gov.nasa.arc.dert.viewpoint.Viewpoint;
-
-import java.util.ArrayList;
 
 import com.ardor3d.framework.CanvasRenderer;
 import com.ardor3d.math.ColorRGBA;
@@ -33,7 +30,6 @@ import com.ardor3d.util.geom.Debugger;
 public class WorldScene extends BasicScene implements DirtyEventListener {
 
 	// List of objects that must be updated when the camera position changes
-	private ArrayList<ViewDependent> viewDependentList;
 
 	// Background color
 	private ColorRGBA backgroundColor = new ColorRGBA(Lighting.defaultBackgroundColor);
@@ -82,7 +78,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		if (viewpoint != null)
 			CoordAction.listenerList.remove(viewpoint);
 		viewpoint = new Viewpoint(world.getName() + "_viewpoint", null);
-		viewDependentList = new ArrayList<ViewDependent>();
 		crosshair = viewpoint.getCrosshair();
 //		world.attachChild(crosshair);
 		textOverlay = viewpoint.getTextOverlay();
@@ -112,11 +107,8 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		// has the viewpoint changed?
 		boolean viewpointChanged = viewpoint.changed.getAndSet(false);
 		// if the viewpoint changed, update the other view dependent objects
-		if (viewpointChanged) {
-			for (int i = 0; i < viewDependentList.size(); ++i) {
-				viewDependentList.get(i).update(viewpoint.getCamera());
-			}
-		}
+		if (viewpointChanged)
+			rootNode.update(viewpoint.getCamera());
 		worldChanged = World.getInstance().getDirtyEventHandler().changed.get();
 		terrainChanged = World.getInstance().getDirtyEventHandler().terrainChanged.get();
 //		System.err.println("WorldScene.update "+viewpointChanged+" "+worldChanged+" "+terrainChanged+" "+sceneChanged.get());
@@ -206,11 +198,9 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 //		System.err.println("WorldScene.spatialDirty "+spatial+" "+type+" "+spatial.getParent());
 		switch (type) {
 		case Attached:
-			addViewDependents(spatial);
 			viewpoint.setSceneBounds();
 			break;
 		case Detached:
-			removeViewDependents(spatial);
 			viewpoint.setSceneBounds();
 			break;
 		case Bounding:
@@ -236,31 +226,6 @@ public class WorldScene extends BasicScene implements DirtyEventListener {
 		super.resize(width, height);
 		if (viewpoint != null)
 			viewpoint.resize(width, height);
-	}
-
-	private void addViewDependents(Spatial spatial) {
-		if (spatial instanceof ViewDependent) {
-			viewDependentList.add((ViewDependent) spatial);
-			((ViewDependent) spatial).update(viewpoint.getCamera());
-		}
-		else if (spatial instanceof Node) {
-			Node node = (Node) spatial;
-			for (int i = 0; i < node.getNumberOfChildren(); ++i) {
-				addViewDependents(node.getChild(i));
-			}
-		}
-	}
-
-	private void removeViewDependents(Spatial spatial) {
-		if (spatial instanceof ViewDependent) {
-			viewDependentList.remove(spatial);
-		}
-		else if (spatial instanceof Node) {
-			Node node = (Node) spatial;
-			for (int i = 0; i < node.getNumberOfChildren(); ++i) {
-				removeViewDependents(node.getChild(i));
-			}
-		}
 	}
 
 	@Override

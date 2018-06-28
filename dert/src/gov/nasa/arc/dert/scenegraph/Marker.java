@@ -3,7 +3,7 @@ package gov.nasa.arc.dert.scenegraph;
 import gov.nasa.arc.dert.camera.BasicCamera;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.quadtree.QuadTree;
-import gov.nasa.arc.dert.scenegraph.text.RasterText;
+import gov.nasa.arc.dert.scenegraph.text.BitmapText;
 import gov.nasa.arc.dert.scenegraph.text.Text.AlignType;
 import gov.nasa.arc.dert.util.SpatialUtil;
 import gov.nasa.arc.dert.util.UIUtil;
@@ -48,7 +48,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 	protected MaterialState materialState;
 
 	// marker label
-	protected RasterText label;
+	protected BitmapText label;
 	// label contents
 	protected String labelStr = "";
 	protected BillboardNode billboard;
@@ -188,7 +188,7 @@ public abstract class Marker extends Movable implements ViewDependent {
 	protected abstract void setMaterialState();
 
 	protected void createLabel() {
-		label = new RasterText("_label", labelStr, AlignType.Center, true);
+		label = new BitmapText("_label", BitmapText.DEFAULT_FONT, labelStr, AlignType.Center, true);
 		label.setScaleFactor((float) (0.75 * size));
 		label.setColor(labelColorRGBA);
 		label.setTranslation(0, 2, 0);

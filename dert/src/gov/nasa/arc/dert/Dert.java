@@ -29,6 +29,7 @@ import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCamera;
 import gov.nasa.arc.dert.scene.tool.fieldcamera.FieldCameraInfoManager;
 import gov.nasa.arc.dert.scenegraph.Marker;
 import gov.nasa.arc.dert.scenegraph.text.BitmapFont;
+import gov.nasa.arc.dert.scenegraph.text.BitmapText;
 import gov.nasa.arc.dert.scenegraph.text.Text;
 import gov.nasa.arc.dert.state.Configuration;
 import gov.nasa.arc.dert.state.ConfigurationManager;
@@ -272,7 +273,7 @@ public class Dert {
 		Marker.PIXEL_SIZE = hgt/7.5;
 		String fName = StringUtil.getStringValue(dertProperties, "RasterText.Font", "Courier New", false);
 		Console.println("Building font: "+fName+" "+fontSize);
-		BitmapFont.createInstance(fName, Font.BOLD, fontSize);
+		BitmapText.DEFAULT_FONT = new BitmapFont(fName, Font.BOLD, fontSize);
 	}
 
 	private void installDertProperties() {

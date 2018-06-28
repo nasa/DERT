@@ -22,7 +22,8 @@ import com.ardor3d.scenegraph.Node;
  * A set of corner points is maintained to aid in splitting and merging.
  *
  */
-public class QuadTree extends Node {
+public class QuadTree
+	extends Node {
 
 	// The minimum number of screen pixels for a mesh cell
 	public static int CELL_SIZE = 4;
@@ -483,7 +484,7 @@ public class QuadTree extends Node {
 		}
 
 		// get the pixel size at the closest point
-		double pixSize = camera.getPixelSizeAt(closest, true);
+		double pixSize = camera.getPixelSizeAt(minDist, true);
 		if (pixSize <= 0)
 			return(false);
 

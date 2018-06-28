@@ -7,7 +7,7 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.scenegraph.Marker;
-import gov.nasa.arc.dert.scenegraph.text.RasterText;
+import gov.nasa.arc.dert.scenegraph.text.BitmapText;
 import gov.nasa.arc.dert.scenegraph.text.Text.AlignType;
 import gov.nasa.arc.dert.util.MathUtil;
 import gov.nasa.arc.dert.view.world.CenterScale;
@@ -69,7 +69,7 @@ public class Viewpoint
 	// Cross hair
 	private RGBAxes crosshair;
 	private Node overlay;
-	private RasterText corText, magText, altText, locText, azElText;
+	private BitmapText corText, magText, altText, locText, azElText;
 	private double textSize = 14;
 	private CenterScale centerScale;
 	private ViewpointMode mode = ViewpointMode.Nominal;
@@ -135,7 +135,10 @@ public class Viewpoint
 			double distance = Double.NaN;
 			if (bv != null) {
 				seekPoint.set(bv.getCenter());
-				distance = bv.getRadius()*5;
+				distance = bv.getRadius();
+				if (spatial instanceof ViewDependent)
+					distance /= spatial.getWorldScale().length();
+				distance *= 3;
 			}
 			else {
 				seekPoint.set(spatial.getWorldTranslation());
@@ -206,27 +209,27 @@ public class Viewpoint
 	
 	private void createOverlays() {
 		overlay = new Node("_textoverlay");
-		corText = new RasterText("_cor", "", AlignType.Left, false);
+		corText = new BitmapText("_cor", BitmapText.DEFAULT_FONT, "", AlignType.Left, false);
 		textSize = corText.getHeight()+2;
 		corText.setColor(ColorRGBA.WHITE);
 		corText.setVisible(true);
 		overlay.attachChild(corText);
-		magText = new RasterText("_mag", "", AlignType.Left, false);
+		magText = new BitmapText("_mag", BitmapText.DEFAULT_FONT, "", AlignType.Left, false);
 		magText.setColor(ColorRGBA.WHITE);
 		magText.setVisible(true);
 		magText.setTranslation(0, textSize, 0);
 		overlay.attachChild(magText);
-		altText = new RasterText("_alt", "", AlignType.Left, false);
+		altText = new BitmapText("_alt", BitmapText.DEFAULT_FONT, "", AlignType.Left, false);
 		altText.setColor(ColorRGBA.WHITE);
 		altText.setVisible(true);
 		altText.setTranslation(0, 2*textSize, 0);
 		overlay.attachChild(altText);
-		azElText = new RasterText("_azel", "", AlignType.Left, false);
+		azElText = new BitmapText("_azel", BitmapText.DEFAULT_FONT, "", AlignType.Left, false);
 		azElText.setColor(ColorRGBA.WHITE);
 		azElText.setVisible(true);
 		azElText.setTranslation(0, 3*textSize, 0);
 		overlay.attachChild(azElText);
-		locText = new RasterText("_loc", "", AlignType.Left, false);
+		locText = new BitmapText("_loc", BitmapText.DEFAULT_FONT, "", AlignType.Left, false);
 		locText.setColor(ColorRGBA.WHITE);
 		locText.setVisible(true);
 		locText.setTranslation(0, 4*textSize, 0);

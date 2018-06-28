@@ -22,30 +22,21 @@ import com.jogamp.opengl.glu.gl2.GLUgl2;
 public class BitmapFont {
 	
 	protected static int IMAGE_WIDTH = 1024, IMAGE_HEIGHT = 1024;
-	protected static BitmapFont INSTANCE;
 	
 	private int letterWidth, letterHeight, xOrigin, yOrigin;
 	private int bitmapWidth;
 	private BitmapChar[] chars;
 	private int size;
 	
-	public static void createInstance(String name, int type, int size) {
+	public BitmapFont(String name, int type, int size) {
 		if (size > IMAGE_HEIGHT/2)
 			size = IMAGE_HEIGHT/2;
-		INSTANCE = new BitmapFont(name, type, size);
-	}
-	
-	public static BitmapFont getInstance() {
-		return(INSTANCE);
-	}
-	
-	protected BitmapFont(String name, int type, int size) {
 		this.size = size;
 		chars = new BitmapChar[256];
 		generateFont(name, type, size);
 	}
 	
-	public void generateFont(String name, int type, int size) {
+	protected void generateFont(String name, int type, int size) {
 		Font font = new Font(name, type, size);	
 		BufferedImage image = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = image.createGraphics();

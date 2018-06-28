@@ -1,7 +1,7 @@
 package gov.nasa.arc.dert.view.world;
 
 import gov.nasa.arc.dert.landscape.Landscape;
-import gov.nasa.arc.dert.scenegraph.text.RasterText;
+import gov.nasa.arc.dert.scenegraph.text.BitmapText;
 import gov.nasa.arc.dert.scenegraph.text.Text;
 import gov.nasa.arc.dert.scenegraph.text.Text.AlignType;
 
@@ -30,7 +30,7 @@ public class CenterScale extends Node {
 	private ReadOnlyColorRGBA[] scaleColor;
 	
 	private Line line;
-	private RasterText sizeText, distText;
+	private BitmapText sizeText, distText;
 
 	/**
 	 * Constructor
@@ -64,13 +64,13 @@ public class CenterScale extends Node {
 		
 		attachChild(line);
 		
-		sizeText = new RasterText("_ctr", "", AlignType.Center, false);
+		sizeText = new BitmapText("_ctr", BitmapText.DEFAULT_FONT, "", AlignType.Center, false);
 		sizeText.setColor(ColorRGBA.WHITE);
 		sizeText.setVisible(true);
 		sizeText.setTranslation(0, 4, 0);
 		attachChild(sizeText);
 		
-		distText = new RasterText("_ctr", "", AlignType.Center, false);
+		distText = new BitmapText("_ctr", BitmapText.DEFAULT_FONT, "", AlignType.Center, false);
 		distText.setColor(ColorRGBA.WHITE);
 		distText.setVisible(true);
 		distText.setTranslation(0, -Text.FONT_SIZE, 0);

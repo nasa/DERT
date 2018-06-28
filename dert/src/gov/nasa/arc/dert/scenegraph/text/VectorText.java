@@ -44,6 +44,7 @@ public class VectorText extends Text {
 	 */
 	public VectorText(String name, String textString, AlignType alignment) {
 		super(name, textString, alignment);
+		initialize();
 	}
 
 	@Override

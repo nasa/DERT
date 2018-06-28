@@ -171,7 +171,7 @@ public class LayerEffects extends GLSLShaderObjectsState {
 	 * 
 	 * @param layers
 	 */
-	public void setLayers(Layer[] layers) {
+	protected void setLayers(Layer[] layers) {
 		intUniforms = new ArrayList<Object[]>();
 		floatArrayUniforms = new ArrayList<Object[]>();
 
@@ -236,8 +236,8 @@ public class LayerEffects extends GLSLShaderObjectsState {
 		}
 		progStr += textureLayers;
 		progStr += bottom;
-//		System.err.println("LayerEffects.setLayers");
-//		System.err.println(progStr);
+		System.err.println("LayerEffects.setLayers");
+		System.err.println(progStr);
 
 		fragmentProgram = progStr.getBytes();
 

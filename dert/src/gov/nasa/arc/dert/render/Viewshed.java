@@ -37,8 +37,7 @@ public class Viewshed extends ProjectedDepthTexture {
 	public void updateProjection() {
 		Camera tCam = textureRenderer.getCamera();
 		tCam.setFrustumPerspective(camera.getFovY(), camera.getAspect(), camera.getFrustumNear(),
-			camera.getFrustumFar()); // viewshed doesn't draw with near plane <
-										// 0.1
+			camera.getFrustumFar()); // viewshed doesn't draw with near plane < 0.1
 		tCam.setFrame(camera.getLocation(), camera.getLeft(), camera.getUp(), camera.getDirection());
 		tCam.update();
 		projectionMatrix.set(tCam.getModelViewProjectionMatrix());
