@@ -659,8 +659,19 @@ public class BasicCamera
 	public double getPixelSizeAt(ReadOnlyVector3 point, boolean applyZoom) {
 		// get the distance from the viewpoint to the given point
 		double depth = getLocation().distance(point);
+		return (getPixelSizeAt(depth, applyZoom));
+	}
 
-		// punt if its outside the clipping planes (the point is clipped anyway)
+	/**
+	 * Get the pixel size at a given point.
+	 * 
+	 * @param point
+	 * @param applyZoom
+	 * @return
+	 */
+	public double getPixelSizeAt(double depth, boolean applyZoom) {
+
+		// punt if depth outside the clipping planes (the point is clipped anyway)
 		if ((depth > _frustumFar) || (depth < _frustumNear)) {
 			return (-1);
 		}
@@ -688,6 +699,7 @@ public class BasicCamera
 		}
 
 		// return units/pixel
+//    	System.err.println("BasicCamera.getPixelSizeAt "+hgt+" "+depth+" "+_frustumNear+" "+_frustumTop+" "+getHeight());
 		return (hgt / getHeight());
 	}
 	
