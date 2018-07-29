@@ -174,7 +174,7 @@ public class DirectionArrow extends Line {
 	 * @param direction
 	 */
 	public void setDirection(ReadOnlyVector3 direction) {
-		System.err.println("DirectionArrow.setDirection "+start+" "+direction);
+//		System.err.println("DirectionArrow.setDirection "+start+" "+direction);
 		this.direction.set(direction);
 		rotMatrix.fromStartEndLocal(start, direction);
 		setRotation(rotMatrix);
