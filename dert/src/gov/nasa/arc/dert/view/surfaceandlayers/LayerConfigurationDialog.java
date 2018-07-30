@@ -106,6 +106,7 @@ import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.landscape.LayerManager;
 import gov.nasa.arc.dert.landscape.layer.LayerInfo;
 import gov.nasa.arc.dert.landscape.layer.LayerInfo.LayerType;
+import gov.nasa.arc.dert.scene.World;
 import gov.nasa.arc.dert.ui.AbstractDialog;
 import gov.nasa.arc.dert.ui.GBCHelper;
 
@@ -127,6 +128,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import com.ardor3d.math.Vector3;
 
 /**
  * Dialog for configuring which layers are visible on the landscape and their
@@ -327,6 +330,15 @@ public class LayerConfigurationDialog extends AbstractDialog {
 
 	@Override
 	public boolean okPressed() {
+		for (int i=0; i<visibleLayers.size(); ++i) {
+			LayerInfo li = visibleLayers.get(i);
+			if (li.type == LayerType.derivative) {
+				li.gmLoc = new Vector3(World.getInstance().getMarble().getTranslation());
+				li.gmLoc.setZ(li.gmLoc.getZ()+Landscape.getInstance().getMinimumElevation());
+				li.minimum = Double.NaN;
+				li.maximum = Double.NaN;
+			}
+		}
 		LayerManager layerManager = Landscape.getInstance().getLayerManager();
 		layerManager.setLayerSelection(visibleLayers, availableLayers);
 		result = new Boolean(true);

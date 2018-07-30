@@ -228,10 +228,7 @@ public class Landscape
 		baseLayer = layerManager.getBaseLayer();
 		pixelWidth = baseLayer.getPixelWidth();
 		pixelLength = baseLayer.getPixelLength();
-		// if we have a millimeter scale terrain we need to scale it up
-		// so we can calculate normals
-		if ((pixelWidth < 0.0001) || (pixelLength < 0.0001))
-			pixelScale = 100;
+		pixelScale = baseLayer.getPixelScale();
 		pixelWidth *= pixelScale;
 		pixelLength *= pixelScale;
 		minZ = baseLayer.getMinimumValue()[0];

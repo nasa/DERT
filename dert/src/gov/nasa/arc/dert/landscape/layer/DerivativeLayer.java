@@ -116,7 +116,7 @@ import com.ardor3d.image.Texture;
 import com.ardor3d.image.Texture2D;
 import com.ardor3d.math.Vector2;
 import com.ardor3d.math.Vector3;
-import com.ardor3d.scenegraph.Mesh;
+import com.ardor3d.math.type.ReadOnlyVector3;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.util.geom.BufferUtils;
 
@@ -133,7 +133,7 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 	public static String defaultColorMapName;
 
 	public static enum DerivativeType {
-		Elevation, Slope, Aspect
+		Elevation, Slope, Aspect, Distance
 	}
 
 	// Type of derivative
@@ -147,6 +147,13 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 
 	// The color map
 	private ColorMap colorMap;
+	
+	// The location of the green marble (for distance map)
+	private ReadOnlyVector3 origin;
+	
+	// Maximum distance from origin;
+	private double maxDist;
+	private double terrainWidth, terrainLength;
 
 	/**
 	 * Constructor
@@ -163,6 +170,28 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 		numLevels = dataSource.getNumberOfLevels();
 		numTiles = dataSource.getNumberOfTiles();
 		bytesPerTile = (dataSource.getTileWidth() + 1) * (dataSource.getTileLength() + 1) * 8;
+		terrainWidth = dataSource.getRasterWidth()*dataSource.getPixelWidth()*dataSource.getPixelScale();
+		terrainLength = dataSource.getRasterLength()*dataSource.getPixelLength()*dataSource.getPixelScale();
+		if (type == DerivativeType.Distance) {
+			origin = layerInfo.gmLoc;
+			findMaximumDistance();
+			// set the green marble location
+			if (Double.isNaN(layerInfo.minimum))
+				layerInfo.minimum = 0;
+			if (Double.isNaN(layerInfo.maximum))
+				layerInfo.maximum = maxDist;
+		}
+	}
+	
+	private double findMaximumDistance() {
+		double x = terrainWidth/2;
+		double y = terrainLength/2;
+		double z = origin.getZ();
+		maxDist = origin.distance(new Vector3(-x, -y, z));
+		maxDist = Math.max(maxDist, origin.distance(new Vector3(x, -y, z)));
+		maxDist = Math.max(maxDist, origin.distance(new Vector3(x, y, z)));
+		maxDist = Math.max(maxDist, origin.distance(new Vector3(-x, y, z)));
+		return(maxDist);
 	}
 
 	@Override
@@ -180,7 +209,9 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 		if (colorMapTexture == null) {
 			initColormap();
 		}
-		createColorMapTextureCoords(mesh, layerInfo.layerNumber);
+		
+		Vector3 center = key.getTileCenter(terrainWidth, terrainLength);
+		createColorMapTextureCoords(mesh, layerInfo.layerNumber, center);
 		return (colorMapTexture);
 	}
 
@@ -223,6 +254,11 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 					layerInfo.gradient);
 				colorMap.addListener(this);
 				break;
+			case Distance:
+				colorMap = new ColorMap(layerInfo.colorMapName, layerName, 0, maxDist, layerInfo.minimum, layerInfo.maximum,
+						layerInfo.gradient);
+				colorMap.addListener(this);
+				break;
 			}
 			if (colorMap == null) {
 				throw new IllegalStateException("Error loading color map " + layerInfo.colorMapName + ".");
@@ -254,7 +290,7 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 	 * @param mesh
 	 * @param textureUnit
 	 */
-	private void createColorMapTextureCoords(Mesh mesh, int textureUnit) {
+	private void createColorMapTextureCoords(QuadTreeMesh mesh, int textureUnit, ReadOnlyVector3 center) {
 		FloatBuffer vertex = mesh.getMeshData().getVertexBuffer();
 		FloatBuffer normals = mesh.getMeshData().getNormalBuffer();
 		FloatBuffer colors = mesh.getMeshData().getColorBuffer();
@@ -264,7 +300,7 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 		}
 		int dataSize = colors.limit() / 4;
 		Vector2 coord = new Vector2();
-		Vector3 normal = new Vector3();
+		Vector3 vec = new Vector3();
 		int k = 0;
 		float pixelScale = Landscape.getInstance().getPixelScale();
 		for (int i = 0; i < dataSize; ++i) {
@@ -279,14 +315,21 @@ public class DerivativeLayer extends Layer implements ColorMapListener {
 					texCoords.put(k, coord.getXf()).put(k + 1, coord.getYf());
 					break;
 				case Slope:
-					normal.set(normals.get(i * 3), normals.get(i * 3 + 1), normals.get(i * 3 + 2));
-					z = (float) MathUtil.getSlopeFromNormal(normal);
+					vec.set(normals.get(i * 3), normals.get(i * 3 + 1), normals.get(i * 3 + 2));
+					z = (float) MathUtil.getSlopeFromNormal(vec);
 					colorMap.getTextureCoordinate(z/pixelScale, coord);
 					texCoords.put(k, coord.getXf()).put(k + 1, coord.getYf());
 					break;
 				case Aspect:
-					normal.set(normals.get(i * 3), normals.get(i * 3 + 1), normals.get(i * 3 + 2));
-					z = (float) MathUtil.getAspectFromNormal(normal);
+					vec.set(normals.get(i * 3), normals.get(i * 3 + 1), normals.get(i * 3 + 2));
+					z = (float) MathUtil.getAspectFromNormal(vec);
+					colorMap.getTextureCoordinate(z/pixelScale, coord);
+					texCoords.put(k, coord.getXf()).put(k + 1, coord.getYf());
+					break;
+				case Distance:
+					vec.set(vertex.get(i * 3), vertex.get(i * 3 + 1), vertex.get(i * 3 + 2));
+					vec.addLocal(center);
+					z = (float) origin.distance(vec);
 					colorMap.getTextureCoordinate(z/pixelScale, coord);
 					texCoords.put(k, coord.getXf()).put(k + 1, coord.getYf());
 					break;

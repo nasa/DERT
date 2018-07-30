@@ -154,6 +154,8 @@ public class RasterLayer extends Layer {
 
 	// helper image utility
 	protected ImageUtil imageUtil;
+	
+	protected float pixelScale = 1;
 
 	/**
 	 * Constructor
@@ -221,6 +223,10 @@ public class RasterLayer extends Layer {
 		Console.println("Maximum Value = " + maximumValue[0]);
 		Console.println("Edge Fill Z-Value = " + fillValue);
 		Console.println(projInfo.toString());
+		// if we have a millimeter scale terrain we need to scale it up
+		// so we can calculate normals
+		if ((projInfo.scale[0] < 0.0001) || (projInfo.scale[1] < 0.0001))
+			pixelScale = 100;
 	}
 
 	/**
@@ -264,6 +270,13 @@ public class RasterLayer extends Layer {
 	 */
 	public double getPixelLength() {
 		return(projInfo.scale[1]);
+	}
+	
+	/**
+	 * Get the pixel scale.
+	 */
+	public float getPixelScale() {
+		return(pixelScale);
 	}
 	
 	/**

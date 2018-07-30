@@ -252,10 +252,13 @@ public class LayerManager {
 			// Add the derivatives to the list
 			LayerInfo lInfo = new LayerInfo("Slope Map", "derivative", DerivativeLayer.defaultColorMapName, 0, 90, false);
 			availableLayers.add(lInfo);
-			lInfo = new LayerInfo("Aspect Map", "derivative", DerivativeLayer.defaultColorMapName, 0, 90, false);
+			lInfo = new LayerInfo("Aspect Map", "derivative", DerivativeLayer.defaultColorMapName, 0, 360, false);
 			availableLayers.add(lInfo);
 			lInfo = new LayerInfo("Elevation Map", "derivative", DerivativeLayer.defaultColorMapName,
 					baseLayerInfo.minimum, baseLayerInfo.maximum, false);
+			availableLayers.add(lInfo);
+			lInfo = new LayerInfo("Distance Map", "derivative", DerivativeLayer.defaultColorMapName,
+					0, 1, false);
 			availableLayers.add(lInfo);
 		}
 		// otherwise check available layers against reality
@@ -519,6 +522,8 @@ public class LayerManager {
 					return (new DerivativeLayer(DerivativeType.Slope, layerInfo, baseLayer));
 				} else if (layerInfo.name.contains("Aspect")) {
 					return (new DerivativeLayer(DerivativeType.Aspect, layerInfo, baseLayer));
+				} else if (layerInfo.name.contains("Distance")) {
+					return (new DerivativeLayer(DerivativeType.Distance, layerInfo, baseLayer));
 				} else {
 					return (null);
 				}

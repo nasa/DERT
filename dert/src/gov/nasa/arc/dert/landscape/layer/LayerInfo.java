@@ -106,6 +106,8 @@ import gov.nasa.arc.dert.util.StateUtil;
 
 import java.util.HashMap;
 
+import com.ardor3d.math.Vector3;
+
 /**
  * Data structure for information about a landscape layer.
  *
@@ -146,6 +148,9 @@ public class LayerInfo implements Comparable<LayerInfo> {
 	
 	// This layer, when added to the visible list, is showing.
 	public int show = 1;
+	
+	// Green marble location.
+	public Vector3 gmLoc;
 
 	// The color map object
 	public transient ColorMap colorMap;
@@ -204,6 +209,7 @@ public class LayerInfo implements Comparable<LayerInfo> {
 			minimum = StateUtil.getDouble(map, "ColorMap.minimum", minimum);
 			maximum = StateUtil.getDouble(map, "ColorMap.maximum", maximum);
 		}
+		gmLoc = StateUtil.getVector3(map, "GreenMarbleLocation", null);
 	}
 
 	/**
@@ -223,6 +229,8 @@ public class LayerInfo implements Comparable<LayerInfo> {
 		this.colorMap = that.colorMap;
 		this.autoblend = that.autoblend;
 		this.show = that.show;
+		if (that.gmLoc != null)
+			this.gmLoc = new Vector3(that.gmLoc);
 	}
 
 	/**
@@ -265,6 +273,8 @@ public class LayerInfo implements Comparable<LayerInfo> {
 			map.put("ColorMap.minimum", new Double(minimum));
 			map.put("ColorMap.maximum", new Double(maximum));
 		}
+		if (gmLoc != null)
+			StateUtil.putVector3(map, "GreenMarbleLocation", gmLoc);
 		return(map);
 	}
 
