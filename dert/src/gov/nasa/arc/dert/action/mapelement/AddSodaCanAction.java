@@ -106,6 +106,8 @@ import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.FigureState;
 
+import java.awt.Color;
+
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
 
@@ -132,6 +134,7 @@ public class AddSodaCanAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		FigureState fState = new FigureState(position, normal, ShapeType.sodacan);
+		fState.color = Color.orange;
 		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(fState, null);
 	}
 
