@@ -103,6 +103,7 @@ package gov.nasa.arc.dert.test;
 
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.landmark.Placemark;
 import gov.nasa.arc.dert.scene.tool.Path.BodyType;
 import gov.nasa.arc.dert.scene.tool.Path.LabelType;
@@ -211,7 +212,7 @@ public class PersistenceTest {
 		fc.height = 11;
 		config.mapElementStateList.add(fc);
 		
-		FigureState f = new FigureState(new Vector3(4, 5, 6), new Vector3(1, 1, 1));
+		FigureState f = new FigureState(new Vector3(4, 5, 6), new Vector3(1, 1, 1), Figure.defaultShapeType);
 		f.normal = new Vector3(0,1,0);
 		f.azimuth = 0.22;
 		f.tilt = 0.33;

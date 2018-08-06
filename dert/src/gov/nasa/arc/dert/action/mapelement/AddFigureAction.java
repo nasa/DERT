@@ -102,6 +102,7 @@ UNILATERAL TERMINATION OF THIS AGREEMENT.
 package gov.nasa.arc.dert.action.mapelement;
 
 import gov.nasa.arc.dert.action.MenuItemAction;
+import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.FigureState;
 
@@ -130,7 +131,7 @@ public class AddFigureAction extends MenuItemAction {
 
 	@Override
 	protected void run() {
-		FigureState fState = new FigureState(position, normal);
+		FigureState fState = new FigureState(position, normal, Figure.defaultShapeType);
 		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(fState, null);
 	}
 

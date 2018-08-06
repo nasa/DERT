@@ -129,6 +129,7 @@ public class Flag extends Node {
 		box.setModelBound(new BoundingBox());
 		box.updateModelBound();
 		attachChild(box);
+		setTranslation(0, 0, 0.5f*size);
 	}
 
 }

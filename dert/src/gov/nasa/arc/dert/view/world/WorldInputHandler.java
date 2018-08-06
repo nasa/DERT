@@ -107,12 +107,14 @@ import gov.nasa.arc.dert.action.mapelement.AddBillboardAction;
 import gov.nasa.arc.dert.action.mapelement.AddCameraAction;
 import gov.nasa.arc.dert.action.mapelement.AddCartesianGridAction;
 import gov.nasa.arc.dert.action.mapelement.AddFigureAction;
+import gov.nasa.arc.dert.action.mapelement.AddMannequinAction;
 import gov.nasa.arc.dert.action.mapelement.AddPathAction;
 import gov.nasa.arc.dert.action.mapelement.AddPlacemarkAction;
 import gov.nasa.arc.dert.action.mapelement.AddPlaneAction;
 import gov.nasa.arc.dert.action.mapelement.AddProfileAction;
 import gov.nasa.arc.dert.action.mapelement.AddRadialGridAction;
 import gov.nasa.arc.dert.action.mapelement.AddScaleAction;
+import gov.nasa.arc.dert.action.mapelement.AddSodaCanAction;
 import gov.nasa.arc.dert.action.mapelement.DeleteMapElementAction;
 import gov.nasa.arc.dert.action.mapelement.EditAction;
 import gov.nasa.arc.dert.action.mapelement.HideMapElementAction;
@@ -469,6 +471,8 @@ public class WorldInputHandler
 					submenu.add(new AddPlaneAction(pickPosition));
 					submenu.add(new AddProfileAction(pickPosition));
 					submenu.add(new AddCameraAction(pickPosition));
+					submenu.add(new AddSodaCanAction(pickPosition, pickNormal));
+					submenu.add(new AddMannequinAction(pickPosition, pickNormal));
 					contextMenu.add(submenu);
 					contextMenu.add(new PlaceHereAction(pickPosition));
 				}

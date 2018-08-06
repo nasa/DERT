@@ -104,10 +104,12 @@ package gov.nasa.arc.dert.view.mapelement;
 import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
 import gov.nasa.arc.dert.scene.landmark.Figure;
+import gov.nasa.arc.dert.scenegraph.Shape;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
 import gov.nasa.arc.dert.ui.DoubleTextField;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -127,6 +129,7 @@ public class FigurePanel extends MapElementBasePanel {
 
 	// Controls
 	private DoubleTextField sizeText;
+	private JLabel sizeLabel;
 	private DoubleSpinner azSpinner, tiltSpinner;
 
 	// Figure
@@ -160,11 +163,24 @@ public class FigurePanel extends MapElementBasePanel {
 			public void actionPerformed(ActionEvent event) {
 				ShapeType shape = (ShapeType) shapeCombo.getSelectedItem();
 				figure.setShape(shape);
+				autoScaleButton.setSelected(figure.isAutoScale());
+				autoScaleButton.setEnabled(Shape.SCALABLE[shape.ordinal()]);
+				if (Shape.SCALABLE[shape.ordinal()]) {
+					sizeLabel.setForeground(Color.BLACK);
+					sizeText.setEnabled(true);
+					sizeText.setValue(figure.getSize());
+				}
+				else {
+					sizeLabel.setForeground(Color.GRAY);
+					sizeText.setEnabled(false);
+					sizeText.setText("");
+				}
 			}
 		});
 		compList.add(shapeCombo);
 
-		compList.add(new JLabel("Size", SwingConstants.RIGHT));
+		sizeLabel = new JLabel("Size", SwingConstants.RIGHT);
+		compList.add(sizeLabel);
 		sizeText = new DoubleTextField(8, Figure.defaultSize, true, Landscape.format) {
 			@Override
 			protected void handleChange(double value) {
@@ -227,9 +243,20 @@ public class FigurePanel extends MapElementBasePanel {
 		super.setMapElement(mapElement);
 		figure = (Figure) mapElement;
 		setLocation(locationText, locLabel, figure.getTranslation());
-		sizeText.setValue(figure.getSize());
-		shapeCombo.setSelectedItem(figure.getShapeType());
+		ShapeType shapeType = figure.getShapeType();
+		if (Shape.SCALABLE[shapeType.ordinal()]) {
+			sizeLabel.setForeground(Color.BLACK);
+			sizeText.setEnabled(true);
+			sizeText.setValue(figure.getSize());
+		}
+		else {
+			sizeLabel.setForeground(Color.GRAY);
+			sizeText.setEnabled(false);
+			sizeText.setText("");
+		}
+		shapeCombo.setSelectedItem(shapeType);
 		autoScaleButton.setSelected(figure.isAutoScale());
+		autoScaleButton.setEnabled(Shape.SCALABLE[shapeType.ordinal()]);
 		surfaceButton.setSelected(figure.isSurfaceNormalVisible());
 		azSpinner.setValueNoChange(figure.getAzimuth());
 		tiltSpinner.setValueNoChange(figure.getTilt());

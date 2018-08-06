@@ -171,6 +171,7 @@ public class FigureMarker extends Marker {
 		label.setTranslation(offset.getX(), offset.getY()*size, offset.getZ());
 		updateWorldTransform(true);
 		updateWorldBound(true);
+		autoScale &= Shape.SCALABLE[shapeType.ordinal()];
 		scaleShape(scale);
 	}
 	

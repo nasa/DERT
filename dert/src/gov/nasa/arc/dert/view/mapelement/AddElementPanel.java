@@ -104,6 +104,7 @@ package gov.nasa.arc.dert.view.mapelement;
 import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.icon.Icons;
 import gov.nasa.arc.dert.scene.World;
+import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.tool.Path;
 import gov.nasa.arc.dert.state.ConfigurationManager;
 import gov.nasa.arc.dert.state.FieldCameraState;
@@ -157,7 +158,7 @@ public class AddElementPanel extends JPanel {
 			public void actionPerformed(ActionEvent event) {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
 				ReadOnlyVector3 normal = World.getInstance().getMarble().getNormal();
-				FigureState fState = new FigureState(position, normal);
+				FigureState fState = new FigureState(position, normal, Figure.defaultShapeType);
 				ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(fState, null);
 			}
 		});

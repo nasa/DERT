@@ -131,13 +131,18 @@ import com.ardor3d.scenegraph.shape.Torus;
 public class Shape extends Node {
 
 	public static enum ShapeType {
-		none, arrow, ball, box, cone, cylinder, dart, disk, dome, flag, crystal, pyramid, quad, rod, sphere, teapot, torus
+		none, arrow, ball, box, cone, cylinder, dart, disk, dome, flag, crystal, pyramid, quad, rod, sphere, teapot, torus, sodacan, mannequin
 	}
 
 	public static Vector3[] SHAPE_TEXT_OFFSET = { new Vector3(0, 0, 0), new Vector3(0, 0.3, 0), new Vector3(0, 1.2, 0),
 		new Vector3(0, 1.2, 0), new Vector3(0, 1.2, 0), new Vector3(0, 1.2, 0), new Vector3(0, 1.2, 0),
 		new Vector3(0, 0.3, 0), new Vector3(0, 0.6, 0), new Vector3(0, 1.2, 0), new Vector3(0, 1.2, 0), new Vector3(0, 1.2, 0),
-		new Vector3(0, 0.5, 0), new Vector3(0, 0.5, 0), new Vector3(0, 0.6, 0), new Vector3(0, 1, 0), new Vector3(0, 0.5, 0) };
+		new Vector3(0, 0.5, 0), new Vector3(0, 0.5, 0), new Vector3(0, 0.6, 0), new Vector3(0, 1, 0), new Vector3(0, 0.5, 0),
+		new Vector3(0, SodaCan.HEIGHT*1.1, 0), new Vector3(0, Mannequin.HEIGHT*1.1, 0)};
+
+	public static boolean[] SCALABLE = {
+		true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false
+	};
 
 	protected Spatial geometry;
 	
@@ -207,7 +212,6 @@ public class Shape extends Node {
 			break;
 		case flag:
 			geometry = new Flag("_flag", arg1);
-			geometry.setTranslation(0, 0, 0.5f*arg1);
 			break;
 		case crystal:
 			geometry = new Sphere("_octahedron", 4, 4, arg2);
@@ -234,6 +238,12 @@ public class Shape extends Node {
 			break;
 		case torus:
 			geometry = new Torus("_torus", (int)arg1, (int)arg1, arg2, arg3);
+			break;
+		case sodacan:
+			geometry = new SodaCan("_sodacan");
+			break;
+		case mannequin:
+			geometry = new SodaCan("_mannequin");
 			break;
 		}
 		if (geometry == null) {
@@ -287,7 +297,6 @@ public class Shape extends Node {
 			break;
 		case flag:
 			geometry = new Flag("_flag", 2 * size);
-			geometry.setTranslation(0, 0, size);
 			break;
 		case crystal:
 			geometry = new Sphere("_octahedron", 4, 4, size * 0.5f);
@@ -317,6 +326,12 @@ public class Shape extends Node {
 			break;
 		case torus:
 			geometry = new Torus("_torus", 50, 50, 0.1f*size, 0.5f*size);
+			break;
+		case sodacan:
+			geometry = new SodaCan("_sodacan");
+			break;
+		case mannequin:
+			geometry = new Mannequin("_mannequin");
 			break;
 		}
 		if (geometry == null) {

@@ -101,96 +101,38 @@ UNILATERAL TERMINATION OF THIS AGREEMENT.
 
 package gov.nasa.arc.dert.action.mapelement;
 
-import gov.nasa.arc.dert.Dert;
 import gov.nasa.arc.dert.action.MenuItemAction;
-import gov.nasa.arc.dert.action.UndoHandler;
-import gov.nasa.arc.dert.scene.World;
-import gov.nasa.arc.dert.scene.landmark.Landmark;
-import gov.nasa.arc.dert.scene.tool.Path;
-import gov.nasa.arc.dert.scene.tool.Profile;
-import gov.nasa.arc.dert.scene.tool.Tool;
-import gov.nasa.arc.dert.scenegraph.Movable;
-import gov.nasa.arc.dert.view.world.MoveEdit;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.swing.JOptionPane;
+import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
+import gov.nasa.arc.dert.state.ConfigurationManager;
+import gov.nasa.arc.dert.state.FigureState;
 
 import com.ardor3d.math.Vector3;
 import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.scenegraph.Spatial;
 
 /**
- * Context menu item for placing a map element at a point in the landscape. User
- * is prompted with a list of map elements.
+ * Context menu item for adding a 3D figure at a point on the landscape.
  *
  */
-public class PlaceHereAction extends MenuItemAction {
+public class AddMannequinAction extends MenuItemAction {
 
-	private Vector3 position;
+	private Vector3 position, normal;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param position
+	 * @param normal
 	 */
-	public PlaceHereAction(ReadOnlyVector3 position) {
-		super("Place Here ...");
+	public AddMannequinAction(ReadOnlyVector3 position, ReadOnlyVector3 normal) {
+		super("Manneqin");
 		this.position = new Vector3(position);
+		this.normal = new Vector3(normal);
 	}
 
 	@Override
 	protected void run() {
-		// Get a list of movable map elements
-		List<Spatial> landmarks = World.getInstance().getLandmarks().getChildren();
-		List<Spatial> tools = World.getInstance().getTools().getChildren();
-		ArrayList<Spatial> list = new ArrayList<Spatial>();
-		for (int i = 0; i < landmarks.size(); ++i) {
-			list.add(landmarks.get(i));
-		}
-		for (int i = 0; i < tools.size(); ++i) {
-			Spatial spat = tools.get(i);
-			if (!((spat instanceof Path) || (spat instanceof Profile))) {
-				list.add(spat);
-			}
-		}
-		if (list.size() == 0) {
-			return;
-		}
-
-		// Sort the list alphabetically
-		Collections.sort(list, new Comparator<Spatial>() {
-			@Override
-			public int compare(Spatial me1, Spatial me2) {
-				return (me1.getName().compareTo(me2.getName()));
-			}
-
-			@Override
-			public boolean equals(Object obj) {
-				return (this == obj);
-			}
-		});
-		Spatial[] spatials = new Spatial[list.size()];
-		list.toArray(spatials);
-
-		// ask user to select one
-		Movable movable = (Movable) JOptionPane.showInputDialog(Dert.getMainWindow(), "Select a Map Element",
-			"Place Here", JOptionPane.PLAIN_MESSAGE, null, spatials, spatials[0]);
-
-		// move the map element and hand it to the undo handler
-		if (movable != null) {
-			Vector3 trans = new Vector3(movable.getTranslation());
-			movable.setLocation(position, false);
-			movable.updateGeometricState(0);
-			if (movable instanceof Landmark)
-				((Landmark)movable).update(Dert.getWorldView().getViewpoint().getCamera());
-			else if (movable instanceof Tool)
-				((Tool)movable).update(Dert.getWorldView().getViewpoint().getCamera());
-			UndoHandler.getInstance().addEdit(new MoveEdit(movable, trans));
-		}
+		FigureState fState = new FigureState(position, normal, ShapeType.mannequin);
+		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(fState, null);
 	}
 
 }

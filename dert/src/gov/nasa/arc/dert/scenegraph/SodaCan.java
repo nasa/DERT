@@ -99,98 +99,34 @@ UNILATERAL TERMINATION OF THIS AGREEMENT.
 
 **/
 
-package gov.nasa.arc.dert.action.mapelement;
+package gov.nasa.arc.dert.scenegraph;
 
-import gov.nasa.arc.dert.Dert;
-import gov.nasa.arc.dert.action.MenuItemAction;
-import gov.nasa.arc.dert.action.UndoHandler;
-import gov.nasa.arc.dert.scene.World;
-import gov.nasa.arc.dert.scene.landmark.Landmark;
-import gov.nasa.arc.dert.scene.tool.Path;
-import gov.nasa.arc.dert.scene.tool.Profile;
-import gov.nasa.arc.dert.scene.tool.Tool;
-import gov.nasa.arc.dert.scenegraph.Movable;
-import gov.nasa.arc.dert.view.world.MoveEdit;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
-import com.ardor3d.math.Vector3;
-import com.ardor3d.math.type.ReadOnlyVector3;
-import com.ardor3d.scenegraph.Spatial;
+import com.ardor3d.bounding.BoundingBox;
+import com.ardor3d.scenegraph.Node;
+import com.ardor3d.scenegraph.shape.Cylinder;
 
 /**
- * Context menu item for placing a map element at a point in the landscape. User
- * is prompted with a list of map elements.
+ * A 3D object that provides a shape the size of a soda can.
  *
  */
-public class PlaceHereAction extends MenuItemAction {
-
-	private Vector3 position;
+public class SodaCan extends Node {
+	
+	public static final double HEIGHT = 0.123825;
+	public static final double RADIUS = 0.0333375;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param position
+	 * @param label
+	 * @param size
 	 */
-	public PlaceHereAction(ReadOnlyVector3 position) {
-		super("Place Here ...");
-		this.position = new Vector3(position);
-	}
-
-	@Override
-	protected void run() {
-		// Get a list of movable map elements
-		List<Spatial> landmarks = World.getInstance().getLandmarks().getChildren();
-		List<Spatial> tools = World.getInstance().getTools().getChildren();
-		ArrayList<Spatial> list = new ArrayList<Spatial>();
-		for (int i = 0; i < landmarks.size(); ++i) {
-			list.add(landmarks.get(i));
-		}
-		for (int i = 0; i < tools.size(); ++i) {
-			Spatial spat = tools.get(i);
-			if (!((spat instanceof Path) || (spat instanceof Profile))) {
-				list.add(spat);
-			}
-		}
-		if (list.size() == 0) {
-			return;
-		}
-
-		// Sort the list alphabetically
-		Collections.sort(list, new Comparator<Spatial>() {
-			@Override
-			public int compare(Spatial me1, Spatial me2) {
-				return (me1.getName().compareTo(me2.getName()));
-			}
-
-			@Override
-			public boolean equals(Object obj) {
-				return (this == obj);
-			}
-		});
-		Spatial[] spatials = new Spatial[list.size()];
-		list.toArray(spatials);
-
-		// ask user to select one
-		Movable movable = (Movable) JOptionPane.showInputDialog(Dert.getMainWindow(), "Select a Map Element",
-			"Place Here", JOptionPane.PLAIN_MESSAGE, null, spatials, spatials[0]);
-
-		// move the map element and hand it to the undo handler
-		if (movable != null) {
-			Vector3 trans = new Vector3(movable.getTranslation());
-			movable.setLocation(position, false);
-			movable.updateGeometricState(0);
-			if (movable instanceof Landmark)
-				((Landmark)movable).update(Dert.getWorldView().getViewpoint().getCamera());
-			else if (movable instanceof Tool)
-				((Tool)movable).update(Dert.getWorldView().getViewpoint().getCamera());
-			UndoHandler.getInstance().addEdit(new MoveEdit(movable, trans));
-		}
+	public SodaCan(String label) {
+		super(label);
+		Cylinder cyl = new Cylinder("_can", 5, 60, RADIUS, HEIGHT, true);
+		cyl.setModelBound(new BoundingBox());
+		cyl.updateModelBound();
+		attachChild(cyl);
+		setTranslation(0, 0, 0.5*HEIGHT);
 	}
 
 }

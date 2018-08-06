@@ -102,6 +102,7 @@ UNILATERAL TERMINATION OF THIS AGREEMENT.
 package gov.nasa.arc.dert.state;
 
 import gov.nasa.arc.dert.scene.landmark.Figure;
+import gov.nasa.arc.dert.scenegraph.Shape;
 import gov.nasa.arc.dert.scenegraph.Shape.ShapeType;
 import gov.nasa.arc.dert.util.StateUtil;
 
@@ -134,16 +135,16 @@ public class FigureState extends LandmarkState {
 	 * @param position
 	 * @param normal
 	 */
-	public FigureState(ReadOnlyVector3 position, ReadOnlyVector3 normal) {
+	public FigureState(ReadOnlyVector3 position, ReadOnlyVector3 normal, ShapeType shape) {
 		super(ConfigurationManager.getInstance().getCurrentConfiguration()
 			.incrementMapElementCount(MapElementState.Type.Figure), MapElementState.Type.Figure, "Figure",
 			Figure.defaultSize, Figure.defaultColor, Figure.defaultLabelVisible, position);
 		this.normal = new Vector3(normal);
 		azimuth = Figure.defaultAzimuth;
 		tilt = Figure.defaultTilt;
-		shape = Figure.defaultShapeType;
+		this.shape = shape;
 		showNormal = Figure.defaultSurfaceNormalVisible;
-		autoScale = Figure.defaultAutoScale;
+		autoScale = Figure.defaultAutoScale && Shape.SCALABLE[shape.ordinal()];
 	}
 	
 	/**

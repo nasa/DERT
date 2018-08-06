@@ -146,6 +146,8 @@ import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -242,6 +244,20 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 				}
 			}
 		});
+		MouseAdapter ma = new MouseAdapter() {
+			public void mousePressed(MouseEvent event) {
+				if (event.getClickCount() == 2) {
+					TreePath tPath = tree.getPathForLocation(event.getX(), event.getY());
+					if (tPath != null) {
+						DefaultMutableTreeNode tNode = (DefaultMutableTreeNode)tPath.getLastPathComponent();
+						Object tObj = tNode.getUserObject();
+						if (tObj instanceof MapElement)
+							doSeek((MapElement)tObj);
+					}
+				}
+			}
+		};
+		tree.addMouseListener(ma);
 		JScrollPane scrollPane = new JScrollPane(tree);
 		scrollPane.setMinimumSize(new Dimension(128, 128));
 		JPanel tPanel = new JPanel(new BorderLayout());
@@ -1025,10 +1041,11 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		seekButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				WorldView wv = Dert.getWorldView();
-				ViewpointController cameraControl = wv.getScenePanel().getViewpointController();
-				cameraControl.seek(currentMapElements[0]);
-				UndoHandler.getInstance().addEdit(new SeekEdit(currentMapElements[0]));
+//				WorldView wv = Dert.getWorldView();
+//				ViewpointController cameraControl = wv.getScenePanel().getViewpointController();
+//				cameraControl.seek(currentMapElements[0]);
+//				UndoHandler.getInstance().addEdit(new SeekEdit(currentMapElements[0]));
+				doSeek(currentMapElements[0]);
 			}
 		});
 		buttonPanel.add(seekButton);
@@ -1111,4 +1128,12 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		buttonPanel.add(noteButton);		
 
 	}
+	
+	private void doSeek(MapElement mapElement) {
+		WorldView wv = Dert.getWorldView();
+		ViewpointController cameraControl = wv.getScenePanel().getViewpointController();
+		cameraControl.seek(mapElement);
+		UndoHandler.getInstance().addEdit(new SeekEdit(mapElement));
+	}
+
 }

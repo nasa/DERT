@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="lib/guava-19.0.jar"/>
 	<classpathentry kind="lib" path="lib/jogamp-fat.jar"/>
 	<classpathentry kind="lib" path="lib/natives_macosx.jar"/>
+	<classpathentry kind="lib" path="lib/ardor3d-collada-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
