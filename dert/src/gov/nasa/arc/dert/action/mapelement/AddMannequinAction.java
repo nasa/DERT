@@ -134,7 +134,7 @@ public class AddMannequinAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		FigureState fState = new FigureState(position, normal, ShapeType.mannequin);
-		fState.color = Color.green;
+		fState.color = new Color(102, 102, 0);
 		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(fState, null);
 	}
 

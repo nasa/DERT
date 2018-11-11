@@ -108,6 +108,7 @@ import gov.nasa.arc.dert.action.mapelement.AddCameraAction;
 import gov.nasa.arc.dert.action.mapelement.AddCartesianGridAction;
 import gov.nasa.arc.dert.action.mapelement.AddFigureAction;
 import gov.nasa.arc.dert.action.mapelement.AddMannequinAction;
+import gov.nasa.arc.dert.action.mapelement.AddModelAction;
 import gov.nasa.arc.dert.action.mapelement.AddPathAction;
 import gov.nasa.arc.dert.action.mapelement.AddPlacemarkAction;
 import gov.nasa.arc.dert.action.mapelement.AddPlaneAction;
@@ -473,6 +474,7 @@ public class WorldInputHandler
 					submenu.add(new AddCameraAction(pickPosition));
 					submenu.add(new AddSodaCanAction(pickPosition, pickNormal));
 					submenu.add(new AddMannequinAction(pickPosition, pickNormal));
+					submenu.add(new AddModelAction(pickPosition, pickNormal));
 					contextMenu.add(submenu);
 					contextMenu.add(new PlaceHereAction(pickPosition));
 				}

@@ -113,6 +113,7 @@ import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.landmark.ImageBoard;
 import gov.nasa.arc.dert.scene.landmark.Landmark;
 import gov.nasa.arc.dert.scene.landmark.Landmarks;
+import gov.nasa.arc.dert.scene.landmark.Model;
 import gov.nasa.arc.dert.scene.landmark.Placemark;
 import gov.nasa.arc.dert.scene.tool.Grid;
 import gov.nasa.arc.dert.scene.tool.Path;
@@ -819,9 +820,9 @@ public class MapElementsPanel extends JPanel implements DirtyEventListener {
 		else {
 			editButton.setEnabled(!(currentMapElement instanceof Feature));
 			openButton.setEnabled(!(currentMapElement instanceof Waypoint) && !(currentMapElement instanceof Grid)
-					&& !(currentMapElement instanceof Figure) && !(currentMapElement instanceof Placemark) && !(currentMapElement instanceof ScaleBar));
+					&& !(currentMapElement instanceof Figure) && !(currentMapElement instanceof Placemark) && !(currentMapElement instanceof ScaleBar) && !(currentMapElement instanceof Model));
 			colorList.setColor(currentMapElement.getColor());
-			colorList.setEnabled(!(currentMapElement instanceof ImageBoard) && !(currentMapElement instanceof Feature) && !(currentMapElement instanceof Waypoint));
+			colorList.setEnabled(!(currentMapElement instanceof ImageBoard) && !(currentMapElement instanceof Feature) && !(currentMapElement instanceof Waypoint) && !(currentMapElement instanceof Model));
 			showButton.setEnabled(!currentMapElement.isVisible());
 			hideButton.setEnabled(currentMapElement.isVisible());
 			lockButton.setEnabled(!currentMapElement.isLocked() && !(currentMapElement instanceof FeatureSet) && !(currentMapElement instanceof Feature) && !(currentMapElement instanceof Waypoint));

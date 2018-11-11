@@ -214,6 +214,7 @@ public class SelectionHandler {
 		position.set(pos);
 		normal.set(nrml);
 		if (meshIndex >= 0) {
+//			System.err.println("SelectionHandler.doSelection "+mesh[meshIndex]);
 			return (mesh[meshIndex]);
 		}
 		return (null);

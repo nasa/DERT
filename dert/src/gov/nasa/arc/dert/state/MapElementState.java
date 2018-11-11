@@ -125,7 +125,7 @@ public abstract class MapElementState extends State {
 
 	// Types of map elements
 	public static enum Type {
-		Placemark, Figure, Billboard, FeatureSet, Feature, Path, Plane, CartesianGrid, RadialGrid, Profile, FieldCamera, Waypoint, Scale, Marble
+		Placemark, Figure, Billboard, FeatureSet, Feature, Path, Plane, CartesianGrid, RadialGrid, Profile, FieldCamera, Waypoint, Scale, Marble, Model
 	}
 	
 	protected static final int X_OFFSET = 20, Y_OFFSET = 20;

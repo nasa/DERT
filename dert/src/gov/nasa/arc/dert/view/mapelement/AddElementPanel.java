@@ -184,7 +184,8 @@ public class AddElementPanel extends JPanel {
 				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
 				PathState state = new PathState(position);
 				Path path = (Path) ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(state, null);
-				Dert.getWorldView().getScenePanel().getInputHandler().setPath(path);
+				if (path != null)
+					Dert.getWorldView().getScenePanel().getInputHandler().setPath(path);
 			}
 		});
 		add(newButton);
@@ -267,6 +268,19 @@ public class AddElementPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				FeatureSetDialog dialog = new FeatureSetDialog((Dialog)getTopLevelAncestor());
+				dialog.open();
+			}
+		});
+		add(newButton);
+
+		newButton = new JButton(Icons.getImageIcon("model.png"));
+		newButton.setToolTipText("add Model");
+		newButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				ReadOnlyVector3 position = World.getInstance().getMarble().getTranslation();
+				ReadOnlyVector3 normal = World.getInstance().getMarble().getNormal();
+				ModelDialog dialog = new ModelDialog((Dialog)getTopLevelAncestor(), position, normal);
 				dialog.open();
 			}
 		});

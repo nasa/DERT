@@ -99,125 +99,107 @@ UNILATERAL TERMINATION OF THIS AGREEMENT.
 
 **/
 
-package gov.nasa.arc.dert.state;
+package gov.nasa.arc.dert.view.mapelement;
 
-import gov.nasa.arc.dert.util.StateUtil;
+import gov.nasa.arc.dert.state.ConfigurationManager;
+import gov.nasa.arc.dert.state.ModelState;
+import gov.nasa.arc.dert.ui.AbstractDialog;
+import gov.nasa.arc.dert.ui.FieldPanel;
+import gov.nasa.arc.dert.ui.FileInputField;
+import gov.nasa.arc.dert.util.FileHelper;
 
-import java.util.Map;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.io.File;
+import java.util.ArrayList;
 
-public class StateFactory {
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import com.ardor3d.math.type.ReadOnlyVector3;
+
+public class ModelDialog
+	extends AbstractDialog {
 	
-	public static enum DefaultState {AnimationState, ColorBarsState, ConsoleState, HelpState, LightingState, LightPositionState, MapElementsState, MarbleState, SurfaceAndLayersState, ViewpointState, WorldState}
-	
-	public StateFactory() {
+	private ReadOnlyVector3 position, normal;
+	private FileInputField fif;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param parent
+	 */
+	public ModelDialog(Dialog parent, ReadOnlyVector3 position, ReadOnlyVector3 normal) {
+		super(parent, "New Model", true, true);
+		this.position = position;
+		this.normal = normal;
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param parent
+	 */
+	public ModelDialog(Frame parent, ReadOnlyVector3 position, ReadOnlyVector3 normal) {
+		super(parent, "New Model", true, true);
+		this.position = position;
+		this.normal = normal;
 	}
 	
-	public State createState(DefaultState key) {
-		return(createState(key.toString(), null));
-	}
-	
-	public State createState(String key, Map<String,Object> map) {
-		
-		DefaultState sName = DefaultState.valueOf(key);
-		
-		if (sName != null) {
-			switch (sName) {
-			case AnimationState:
-				if (map == null)
-					return(new AnimationState());
-				return(new AnimationState(map));
-			case ColorBarsState:
-				if (map == null)
-					return(new ColorBarsState());
-				return(new ColorBarsState(map));
-			case ConsoleState:
-				if (map == null)
-					return(new ConsoleState());
-				return(new ConsoleState(map));
-			case HelpState:
-				if (map == null)
-					return(new HelpState());
-				return(new HelpState(map));
-			case LightingState:
-				if (map == null)
-					return(new LightingState());
-				return(new LightingState(map));
-			case LightPositionState:
-				if (map == null)
-					return(new LightPositionState());
-				return(new LightPositionState(map));
-			case MapElementsState:
-				if (map == null)
-					return(new MapElementsState());
-				return(new MapElementsState(map));
-			case MarbleState:
-				if (map == null)
-					return(new MarbleState());
-				return(new MarbleState(map));
-			case SurfaceAndLayersState:
-				if (map == null)
-					return(new SurfaceAndLayersState());
-				return(new SurfaceAndLayersState(map));
-			case ViewpointState:
-				if (map == null)
-					return(new ViewpointState());
-				return(new ViewpointState(map));
-			case WorldState:
-				if (map == null)
-					return(new WorldState());
-				return(new WorldState(map));
-			}
-		}
-		
-		return(null);
-	}		
 
-	public MapElementState createMapElementState(Map<String,Object> map) {
-		if (map == null)
-			return(null);
-		String str = StateUtil.getString(map, "MapElementType", null);
-		if (str != null) {
-			try {
-				MapElementState.Type type = MapElementState.Type.valueOf(str);
-				if (type != null)
-					switch (type) {
-					case Placemark:
-						return(new PlacemarkState(map));
-					case Figure:
-						return(new FigureState(map));
-					case Billboard:
-						return(new ImageBoardState(map));
-					case Model:
-						return(new ModelState(map));
-					case FeatureSet:
-						return(new FeatureSetState(map));
-					case Path:
-						return(new PathState(map));
-					case Plane:
-						return(new PlaneState(map));
-					case CartesianGrid:
-						return(new GridState(map));
-					case RadialGrid:
-						return(new GridState(map));
-					case Profile:
-						return(new ProfileState(map));
-					case FieldCamera:
-						return(new FieldCameraState(map));
-					case Waypoint:
-						return(new WaypointState(map));
-					case Marble:
-						return(new MarbleState(map));
-					case Scale:
-						return(new ScaleBarState(map));
-					case Feature:
-						break;
-					}
+	@Override
+	protected void build() {
+		super.build();
+		
+		ArrayList<Component> compList = new ArrayList<Component>();
+		compList.add(new JLabel("File", SwingConstants.RIGHT));
+		fif = new FileInputField("", "enter path to Model COLLADA file") {
+			@Override
+			public void setFile() {
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("DAE", "dae");
+				String path = FileHelper.getFilePathForOpen("Model File Selection", filter);
+				if (path != null) {
+					File file = new File(path);
+					fileText.setText(file.getAbsolutePath());
+				}
 			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			
+		};
+		compList.add(fif);
+		contentArea.setLayout(new BorderLayout());
+		contentArea.add(new FieldPanel(compList), BorderLayout.CENTER);
+		messageText.setText("Enter path to model file.");
+		
+		width = 500;
+		height = 150;
+	}
+
+	@Override
+	public boolean okPressed() {
+		okButton.setEnabled(false);
+		messageText.setText("Loading model file.  Please wait.");
+		boolean rc = loadFile();
+		messageText.setText("Loading complete.");
+		okButton.setEnabled(true);
+		return (rc);
+	}
+
+	private boolean loadFile() {
+
+		// get the file path
+		String filePath = fif.getFilePath();
+		if (filePath.isEmpty()) {
+			messageText.setText("Invalid file path.");
+			return(false);
 		}
-		return(null);
+
+		ModelState mState = new ModelState(position, normal, filePath);
+		if (ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(mState, messageText) == null)
+			return(false);
+		return(true);
 	}
 
 }

@@ -134,7 +134,7 @@ public class AddSodaCanAction extends MenuItemAction {
 	@Override
 	protected void run() {
 		FigureState fState = new FigureState(position, normal, ShapeType.sodacan);
-		fState.color = Color.orange;
+		fState.color = new Color(204, 102, 0);
 		ConfigurationManager.getInstance().getCurrentConfiguration().addMapElementState(fState, null);
 	}
 

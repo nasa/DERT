@@ -101,123 +101,105 @@ UNILATERAL TERMINATION OF THIS AGREEMENT.
 
 package gov.nasa.arc.dert.state;
 
+import gov.nasa.arc.dert.scene.landmark.ImageBoard;
+import gov.nasa.arc.dert.scene.landmark.Model;
 import gov.nasa.arc.dert.util.StateUtil;
 
 import java.util.Map;
 
-public class StateFactory {
-	
-	public static enum DefaultState {AnimationState, ColorBarsState, ConsoleState, HelpState, LightingState, LightPositionState, MapElementsState, MarbleState, SurfaceAndLayersState, ViewpointState, WorldState}
-	
-	public StateFactory() {
-	}
-	
-	public State createState(DefaultState key) {
-		return(createState(key.toString(), null));
-	}
-	
-	public State createState(String key, Map<String,Object> map) {
-		
-		DefaultState sName = DefaultState.valueOf(key);
-		
-		if (sName != null) {
-			switch (sName) {
-			case AnimationState:
-				if (map == null)
-					return(new AnimationState());
-				return(new AnimationState(map));
-			case ColorBarsState:
-				if (map == null)
-					return(new ColorBarsState());
-				return(new ColorBarsState(map));
-			case ConsoleState:
-				if (map == null)
-					return(new ConsoleState());
-				return(new ConsoleState(map));
-			case HelpState:
-				if (map == null)
-					return(new HelpState());
-				return(new HelpState(map));
-			case LightingState:
-				if (map == null)
-					return(new LightingState());
-				return(new LightingState(map));
-			case LightPositionState:
-				if (map == null)
-					return(new LightPositionState());
-				return(new LightPositionState(map));
-			case MapElementsState:
-				if (map == null)
-					return(new MapElementsState());
-				return(new MapElementsState(map));
-			case MarbleState:
-				if (map == null)
-					return(new MarbleState());
-				return(new MarbleState(map));
-			case SurfaceAndLayersState:
-				if (map == null)
-					return(new SurfaceAndLayersState());
-				return(new SurfaceAndLayersState(map));
-			case ViewpointState:
-				if (map == null)
-					return(new ViewpointState());
-				return(new ViewpointState(map));
-			case WorldState:
-				if (map == null)
-					return(new WorldState());
-				return(new WorldState(map));
-			}
-		}
-		
-		return(null);
-	}		
+import com.ardor3d.math.Vector3;
+import com.ardor3d.math.type.ReadOnlyVector3;
 
-	public MapElementState createMapElementState(Map<String,Object> map) {
-		if (map == null)
-			return(null);
-		String str = StateUtil.getString(map, "MapElementType", null);
-		if (str != null) {
-			try {
-				MapElementState.Type type = MapElementState.Type.valueOf(str);
-				if (type != null)
-					switch (type) {
-					case Placemark:
-						return(new PlacemarkState(map));
-					case Figure:
-						return(new FigureState(map));
-					case Billboard:
-						return(new ImageBoardState(map));
-					case Model:
-						return(new ModelState(map));
-					case FeatureSet:
-						return(new FeatureSetState(map));
-					case Path:
-						return(new PathState(map));
-					case Plane:
-						return(new PlaneState(map));
-					case CartesianGrid:
-						return(new GridState(map));
-					case RadialGrid:
-						return(new GridState(map));
-					case Profile:
-						return(new ProfileState(map));
-					case FieldCamera:
-						return(new FieldCameraState(map));
-					case Waypoint:
-						return(new WaypointState(map));
-					case Marble:
-						return(new MarbleState(map));
-					case Scale:
-						return(new ScaleBarState(map));
-					case Feature:
-						break;
-					}
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return(null);
+/**
+ * Provides a state object for the Figure.
+ *
+ */
+public class ModelState extends LandmarkState {
+
+	// The path to the model to be displayed
+	public String filePath;
+
+	// Surface normal
+	public Vector3 normal;
+
+	// Orientation
+	public double azimuth, tilt;
+
+	// Options
+	public boolean showNormal;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param position
+	 * @param normal
+	 */
+	public ModelState(ReadOnlyVector3 position, ReadOnlyVector3 normal, String filePath) {
+		super(ConfigurationManager.getInstance().getCurrentConfiguration()
+			.incrementMapElementCount(MapElementState.Type.Model), MapElementState.Type.Model, "Model",
+			Model.defaultSize, Model.defaultColor, Model.defaultLabelVisible, position);
+		this.normal = new Vector3(normal);
+		azimuth = Model.defaultAzimuth;
+		tilt = Model.defaultTilt;
+		this.filePath = filePath;
+		showNormal = Model.defaultSurfaceNormalVisible;
+	}
+	
+	/**
+	 * Constructor for hash map.
+	 */
+	public ModelState(Map<String,Object> map) {
+		super(map);
+		filePath = StateUtil.getString(map, "FilePath", ImageBoard.defaultImagePath);
+		normal = StateUtil.getVector3(map, "Normal", Vector3.ZERO);
+		azimuth = StateUtil.getDouble(map, "Azimuth", Model.defaultAzimuth);
+		tilt = StateUtil.getDouble(map, "Tilt", Model.defaultTilt);
+		showNormal = StateUtil.getBoolean(map, "ShowNormal", Model.defaultSurfaceNormalVisible);
+	}
+	
+	@Override
+	public boolean isEqualTo(State state) {
+		if ((state == null) || !(state instanceof ModelState)) 
+			return(false);
+		ModelState that = (ModelState)state;
+		if (!super.isEqualTo(that)) 
+			return(false);
+		if (!this.normal.equals(that.normal)) 
+			return(false);
+		if (this.azimuth != that.azimuth) 
+			return(false);
+		if (this.tilt != that.tilt)
+			return(false);
+		if (this.showNormal != that.showNormal) 
+			return(false);
+		if (!this.filePath.equals(that.filePath)) 
+			return(false);
+		return(true);
 	}
 
+	@Override
+	public Map<String,Object> save() {
+		Map<String,Object> map = super.save();
+		if (mapElement != null) {
+			Model model = (Model) mapElement;
+			normal = new Vector3(model.getNormal());
+			azimuth = model.getAzimuth();
+			tilt = model.getTilt();
+			filePath = model.getFilePath();
+			showNormal = model.isSurfaceNormalVisible();
+		}
+		StateUtil.putVector3(map, "Normal", normal);
+		map.put("Azimuth", new Double(azimuth));
+		map.put("Tilt", new Double(tilt));
+		map.put("FilePath", filePath);
+		map.put("ShowNormal", new Boolean(showNormal));
+		return(map);
+	}
+	
+	@Override
+	public String toString() {
+		String str = super.toString();
+		str = "["+azimuth+","+tilt+","+normal+","+filePath+","+showNormal+"] "+str;
+		return(str);
+	}
 }

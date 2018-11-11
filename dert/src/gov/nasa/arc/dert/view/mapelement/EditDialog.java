@@ -145,6 +145,9 @@ public class EditDialog extends AbstractDialog {
 		case Billboard:
 			basePanel = new ImageBoardPanel(mapElement);
 			break;
+		case Model:
+			basePanel = new ModelPanel(mapElement);
+			break;
 		case Feature:
 		case FeatureSet:
 			basePanel = new FeatureSetPanel(mapElement);

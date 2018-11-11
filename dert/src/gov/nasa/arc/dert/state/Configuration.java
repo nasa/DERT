@@ -113,6 +113,7 @@ import gov.nasa.arc.dert.view.mapelement.MapElementsView;
 import gov.nasa.arc.dert.view.surfaceandlayers.SurfaceAndLayersView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -192,6 +193,8 @@ public class Configuration {
 		consoleState = (ConsoleState)stateMap.get("ConsoleState");
 
 		mapElementCount = (int[])map.get("MapElementCount");
+		if (mapElementCount.length < MapElementState.Type.values().length)
+			mapElementCount = Arrays.copyOf(mapElementCount, MapElementState.Type.values().length);
 		int n = StateUtil.getInteger(map, "MapElementStateCount", 0);
 		mapElementStateList = new ArrayList<MapElementState>();
 		for (int i = 0; i < n; ++i) {
@@ -269,7 +272,6 @@ public class Configuration {
 			Path path = (Path) ((WaypointState) state).parent.getMapElement();
 			mapElement = path.addWaypoint((WaypointState) state);
 		} else {
-			mapElementStateList.add(state);
 			if (state instanceof LandmarkState) {
 				mapElement = World.getInstance().getLandmarks().addLandmark((LandmarkState) state, true);
 			} else if (state instanceof ToolState) {
@@ -277,9 +279,11 @@ public class Configuration {
 			} else if (state instanceof FeatureSetState) {
 				mapElement = World.getInstance().getFeatureSets().addFeatureSet((FeatureSetState) state, true, msgField);
 			}
+			if (mapElement != null)
+				mapElementStateList.add(state);
 		}
 		World world = World.getInstance();
-		if (world != null) {
+		if ((world != null) && (mapElement != null)) {
 			world.setVerticalExaggeration(mapElement);
 		}
 		return (mapElement);

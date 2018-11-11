@@ -111,6 +111,7 @@ import gov.nasa.arc.dert.scenegraph.GroupNode;
 import gov.nasa.arc.dert.state.FigureState;
 import gov.nasa.arc.dert.state.ImageBoardState;
 import gov.nasa.arc.dert.state.LandmarkState;
+import gov.nasa.arc.dert.state.ModelState;
 import gov.nasa.arc.dert.state.PlacemarkState;
 import gov.nasa.arc.dert.view.Console;
 
@@ -201,6 +202,17 @@ public class Landmarks extends GroupNode {
 		case Billboard:
 			ImageBoardState iState = (ImageBoardState) state;
 			landmark = new ImageBoard(iState);
+			break;
+		case Model:
+			ModelState mState = (ModelState) state;
+			try {
+				landmark = new Model(mState);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				Console.println("Error loading model.  See log.");
+				landmark = null;
+			}
 			break;
 		case Path:
 		case Plane:

@@ -204,6 +204,7 @@ public class Tools extends GroupNode {
 		case Figure:
 		case Placemark:
 		case Billboard:
+		case Model:
 			break;
 		case Path:
 			tool = new Path((PathState) state);
