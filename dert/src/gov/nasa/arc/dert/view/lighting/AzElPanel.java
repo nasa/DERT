@@ -149,6 +149,8 @@ public class AzElPanel extends JPanel {
 		azElArray = new double[2];
 		lastAzEl = new float[2];
 		lastAzEl[0] = (float) Math.toDegrees(World.getInstance().getLighting().getLight().getAzimuth());
+		if (lastAzEl[0] < 0)
+			lastAzEl[0] += 360;
 		lastAzEl[1] = (float) Math.toDegrees(World.getInstance().getLighting().getLight().getElevation());
 		azElDisk = new AzElDisk(lastAzEl[0], lastAzEl[1]) {
 			@Override
