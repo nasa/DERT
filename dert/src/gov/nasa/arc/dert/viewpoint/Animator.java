@@ -205,8 +205,9 @@ public class Animator {
 			animationPanel.enableParameters(false);
 			// Pause the rendering framework so it won't interfere.
 			SceneFramework.getInstance().suspend(true);
-			// make time step at least 1 second if we are grabbing frames
-			final int millis = (flyParams.grab && (flyParams.millisPerFrame < 1000)) ? 1000 : flyParams.millisPerFrame;
+//			// make time step at least 1 second if we are grabbing frames
+//			final int millis = (flyParams.grab && (flyParams.millisPerFrame < 1000)) ? 1000 : flyParams.millisPerFrame;
+			final int millis = flyParams.millisPerFrame;
 			flyIndex = 0;
 			oldViewpoint = viewpoint.get(oldViewpoint);
 			flyThroughTimer = new Timer(millis, new ActionListener() {
