@@ -12,6 +12,7 @@
 	<path id="libclasspath">
 		<pathelement path="${libdir}/ardor3d-animation-1.0-SNAPSHOT.jar"/>
 		<pathelement path="${libdir}/ardor3d-awt-1.0-SNAPSHOT.jar"/>
+		<pathelement path="${libdir}/ardor3d-collada-1.0-SNAPSHOT.jar"/>
 		<pathelement path="${libdir}/ardor3d-core-1.0-SNAPSHOT.jar"/>
 		<pathelement path="${libdir}/ardor3d-effects-1.0-SNAPSHOT.jar"/>
 		<pathelement path="${libdir}/ardor3d-extras-1.0-SNAPSHOT.jar"/>
@@ -21,6 +22,7 @@
 		<pathelement path="${libdir}/ardor3d-savable-1.0-SNAPSHOT.jar"/>
 		<pathelement path="${libdir}/ardor3d-ui-1.0-SNAPSHOT.jar"/>
 		<pathelement path="${libdir}/guava-19.0.jar"/>
+		<pathelement path="${libdir}/jdom-2.0.4.jar"/>
 		<pathelement path="${libdir}/jogamp-fat.jar"/>
 		<pathelement path="${libdir}/spice.jar"/>
 		<pathelement path="${libdir}/natives_macosx.jar"/>
@@ -29,6 +31,7 @@
 	<path id="macclasspath">
 		<pathelement path="ardor3d-animation-1.0-SNAPSHOT.jar"/>
 		<pathelement path="ardor3d-awt-1.0-SNAPSHOT.jar"/>
+		<pathelement path="ardor3d-collada-1.0-SNAPSHOT.jar"/>
 		<pathelement path="ardor3d-core-1.0-SNAPSHOT.jar"/>
 		<pathelement path="ardor3d-effects-1.0-SNAPSHOT.jar"/>
 		<pathelement path="ardor3d-extras-1.0-SNAPSHOT.jar"/>
@@ -38,6 +41,7 @@
 		<pathelement path="ardor3d-savable-1.0-SNAPSHOT.jar"/>
 		<pathelement path="ardor3d-ui-1.0-SNAPSHOT.jar"/>
 		<pathelement path="guava-19.0.jar"/>
+		<pathelement path="jdom-2.0.4.jar"/>
 		<pathelement path="jogamp-fat.jar"/>
 		<pathelement path="spice.jar"/>
 		<pathelement path="natives_macosx.jar"/>

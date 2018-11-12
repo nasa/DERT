@@ -285,12 +285,12 @@ public class Ephemeris {
 			double et = CSPICE.str2et(time);
 
 			// Compute target state in observer body-fixed frame
-			double[] pos = new double[6];
+			double[] trgPt = new double[3];
 			double[] lt = new double[1];
 			String obsName = observer;
 //			if (obsName.equals("MARS"))
 //				obsName += " BARYCENTER";
-			CSPICE.spkpos(target, et, "IAU_"+observer, "LT+S", obsName, pos, lt);
+			CSPICE.spkpos(target, et, "IAU_"+observer, "LT+S", obsName, trgPt, lt);
 			
 			// Get the observer body
 			BodyName obsBody = new BodyName(observer);
@@ -306,27 +306,28 @@ public class Ephemeris {
 			double[] obsSurfaceNm = CSPICE.surfnm(obsRadii[0], obsRadii[1], obsRadii[2], obsSurfacePt);
 			obsSurfaceNm = CSPICE.vhat(obsSurfaceNm);
 			
-			pos[0] -= obsSurfacePt[0];
-			pos[1] -= obsSurfacePt[1];
-			pos[2] -= obsSurfacePt[2];
+			trgPt[0] -= obsSurfacePt[0];
+			trgPt[1] -= obsSurfacePt[1];
+			trgPt[2] -= obsSurfacePt[2];
 
 			// Compute the matrix to tranform the body-fixed frame to the surface frame
 			// make the Y axis Lon = 0
 			double[][] obsMatrix = CSPICE.twovec(obsSurfaceNm, 3, zAxis, 2);
-			double[] trgPt = new double[] {pos[0], pos[1], pos[2]};
-			trgPt = CSPICE.mxv(obsMatrix, trgPt);
-			trgPt = CSPICE.vhat(trgPt);
-			pos[0] = trgPt[0];
-			pos[1] = trgPt[1];
-			pos[2] = trgPt[2];
+			double[] vec = CSPICE.mxv(obsMatrix, trgPt);
+			vec = CSPICE.vhat(vec);
+			
+			double[] result = new double[6];
+			result[0] = vec[0];
+			result[1] = vec[1];
+			result[2] = vec[2];
 					
 			// convert to radius, lon, and lat
-			trgPt = CSPICE.reclat(trgPt);
-			pos[3] = trgPt[0];
-			pos[4] = trgPt[1];
-			pos[5] = trgPt[2];
+			vec = CSPICE.reclat(trgPt);
+			result[3] = vec[0];
+			result[4] = vec[1];
+			result[5] = vec[2];
 
-			return (pos);
+			return (result);
 		} catch (Exception e) {
 			System.out.println("Unable to get target vector, see log.");
 			e.printStackTrace();
