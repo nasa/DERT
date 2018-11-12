@@ -176,7 +176,7 @@ public class TapeMeasure extends Node implements ViewDependent, CoordListener {
 	public TapeMeasure() {
 		tmpVec = new Vector3();
 		anchorPoint = new FigureMarker("_anchor", Vector3.ZERO, pointSize, 0, anchorColor, false, true, false);
-		anchorPoint.setShape(ShapeType.sphere);
+		anchorPoint.setShape(ShapeType.sphere, false);
 		anchorPoint.getSceneHints().setAllPickingHints(false);
 		MaterialState materialState = (MaterialState) anchorPoint.getLocalRenderState(StateType.Material);
 		materialState.setAmbient(MaterialFace.FrontAndBack, UIUtil.colorToColorRGBA(anchorColor));
@@ -184,7 +184,7 @@ public class TapeMeasure extends Node implements ViewDependent, CoordListener {
 		attachChild(anchorPoint);
 
 		currentPoint = new FigureMarker("_current", new Vector3(0, 0, 1), pointSize, 0, currentColor, false, true, false);
-		currentPoint.setShape(ShapeType.sphere);
+		currentPoint.setShape(ShapeType.sphere, false);
 		currentPoint.getSceneHints().setAllPickingHints(false);
 		materialState = (MaterialState) currentPoint.getLocalRenderState(StateType.Material);
 		materialState.setAmbient(MaterialFace.FrontAndBack, UIUtil.colorToColorRGBA(currentColor));

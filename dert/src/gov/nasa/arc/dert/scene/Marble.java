@@ -140,7 +140,7 @@ public class Marble extends FigureMarker implements MapElement {
 	 */
 	public Marble(MarbleState state) {
 		super("Marble", null, state.size, 0, state.color, state.labelVisible, true, false);
-		setShape(ShapeType.sphere);
+		setShape(ShapeType.sphere, false);
 		surfaceNormalArrow.getSceneHints().setCullHint(CullHint.Never);
 		getSceneHints().setAllPickingHints(false);
 		solarDirectionArrow = new DirectionArrow("Direction to Sol", (float)(state.size*2), ColorRGBA.YELLOW);

@@ -157,8 +157,8 @@ public class FigureMarker extends Marker {
 	 * 
 	 * @param type
 	 */
-	public void setShape(ShapeType type) {
-		if (shapeType == type)
+	public void setShape(ShapeType type, boolean force) {
+		if (!force && (shapeType == type))
 			return;
 		if (shape != null)
 			contents.detachChild(shape);
@@ -302,7 +302,7 @@ public class FigureMarker extends Marker {
 		this.size = size;
 		if (surfaceNormalArrow != null)
 			surfaceNormalArrow.setLength(size*1.5);
-		setShape(shapeType);
+		setShape(shapeType, true);
 	}
 
 	/**

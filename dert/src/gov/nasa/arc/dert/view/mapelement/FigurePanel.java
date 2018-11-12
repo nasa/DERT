@@ -162,7 +162,7 @@ public class FigurePanel extends MapElementBasePanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				ShapeType shape = (ShapeType) shapeCombo.getSelectedItem();
-				figure.setShape(shape);
+				figure.setShape(shape, false);
 				autoScaleButton.setSelected(figure.isAutoScale());
 				autoScaleButton.setEnabled(Shape.SCALABLE[shape.ordinal()]);
 				if (Shape.SCALABLE[shape.ordinal()]) {

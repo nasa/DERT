@@ -148,7 +148,7 @@ public class Figure extends FigureMarker implements Landmark {
 	 */
 	public Figure(FigureState state) {
 		super(state.name, state.position, state.size, state.zOff, state.color, state.labelVisible, state.autoScale, state.locked);
-		setShape(state.shape);
+		setShape(state.shape, false);
 		setAzimuth(state.azimuth);
 		setTilt(state.tilt);
 		setSurfaceNormalVisible(state.showNormal);

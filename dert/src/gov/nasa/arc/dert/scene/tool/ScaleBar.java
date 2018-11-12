@@ -198,7 +198,7 @@ public class ScaleBar extends FigureMarker implements Tool {
 	}
 	
 	@Override
-	public void setShape(ShapeType shapeType) {
+	public void setShape(ShapeType shapeType, boolean force) {
 		buildRod();
 	}
 	

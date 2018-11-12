@@ -137,7 +137,7 @@ public class Waypoint extends FigureMarker implements MapElement {
 		super(state.name, state.location, state.size, state.zOff, state.color, state.labelVisible, true, state.locked);
 		contents.detachChild(surfaceNormalArrow);
 		surfaceNormalArrow = null;
-		setShape(ShapeType.sphere);
+		setShape(ShapeType.sphere, false);
 		setVisible(state.visible);
 		label.setTranslation(0, 2*size, 0);
 		line = new LineSegment("_textLine", new Vector3(0,0,0), new Vector3(0, 1.8*size, 0));

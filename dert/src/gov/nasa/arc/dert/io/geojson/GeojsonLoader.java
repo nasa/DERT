@@ -344,7 +344,7 @@ public class GeojsonLoader {
 			pos = toWorld(pCoord, ground);
 			if (pos != null) {
 				FigureMarker fm = new FigureMarker(parent.getName(), pos, size, 0, color, false, true, true);
-				fm.setShape(ShapeType.crystal);
+				fm.setShape(ShapeType.crystal, false);
 				fm.setAutoShowLabel(true);
 				parent.attachChild(fm);
 				minZ = pos.getZ();
@@ -368,7 +368,7 @@ public class GeojsonLoader {
 				pos = toWorld(mpCoord[i], ground);
 				if (coord != null) {
 					FigureMarker fm = new FigureMarker(parent.getName()+i, pos, size, 0, color, false, true, true);
-					fm.setShape(ShapeType.crystal);
+					fm.setShape(ShapeType.crystal, false);
 					fm.setAutoShowLabel(true);
 					parent.attachChild(fm);
 					minZ = Math.min(minZ, pos.getZ());
