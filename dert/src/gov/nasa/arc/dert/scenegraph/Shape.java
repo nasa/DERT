@@ -243,7 +243,7 @@ public class Shape extends Node {
 			geometry = new SodaCan("_sodacan");
 			break;
 		case mannequin:
-			geometry = new SodaCan("_mannequin");
+			geometry = new Mannequin("_mannequin");
 			break;
 		}
 		if (geometry == null) {
