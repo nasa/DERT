@@ -300,7 +300,6 @@ public class Ephemeris {
 
 			// Compute surface point on observer body in body-fixed frame			
 			double[] obsSurfacePt = CSPICE.georec(Math.toRadians(lon), Math.toRadians(lat), alt, obsRadii[0], (obsRadii[0]-obsRadii[2])/obsRadii[0]);
-			obsSurfacePt[2] += alt;
 
 			// Compute surface normal at surface point
 			double[] obsSurfaceNm = CSPICE.surfnm(obsRadii[0], obsRadii[1], obsRadii[2], obsSurfacePt);
