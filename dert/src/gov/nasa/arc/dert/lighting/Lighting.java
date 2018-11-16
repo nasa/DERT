@@ -458,7 +458,8 @@ public class Lighting {
 		StateUtil.putColorRGBA(map, "HeadlightIntensity", headlightIntensity);
 		map.put("IsLamp", new Boolean(isLamp));
 		map.put("HeadlightEnabled", new Boolean(headlightEnabled));
-		StateUtil.putVector3(map, "ReferenceLocation", refLoc);
+		if (refLoc != null)
+			StateUtil.putVector3(map, "ReferenceLocation", refLoc);
 		map.put("Epoch", epoch);
 		map.put("TimeUTC", new Long(timeUTC));
 		StateUtil.putColorRGBA(map, "BackgroundColor", background);
@@ -666,7 +667,7 @@ public class Lighting {
 	 */
 	public ReadOnlyVector3 getRefLoc() {
 		if (refLoc == null)
-			refLoc = new Vector3(Landscape.getInstance().getCenterLonLat());
+			return(Landscape.getInstance().getCenterLonLat());
 		return(refLoc);
 	}
 
