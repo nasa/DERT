@@ -212,6 +212,7 @@ public class Projection {
 				bounds[3] = xy[1];
 				projInfo.scale[0] = (bounds[2] - bounds[0]) / projInfo.rasterWidth;
 				projInfo.scale[1] = (bounds[3] - bounds[1]) / projInfo.rasterLength;
+				Console.println("Projection Result: tiepoints=("+projInfo.tiePoint[0]+","+projInfo.tiePoint[1]+","+projInfo.tiePoint[2]+"), scale=("+projInfo.scale[0]+","+projInfo.scale[1]+","+projInfo.scale[2]+").");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

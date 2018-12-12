@@ -226,6 +226,7 @@ public class Landscape
 		this.surfaceColor = surfaceColor;
 		layerList = layerManager.getLayers();
 		baseLayer = layerManager.getBaseLayer();
+		srs = new SpatialReferenceSystem(baseLayer.getProjectionInfo());
 		pixelWidth = baseLayer.getPixelWidth();
 		pixelLength = baseLayer.getPixelLength();
 		pixelScale = baseLayer.getPixelScale();
@@ -251,7 +252,6 @@ public class Landscape
 		// determine the default grid cell sizes and number formats based on
 		// base layer physical size
 		computeDefaultSizes();
-		srs = new SpatialReferenceSystem(baseLayer.getProjectionInfo());
 	}
 
 	/**

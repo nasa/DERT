@@ -368,6 +368,7 @@ public class Lighting {
 		if (!isLamp) {
 			light.setTime(timeUTC, Landscape.getInstance().getGlobeName(), "Sun", getRefLoc());
 			setBackgroundSaturation(light.getElevation());
+//			CelestialBody.update(timeUTC);
 		}
 		World.getInstance().getMarble().setSolarDirection(getLightDirection());
 	}

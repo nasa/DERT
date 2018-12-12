@@ -324,7 +324,7 @@ public class FileSystemTileSource
 				return (tile);
 			}
 		} catch (Exception e) {
-			System.out.println("Unable to read tile " + qKey + ", see log.");
+			System.out.println("Unable to read tile " + qKey + " for layer "+layerName+", see log.");
 			e.printStackTrace();
 		}
 		return (null);

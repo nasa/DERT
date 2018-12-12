@@ -7,7 +7,8 @@
 
 # Setup for Mac
 PLATFORM = macosx
-JAVA_INCLUDE = -I/System/Library/Frameworks/JavaVM.Framework/Headers
+#JAVA_INCLUDE = -I/System/Library/Frameworks/JavaVM.Framework/Headers
+JAVA_INCLUDE = -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/JavaVM.framework/Versions/Current/Headers
 LIBEXT = jnilib
 CFLAGS = -arch x86_64 -O2
 LFLAGS = -arch x86_64 -fPIC -bundle -framework JavaVM

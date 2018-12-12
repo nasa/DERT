@@ -297,6 +297,8 @@ public class World extends GroupNode {
 		ruler.getSceneHints().setCullHint(CullHint.Always);
 		CoordAction.listenerList.add(ruler);
 		contents.attachChild(ruler);
+		
+//		CelestialBody.initialize(contents);
 
 		// initialize shadows
 		setTime(timeUTC);
