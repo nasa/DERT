@@ -1540,34 +1540,37 @@ public class GTIF extends RasterFileImpl {
 			if (s > Integer.MAX_VALUE) {
 				throw new IllegalArgumentException("Cannot load TIFF file with tile size > " + Integer.MAX_VALUE + ".");
 			}
+			
+			loadFromTile(n, (int)s, w, h, raster);
 
-			// Allocate memory directly
-			ByteBuffer bbuf = ByteBuffer.allocateDirect((int) s);
-			bbuf.order(byteOrder);
-			byte[] bArray = new byte[(int) s];
-			// ByteBuffer bbuf = ByteBuffer.wrap(bArray);
-
-			// Read each tile and place it in the full size raster.
-			int r = 0, c = 0; // row and column pixels of the upper left corner
-								// of the tile
-			for (int i = 0; i < n; ++i) {
-				boolean success = readRGBATile(handle, r, c, bbuf);
-				if (!success) {
-					throw new IllegalStateException(getTIFFError());
-				}
-				bbuf.rewind();
-				bbuf.get(bArray);
-				int wid = Math.min(w, rasterWidth - c);
-				int hgt = Math.min(h, rasterLength - r);
-				// raster.set(r, c, wid, hgt, bbuf);
-				raster.set(r, c, wid, hgt, bArray);
-				c += w;
-				if (c >= rasterWidth) {
-					c = 0;
-					r += h;
-				}
-				Thread.yield();
-			}
+//			// Allocate memory directly
+//			ByteBuffer bbuf = ByteBuffer.allocateDirect((int) s);
+//			bbuf.order(byteOrder);
+//			byte[] bArray = new byte[(int) s];
+//			// ByteBuffer bbuf = ByteBuffer.wrap(bArray);
+//
+//			// Read each tile and place it in the full size raster.
+//			int r = 0, c = 0; // row and column pixels of the upper left corner
+//								// of the tile
+//			for (int i = 0; i < n; ++i) {
+//				boolean success = readRGBATile(handle, r, c, bbuf);
+//				if (!success) {
+//					throw new IllegalStateException(getTIFFError());
+//				}
+//				System.err.println("GTIF.loadRGBA "+i+" "+r+" "+c+" "+s+" "+rasterWidth+" "+w);
+//				bbuf.rewind();
+//				bbuf.get(bArray);
+//				int wid = Math.min(w, rasterWidth - c);
+//				int hgt = Math.min(h, rasterLength - r);
+//				// raster.set(r, c, wid, hgt, bbuf);
+//				raster.set(r, c, wid, hgt, bArray);
+//				c += w;
+//				if (c >= rasterWidth) {
+//					c = 0;
+//					r += h;
+//				}
+//				Thread.yield();
+//			}
 		}
 
 		// TIFF is organized in strips.
