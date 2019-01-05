@@ -31,7 +31,7 @@ Copyright © 1991-2000 Silicon Graphics, Inc.
 Light Weight Java Gaming Library Project (LWJGL)
 Copyright © 2002-2004 LWJGL Project All rights reserved.
  
-Tile Rendering Library - Brain Paul 
+Tile Rendering Library - Brian Paul 
 Copyright © 1997-2005 Brian Paul. All Rights Reserved.
  
 OpenKODE, EGL, OpenGL , OpenGL ES1 & ES2
