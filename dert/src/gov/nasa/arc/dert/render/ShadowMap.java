@@ -125,6 +125,7 @@ public class ShadowMap extends ProjectedDepthTexture {
 	public static final int SHADOW_MAP_UNIT = 7;
 
 	// projection direction fields
+	// the location of the camera used for the shadow map, the direction of the light coming from the source, work vector
 	private Vector3 lightCameraLocation, lightDirection, dirTmp;
 
 	// center of shadowed region
@@ -267,6 +268,7 @@ public class ShadowMap extends ProjectedDepthTexture {
 
 	@Override
 	public void update(final Renderer r) {
+		// if the direction of the light rays have a positive elevation, the light source is underneath the landscape
 		if (angle.getY() >= 0)
 			Landscape.getInstance().getLayerManager().setAllDark(true);
 		else
