@@ -122,6 +122,9 @@ import com.ardor3d.extension.model.collada.jdom.ColladaImporter;
 import com.ardor3d.extension.model.collada.jdom.data.ColladaStorage;
 import com.ardor3d.math.Matrix3;
 import com.ardor3d.math.Vector3;
+import com.ardor3d.renderer.queue.RenderBucketType;
+import com.ardor3d.renderer.state.MaterialState;
+import com.ardor3d.renderer.state.MaterialState.ColorMaterial;
 import com.ardor3d.scenegraph.Node;
 import com.ardor3d.scenegraph.event.DirtyType;
 import com.ardor3d.scenegraph.hint.CullHint;
@@ -168,6 +171,10 @@ public class Model extends FigureMarker implements Landmark {
 			ColladaStorage storage = importer.load(file.getName());
 			rootNode = storage.getScene();
 			contents.attachChild(rootNode);
+			MaterialState materialState = new MaterialState();
+			materialState.setColorMaterial(ColorMaterial.None);
+			contents.setRenderState(materialState);
+			contents.updateGeometricState(0);
 			rootNode.updateWorldBound(true);
 //			label.setTranslation(offset.getX(), offset.getY()*size, offset.getZ());
 		}
@@ -179,6 +186,7 @@ public class Model extends FigureMarker implements Landmark {
 		state.setMapElement(this);
 		updateWorldTransform(true);
 		updateWorldBound(true);
+		getSceneHints().setRenderBucketType(RenderBucketType.Inherit);
 	}
 
 	/**

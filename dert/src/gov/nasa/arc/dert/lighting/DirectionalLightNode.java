@@ -328,7 +328,7 @@ public class DirectionalLightNode extends Node {
 
 	private void buildOrb() {
 		orb = new Sphere("_orb", 20, 20, 1);
-		orb.setDefaultColor(SOL_COLOR);
+		orb.setSolidColor(SOL_COLOR);
 		orb.updateGeometricState(0);
 	}
 
