@@ -101,10 +101,14 @@ UNILATERAL TERMINATION OF THIS AGREEMENT.
 
 package gov.nasa.arc.dert.view.mapelement;
 
+import gov.nasa.arc.dert.landscape.Landscape;
 import gov.nasa.arc.dert.scene.MapElement;
+import gov.nasa.arc.dert.scene.landmark.Figure;
 import gov.nasa.arc.dert.scene.landmark.Model;
 import gov.nasa.arc.dert.ui.DoubleSpinner;
+import gov.nasa.arc.dert.ui.DoubleTextField;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -125,8 +129,8 @@ public class ModelPanel extends MapElementBasePanel {
 
 	// Controls
 	private JTextField fileText;
-//	private DoubleTextField sizeText;
-//	private JLabel sizeLabel;
+	private DoubleTextField sizeText;
+	private JLabel sizeLabel;
 	private DoubleSpinner azSpinner, tiltSpinner;
 
 	// Figure
@@ -156,18 +160,18 @@ public class ModelPanel extends MapElementBasePanel {
 		fileText.setToolTipText("model file path");
 		compList.add(fileText);
 
-//		sizeLabel = new JLabel("Size", SwingConstants.RIGHT);
-//		compList.add(sizeLabel);
-//		sizeText = new DoubleTextField(8, Figure.defaultSize, true, Landscape.format) {
-//			@Override
-//			protected void handleChange(double value) {
-//				if (Double.isNaN(value)) {
-//					return;
-//				}
-//				model.setSize(value);
-//			}
-//		};
-//		compList.add(sizeText);
+		sizeLabel = new JLabel("Scale", SwingConstants.RIGHT);
+		compList.add(sizeLabel);
+		sizeText = new DoubleTextField(8, Figure.defaultSize, true, Landscape.format) {
+			@Override
+			protected void handleChange(double value) {
+				if (Double.isNaN(value)) {
+					return;
+				}
+				model.setSize(value);
+			}
+		};
+		compList.add(sizeText);
 
 		compList.add(new JLabel("Azimuth", SwingConstants.RIGHT));
 		azSpinner = new DoubleSpinner(0, 0, 359, 1, true) {
@@ -210,9 +214,9 @@ public class ModelPanel extends MapElementBasePanel {
 		super.setMapElement(mapElement);
 		model = (Model) mapElement;
 		setLocation(locationText, locLabel, model.getTranslation());
-//		sizeLabel.setForeground(Color.BLACK);
-//		sizeText.setEnabled(true);
-//		sizeText.setValue(model.getSize());
+		sizeLabel.setForeground(Color.BLACK);
+		sizeText.setEnabled(true);
+		sizeText.setValue(model.getSize());
 		surfaceButton.setSelected(model.isSurfaceNormalVisible());
 		azSpinner.setValueNoChange(model.getAzimuth());
 		tiltSpinner.setValueNoChange(model.getTilt());

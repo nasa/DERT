@@ -176,7 +176,7 @@ public class Model extends FigureMarker implements Landmark {
 			contents.setRenderState(materialState);
 			contents.updateGeometricState(0);
 			rootNode.updateWorldBound(true);
-//			label.setTranslation(offset.getX(), offset.getY()*size, offset.getZ());
+			label.setTranslation(0, rootNode.getWorldBound().getRadius()*size, 0);
 		}
 		setAzimuth(state.azimuth);
 		setTilt(state.tilt);
@@ -243,6 +243,24 @@ public class Model extends FigureMarker implements Landmark {
 	@Override
 	public Icon getIcon() {
 		return (icon);
+	}
+
+	/**
+	 * Set the size
+	 * 
+	 * @param size
+	 */
+	@Override
+	public void setSize(double size) {
+		if (this.size == size) {
+			return;
+		}
+		this.size = size;
+		rootNode.setScale(size, size, size);
+		rootNode.updateWorldBound(true);
+		label.setTranslation(0, rootNode.getWorldBound().getRadius()*size, 0);
+		updateWorldTransform(true);
+		updateWorldBound(true);
 	}
 
 	/**
