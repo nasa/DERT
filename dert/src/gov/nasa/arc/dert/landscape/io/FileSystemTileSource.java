@@ -128,9 +128,6 @@ import com.ardor3d.image.Image;
 public class FileSystemTileSource
 	extends AbstractTileSource {
 
-	// Quad tree structure of existing tile keys
-	private DepthTree depthTree;
-
 	// Landscape directory
 	private String dirName;
 
