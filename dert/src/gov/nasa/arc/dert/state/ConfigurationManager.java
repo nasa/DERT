@@ -130,7 +130,7 @@ import javax.swing.JOptionPane;
 public class ConfigurationManager {
 
 	// This is a singleton
-	private static ConfigurationManager INSTANCE;
+	private static volatile ConfigurationManager INSTANCE;
 
 	// The current configuration in use
 	private Configuration currentConfig;
@@ -156,10 +156,8 @@ public class ConfigurationManager {
 	 * @return
 	 */
 	public static ConfigurationManager createInstance(Properties properties, StateFactory stateFactory) {
-		if (INSTANCE == null) {
+		if (INSTANCE == null)
 			INSTANCE = new ConfigurationManager(properties, stateFactory);
-			INSTANCE.currentConfig = new Configuration((String) null);
-		}
 		return (INSTANCE);
 	}
 
@@ -181,6 +179,7 @@ public class ConfigurationManager {
 		this.stateFactory = stateFactory;
 		saveConfigToStash = StringUtil.getBooleanValue(properties, "SaveToStashOnly", false, false);
 		loadRecent(properties);
+		currentConfig = new Configuration((String) null, stateFactory);
 	}
 
 	/**

@@ -177,7 +177,7 @@ public class QuadKey {
 		return(path[path.length-1]);
 	}
 	
-	public boolean equals(QuadKey that) {
+	public boolean equalTo(QuadKey that) {
 		if (this.path.length != that.path.length)
 			return(false);
 		int n = Math.min(path.length, that.path.length);

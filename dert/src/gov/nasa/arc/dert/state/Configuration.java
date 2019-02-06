@@ -149,12 +149,11 @@ public class Configuration {
 	 * 
 	 * @param label
 	 */
-	public Configuration(String label) {
+	public Configuration(String label, StateFactory stateFactory) {
 		this.label = label;		
 		
 		stateMap = new ConcurrentHashMap<String, State>();
 		
-		StateFactory stateFactory = ConfigurationManager.getInstance().getStateFactory();
 		worldState = (WorldState)stateFactory.createState(DefaultState.WorldState);
 		stateMap.put("WorldState", worldState);
 		consoleState = (ConsoleState)stateFactory.createState(DefaultState.ConsoleState);

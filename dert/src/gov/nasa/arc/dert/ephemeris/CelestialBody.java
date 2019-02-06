@@ -517,8 +517,6 @@ public class CelestialBody {
         int nLon = points[0].length-1;
         
         double totalArea = 0;
-        double thetaDeg = theta;
-        theta = Math.toRadians(theta);
         facets = new ArrayList<Facet>();
         
         // Bottom triangles
@@ -549,7 +547,7 @@ public class CelestialBody {
                 facets.add(f);
             }                
         }
-        System.out.println(bodyName+" tessallation: num latitude:"+nLat+", num longitude:"+nLon+", theta:"+thetaDeg+", facets:"+facets.size());
+        System.out.println(bodyName+" tessallation: num latitude:"+nLat+", num longitude:"+nLon+", theta:"+theta+", facets:"+facets.size());
         return(totalArea);
     }
     

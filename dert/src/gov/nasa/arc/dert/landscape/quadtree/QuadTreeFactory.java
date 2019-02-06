@@ -137,7 +137,7 @@ import com.ardor3d.util.geom.BufferUtils;
  */
 public class QuadTreeFactory {
 	
-	private static QuadTreeFactory instance;
+	private static volatile QuadTreeFactory instance;
 
 	// Fields used for missing vertices
 	private float[] missingColor = {0, 0, 0, 0};

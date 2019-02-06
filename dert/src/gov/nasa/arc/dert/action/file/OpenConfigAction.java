@@ -130,7 +130,7 @@ public class OpenConfigAction extends MenuItemAction {
 			File file = new File(filePath);
 			if (file.isDirectory()) {
 				// landscape - create a new configuration
-				Configuration newConfig = new Configuration("Untitled");
+				Configuration newConfig = new Configuration("Untitled", ConfigurationManager.getInstance().getStateFactory());
 				newConfig.setLandscapePath(filePath);
 //				ConfigurationManager.getInstance().createConfiguration(filePath);
 				ConfigurationManager.getInstance().openConfiguration(newConfig);
